@@ -256,7 +256,8 @@ typedef struct _assembler
 	BP_uint32			footer_depth;				/* page footer of lines */
 	BP_Bool				o_format_only;              /* format only flag, 0=no symbol */
 	BP_Bool				o_debug;					/* debug flag */
-	FILE				*fd_object;					/* object file's file descriptor*/
+	coco_path_id		fd_object;					/* object file's file descriptor*/
+	BP_Bool				object_output;
 	BP_char				object_name[FNAMESIZE];
 	BP_uint32			accum;
 	BP_char				_crc[3];

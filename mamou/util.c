@@ -265,7 +265,7 @@ void f_record(assembler *as)
 
 	/* 1. Pass 2 only. */
 	
-	if (as->pass == 2 && as->fd_object)
+	if (as->pass == 2 && as->object_output == BP_TRUE)
 	{
 		as->code_bytes += as->E_total;
 		
@@ -291,26 +291,40 @@ void f_record(assembler *as)
 
 		/* S-Record and Hex files: record header preamble. */
 
-		if (as->output_type == OUTPUT_BINARY && as->fd_object)
+		if (as->output_type == OUTPUT_BINARY && as->object_output == BP_TRUE)
 		{
-			for (i = 0; i < as->E_total; i++)
-			{
-				fputc(as->E_bytes[i], as->fd_object);
-			}
+			int		size = as->E_total;
+			
+			_coco_write(as->fd_object, as->E_bytes, &size);
+			
+//			for (i = 0; i < as->E_total; i++)
+//			{
+//				fputc(as->E_bytes[i], as->fd_object);
+//			}
 		}
 		else
 		{
-			if (as->output_type == OUTPUT_HEX && as->fd_object)
+			int size;
+			
+			if (as->output_type == OUTPUT_HEX && as->object_output == BP_TRUE)
 			{
-				fprintf(as->fd_object, ":");
+				size = 1;
+				
+				_coco_write(as->fd_object, ":", &size);
+				
+//				fprintf(as->fd_object, ":");
 				hexout(as, as->E_total);        /* byte count  */
 				hexout(as, 0);		/* Output 00 */
 			}
-			else if (as->output_type == OUTPUT_SRECORD && as->fd_object) 		/* S record file */
+			else if (as->output_type == OUTPUT_SRECORD && as->object_output == BP_TRUE) 		/* S record file */
 			{
+				size = 2;
+				
 				chksum += 3;
 
-				fprintf(as->fd_object, "S1");
+				_coco_write(as->fd_object, "S1", &size);
+				
+//				fprintf(as->fd_object, "S1");
 				hexout(as, as->E_total + 3);      /* byte count +3 */
 			}
 
@@ -334,7 +348,11 @@ void f_record(assembler *as)
 
 			hexout(as, lobyte(chksum));
 
-			fprintf(as->fd_object, "\n");
+			size = 1;
+			
+			_coco_write(as->fd_object, "\n", &size);
+			
+//			fprintf(as->fd_object, "\n");
 		}
 		
 		as->E_pc = as->program_counter;
@@ -352,10 +370,15 @@ char *hexstr = {"0123456789ABCDEF"};
 
 void hexout(assembler *as, int byte)
 {
-	if (as->fd_object)
+	if (as->object_output == BP_TRUE)
 	{
+		int size = 2;
+		BP_char tmp[8];
+		
 		byte = lobyte(byte);
-		fprintf(as->fd_object, "%c%c", hexstr[byte >> 4], hexstr[byte & 017]);
+		sprintf(tmp, "%c%c", hexstr[byte >> 4], hexstr[byte & 017]);
+
+		_coco_write(as->fd_object, tmp, &size);
 	}
 
 
@@ -386,7 +409,10 @@ void imageinit(void)
  */
 void finish_outfile(assembler *as)
 {
-	if (!as->fd_object)
+	int size;
+	
+	
+	if (as->object_output == BP_FALSE)
 	{
 		return;
 	}
@@ -396,14 +422,21 @@ void finish_outfile(assembler *as)
 	}
 	else if (as->output_type == OUTPUT_HEX)
 	{
-		fprintf(as->fd_object, ":00000001FF\n");
+		size = 12;
+		
+		_coco_write(as->fd_object, ":00000001FF\n", &size);
+//		fprintf(as->fd_object, ":00000001FF\n");
 	}
 	else
 	{
-		fprintf(as->fd_object, "S9030000FC\n");
+		size = 11;
+		
+		_coco_write(as->fd_object, "S9030000FC\n", &size);
+//		fprintf(as->fd_object, "S9030000FC\n");
 	}
 
-	fclose(as->fd_object);
+	_coco_close(as->fd_object);
+//	fclose(as->fd_object);
 
 
 	return;

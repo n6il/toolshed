@@ -183,6 +183,7 @@ int main(int argc, char **argv)
                     /* output file */
                     p = &argv[j][2];
 					strncpy(as.object_name, p, FNAMESIZE - 1);
+					as.object_output = BP_TRUE;
                     break;
 					
                 case 'p':
@@ -461,8 +462,7 @@ static void mamou_initialize(assembler *as)
 		as->program_counter			= 0;
 		as->pass					= 1;
 		as->Ctotal					= 0;
-		as->f_new_page					= BP_FALSE;
-//		as->input_line[MAXBUF-1]	= '\n';
+		as->f_new_page				= BP_FALSE;
 		as->use_depth				= 0;
 		
 		as->conditional_stack_index = 0;
@@ -474,14 +474,9 @@ static void mamou_initialize(assembler *as)
 
 		if (as->object_name[0] != EOS)
 		{
-#if 0
-			if (as->o_quiet_mode == BP_FALSE)
-			{
-				printf("output:  %s\n", as->object_name);
-			}
-#endif
-			
-			if ((as->fd_object = fopen(as->object_name, "wb")) == NULL)
+			if (_coco_create(&(as->fd_object), as->object_name,
+				FAM_READ | FAM_WRITE,
+				FAP_READ | FAP_WRITE | FAP_PREAD) != 0)
 			{
 				fatal("Can't create object file");
 			}
@@ -505,8 +500,8 @@ static void mamou_initialize(assembler *as)
 		as->E_total			= 0;
 		as->P_total			= 0;
 		as->Ctotal			= 0;
-		as->f_new_page			= BP_FALSE;
-		as->use_depth				= 0;
+		as->f_new_page		= BP_FALSE;
+		as->use_depth		= 0;
 		
 		as->current_org		= 0;
 		
@@ -882,7 +877,7 @@ void init_globals(assembler *as)
     as->DP = 0;			/* Direct Page                  */
     as->num_warnings = 0;		/* total warnings               */
     as->old_program_counter = 0;		/* Program Counter at beginning */
-
+	as->object_output = BP_FALSE;
     as->last_symbol = 0;		/* result of last symbol_find        */
 
     as->pass = 1;		/* Current pass #               */
@@ -916,7 +911,7 @@ void init_globals(assembler *as)
     as->o_show_symbol_table = BP_FALSE;		/* symbol table flag, 0=no symbol */
     as->o_pagewidth = 80;
     as->o_debug = 0;		/* debug flag */
-    as->fd_object = NULL;		/* object file's file descriptor*/
+//    as->fd_object = NULL;		/* object file's file descriptor*/
     as->object_name[0] = EOS;
     as->bucket = NULL;
     as->do_module_crc = BP_FALSE;
