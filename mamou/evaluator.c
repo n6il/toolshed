@@ -1,5 +1,11 @@
-/*
+/***************************************************************************
  * evaluator.c: expression evaluation routines
+ *
+ * $Id$
+ *
+ * The Mamou Assembler - A Hitachi 6309 assembler
+ *
+ * (C) 2004 Boisy G. Pitre
  *
  *      an expression is constructed like this:
  *
@@ -34,7 +40,7 @@
  *
  *      ascii constant ::= ''' any printing char;
  *
- */
+ ***************************************************************************/
 
 #include "mamou.h"
 
@@ -58,12 +64,6 @@ static BP_Bool forward = BP_FALSE;
 	@param result A pointer to the result of the evaluated expression
 	@param eptr The expression to be evaluated
 	@param ignoreUndefined Ignore any undefined symbols
- */
-
-/*
- * evaluator: evaluate a mathematical expression
- *
- * NOTE: This evaluator currently does NOT perform operator precedence!
  */
 
 BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignoreUndefined)

@@ -1,4 +1,12 @@
-
+/***************************************************************************
+* symbol_bucket.c: symbol handle routines
+*
+* $Id$
+*
+* The Mamou Assembler - A Hitachi 6309 assembler
+*
+* (C) 2004 Boisy G. Pitre
+***************************************************************************/
 
 #include "mamou.h"
 #include "h6309.h"

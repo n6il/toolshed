@@ -1,4 +1,12 @@
-
+/***************************************************************************
+* util.c: common utility functions
+*
+* $Id$
+*
+* The Mamou Assembler - A Hitachi 6309 assembler
+*
+* (C) 2004 Boisy G. Pitre
+***************************************************************************/
 
 #include	"mamou.h"
 #include	"os9module.h"

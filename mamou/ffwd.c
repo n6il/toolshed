@@ -1,3 +1,12 @@
+/***************************************************************************
+* ffwd.c: forward reference support
+*
+* $Id$
+*
+* The Mamou Assembler - A Hitachi 6309 assembler
+*
+* (C) 2004 Boisy G. Pitre
+***************************************************************************/
 
 #include "mamou.h"
 
@@ -17,14 +26,14 @@ void fwd_init(assembler *as)
 {
 	if (_coco_create(&forward_path, fwd_name, FAM_READ | FAM_WRITE, FAP_READ | FAP_WRITE) != 0)
 	{
-		fatal("Can't create temp file");
+		fatal("Cannot create forward reference file.");
 	}
 
 	_coco_close(forward_path); /* close and reopen for reads and writes */
 
 	if (_coco_open(&forward_path, fwd_name, FAM_READ | FAM_WRITE) != 0)
 	{
-		fatal("Forward ref file has gone.");
+		fatal("Cannot open forward reference file.");
 	}
 
 

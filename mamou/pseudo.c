@@ -1,6 +1,14 @@
+/***************************************************************************
+* pseudo.c: pseudo op-code routines
+*
+* $Id$
+*
+* The Mamou Assembler - A Hitachi 6309 assembler
+*
+* (C) 2004 Boisy G. Pitre
+***************************************************************************/
+
 #include <string.h>
-
-
 #include "mamou.h"
 
 
