@@ -1,0 +1,8 @@
+#!/bin/sh
+until [ -z $1 ]
+do
+	tr '\012' '\015' < $1 > /tmp/$1.tmp
+	mv /tmp/$1.tmp $1
+	shift
+done
+

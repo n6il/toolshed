@@ -1,0 +1,7 @@
+ - Add support for Motorola mode
+ - Allow spaces between mod's params (i.e. mod x, y, z, a, b) like asm does
+ - Show 'D' in info area of listing when '.' (Current data counter) is used
+   in an expression (e.g.   size  equ .)
+ - insert blank lines or formfeed after summary report of assembly if listing
+   is turned on
+ - test
