@@ -307,7 +307,7 @@ void f_record(assembler *as)
 			fprintf(as->fd_object, ":");
 			hexout(as, as->E_total);        /* byte count  */
 		}
-		else if (!as->Binfil && as->fd_object) 		/* S record file */
+		else if (!as->o_binaryfile && as->fd_object) 		/* S record file */
 		{
 			chksum += 3;
 
@@ -318,7 +318,7 @@ void f_record(assembler *as)
 
 		/* If this is a binary file, output bytes directly to file. */
 		
-		if (as->Binfil && as->fd_object)
+		if (as->o_binaryfile && as->fd_object)
 		{
 			for (i = 0; i < as->E_total; i++)
 			{
@@ -408,7 +408,7 @@ void finish_outfile(assembler *as)
 		return;
 	}
 
-	if (as->Binfil)	/* dump the binary bytes to the object file */
+	if (as->o_binaryfile)	/* dump the binary bytes to the object file */
 	{
 	}
 	else if (as->Hexfil)

@@ -141,6 +141,12 @@ static int do_dir(char **argv, char *p)
 		int		granule_size = 1;
 		int		curr_granule;
 
+
+		if (de.filename[0] == 0 || de.filename[0] == 255)
+		{
+			continue;
+		}
+		
 		
 		switch(de.ascii_flag)
 		{

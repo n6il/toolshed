@@ -1,7 +1,9 @@
 
 #include "mamou.h"
 
+
 coco_path_id	forward_path;		/* temp file's file descriptor	*/
+
 
 char	fwd_name[] = { "fwd_refs" } ;
 

@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	
 	/* 1. Initialize our globals. */
 	
-    as.Argv = argv;
+    as.arguments = argv;
 
     init_globals(&as);
 
@@ -46,10 +46,9 @@ int main(int argc, char **argv)
 	
 	if (argc < 2)
     {
-		fprintf(stderr, "The Mamou Assembler\n");
+		fprintf(stderr, "The Mamou Assembler for the Hitachi 6309\n");
 		fprintf(stderr, "Copyright (C) 2004 Boisy G. Pitre\n");
-		fprintf(stderr, "Syntax: mamou [<opts>] [file)] [<opts>]\n");
-        fprintf(stderr, "Function: 6809/6309 assembler\n");
+		fprintf(stderr, "\n");
         fprintf(stderr, "Options:\n");
         fprintf(stderr, "    -a<sym>[=<val>] assign val to sym\n");
         fprintf(stderr, "    -b              no binary image file output\n");
@@ -103,7 +102,8 @@ int main(int argc, char **argv)
                     }
 
                     /* now i points to '=' or \0 */
-                    if (*i == '=')
+
+					if (*i == '=')
                     {
                         *i = '\0';
                         i++;
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 					
                 case 'b':
                     /* Binary file output */
-                    as.Binfil = 0;
+                    as.o_binaryfile = 0;
                     break;	
 					
                 case 'e':
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
                     if (tolower(argv[j][2]) == 's')
                     {
                         as.o_format_only = BP_TRUE;
-                        as.Opt_W = 256;
+                        as.o_pagewidth = 256;
                     }
                     if (tolower(argv[j][2]) == 't')
                     {
@@ -825,7 +825,7 @@ void init_globals(assembler *as)
 //    as->file_count = 0;		/* Number of files to assemble  */
     as->Ffn = 0;		/* forward ref file #           */
     as->F_ref = 0;		/* next line with forward ref   */
-    as->Argv = 0;		/* pointer to file names        */
+    as->arguments = 0;		/* pointer to file names        */
 
     as->E_total = 0;		/* total # bytes for one line   */
     as->E_bytes[0] = 0;		/* Emitted held bytes           */
@@ -851,9 +851,9 @@ void init_globals(assembler *as)
     as->Opt_N = BP_FALSE;
     as->o_quiet_mode = BP_FALSE;
     as->o_show_symbol_table = BP_FALSE;		/* symbol table flag, 0=no symbol */
-    as->Opt_W = 80;
+    as->o_pagewidth = 80;
     as->o_debug = 0;		/* debug flag */
-    as->Binfil = 1;		/* binary image file output flag */
+    as->o_binaryfile = 1;		/* binary image file output flag */
     as->Hexfil = 0;		/* Intel Hex file output flag */
     as->fd_object = NULL;		/* object file's file descriptor*/
     as->object_name[0] = EOS;

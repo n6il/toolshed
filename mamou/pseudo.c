@@ -635,7 +635,7 @@ int _opt(assembler *as)
 			break;
 
 		case 'w':	/* page width */
-			as->Opt_W = atoi(Opt + 1);
+			as->o_pagewidth = atoi(Opt + 1);
 			break;
 
 		default:

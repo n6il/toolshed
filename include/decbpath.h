@@ -67,6 +67,7 @@ typedef struct _decb_path_id
 	char			filename[64];	/* pointer to filename */
 	char			extension[64];	/* Pointer to extension */
 	int				drive;			/* Drive Number */
+	decb_dir_entry  dir_entry;
 	unsigned int	this_directory_entry_index;
 	unsigned int	directory_entry_index;
 	char			first_granule;  /* first granule in file */

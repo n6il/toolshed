@@ -51,20 +51,34 @@ static BP_Bool forward = BP_FALSE;
 
 
 
+/*
+ * evaluator: evaluate a mathematical expression
+ *
+ * NOTE: This evaluator currently does NOT perform operator precedence!
+ */
+
 BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignoreUndefined)
 {
-	BP_int32	left, right;     /* left and right terms for expression */
+	BP_int32	left, right;		/* left and right terms for expression */
 	BP_char		o;					/* operator character */
 
 
+	/* 1. Do any debugging output. */
+	
 	if (as->o_debug)
 	{
 		printf("Evaluating %s\n", *eptr);
 	}
 	
+	
+	/* 2. Assume no forcing of result size. */
+	
 	as->force_byte = BP_FALSE;
 	as->force_word = BP_FALSE;
 
+	
+	/* 3. Force byte or word size? */
+	
 	if (**eptr == '<')
 	{
 		as->force_byte = BP_TRUE;
@@ -77,7 +91,7 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 	}
 
 
-	/* Pickup first part of expression. */
+	/* 4. Pickup first part of expression. */
 	
 	if ((get_term(as, &left, eptr, ignoreUndefined) == BP_FALSE) && (forward == BP_FALSE))
 	{
@@ -87,6 +101,8 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 	}
 
 
+	/* 5. Gather rest of line. */
+	
 	while (is_op(**eptr))
 	{
 		/* 1. Pickup operator and skip. */
@@ -137,12 +153,12 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 	}
 
 
-	/* 4. Assign result to left. */
+	/* 6. Assign result to left. */
 	
 	*result = left;
 
 
-	/* 5. Print debugging information if requested. */
+	/* 7. Print debugging information if requested. */
 	
 	if (as->o_debug)
 	{
@@ -152,7 +168,7 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 	}
 
 
-	/* 6. Return status. */
+	/* 8. Return status. */
 	
 	return BP_TRUE;
 }
@@ -160,8 +176,9 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 
 
 /*
- *      is_op --- is character an expression operator?
+ * is_op: is character an expression operator?
  */
+
 static BP_Bool is_op(BP_char c)
 {
 	if (any(c, "+-*/&%|^!"))
@@ -176,8 +193,9 @@ static BP_Bool is_op(BP_char c)
 
 
 /*
- *      get_term --- evaluate a single item in an expression
+ * get_term: evaluate a single item in an expression
  */
+
 static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool ignoreUndefined)
 {
 	char			hold[MAXBUF];
@@ -190,39 +208,50 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 
 	forward = BP_FALSE;
 
+	/* 1. If we encounter end of string, something's wrong. */
+	
 	if (!**eptr)
 	{
 		error(as, "Unbalanced expression");
 
 		return BP_FALSE;
 	}
+
+	
+	/* 2. A leading minus is a negation. */
+	
 	else if (**eptr == '-')
 	{
 		(*eptr)++;
+
 		minus = BP_TRUE;
 	}
 
 
-	/* Open brace? */
+	/* 3. Open brace? */
 	
 	if (**eptr == '(')
 	{
 		(*eptr)++;
+
 		evaluate(as, &val, eptr, ignoreUndefined); /* evaluate the inside */
+
 		if (**eptr != ')')
 		{
 			error(as, "Mismatched brace");
+
 			return BP_FALSE;
 		}
 	}
 	else if (**eptr == ')')
 	{
 		error(as, "Mismatched brace");
+
 		return BP_FALSE;
 	}
 
 
-	/* Skip over immediate character. */
+	/* 4. Skip over immediate character. */
 	
 	while (**eptr == '#')
 	{
@@ -230,7 +259,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 	
 	
-	/* Complement? */
+	/* 5. Complement? */
 	
 	if (**eptr == '^')
 	{
@@ -249,7 +278,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 	
 
-	/* Binary constant? */
+	/* 6. Binary constant? */
 	
 	if (**eptr == '%')
 	{
@@ -262,7 +291,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 
 
-	/* Octal constant? */
+	/* 7. Octal constant? */
 	
 	else if (**eptr == '@')
 	{
@@ -275,7 +304,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 
 
-	/* Hexadecimal constant? */
+	/* 8. Hexadecimal constant? */
 	
 	else if (**eptr == '$')
 	{
@@ -295,7 +324,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 
 
-	/* Decimal constant? */
+	/* 9. Decimal constant? */
 	
 	else if (any(**eptr, "0123456789"))
 	{
@@ -306,7 +335,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 
 
-	/* Current program counter? */
+	/* 10. Current program counter? */
 	
 	else if (**eptr == '*')
 	{
@@ -315,7 +344,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 
 
-	/* Current data counter? */
+	/* 11. Current data counter? */
 	
 	else if (**eptr == '.')
 	{
@@ -324,7 +353,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 	
 	
-	/* Character literal? */
+	/* 12. Character literal? */
 
 	else if (**eptr == '\'')
 	{
@@ -341,7 +370,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	}
 
 
-	/* Symbol? */
+	/* 13. Symbol? */
 	
 	else if (alpha(**eptr))
 	{
@@ -399,6 +428,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 #endif
 				forward = BP_TRUE;
 				*term = 0;
+
 				return BP_FALSE;
 			}
 		}
@@ -413,24 +443,34 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 			fwd_next(as);
 		}
 	}
+
+	
+	/* Closing parentheses? */
+	
 	else if (**eptr == ')')
 	{
 		(*eptr)++;
 	}
 	else
 	{
-		/* none of the above */
+		/* 1. None of the above */
+		
 		val = 0;
 	}
 
+	
+	/* Negate if needed. */
+	
 	if (minus)
 	{
 		*term = -val;
-		return(BP_TRUE);
 	}
 	else
 	{
 		*term = val;
-		return(BP_TRUE);
 	}
+
+
+	
+	return BP_TRUE;
 }

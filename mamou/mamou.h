@@ -186,7 +186,7 @@ typedef struct _assembler
 	int					current_filename_index;						/* file number count            */
 	int					Ffn;						/* forward ref file #           */
 	int					F_ref;						/* next line with forward ref   */
-	char				**Argv;						/* pointer to file names        */
+	char				**arguments;						/* pointer to file names        */
 	int					E_total;					/* total # bytes for one line   */
 	BP_char				E_bytes[E_LIMIT + MAXBUF];  /* Emitted held bytes           */
 	int					E_pc;						/* Pc at beginning of collection*/
@@ -209,14 +209,14 @@ typedef struct _assembler
 	int					Opt_N;						/* */
 	int					o_quiet_mode;				/* quiet mode */
 	int					o_show_symbol_table;		/* symbol table flag, 0=no symbol */
-	int					Opt_W;						/* */
+	int					o_pagewidth;						/* */
 	int					current_line;				/* line counter for printing */
 	int					current_page;				/* page counter for printing */
 	int					header_depth;				/* page header number of lines */
 	int					footer_depth;				/* page footer of lines */
 	int					o_format_only;              /* format only flag, 0=no symbol */
 	int					o_debug;					/* debug flag */
-	int					Binfil;						/* binary image file output flag */
+	int					o_binaryfile;						/* binary image file output flag */
 	int					Hexfil;						/* Intel Hex file output flag */
 	unsigned char		Memmap[65536];				/* Memory image of output data */
 	FILE				*fd_object;					/* object file's file descriptor*/

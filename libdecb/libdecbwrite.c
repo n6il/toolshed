@@ -184,13 +184,14 @@ error_code _decb_writedir(decb_path_id path, decb_dir_entry *dirent)
 	int entry_in_sector;
 	
 
+#if 0
 	/* 1. Check the mode. */
 	
 	if (path->mode & FAM_DIR == 0 || path->mode & FAM_WRITE == 0)
     {
         return EOS_BMODE;
     }
-
+#endif
 
 	entry_in_sector = (path->directory_entry_index * sizeof(decb_dir_entry)) % 256;
 

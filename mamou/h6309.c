@@ -1,3 +1,12 @@
+/***************************************************************************
+* h6309.c: Hitach 6309 assembly routines
+*
+* $Id$
+*
+* The Mamou Assembler - A Hitachi 6309 assembler
+*
+* (C) 2004 Boisy G. Pitre
+***************************************************************************/
 
 #include "mamou.h"
 
@@ -91,6 +100,9 @@ int _inh(assembler *as, int opcode)
 	
 	emit(as, opcode);
 
+
+	/* 1. Print the line. */
+	
 	print_line(as, 0, ' ', as->old_program_counter);
 
 
@@ -99,10 +111,10 @@ int _inh(assembler *as, int opcode)
 
 
 
-/* Page 2 inherent */
-
 int _p2inh(assembler *as, int opcode)
 {
+	/* 1. Emit leading opcode. */
+	
 	emit(as, PAGE2);
 	
 
@@ -111,10 +123,10 @@ int _p2inh(assembler *as, int opcode)
 
 
 
-/* Page 3 inherent */
-
 int _p3inh(assembler *as, int opcode)
 {
+	/* 1. Emit leading opcode. */
+	
 	emit(as, PAGE3);
 
 
@@ -125,13 +137,24 @@ int _p3inh(assembler *as, int opcode)
 
 int _gen(assembler *as, int opcode)
 {
-	int     amode;  /* indicated addressing mode */
+	int     amode;
 
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	
+     /* 1. Get addressing mode. */
+	
+	amode = set_mode(as);
 
-	/* general addressing */
+	
+	/* 2. Do general addressing */
+	
 	do_gen(as, opcode, amode, BP_FALSE);
+
+	
+	/* 3. Print the line. */
+	
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
@@ -140,20 +163,29 @@ int _gen(assembler *as, int opcode)
 int _imgen(assembler *as, int opcode)
 {
 	BP_int32	result;
-	int amode;  /* indicated addressing mode */
-	int old;
-	register char *p;
+	BP_int32	amode;
+	BP_int32	old;
+	BP_char		*p;
 
-	amode = set_mode(as);     /* pickup indicated addressing mode */
-
-	/* immediate addressing */
+	
+	/* 1. Get indicated addressing mode. */
+	
+	amode = set_mode(as);
+	
+	
+	/* 2. Verify immediate addressing. */
+	
 	if (amode != IMMED)
 	{
-		error(as, "Immediate as->operand Required");
+		error(as, "Immediate Operand Required");
+
 		return 0;
 	}
+	
 	as->optr++;
+
 	evaluate(as, &result, &as->optr, 0);
+
 	if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 	{
 		error(as, "Result >255");
@@ -164,26 +196,31 @@ int _imgen(assembler *as, int opcode)
 	if (*as->optr++ != ',')
 	{
 		error(as, "Comma required between operands");
+
 		return 0;
 	}
 
-	while(*as->optr == ' ') as->optr++;
+	while (*as->optr == ' ') as->optr++;
 
 	if (*as->optr == '#')
 	{
 		error(as, "Immediate Addressing Illegal");
+
 		return 0;
 	}
+
 	if (*as->optr == '[')
 	{
 		emit(as, opcode + 0x60);
 		do_indexed(as, result);
 		print_line(as, 0, ' ', as->old_program_counter);
+
 		return 0;
 	}
 
 	amode = OTHER;		/* default */
 	p = as->optr;
+
 	while (*p != EOS && *p != BLANK && *p != TAB)
 	{
 		/* any , before break */
@@ -197,10 +234,13 @@ int _imgen(assembler *as, int opcode)
 
 	old = as->E_total;
 	emit(as, lobyte(result));
-	/* general addressing */
+
+	/* General addressing */
+
 	do_gen(as, opcode, amode, BP_FALSE);
 
 	/* Fix up output */
+
 	as->E_bytes[old] = as->E_bytes[old + 1];
 	as->E_bytes[old + 1] = result;
 	as->P_bytes[0] = as->P_bytes[1];
@@ -218,6 +258,8 @@ int _imgen(assembler *as, int opcode)
 	}
 
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 

@@ -29,10 +29,11 @@ static int _decb_cmp(decb_dir_entry *entry, char *name);
  */
 error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_type, int data_type)
 {
-	error_code	ec = EOS_BPNAM;
+	error_code		ec = EOS_BPNAM;
+	int				empty_entry = -1;
+	char			*open_mode;
+	
 
-
-#if 0
     /* 1. Allocate & initialize path descriptor. */
 
     ec = init_pd(path, mode);
@@ -53,7 +54,155 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 
         return ec;
     }
-#endif
+
+	
+	/* 3. Open a path to the image file. */
+	
+	if (mode & FAM_WRITE)
+	{
+		open_mode = "rb+";
+	}
+	else
+	{
+		open_mode = "rb";
+	}
+	
+	(*path)->fd = fopen((*path)->imgfile, open_mode);
+	
+	if ((*path)->fd == NULL)
+	{
+		term_pd(*path);
+		
+		return(EOS_BPNAM);
+	}
+	
+	
+	(*path)->disk_offset = 161280 * (*path)->drive;
+	
+	
+	/* 4. At this point, sector and granule function will work - Load FAT */
+	
+	_decb_gs_sector(*path, 17, 2, (*path)->FAT);
+	
+	
+	/* 5. Determine if there is enough space. */
+
+	{
+		int			i, free_granules = 0;
+
+	
+		for (i = 0; i < 256; i++)
+		{
+			if ((*path)->FAT[i] == 0xFF)
+			{
+				free_granules++;
+			}
+		}
+		
+		if (free_granules == 0)
+		{
+			return EOS_DF;
+		}
+	}
+	
+	
+	/* 6. Construct a directory entry. */
+	
+	{
+		char *p = strchr((*path)->filename, '.');
+		
+		
+		/* 1. Clear memory. */
+		
+		memset(&(*path)->dir_entry, 0x20, 11);
+		memset(&(*path)->dir_entry + 11, 0, sizeof(decb_dir_entry) - 11);
+		
+		
+		if (p == NULL)
+		{
+			int length = strlen((*path)->filename);
+			
+			if (length > 8) length = 8;
+			
+			strncpy((*path)->dir_entry.filename, (*path)->filename, length);
+		}
+		else
+		{
+			int length = p - (*path)->filename;
+			
+			
+			if (length > 8)
+			{
+				length = 8;
+			}
+			
+			strncpy((*path)->dir_entry.filename, (*path)->filename, length);
+			
+			
+			p++; /* skip over '.' */
+			
+			length = strlen(p);
+			
+			if (length > 3)
+			{
+				length = 3;
+			}
+			
+			strncpy((*path)->dir_entry.file_extension, p, length);
+		}
+		
+		(*path)->dir_entry.file_type = file_type;
+		
+		(*path)->dir_entry.ascii_flag = data_type;
+	}
+	
+	
+	
+	/* 7. Determine if file already exists. */
+
+	{
+		decb_dir_entry		de;
+		
+		
+		/* 1. Find an empty dir (and check for duplicate entry too) */
+
+		_decb_seekdir(*path, 0);
+		
+		while (_decb_readdir(*path, &de) == 0)
+		{
+			/* 1. If we run across an empty directory entry, make a note of it. */
+			
+			if ((de.filename[0] == 255 || de.filename[0] == '\0') && empty_entry == -1)
+			{
+				empty_entry = (*path)->directory_entry_index - 1;
+				
+				(*path)->this_directory_entry_index = (*path)->directory_entry_index;
+			}
+
+			if (strcmp(de.filename, (*path)->dir_entry.filename) == 0 && strcmp(de.file_extension, (*path)->dir_entry.file_extension) == 0)
+			{
+				/* 1. A file of this type already exists. */
+				
+				return EOS_FAE;
+			}
+		}
+
+	
+		if (empty_entry == -1)
+		{
+			/* 1. There are no more directory entries left. */
+			
+			return EOS_DF;
+		}
+	}
+
+
+	/* 8. Write the new directory entry. */
+	
+	_decb_seekdir(*path, empty_entry);
+	
+	_decb_writedir(*path, &(*path)->dir_entry);
+
 	
     return ec;
 }
@@ -167,7 +316,6 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 	/* 8. Find directory entry matching filename. */
 
 	{
-		decb_dir_entry entry;
 		int mode = (*path)->mode;
 		
 		
@@ -181,9 +329,9 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 		
 		/* 2. Check each entry until we find a match. */
 		
-		while ((ec = _decb_readdir(*path, &entry)) == 0)
+		while ((ec = _decb_readdir(*path, &(*path)->dir_entry)) == 0)
 		{
-			if (_decb_cmp(&entry, (*path)->filename) == 0)
+			if (_decb_cmp(&(*path)->dir_entry, (*path)->filename) == 0)
 			{
 				/* 1. We have a match! */
 				
@@ -191,9 +339,9 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 
 				(*path)->this_directory_entry_index = (*path)->directory_entry_index;
 								
-				(*path)->first_granule = entry.first_granule;
+				(*path)->first_granule = (*path)->dir_entry.first_granule;
 				
-				(*path)->bytes_in_last_sector = int2(entry.last_sector_size);
+				(*path)->bytes_in_last_sector = int2((*path)->dir_entry.last_sector_size);
 				
 				break;
 			}

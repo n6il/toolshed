@@ -56,7 +56,11 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 			break;
 			
 		case DECB:
-			ec = _decb_create(&((*path)->path.decb), pathlist, mode, perms, perms);
+			{
+				char	file_type = 0, data_type = 0;
+				
+				ec = _decb_create(&((*path)->path.decb), pathlist, mode, file_type, data_type);
+			}
 			break;
 	}
 

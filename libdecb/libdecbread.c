@@ -188,6 +188,7 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 	int entry_in_sector;
 	
 
+#if 0
 	/* 1. Check the mode. */
 	
 	if (path->mode & FAM_DIR == 0 || path->mode & FAM_READ == 0)
@@ -196,7 +197,8 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 
         return EOS_BMODE;
     }
-
+#endif
+	
 
 retry:
 	sector = (path->directory_entry_index * sizeof(decb_dir_entry)) / 256;
@@ -219,18 +221,6 @@ retry:
 
 	if (ec == 0)
 	{
-		/* 1. Check if this is an empty entry. */
-		
-		if (*(buffer + entry_in_sector) == '\x00')
-		{
-			goto retry;
-		}
-		
-		if (*(buffer + entry_in_sector) == '\xFF')
-		{
-			return(EOS_PNNF);
-		}
-		
 		memcpy(dirent, buffer + entry_in_sector, sizeof(decb_dir_entry));
 	}
 

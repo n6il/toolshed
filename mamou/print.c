@@ -143,8 +143,8 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	}
 
 	/* print out the built up line */
-	strncpy(Tmp_buff, Line_buff, as->Opt_W);
-	Tmp_buff[as->Opt_W] = EOS;
+	strncpy(Tmp_buff, Line_buff, as->o_pagewidth);
+	Tmp_buff[as->o_pagewidth] = EOS;
 	printf("%s\n", Tmp_buff);
 
 	/* check if we are at last line before footer should be printed */

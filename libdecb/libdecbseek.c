@@ -50,11 +50,13 @@ error_code _decb_seekdir(decb_path_id path, int entry)
 	
 	/* 1. Check mode. */
 	
+#if 0
 	if (!(path->mode & FAM_DIR))
 	{
 		ec = EOS_BMODE;
 	}
 	else
+#endif
 	{
 		if (entry > 72)
 		{
