@@ -3,10 +3,12 @@
  *
  * $Id$
  ********************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
-#include <cocotypes.h>
-#include <os9path.h>
+
+#include "cocotypes.h"
+#include "os9path.h"
 
 
 error_code _os9_readln(os9_path_id path, void *buffer, int *size)

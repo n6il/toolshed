@@ -39,10 +39,14 @@ error_code _os9_delete(char *pathlist)
 
         _os9_close(parent_path);
 
-        return(EOS_IC);
+		
+        return EOS_IC;
     }
 	
-    ec = _os9_open_parent_directory( &parent_path, pathlist, FAM_DIR | FAM_WRITE, filename );
+	
+    /* 2. Open parent directory. */
+
+    ec = _os9_open_parent_directory(&parent_path, pathlist, FAM_DIR | FAM_WRITE, filename);
 
     if (ec != 0)
     {
@@ -50,24 +54,24 @@ error_code _os9_delete(char *pathlist)
     }
 
 
-    /* 2. Return on illegal filename. */
+    /* 3. Return on illegal filename. */
 		
-    if( !strcasecmp(filename, "." ))
+    if (!strcasecmp(filename, "." ))
     {
         _os9_close(parent_path);
 
-        return(EOS_IA);
+        return EOS_IA;
     }
-	
-    if( !strcasecmp(filename, ".." ))
+
+    if (!strcasecmp(filename, ".." ))
     {
         _os9_close(parent_path);
 
-        return(EOS_IA);
+        return EOS_IA;
     }
 
 	
-    /* 3. Start reading directory file and search for match. */
+    /* 4. Start reading directory file and search for match. */
 
     while (_os9_gs_eof(parent_path) == 0)
     {
@@ -95,23 +99,33 @@ error_code _os9_delete(char *pathlist)
                 /* Only deallocate file if link count is zero */
 				
                 /* Deallocate any bits used by the file */
+				
                 ec = _os9_freefile( pathlist, parent_path->bitmap );
 				
                 /* Deallocate the bit used for the file descriptor */
+				
                 _os9_delbit( parent_path->bitmap, int3(dentry.lsn) / parent_path->spc, 1 );
             }
 
+			
             /* Back up file pointer in preparation of updating directory entry */
+			
             _os9_seek(parent_path, -(int)sizeof(dentry), SEEK_CUR);
+
 			
             /* Putting a NULL in the first charcter position identifies the file
                 as deleted */
+
             dentry.name[0] = '\0';
+
 			
             /* Write the directory entry back to the image */
+
             ec = _os9_writedir( parent_path, &dentry);
 
+			
 			/* Flag that the file has been deleted. */
+
 			deleted = 1;
 			
             break;			
@@ -126,14 +140,16 @@ error_code _os9_delete(char *pathlist)
 	}
 	
 	
-    return(ec);
+    return ec;
 }
 
 
-u_char DecrementLinkCount( os9_path_id path, int fd_lsn )
+
+u_char DecrementLinkCount(os9_path_id path, int fd_lsn)
 {
     fd_stats	fdbuf;
     u_char		result;
+
 	
     fseek(path->fd, fd_lsn * path->bps, SEEK_SET);	
     fread(&fdbuf, 1, sizeof(fd_stats), path->fd);
@@ -143,8 +159,10 @@ u_char DecrementLinkCount( os9_path_id path, int fd_lsn )
     fseek(path->fd, fd_lsn * path->bps, SEEK_SET);	
     fwrite(&fdbuf, 1, sizeof(fd_stats), path->fd);
 
+	
     return result;
 }
+
 
 
 static int _os9_freefile( char *filePath, u_char *bitmap )
@@ -154,23 +172,29 @@ static int _os9_freefile( char *filePath, u_char *bitmap )
     Fd_seg	seg;
     int i;
     int	ec = 0;
+
 	
-    ec = _os9_open( &path, filePath, FAM_READ );
-    ec = _os9_gs_fd( path, sizeof(fd_stats), &fdbuf );
+    ec = _os9_open(&path, filePath, FAM_READ);
+    ec = _os9_gs_fd(path, sizeof(fd_stats), &fdbuf);
     ec = _os9_close(path);
 	
     seg = fdbuf.fd_seg;
 	
-    for( i = 0; i<NUM_SEGS; i++ )
+    for (i = 0; i<NUM_SEGS; i++)
     {
-        if( int3(seg[i].lsn) == 0 )
+        if (int3(seg[i].lsn) == 0)
+		{
             break;
+		}
 
-        ec = _os9_delbit( bitmap, int3(seg[i].lsn) / path->spc, int2(seg[i].num) / path->spc );
+        ec = _os9_delbit(bitmap, int3(seg[i].lsn) / path->spc, int2(seg[i].num) / path->spc);
 		
-        if( ec != 0 )
+        if (ec != 0)
+		{
             return ec;
+		}
     }
 
+	
     return ec;	
 }

@@ -3,14 +3,16 @@
  *
  * $Id$
  ********************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <cocotypes.h>
-#include <cocosys.h>
-#include <decbpath.h>
-#include <cococonv.h>
+
+#include "cocotypes.h"
+#include "cocosys.h"
+#include "decbpath.h"
+#include "cococonv.h"
 
 
 error_code _decb_rename(char *pathlist, char *new_name)

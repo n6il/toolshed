@@ -3,12 +3,14 @@
  *
  * $Id$
  ********************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <cocotypes.h>
-#include <os9path.h>
-#include <cococonv.h>
+
+#include "cocotypes.h"
+#include "os9path.h"
+#include "cococonv.h"
 
 
 error_code _os9_ss_attr(os9_path_id path, int perms)

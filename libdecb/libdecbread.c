@@ -222,8 +222,8 @@ error_code _decb_readln(decb_path_id path, void *buffer, int *size)
 	
 	
     /* 5. If the passed size is greater than the length of the file minus
-		*    the file position, then reset the size
-		*/
+	 *    the file position, then reset the size
+	 */
 	
     if (*size > filesize - path->filepos)
     {
@@ -232,8 +232,8 @@ error_code _decb_readln(decb_path_id path, void *buffer, int *size)
 	
 	
     /* 6. Determine which granule the offset starts by looping
-		*    through each entry until we reach the end.
-		*/
+	 *    through each entry until we reach the end.
+	 */
 	
     accum_size = 0;
 	

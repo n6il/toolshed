@@ -3,14 +3,16 @@
  *
  * $Id$
  ********************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <cocotypes.h>
-#include <decbpath.h>
-#include <cococonv.h>
+
+#include "cocotypes.h"
+#include "decbpath.h"
+#include "cococonv.h"
 
 
 error_code _decb_kill(char *pathlist)
@@ -30,7 +32,7 @@ error_code _decb_kill(char *pathlist)
     }
 
 
-	/* Erase the entry by writing a nul as the first byte and write out sector. */
+	/* 2. Erase the entry by writing a nul as the first byte and write out sector. */
 	
 	path->dir_entry.filename[0] = '\0';
 
@@ -39,7 +41,7 @@ error_code _decb_kill(char *pathlist)
 	_decb_writedir(path, &path->dir_entry);
 
 	
-	/* 5. Clear the granules in the FAT used by this entry. */
+	/* 3. Clear the granules in the FAT used by this entry. */
 	
 	curr_granule = path->dir_entry.first_granule;
 	
@@ -58,7 +60,7 @@ error_code _decb_kill(char *pathlist)
 	path->FAT[curr_granule] = 0xFF;
 	
 	
-	/* 6. Close the path. */
+	/* 4. Close the path. */
 	
     _decb_close(path);
     

@@ -6,7 +6,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <decbpath.h>
+
+#include "decbpath.h"
 
 
 static error_code _raw_write(decb_path_id path, void *buffer, int *size);

@@ -1,15 +1,15 @@
 /********************************************************************
- * gs.c - Disk BASIC GetStatus routines
+ * gs.c - Disk BASIC GetStat routines
  *
  * $Id$
  ********************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
 #include "decbpath.h"
 #include "cococonv.h"
-
 
 
 error_code _decb_gs_fd(decb_path_id path, decb_file_stat *stat)
@@ -48,7 +48,7 @@ error_code _decb_gs_eof(decb_path_id path)
     }
 
     
-    return(ec);
+    return ec;
 }
 
 
@@ -76,8 +76,9 @@ error_code _decb_gs_size(decb_path_id path, int *size)
 	*size += 256 * ((path->FAT[curr_granule] & 0x3f) - 1)+ int2(path->dir_entry.last_sector_size);
 	
 
-    return(ec);
+    return ec;
 }
+
 
 
 error_code _decb_gs_sector(decb_path_id path, int track, int sector, char *buffer)
@@ -103,6 +104,7 @@ error_code _decb_gs_sector(decb_path_id path, int track, int sector, char *buffe
 }
 
 
+
 error_code _decb_gs_granule(decb_path_id path, int granule, char *buffer)
 {
 	error_code	ec = 0;
@@ -122,7 +124,3 @@ error_code _decb_gs_granule(decb_path_id path, int granule, char *buffer)
 	
 	return ec;
 }
-
-
-
-

@@ -3,10 +3,11 @@
  *
  * $Id$
  ********************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
-#include <cocotypes.h>
 
+#include "cocotypes.h"
 #include "os9path.h"
 
 

@@ -3,6 +3,7 @@
  *
  * $Id$
  ********************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -28,6 +29,7 @@ extern error_code find_free_granule(decb_path_id path, int *granule, int next_to
  *
  * Create a file
  */
+
 error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_type, int data_type)
 {
 	error_code		ec = EOS_BPNAM;
@@ -162,8 +164,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		
 		(*path)->dir_entry.ascii_flag = data_type;
 	}
-	
-	
+
 	
 	/* 7. Determine if file already exists. */
 
@@ -258,6 +259,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
  * 2. imagename,file  (considered to be a file open within the image)
  * 3. imagename       (considered to be an error) 
 */
+
 error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 {
 	error_code	ec = 0;

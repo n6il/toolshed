@@ -3,17 +3,19 @@
  *
  * $Id$
  ********************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
 #include <sys/stat.h>
-#include <cocotypes.h>
-#include <os9path.h>
-#include <cococonv.h>
-#include <cocosys.h>
 #include <errno.h>
 #include <dirent.h>
+
+#include "cocotypes.h"
+#include "os9path.h"
+#include "cococonv.h"
+#include "cocosys.h"
 
 
 static int init_pd(os9_path_id *path, int mode);
