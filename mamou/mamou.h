@@ -179,8 +179,17 @@ struct oper
 
 
 
+typedef enum
+{
+	LINETYPE_COMMENT,
+	LINETYPE_BLANK,
+	LINETYPE_SOURCE
+} line_type;
+
+
 struct source_line
 {
+	line_type			type;
 	BP_Bool				has_warning;				/* allow assembler warnings */
 	BP_char				label[MAXLAB];				/* label on current line */
 	BP_char				Op[MAXOP];					/* opcode mnemonic on current line */

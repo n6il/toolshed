@@ -551,7 +551,7 @@ void mamou_pass(assembler *as)
 	while (as->current_file->end_encountered == BP_FALSE && _coco_readln(as->current_file->fd, input_line, &size) == 0)
 	{
 		char *p = strchr(input_line, 0x0D);
-		BP_int32		line_type;
+//		BP_int32			line_type;
 		struct source_line		line;
 		
 		
@@ -575,9 +575,10 @@ void mamou_pass(assembler *as)
 		as->P_force = 0;	/* No force unless bytes emitted */
 		as->f_new_page = BP_FALSE;
 	
-		line_type = mamou_parse_line(as, input_line);
+//		line_type = mamou_parse_line(as, input_line);
+		mamou_parse_line(as, input_line);
 		
-		if (line_type == 2 && as->o_do_parsing == BP_TRUE)
+		if (as->line->type == LINETYPE_SOURCE && as->o_do_parsing == BP_TRUE)
 		{
 			process(as);
 		}
@@ -585,7 +586,7 @@ void mamou_pass(assembler *as)
 		{
 			print_line(as, 0, ' ', 0);
 
-			if (line_type == 0)
+			if (as->line->type == LINETYPE_BLANK)
 			{
 				as->current_file->num_blank_lines++;
 				as->cumulative_blank_lines++;
