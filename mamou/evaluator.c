@@ -379,7 +379,29 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 			val = *((*eptr)++);
 		}
 	}
-
+	else if (**eptr == '"')
+	{
+		/* double character literal */
+		(*eptr)++;
+		if (**eptr == EOS)
+		{
+			val = 0;
+		}
+		else
+		{
+			val = *((*eptr)++);
+			if (**eptr == EOS)
+			{
+				val = 0;
+			}
+			else
+			{
+				val = val<<8;
+				val += *((*eptr)++);
+			}
+		}
+	}
+	
 
 	/* 13. Symbol? */
 	

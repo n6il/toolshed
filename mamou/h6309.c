@@ -518,8 +518,14 @@ int _rtor(assembler *as, int opcode)
 	}
 
 	if ((src != RZERO) &&
+#if 0
 	    ((src < 8 && dst >= 8) ||
 	    (src >= 8 && dst < 8)))
+#else
+	/* Rodney's 16->8 addition -- 05/30/04 */
+            ((src & 8) != (dst & 8)) &&
+            (src >= 8 && opcode == 30)) /* EXG disallows R16->R8 */
+#endif
 	{
 		error(as, "Register Size Mismatch");
 		emit(as, 0);
