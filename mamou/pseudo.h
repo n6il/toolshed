@@ -20,6 +20,7 @@
 
 struct oper pseudo[] = {
 	{"absolute",PSEUDO, NULL_OP, 0,	1,	_null_op},
+	{"align",   PSEUDO, NULL_OP, 0,	1,	_align},
 	{"bsz",		PSEUDO, ZMB,    0,	1,	_zmb},
 	{"code",	PSEUDO, NULL_OP,0,	1,	_null_op},
 	{"cond",	PSEUDO, IFNE,   1,	1,	_ifne},
@@ -42,6 +43,9 @@ struct oper pseudo[] = {
 	{"fdb",		PSEUDO, FDB,    1,	1,	_fdb},
 	{"fill",	PSEUDO, FILL,   1,	1,	_fill},
 	{"fqb",		PSEUDO, FDB,    1,	1,	_fqb},
+	{"fzb",		PSEUDO, ZMB,    1,	1,	_zmb},
+	{"fzd",		PSEUDO, ZMB,    1,	1,	_zmd},
+	{"fzq",		PSEUDO, ZMB,    1,	1,	_zmq},
 	{"if",		PSEUDO, IFNE,   1,	1,	_ifne},
 	{"ifeq",	PSEUDO, IFEQ,   1,	1,	_ifeq},
 	{"ifge",	PSEUDO, IFGE,   1,	1,	_ifge},
@@ -76,5 +80,7 @@ struct oper pseudo[] = {
 	{"title",   PSEUDO, NULL_OP,4,	1,	_ttl},
 	{"use",		PSEUDO, USE,    1,	1,	_use},
 	{"zmb",		PSEUDO, ZMB,    1,	1,	_zmb},
+	{"zmd",		PSEUDO, ZMB,    1,	1,	_zmd},
+	{"zmq",		PSEUDO, ZMB,    1,	1,	_zmq}
 };
 

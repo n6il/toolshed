@@ -5,11 +5,19 @@
 
 
 /*
- * even - align PC on even boundary
+ * align: align program counter on passed boundary
  */
 
-int _even(assembler *as)
+int _align(assembler *as)
 {
+	BP_int32	result;
+	
+	
+	as->P_force = 1;
+	
+	as->code_segment_start = BP_TRUE;
+	
+	
 	/* 1. If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
@@ -17,26 +25,62 @@ int _even(assembler *as)
 		return 0;
 	}
 	
-
-	/* 2. Test for presence of a label and error if found. */
 	
-	if (*as->line->label != EOS)
+	if (evaluate(as, &result, &as->line->optr, 0))
 	{
-		error(as, "label not allowed");
+		BP_int32			whats_left;
 		
+		
+		f_record(as);     /* flush out bytes */
+		
+		whats_left = result - (as->program_counter % result);
+
+		while (whats_left-- > 0)
+		{
+			emit(as, 0);
+		}
+
+		print_line(as, 0, ' ', as->old_program_counter);
+	}
+	else
+	{
+		error(as, "Undefined operand during pass one");
+	}
+	
+	
+	return 0;
+}
+
+
+
+/*
+ * even - align PC on even boundary
+ */
+
+int _even(assembler *as)
+{
+	as->P_force = 1;
+	
+	as->code_segment_start = BP_TRUE;
+	
+	
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
 		return 0;
 	}
 	
-
-	/* 3. Advance program counter if necessary. */
 	
-	if (as->program_counter % 2)
+	f_record(as);     /* flush out bytes */
+		
+	if (as->program_counter % 2 == 1)
 	{
-		as->program_counter++;
+		emit(as, 0);
 	}
-	
+
 	print_line(as, 0, ' ', as->old_program_counter);
-	
+
 	
 	return 0;
 }
@@ -49,6 +93,11 @@ int _even(assembler *as)
 
 int _odd(assembler *as)
 {
+	as->P_force = 1;
+	
+	as->code_segment_start = BP_TRUE;
+	
+	
 	/* 1. If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
@@ -57,23 +106,13 @@ int _odd(assembler *as)
 	}
 	
 	
-	/* 2. Test for presence of a label and error if found. */
-	
-	if (*as->line->label != EOS)
-	{
-		error(as, "label not allowed");
-		
-		return 0;
-	}
-	
-	
-	/* 3. Advance program counter if necessary. */
+	f_record(as);     /* flush out bytes */
 	
 	if (as->program_counter % 2 == 0)
 	{
-		as->program_counter++;
+		emit(as, 0);
 	}
-	
+
 	print_line(as, 0, ' ', as->old_program_counter);
 	
 	
@@ -165,58 +204,6 @@ int _ttl(assembler *as)
 	print_line(as, 0, ' ', 0);
 
 
-	return 0;
-}
-
-
-
-/*
- * zmb - zero memory bytes
- */
-int _zmb(assembler *as)
-{
-	BP_int32	result;
-
-	as->P_force = 1;
-
-	/* 1. If we are currently in a FALSE conditional, just return. */
-	
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		return 0;
-	}
-
-
-	if (evaluate(as, &result, &as->line->optr, 0))
-	{
-		if (result < 0)
-		{
-			error(as, "Illegal value for zmb");
-			return 0;
-		}
-
-		while (result--)
-		{
-			emit(as, 0);
-
-			/* In order to not overflow our emit buffer, we flush
-			* every MAXBUF bytes.
-			*/
-			if (result % MAXBUF == 0)
-			{
-				f_record(as);     /* flush out bytes so far */
-			}
-		}
-		print_line(as, 0, ' ', as->old_program_counter);
-	}
-	else
-	{
-		error(as, "Undefined as->line->operand during Pass One");
-	}
-	if (*as->line->label != EOS)
-	{
-		symbol_add(as, as->line->label, as->old_program_counter, 0);
-	}		
 	return 0;
 }
 
@@ -1558,7 +1545,7 @@ int _rmb(assembler *as)
 
 
 /*
- * rmd - reserve memory words
+ * rmd - reserve memory double bytes
  */
 
 int _rmd(assembler *as)
@@ -1569,7 +1556,7 @@ int _rmd(assembler *as)
 
 
 /*
- * rmq - reserve memory quad words
+ * rmq - reserve memory quad bytes
  */
 
 int _rmq(assembler *as)
@@ -1673,3 +1660,113 @@ int _fqb(assembler *as)
 {
 	return _form_constant(as, 4);
 }
+
+
+
+/***** FORM CONSTANT WITH VALUE *****/
+
+static int _form_constant_with_value(assembler *as, BP_int32 size, BP_int32 value);
+
+
+
+/*
+ * form_constant_with_value
+ */
+static int _form_constant_with_value(assembler *as, BP_int32 size, BP_int32 value)
+{
+	BP_int32	result;
+
+	
+	as->P_force = 1;
+	
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		return 0;
+	}
+	
+	
+	if (evaluate(as, &result, &as->line->optr, 0))
+	{
+		if (result < 0)
+		{
+			error(as, "Illegal value");
+
+			return 0;
+		}
+		
+		while (result--)
+		{
+			switch (size)
+			{
+				case 1:
+					emit(as, value);
+					break;
+
+				case 2:
+					eword(as, value);
+					break;
+					
+				case 4:
+					equad(as, value);
+					break;
+			}
+					
+			/* In order to not overflow our emit buffer, we flush
+			 * every MAXBUF bytes.
+			 */
+
+			if (result % MAXBUF == 0)
+			{
+				f_record(as);     /* flush out bytes so far */
+			}
+		}
+
+		print_line(as, 0, ' ', as->old_program_counter);
+	}
+	else
+	{
+		error(as, "Undefined operand during pass one");
+	}
+
+	if (*as->line->label != EOS)
+	{
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
+	}		
+
+	
+	return 0;
+}
+
+
+
+/*
+ * zmb - zero memory bytes
+ */
+int _zmb(assembler *as)
+{
+	return _form_constant_with_value(as, 1, 0);
+}
+
+
+
+/*
+ * zmd - zero memory double bytes
+ */
+int _zmd(assembler *as)
+{
+	return _form_constant_with_value(as, 2, 0);
+}
+
+
+
+/*
+ * zmq - zero memory quad bytes
+ */
+int _zmq(assembler *as)
+{
+	return _form_constant_with_value(as, 4, 0);
+}
+
+

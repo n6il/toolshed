@@ -378,6 +378,7 @@ char *skip_white(char *ptr);
 
 /* pseudo.c */
 int	_else(assembler *as),
+	_align(assembler *as),
 	_emod(assembler *as),
 	__end(assembler *as),
 	_endc(assembler *as),
@@ -415,7 +416,9 @@ int	_else(assembler *as),
 	_spc(assembler *as),
 	_ttl(assembler *as),
 	_use(assembler *as),
-	_zmb(assembler *as);
+	_zmb(assembler *as),
+	_zmd(assembler *as),
+	_zmq(assembler *as);
 
 /* h6309.c */
 int	_gen(assembler *as, int opcode),
