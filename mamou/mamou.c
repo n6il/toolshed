@@ -486,11 +486,27 @@ static void mamou_initialize(assembler *as)
 
 		if (as->object_name[0] != EOS)
 		{
+			_path_type t;
+			
 			if (_coco_create(&(as->fd_object), as->object_name,
 				FAM_READ | FAM_WRITE,
 				FAP_READ | FAP_WRITE | FAP_PREAD) != 0)
 			{
 				fatal("Can't create object file");
+			}
+			
+			/* This code sets the binary file type for Disk BASIC Files - tjl 8/8/2004 */
+			_coco_gs_pathtype(as->fd_object, &t);
+			
+			if (as->o_asm_mode == ASM_DECB && t == DECB)
+			{
+				decb_file_stat f;
+				
+				_decb_gs_fd(as->fd_object->path.decb, &f);
+				
+				f.file_type = 2;
+				
+				_decb_ss_fd(as->fd_object->path.decb, &f);
 			}
 		}
 
