@@ -1,0 +1,28 @@
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  1996/07/20 22:40:16  cc
+# Initial revision
+#
+#
+
+CFLAGS	= -DSYSV -DSTATIC=static 
+RM	= rm -f
+ 
+ar2_osk: ar.o arsup.o lz1.o o2u.o 
+	cc ar.o arsup.o lz1.o o2u.o -o ar2_osk
+	
+ar.o: ar.c ar.h arerrs.h
+arsup.o:  arsup.c filehdr.h ar.h arerrs.h o2u.h
+lz1.o:  lz1.c arerrs.h lz1.h
+o2u.o:  o2u.c o2u.h
+	
+.SCCS_GET:
+	?sccs get -s $@ -G$@
+	
+clean:	
+	$(RM) *.o core
+	
+more_clean:
+	sccs clean
