@@ -5,6 +5,46 @@
 
 
 
+/*
+ * date: generate current date/timestamp
+ */
+
+int _date(assembler *as)
+{
+	char *t;
+	time_t tp;
+	
+	
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		return 0;
+	}
+	
+	tp = time(NULL);
+	t = ctime(&tp);
+	
+	while (*t != '\n')
+	{
+		emit(as, *t);
+
+		t++;
+	}
+
+	if (*as->line.label != EOS)
+	{
+		symbol_add(as, as->line.label, as->old_program_counter, 0);
+	}		
+	
+	print_line(as, 0, ' ', as->old_program_counter);
+	
+	
+	return 0;
+}
+
+
+
 /*****************************************************************************
  *
  * OS-9 DIRECTIVES (MOD, EMOD)
@@ -639,9 +679,9 @@ int _ttl(assembler *as)
 
 	
 	/* 4. Copy the title into our global space for later use. */
-	
-	strncpy(as->title_header, as->line.optr, TTLLEN - 1);
 
+	strncpy(as->title_header, as->line.optr, TTLLEN - 1);
+	
 	print_line(as, 0, ' ', 0);
 
 

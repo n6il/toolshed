@@ -400,6 +400,7 @@ char *skip_white(char *ptr);
 /* pseudo.c */
 int	_else(assembler *as),
 	_align(assembler *as),
+	_date(assembler *as),
 	_emod(assembler *as),
 	__end(assembler *as),
 	_endc(assembler *as),
