@@ -285,94 +285,96 @@ void f_record(assembler *as)
 
 	/* 1. Pass 2 only. */
 	
-	if (as->pass == 2 && as->object_output == BP_TRUE)
+	if (as->pass == 1)
 	{
-		as->code_bytes += as->E_total;
-		
-		if (as->E_total == 0)
-		{
-			as->E_pc = as->program_counter;
-
-			return;
-		}
-
-		chksum =  as->E_total;    /* total bytes in this record */
-		chksum += lobyte(as->E_pc);
-		chksum += as->E_pc >> 8;
-
-
-		/* Compute module CRC. */
-
-		if (as->do_module_crc == BP_TRUE && as->pass == 2)
-		{
-			_os9_crc_compute(as->E_bytes, as->E_total, as->_crc);
-		}
-
-
-		/* S-Record and Hex files: record header preamble. */
-
-		if (as->output_type == OUTPUT_BINARY && as->object_output == BP_TRUE)
-		{
-			int		size = as->E_total;
-			
-			_coco_write(as->fd_object, as->E_bytes, &size);
-		}
-		else
-		{
-			int size;
-			
-			if (as->output_type == OUTPUT_HEX && as->object_output == BP_TRUE)
-			{
-				size = 1;
-				
-				_coco_write(as->fd_object, ":", &size);
-				
-				hexout(as, as->E_total);        /* byte count  */
-				hexout(as, 0);		/* Output 00 */
-			}
-			else if (as->output_type == OUTPUT_SRECORD && as->object_output == BP_TRUE) 		/* S record file */
-			{
-				size = 2;
-				
-				chksum += 3;
-
-				_coco_write(as->fd_object, "S1", &size);
-				
-				hexout(as, as->E_total + 3);      /* byte count +3 */
-			}
-
-			hexout(as, as->E_pc >> 8);        	/* high byte of PC */
-			hexout(as, lobyte(as->E_pc));		/* low byte of PC */
-
-
-			for (i = 0; i < as->E_total; i++)
-			{
-				chksum += lobyte(as->E_bytes[i]);
-				hexout(as, lobyte(as->E_bytes[i]));	/* data byte */
-			}
-
-			/* ones or twos complement checksum then output it */
-
-			chksum =~ chksum;
-			if (as->output_type == OUTPUT_HEX)
-			{
-				chksum++;
-			}
-
-			hexout(as, lobyte(chksum));
-
-			size = 1;
-			
-			_coco_write(as->fd_object, "\n", &size);
-		}
+		return;
 	}
 	
-	if (as->pass == 2)
+	
+	/* 2. Count up accumulated code bytes. */
+	
+	as->code_bytes += as->E_total;
+		
+	if (as->E_total == 0)
 	{
-		/* 1. On pass 2, reset PC and total. */
 		as->E_pc = as->program_counter;
-		as->E_total = 0;
+
+		return;
 	}
+
+	chksum =  as->E_total;    /* total bytes in this record */
+	chksum += lobyte(as->E_pc);
+	chksum += as->E_pc >> 8;
+
+
+	/* Compute module CRC. */
+
+	if (as->do_module_crc == BP_TRUE && as->pass == 2)
+	{
+		_os9_crc_compute(as->E_bytes, as->E_total, as->_crc);
+	}
+
+
+	/* S-Record and Hex files: record header preamble. */
+
+	if (as->output_type == OUTPUT_BINARY && as->object_output == BP_TRUE)
+	{
+		int		size = as->E_total;
+			
+		_coco_write(as->fd_object, as->E_bytes, &size);
+	}
+	else if (as->object_output == BP_TRUE)
+	{
+		int size;
+			
+		if (as->output_type == OUTPUT_HEX && as->object_output == BP_TRUE)
+		{
+			size = 1;
+				
+			_coco_write(as->fd_object, ":", &size);
+				
+			hexout(as, as->E_total);        /* byte count  */
+			hexout(as, 0);		/* Output 00 */
+		}
+		else if (as->output_type == OUTPUT_SRECORD && as->object_output == BP_TRUE) 		/* S record file */
+		{
+			size = 2;
+				
+			chksum += 3;
+
+			_coco_write(as->fd_object, "S1", &size);
+				
+			hexout(as, as->E_total + 3);      /* byte count +3 */
+		}
+
+		hexout(as, as->E_pc >> 8);        	/* high byte of PC */
+		hexout(as, lobyte(as->E_pc));		/* low byte of PC */
+
+
+		for (i = 0; i < as->E_total; i++)
+		{
+			chksum += lobyte(as->E_bytes[i]);
+			hexout(as, lobyte(as->E_bytes[i]));	/* data byte */
+		}
+
+		/* ones or twos complement checksum then output it */
+
+		chksum =~ chksum;
+		if (as->output_type == OUTPUT_HEX)
+		{
+			chksum++;
+		}
+
+		hexout(as, lobyte(chksum));
+
+		size = 1;
+			
+		_coco_write(as->fd_object, "\n", &size);
+	}
+
+	
+	as->E_pc = as->program_counter;
+	as->E_total = 0;
 	
 
 	return;
