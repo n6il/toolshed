@@ -664,7 +664,9 @@ int mamou_parse_line(assembler *as, BP_char *input_line)
 	{
 		*ptrto = EOS;
 
-		return 0;
+		as->line->type = LINETYPE_BLANK;
+
+		return;
 	}
 	
 	
@@ -685,7 +687,9 @@ int mamou_parse_line(assembler *as, BP_char *input_line)
 
         *ptrto = EOS;
 
-        return 1;	/* a comment line */
+		as->line->type = LINETYPE_COMMENT;
+
+        return;
     }
 
     while (delim(*ptrfrm) == BP_FALSE)
@@ -773,14 +777,18 @@ int mamou_parse_line(assembler *as, BP_char *input_line)
     {
         if (as->line->label[0] == '\0')
         {
-            return 0;	/* a comment line */
+			as->line->type = LINETYPE_COMMENT;
+
+            return;
         }
         else	/* save this label for the next mamou_parse_line() */
         {
             strcpy(hold_lbl, as->line->label);
             cont_prev = 1;
 
-            return 1;	/* a comment line */
+			as->line->type = LINETYPE_COMMENT;
+			
+            return;
         }
     }
 
@@ -794,7 +802,9 @@ int mamou_parse_line(assembler *as, BP_char *input_line)
     }
 
 
-    return 2;
+	as->line->type = LINETYPE_SOURCE;
+	
+	return;
 }
 
 
