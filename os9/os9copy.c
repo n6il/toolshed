@@ -18,7 +18,7 @@
 static u_int buffer_size = 32768;
 static char *buffer;
 
-static error_code CopyFile( char *srcfile, char *dstfile, int eolTranslate, int rewrite );
+static error_code CopyFile( char *srcfile, char *dstfile, int eolTranslate, int rewrite, int owner, int owner_set);
 static char *GetFilename( char *path );
 static EOL_Type DetermineEOLType(char *buffer, int size);
 static void NativeToCoCo(char *buffer, int size, char **newBuffer, int *newSize);
@@ -33,6 +33,7 @@ static char *helpMessage[] =
     "Options:\n",
     "     -b=size    size of copy buffer in bytes or K-bytes\n",
     "     -l         perform end of line translation\n",
+    "     -o=id      set file's owner as id\n",
     "     -r         rewrite if file exists\n",
     NULL
 };
@@ -48,6 +49,7 @@ int os9copy(int argc, char *argv[])
     int	eolTranslate = 0;
     int	rewrite = 0;
     char	df[256];
+	int owner = 0, owner_set = 0;
 	
 	
     /* 1. Walk command line for options. */
@@ -86,6 +88,20 @@ int os9copy(int argc, char *argv[])
                         rewrite = 1;
                         break;
 
+                    case 'o':
+                        if (*(++p) == '=')
+                        {
+                            p++;
+                        }
+
+                        q = p + strlen(p) - 1;
+						{
+							owner = atoi(p);
+							owner_set = 1;
+						}
+						p = q;
+                        break;
+						
                     case 'h':
                     case '?':
                         show_help(helpMessage);
@@ -259,7 +275,7 @@ int os9copy(int argc, char *argv[])
             strcat( df, GetFilename( argv[j] ) );
         }
 
-        ec = CopyFile(argv[j], df, eolTranslate, rewrite );
+        ec = CopyFile(argv[j], df, eolTranslate, rewrite, owner, owner_set);
 
         if (ec != 0)
         {
@@ -302,7 +318,7 @@ static char *GetFilename( char *path )
 
 
 
-static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int rewrite)
+static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int rewrite, int owner, int owner_set)
 {
     error_code	ec = 0;
     coco_path_id path;
@@ -394,6 +410,13 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int r
     /* Copy meta data from file descriptor of source to destination */
 	
     _coco_gs_fd(path, &fdesc);
+	
+	if (owner_set == 1)
+	{
+		fdesc.user_id = owner % 65536;
+		fdesc.group_id = owner / 65536;
+	}
+	
     _coco_ss_fd(destpath, &fdesc);
 	
     _coco_close(path);
