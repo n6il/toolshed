@@ -31,6 +31,10 @@ static char *helpMessage[] =
     "Usage:  Copy one or more files to a target directory.\n",
     "Options:\n",
     "     -[0-3]     file type (when copying to a Disk BASIC image)\n",
+	"                  0 = BASIC program\n",
+	"                  1 = BASIC data f3ile\n",
+	"                  2 = machine-language program\n",
+	"                  3 = text editor source file\n",	
 	"     -[a|b]     data type (a = ASCII, b = binary)\n",
     "     -l         perform end of line translation\n",
     "     -r         rewrite if file exists\n",
@@ -359,6 +363,8 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int t
 
 				file_type = 0;
 				data_type = 0;
+				
+				eolTranslate = 0;
 			}
 			else
 				return -1;
