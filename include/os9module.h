@@ -184,6 +184,7 @@ typedef enum os9_attr_t
 
 #define INT(foo) (foo[0] * 256 + foo[1])
 
+error_code _os9_crc_compute(u_char *ptr, u_int sz, u_char *crc);
 error_code _os9_crc(OS9_MODULE_t *mod);
 u_char  _os9_header(OS9_MODULE_t *mod);
 

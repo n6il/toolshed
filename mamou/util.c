@@ -285,7 +285,7 @@ void f_record(assembler *as)
 
 		if (as->do_module_crc == BP_TRUE && as->pass == 2)
 		{
-			_os9_crc_compute(as->E_bytes, as->E_total);
+			_os9_crc_compute(as->E_bytes, as->E_total, as->_crc);
 		}
 
 
@@ -296,11 +296,6 @@ void f_record(assembler *as)
 			int		size = as->E_total;
 			
 			_coco_write(as->fd_object, as->E_bytes, &size);
-			
-//			for (i = 0; i < as->E_total; i++)
-//			{
-//				fputc(as->E_bytes[i], as->fd_object);
-//			}
 		}
 		else
 		{
@@ -312,7 +307,6 @@ void f_record(assembler *as)
 				
 				_coco_write(as->fd_object, ":", &size);
 				
-//				fprintf(as->fd_object, ":");
 				hexout(as, as->E_total);        /* byte count  */
 				hexout(as, 0);		/* Output 00 */
 			}
@@ -324,7 +318,6 @@ void f_record(assembler *as)
 
 				_coco_write(as->fd_object, "S1", &size);
 				
-//				fprintf(as->fd_object, "S1");
 				hexout(as, as->E_total + 3);      /* byte count +3 */
 			}
 
@@ -351,8 +344,6 @@ void f_record(assembler *as)
 			size = 1;
 			
 			_coco_write(as->fd_object, "\n", &size);
-			
-//			fprintf(as->fd_object, "\n");
 		}
 		
 		as->E_pc = as->program_counter;
@@ -425,18 +416,15 @@ void finish_outfile(assembler *as)
 		size = 12;
 		
 		_coco_write(as->fd_object, ":00000001FF\n", &size);
-//		fprintf(as->fd_object, ":00000001FF\n");
 	}
 	else
 	{
 		size = 11;
 		
 		_coco_write(as->fd_object, "S9030000FC\n", &size);
-//		fprintf(as->fd_object, "S9030000FC\n");
 	}
 
 	_coco_close(as->fd_object);
-//	fclose(as->fd_object);
 
 
 	return;

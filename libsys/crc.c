@@ -10,10 +10,9 @@
 #include <os9module.h>
 
 
-error_code _os9_crc_compute(u_char *ptr, u_int sz)
+error_code _os9_crc_compute(u_char *ptr, u_int sz, u_char *crc)
 {
     error_code	ec = 0;
-    u_char  crc[3] = {0xff, 0xff, 0xff};
     u_char  a;
     u_int   i;
 
@@ -58,7 +57,9 @@ error_code _os9_crc_compute(u_char *ptr, u_int sz)
 
 error_code _os9_crc(OS9_MODULE_t *mod)
 {
-    return(_os9_crc_compute((u_char *) mod, INT(mod->size)));
+    u_char  crc[3] = {0xff, 0xff, 0xff};
+
+    return(_os9_crc_compute((u_char *) mod, INT(mod->size), crc));
 }
 
 
@@ -67,7 +68,9 @@ error_code _os9_crc(OS9_MODULE_t *mod)
 
 error_code _osk_crc(OSK_MODULE_t *mod)
 {
-    return(_os9_crc_compute((u_char *) mod, int4(mod->size)));
+    u_char  crc[3] = {0xff, 0xff, 0xff};
+	
+    return(_os9_crc_compute((u_char *) mod, int4(mod->size), crc));
 }
 
 
