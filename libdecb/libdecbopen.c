@@ -20,7 +20,7 @@ static int term_pd(decb_path_id path);
 static int validate_pathlist(decb_path_id *path, char *pathlist);
 static int _decb_cmp(decb_dir_entry *entry, char *name);
 
-extern error_code find_free_granule(decb_path_id path, int *granule);
+extern error_code find_free_granule(decb_path_id path, int *granule, int next_to);
 
 
 /*
@@ -207,7 +207,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		int			new_granule;
 		
 		
-		ec = find_free_granule(*path, &new_granule);
+		ec = find_free_granule(*path, &new_granule, 34);
 		
 		if (ec != 0)
 		{

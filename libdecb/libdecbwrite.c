@@ -11,7 +11,7 @@
 
 static error_code _raw_write(decb_path_id path, void *buffer, int *size);
 static error_code extend_fat_chain(decb_path_id path, int current_size, int new_size);
-error_code find_free_granule(decb_path_id path, int *granule);
+error_code find_free_granule(decb_path_id path, int *granule, int next_to);
 
 
 error_code _decb_write(decb_path_id path, void *buffer, int *size)
@@ -293,7 +293,7 @@ static error_code extend_fat_chain(decb_path_id path, int current_size, int new_
 		{
 			/* 1. We're gonna have to find a free granule. */
 	
-			if (find_free_granule(path, &new_granule) != 0)
+			if (find_free_granule(path, &new_granule, curr_granule) != 0)
 			{
 				/* 1. Could not find any free granules. */
 		
@@ -339,24 +339,67 @@ static error_code extend_fat_chain(decb_path_id path, int current_size, int new_
 
 
 
-error_code find_free_granule(decb_path_id path, int *granule)
-{
+/*
+ * find_free_granule: find a free granule.
+ *
+ * The 'next_to' parameter lets this function attempt to find a granule
+ * either ahead of or behind the next_to.
+ */
 
+error_code find_free_granule(decb_path_id path, int *granule, int next_to)
+{
+	int		t_next_to = next_to + 1;
+	
+	
 	*granule = 0;
 	
+	/* 1. Validate next_to. */
 	
-	while (path->FAT[*granule] != 0x00)
+	if (t_next_to > 255)
 	{
-		if (path->FAT[*granule] == 0xFF)
+		return EOS_DF;
+	}
+
+
+	/* 2. Start search from next_to to last_granule. */
+	
+	while (path->FAT[t_next_to] != 0x00)
+	{
+		if (path->FAT[t_next_to] == 0xFF)
 		{
-			/* 1. Just return the first free one we have. */
+			/* 1. Found one!  Return it. */
+			
+			*granule = t_next_to;
 			
 			return 0;
 		}
-
-		(*granule)++;
+		
+		t_next_to++;
 	}
-	
+
+
+	/* 3. Now try searching from t_nexto - 1 to 0. */
+
+	if (next_to > 0)
+	{
+		t_next_to = next_to - 1;
+		
+
+		while (t_next_to >= 0)
+		{
+			if (path->FAT[t_next_to] == 0xFF)
+			{
+				/* 1. Found one!  Return it. */
+			
+				*granule = t_next_to;
+			
+				return 0;
+			}
+		
+			t_next_to--;
+		}
+	}
+
 	
 	return EOS_DF;
 }
