@@ -10,13 +10,14 @@
 
 
 static error_code _raw_write(decb_path_id path, void *buffer, int *size);
-static error_code extend_fat_chain(decb_path_id path, int *delta);
+static error_code extend_fat_chain(decb_path_id path, int current_size, int new_size);
+error_code find_free_granule(decb_path_id path, int *granule);
 
 
 error_code _decb_write(decb_path_id path, void *buffer, int *size)
 {
     error_code	ec = EOS_WRITE;
-	int current_size = 0, accum_size = 0, curr_granule;
+	int current_size = 0, accum_size = 0, curr_granule, bytes_left;
 		
 
 	/* 1. Check the mode. */
@@ -37,9 +38,7 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
     }
 
 
-	/* 3. Determine if current position plus write size is greater than 
-	 *    current size.
-	 */
+	/* 3. Get the file's current size. */
 	
 	_decb_gs_size(path, &current_size);
 	
@@ -56,16 +55,11 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 	
 	/* 5. If there is not enough room, we need to extend the FAT chain. */
 
-	while (accum_size < path->filepos + *size)
+	if (current_size < path->filepos + *size)
 	{
-		int delta;
-		
-		
-		/* 1. We need to enlarge the file.
-		 *    Delta will contain the number of bytes added.
-		 */
-		
-		ec = extend_fat_chain(path, &delta);
+		/* 1. We need to enlarge the file. */		
+
+		ec = extend_fat_chain(path, current_size, path->filepos + *size);
 		
 		
 		/* 2. If there is an error, time to abort */
@@ -74,8 +68,6 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 		{
 			return ec;
 		}
-		
-		accum_size += delta;
 	}
 	
 
@@ -83,7 +75,7 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 
 	accum_size = 0;
 	
-	curr_granule = path->first_granule;
+	curr_granule = path->dir_entry.first_granule;
 		
 	while (path->FAT[curr_granule] < 0xC0)
 	{
@@ -102,13 +94,36 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 	}
 	
 	
-	/* 7. Make out-of-loop check to insure we exited from the for()
-	 *    loop due to finding the proper granule, and not because we
-	 *    ran out of granules in the FAT chain list to search.
-	 */
+	/* 7. Copy user supplied data into the file for 'bytes_left' bytes. */
 
+	bytes_left = (path->filepos + *size) - current_size;
+	
+	while (bytes_left > 0)
+	{
+		char granule[2304];
+		
+		
+		/* 1. Get the granule. */
+		
+		_decb_gs_granule(path, curr_granule, granule);
+	
+		
+		/* 2. Copy the data. */
 
-	/* 8. Copy user supplied data into the file for 'bytes_left' bytes. */
+		memcpy(granule, buffer, *size);
+		
+		buffer += *size;
+		bytes_left -= *size;
+		
+		
+		/* 3. Put back the granule. */
+		
+		_decb_ss_granule(path, curr_granule, granule);
+		
+		curr_granule = path->FAT[curr_granule];		
+	}
+
+	path->dir_entry.last_sector_size[1] = *size;
 	
 	
 	/* 9. Write updated file descriptor back to image file. */
@@ -118,129 +133,6 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 	_decb_writedir(path, &path->dir_entry);
 	
 	
-#if 0
-    else
-    {
-        fd_stats fd_sector;
-        fd_seg segptr;
-        int i;
-        int accum_size = 0;
-        int bytes_left;
-        char *buf_ptr = buffer;
-        int seg_size_bytes, write_size;
-        int filesize;
-
-        /* 1. Seek to FD LSN of pathlist */
-        fseek(path->fd, path->pl_fd_lsn * path->bps, SEEK_SET);	
-	
-        /* 2. Read the file descriptor sector */
-        fread(&fd_sector, 1, sizeof(fd_stats), path->fd);
-	
-        /* 3. Point to segment list */
-        segptr = (fd_seg)&(fd_sector.fd_seg);
-	
-        /* 4. Extract file size from FD */
-        filesize = int4(fd_sector.fd_siz);
-
-        /* 5. If our file position is greater than the file size, return error */
-        if (path->filepos > filesize)
-        {
-            /* end of file */
-            return(EOS_EOF);
-        }
-
-        /* 6a. Determine maximum file size by adding up the segment list */
-        accum_size = _os9_maximum_file_size( fd_sector, path->bps );
-
-        /* 6b. If there is not enough room, we need to extend the segment list */
-        while (accum_size < path->filepos + *size)
-        {
-            int delta;
-			
-            /* We need to enlarge the file. Delta will contain the number of bytes added */
-            ec = _os9_extendSegList(path, segptr, &delta);
-			
-            /* If there is an error, time to abort */
-            if (ec != 0)
-            {
-                return(ec);
-            }
-			
-            accum_size += delta;
-        }
-
-        /* 7. Determine which segment the offset starts by looping
-         *    through each segptr entry until we reach the end
-         */
-        accum_size = 0;
-
-        for (i = 0; i < NUM_SEGS && int3(segptr[i].lsn) != 0; i++)
-        {
-            accum_size += int2(segptr[i].num) * path->bps;
-            if (accum_size > path->filepos)
-            {
-                /* this is the sector! */
-                accum_size -= int2(segptr[i].num) * path->bps;
-                break;
-            }
-        }
-	
-        /* 8. make out-of-loop check to insure we exited from the for()
-         *    loop due to finding the proper sector, and not because we
-         *    ran out of sectors in the segment list to search.
-         */
-        if (int3(segptr[i].lsn) == 0 || i == NUM_SEGS)
-        {
-            /* Apparently, the file position in the path was too
-             * large, because we couldn't find a sector.
-             */
-            return 1;
-        }
-
-        /* 9. Start copying the user supplied data into the file for 'bytes_left' bytes.
-         *
-         * i == segment entry to start
-         */
-        bytes_left = *size;
-        while (bytes_left > 0 && i != NUM_SEGS && int3(segptr[i].lsn) != 0)
-        {
-            accum_size += int2(segptr[i].num) * path->bps;
-	
-            /* seek to sector where segment starts and compute the segment size */
-            fseek(path->fd, int3(segptr[i].lsn) * path->bps, SEEK_SET);
-            seg_size_bytes = int2(segptr[i].num) * path->bps;
-	
-            /* seek within segment to offset */
-            fseek(path->fd, path->filepos - (accum_size - seg_size_bytes), SEEK_CUR);
-	
-            /* compute write size for this segment */
-            write_size = accum_size - path->filepos;
-            if (write_size > bytes_left)
-            {
-                write_size = bytes_left;
-            }
-            fwrite(buf_ptr, 1, write_size, path->fd);
-            buf_ptr += write_size;
-            path->filepos += write_size;
-            bytes_left -= write_size;
-            i++;
-        }
-
-        /* 10. Update fd_siz if necessary. */
-        if( path->filepos > int4(fd_sector.fd_siz) )
-        {
-            /* Update file size */
-            _int4( path->filepos, fd_sector.fd_siz );
-        }
-	
-        /* 11. TODO - Update modification date/time */
-		
-        /* 12. Write updated file descriptor back to image file */
-        fseek(path->fd, path->pl_fd_lsn * path->bps, SEEK_SET);	
-        fwrite(&fd_sector, 1, sizeof(fd_stats), path->fd);
-    }
-#endif
-
     return ec;
 }
 
@@ -308,8 +200,88 @@ error_code _decb_writedir(decb_path_id path, decb_dir_entry *dirent)
 
 
 
-static error_code extend_fat_chain(decb_path_id path, int *delta)
+static error_code extend_fat_chain(decb_path_id path, int current_size, int new_size)
 {
+//	int expansion_amount = new_size - current_size;
+	int curr_granule = path->dir_entry.first_granule;
+	int max_size_with_curr_granules_allocated = 0;
+	
+	
+	/* 1. Compute maximum size of file with current granules allocated. */
+	
+	while (path->FAT[curr_granule] < 0xC0)
+	{
+		curr_granule = path->FAT[curr_granule];
+
+		max_size_with_curr_granules_allocated += 2304;
+	}
+	
+	max_size_with_curr_granules_allocated += 2304;
+
+	
+	if (new_size > max_size_with_curr_granules_allocated)
+	{
+		do
+		{
+			int new_granule;
+		
+		
+			/* 1. We're gonna have to find a free granule. */
+	
+			if (find_free_granule(path, &new_granule) != 0)
+			{
+				/* 1. Could not find any free granules. */
+		
+				return EOS_DF;
+			}
+		
+			path->FAT[curr_granule] = new_granule;
+			max_size_with_curr_granules_allocated += 2304;
+		}
+		while (new_size > max_size_with_curr_granules_allocated);
+	}
+	else
+	{
+		/* 1. The new size will fit in the currently allocated granules,
+		 *    so we'll just extend the last granule entry.
+		 */
+
+		int expand_size = new_size - (max_size_with_curr_granules_allocated - 2304);
+		
+		
+		/* 2. Reset the last granule's sector size. */
+		
+		path->FAT[curr_granule] = 0xC0 + (expand_size / 256);
+
+		path->dir_entry.last_sector_size[1] = expand_size % 256;
+	}
+	
+	
 	return 0;
 }
+
+
+
+error_code find_free_granule(decb_path_id path, int *granule)
+{
+	*granule = 0;
+	
+	
+	while (path->FAT[*granule] != 0x00)
+	{
+		if (path->FAT[*granule] == 0xFF)
+		{
+			/* 1. Just return the first free one we have. */
+			
+			return 0;
+		}
+
+		(*granule)++;
+	}
+	
+	
+	return EOS_DF;
+}
+
+
 

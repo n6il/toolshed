@@ -20,6 +20,7 @@ static int term_pd(decb_path_id path);
 static int validate_pathlist(decb_path_id *path, char *pathlist);
 static int _decb_cmp(decb_dir_entry *entry, char *name);
 
+extern error_code find_free_granule(decb_path_id path, int *granule);
 
 
 /*
@@ -96,6 +97,8 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 			if ((*path)->FAT[i] == 0xFF)
 			{
 				free_granules++;
+				
+				break;
 			}
 		}
 		
@@ -196,10 +199,32 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		}
 	}
 
+	
+	/* 8. Allocate a granule for this file. */
+	
+	{
+		error_code  ec;
+		int			new_granule;
+		
+		
+		ec = find_free_granule(*path, &new_granule);
+		
+		if (ec != 0)
+		{
+			return ec;
+		}
+		
+		(*path)->FAT[new_granule] = 0xC0;
+		
+		(*path)->dir_entry.last_sector_size[1] = 0;
+	}
+	
 
-	/* 8. Write the new directory entry. */
+	/* 9. Write the new directory entry. */	
 	
 	_decb_seekdir(*path, empty_entry);
+	
+	(*path)->this_directory_entry_index = empty_entry;
 	
 	_decb_writedir(*path, &(*path)->dir_entry);
 
@@ -339,10 +364,6 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 
 				(*path)->this_directory_entry_index = (*path)->directory_entry_index;
 								
-				(*path)->first_granule = (*path)->dir_entry.first_granule;
-				
-				(*path)->bytes_in_last_sector = int2((*path)->dir_entry.last_sector_size);
-				
 				break;
 			}
 		}

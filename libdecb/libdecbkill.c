@@ -49,7 +49,7 @@ error_code _decb_kill(char *pathlist)
 	
 	/* 5. Clear the granules in the FAT used by this entry. */
 	
-	curr_granule = path->first_granule;
+	curr_granule = path->dir_entry.first_granule;
 	
 	while (path->FAT[curr_granule] < 0xC0)
 	{

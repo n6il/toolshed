@@ -159,9 +159,9 @@ static int do_fstat(char **argv, char *p)
 		
 		printf("  File size          : %d bytes\n", size);
 
-		printf("  First granule      : %d\n", path->first_granule);
+		printf("  First granule      : %d\n", path->dir_entry.first_granule);
 
-		printf("  Last sector        : %d bytes\n", path->bytes_in_last_sector);
+		printf("  Last sector        : %d bytes\n", path->dir_entry.last_sector_size[1]);
 
 		printf("  FAT chain          : ");
 
@@ -176,7 +176,7 @@ static int do_fstat(char **argv, char *p)
 
 		if (path->FAT[curr_granule] > 0xC0)
 		{
-			remaining_bytes = (path->FAT[curr_granule] & 0x3F) * 256 + path->bytes_in_last_sector - 256;
+			remaining_bytes = (path->FAT[curr_granule] & 0x3F) * 256 + path->dir_entry.last_sector_size[1] - 256;
 		}
 		
 		printf("[%d:%d] ", curr_granule, remaining_bytes);

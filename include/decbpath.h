@@ -70,8 +70,6 @@ typedef struct _decb_path_id
 	decb_dir_entry  dir_entry;
 	unsigned int	this_directory_entry_index;
 	unsigned int	directory_entry_index;
-	char			first_granule;  /* first granule in file */
-	int				bytes_in_last_sector;   /* number of bytes in last sector. */
 	u_char			FAT[256];
 	unsigned int	filepos;		/* file position */
 	FILE			*fd;			/* file path pointer */
