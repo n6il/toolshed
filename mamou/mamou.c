@@ -900,65 +900,23 @@ void process(assembler *as)
 
 void init_globals(assembler *as)
 {
+	memset(as, 0, sizeof(assembler));
+	
     as->output_type = OUTPUT_BINARY;
-	as->current_file = NULL;
-    as->num_errors = 0;		/* total number of errors       */
-    as->program_counter = 0;			/* Program Counter              */
-    as->DP = 0;			/* Direct Page                  */
-    as->num_warnings = 0;		/* total warnings               */
-    as->old_program_counter = 0;		/* Program Counter at beginning */
-	as->object_output = BP_FALSE;
-    as->last_symbol = 0;		/* result of last symbol_find        */
-
     as->pass = 1;		/* Current pass #               */
-    as->Ffn = 0;		/* forward ref file #           */
-    as->F_ref = 0;		/* next line with forward ref   */
-    as->arguments = 0;		/* pointer to file names        */
-
-    as->E_total = 0;		/* total # bytes for one line   */
-    as->E_bytes[0] = 0;		/* Emitted held bytes           */
-    as->E_pc = 0;		/* Pc at beginning of collection*/
-
-    as->P_force = 0;		/* force listing line to include Old_pc */
-    as->P_total = 0;		/* current number of bytes collected    */
-    as->P_bytes[0] = 0;		/* Bytes collected for listing  */
-
-    as->cumulative_cycles = 0;		/* # of cycles per instruction  */
-    as->Ctotal = 0;		/* # of cycles seen so far */
-    as->f_new_page = BP_FALSE;		/* new page flag */
     as->page_number = 2;		/* page number */
-    as->o_show_cross_reference = 0;		/* cross reference table flag */
-    as->f_count_cycles = 0;		/* cycle count flag */
     as->Opt_C = BP_TRUE;		/* show conditionals in listing */
     as->o_page_depth = 66;
     as->o_show_error = BP_TRUE;
-    as->Opt_F = BP_FALSE;
-    as->Opt_G = BP_FALSE;
-    as->o_show_listing = 0;		/* listing flag 0=nolist, 1=list*/
-    as->o_asm_mode			= ASM_OS9;
-    as->Opt_N = BP_FALSE;
-    as->o_quiet_mode = BP_FALSE;
-    as->o_show_symbol_table = BP_FALSE;		/* symbol table flag, 0=no symbol */
     as->o_pagewidth = 80;
-    as->o_debug = 0;		/* debug flag */
-    as->object_name[0] = EOS;
-    as->bucket = NULL;
-    as->do_module_crc = BP_FALSE;
     as->_crc[0] = 0xFF;
     as->_crc[1] = 0xFF;
     as->_crc[2] = 0xFF;
     as->o_do_parsing = BP_TRUE;
-    as->include_index = 0;
-    as->file_index = 0;
-    as->current_line = 0;
     as->current_page = 1;
     as->header_depth = 3;
     as->footer_depth = 3;
     as->o_asm_mode = ASM_OS9;
-    as->SuppressFlag = 0;	/* suppress errors and warnings */
-    as->tabbed = 0;
-    as->o_h6309 = BP_FALSE;		/* assume 6809 mode only */
-	as->code_bytes = 0;
 
     return;
 }
