@@ -196,31 +196,36 @@ int decbcopy(int argc, char *argv[])
         if( argv[j] == NULL )
             continue;
 
-        strcpy( df, desttarget );
+		memset(df, 0, 256);
 		
-        if( targetDirectory == YES )
+		
+        if (targetDirectory == YES)
         { 
             /* OK, we need to add the filename to the end of the directory path */
 			
-            if( strchr( df, ',' ) != NULL )
+            if ((p = strchr(desttarget, ',')) != NULL)
             {
-                /* OS-9 directory */
-                if( df[ strlen( df )-1 ] != '/' )
-                {
-                    if( df[ strlen( df )-1 ] != ',' )
-                        strcat( df, "/" );
-                }
-            }
-            else
-            {
-                /* Native directory */
-                if( df[ strlen( df )-1 ] != '/' )
-                    strcat( df, "/" );
-            }
-			
-            strcat( df, GetFilename( argv[j] ) );
-        }
-
+				if (*(p + 1) == ':')
+				{
+					strncpy(df, desttarget, p - desttarget + 1);
+				
+					strcat(df, GetFilename(argv[j]));
+					
+					strcat(df, p + 1);
+				}
+				else
+				{
+					strcpy(df, desttarget);
+					strcat(df, GetFilename(argv[j]));
+				}
+			}
+		}
+		else
+		{
+			strcpy(df, desttarget);
+		}
+		
+		
         ec = CopyFile(argv[j], df, eolTranslate, rewrite, file_type, data_type);
 
         if (ec != 0)

@@ -1,6 +1,6 @@
 # Makefile for as6809
 
-vpath %.c ../../../as6809
+vpath %.c ../../../attic/as6809
 
 CFLAGS	+=
 LDFLAGS	+=

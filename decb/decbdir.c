@@ -98,16 +98,28 @@ static int do_dir(char **argv, char *p)
 	decb_dir_entry  de;
 	
 	
-	/* 1. Copy the passed pathlist into our own local buffer. */
+	/* 1. If a comma isn't present in the string, then add it so that the path is opened as a non-native path. */
 	
-	strcpy(decbpathlist, p);
-
+	memset(decbpathlist, 0, 256);
 	
-	/* 2. If a comma isn't present in the string, then add it so that the path is opened as a non-native path. */
-	
-	if (strchr(decbpathlist, ',') == NULL)
+	if (strchr(p, ',') == NULL)
 	{
-		strcat(decbpathlist, ",");
+		char *q = strchr(p, ':');
+		
+		if (q == NULL)
+		{
+			strcpy(decbpathlist, p);
+		}
+		else
+		{
+			strncpy(decbpathlist, p, q - p);
+			strcat(decbpathlist, ",");
+			strcat(decbpathlist, q);
+		}
+	}
+	else
+	{
+		strcpy(decbpathlist, p);
 	}
 	
 	

@@ -323,7 +323,7 @@ typedef struct _assembler
 #define TTLLEN NAMLEN
 	BP_char				name_header[NAMLEN];
 	BP_char				title_header[TTLLEN];
-	struct nlist		*bucket;            /* root node of the tree */
+	struct nlist		*bucket;					/* root node of the tree */
 	struct psect		psect[256];
 	BP_int32			current_psect;
 	BP_Bool				code_segment_start;

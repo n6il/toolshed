@@ -10,9 +10,9 @@
 #include <cocotypes.h>
 
 
-#define BUFFSIZ	256
+#define MAX_BPS 256
 
-static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName);
+static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int hdbdrives, int bps);
 
 /* Help message */
 static char *helpMessage[] =
@@ -20,10 +20,11 @@ static char *helpMessage[] =
 	"Syntax: dskini {[<opts>]} <disk> {[<...>]} {[<opts>]}\n",
 	"Usage:  Create a Disk BASIC image.\n",
 	"Options:\n",
-	"     -3     = 35 track disk (default)\n",
-	"     -4     = 40 track disk\n",
-	"     -8     = 80 track disk\n",
-	"     -nname = HDB-DOS disk name\n",
+	"     -3       = 35 track disk (default)\n",
+	"     -4       = 40 track disk\n",
+	"     -8       = 80 track disk\n",
+	"     -h<num>  = create <num> HDB-DOS drives\n",
+	"     -n<name> = HDB-DOS disk name\n",
 	NULL
 };
 
@@ -35,6 +36,8 @@ int decbdskini(int argc, char **argv)
 	int i;
 	int tracks = 35;
 	char *diskName = NULL;
+	int bps = MAX_BPS;
+	int hdbdrives = 1;
 
 
 	/* 1. If no arguments, show help and return. */
@@ -69,6 +72,12 @@ int decbdskini(int argc, char **argv)
 						tracks = 80;
 						break;
 
+					case 'h':	/* HDB-DOS drives */
+						hdbdrives = atoi(p + 1);
+						tracks = 35;
+						while (*(p + 1) != '\0') p++;
+						break;
+						
 					case 'n':	/* disk name */
 						diskName = p + 1;
 						while (*(p + 1) != '\0') p++;
@@ -97,7 +106,7 @@ int decbdskini(int argc, char **argv)
 		}
 		else
 		{
-			do_dskini(argv, argv[i], tracks, diskName);
+			do_dskini(argv, argv[i], tracks, diskName, hdbdrives, bps);
 		}
 	}
 
@@ -106,12 +115,12 @@ int decbdskini(int argc, char **argv)
 
 
 
-static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName)
+static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int hdbdrives, int bps)
 {
 	error_code	ec = 0;
 	native_path_id nativepath;
-	int max_s;
-	char sector[256];
+	int max_s, i;
+	char sector[MAX_BPS];
 
 
 	/* 1. Open a path to the virtual disk. */
@@ -133,121 +142,124 @@ static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName)
 	_native_seek(nativepath, 0, SEEK_SET);
 
 
-	/* 2. Write 17 tracks of $FF */
-
-	memset(sector, 0xFF, 256);
-
+	for (i = 0; i < hdbdrives; i++)
 	{
-		int t, s;
-		
-		for (t = 0; t < 17; t++)
+		/* 2. Write 17 tracks of $FF */
+
+		memset(sector, 0xFF, bps);
+
 		{
-			for (s = 1; s < 19; s++)
+			int t, s;
+		
+			for (t = 0; t < 17; t++)
 			{
-				int size = 256;
+				for (s = 1; s < 19; s++)
+				{
+					int size = bps;
+				
+					_native_write(nativepath, sector, &size);
+				}
+			}
+		}
+
+
+		/* 4. Write directory track. */
+
+		memset(sector, 0x00, bps);
+
+		{
+			int s;
+			int size;
+		
+		
+			/* 1. Write sector of track 17 (all 0s..). */
+		
+			size = bps;
+				
+			_native_write(nativepath, sector, &size);
+
+
+			/* 2. Write FAT sector. */
+		
+			switch (tracks)
+			{
+				case 40:
+					max_s = 78;
+					break;
+				
+				case 80:
+					max_s = 156;
+					break;
+
+				case 35:
+				default:
+					max_s = 68;
+					break;
+			}
+
+			for (s = 0; s < max_s; s++)
+			{
+				sector[s] = 0xFF;
+			}
+
+			size = bps;
+				
+			_native_write(nativepath, sector, &size);
+
+
+			/* 3. Write 14 sectors of 0xFF. */
+		
+			memset(sector, 0xFF, bps);
+
+			for (s = 0; s < 14; s++)
+			{
+				size = bps;
 				
 				_native_write(nativepath, sector, &size);
 			}
-		}
-	}
-
-
-	/* 4. Write directory track. */
-
-	memset(sector, 0x00, 256);
-
-	{
-		int s;
-		int size;
 		
+
+			/* 4. If disk name was provided, copy it to sector. */
 		
-		/* 1. Write sector of track 17 (all 0s..). */
-		
-		size = 256;
+			if (diskName != NULL)
+			{
+				strcpy(sector, diskName);
+			}
+
+
+			/* 5. Write 17th sector. */
+
+			size = bps;
 				
-		_native_write(nativepath, sector, &size);
+			_native_write(nativepath, sector, &size);
 
 
-		/* 2. Write FAT sector. */
-		
-		switch (tracks)
-		{
-			case 40:
-				max_s = 78;
-				break;
-				
-			case 80:
-				max_s = 156;
-				break;
-
-			case 35:
-			default:
-				max_s = 68;
-				break;
-		}
-
-		for (s = 0; s < max_s; s++)
-		{
-			sector[s] = 0xFF;
-		}
-
-		size = 256;
-				
-		_native_write(nativepath, sector, &size);
+			memset(sector, 0xFF, bps);
 
 
-		/* 3. Write 14 sectors of 0xFF. */
-		
-		memset(sector, 0xFF, 256);
+			/* 6. Write 18th sector. */
 
-		for (s = 0; s < 14; s++)
-		{
-			size = 256;
+			size = bps;
 				
 			_native_write(nativepath, sector, &size);
 		}
-		
 
-		/* 4. If disk name was provided, copy it to sector. */
-		
-		if (diskName != NULL)
+
+		/* 5. Write remaining 17, 22 or 62 tracks of $FF. */
+
+		memset(sector, 0xFF, bps);
+
 		{
-			strcpy(sector, diskName);
-		}
-
-
-		/* 5. Write 17th sector. */
-
-		size = 256;
-				
-		_native_write(nativepath, sector, &size);
-
-
-		memset(sector, 0xFF, 256);
-
-
-		/* 6. Write 18th sector. */
-
-		size = 256;
-				
-		_native_write(nativepath, sector, &size);
-	}
-
-
-	/* 5. Write remaining 17, 22 or 62 tracks of $FF. */
-
-	memset(sector, 0xFF, 256);
-
-	{
-		int t, s;
+			int t, s;
 		
-		for (t = 0; t < tracks - 18; t++)
-		{
-			for (s = 1; s < 19; s++)
+			for (t = 0; t < tracks - 18; t++)
 			{
-				int size = 256;
+				for (s = 1; s < 19; s++)
+				{
+					int size = bps;
 				
-				_native_write(nativepath, sector, &size);
+					_native_write(nativepath, sector, &size);
+				}
 			}
 		}
 	}
