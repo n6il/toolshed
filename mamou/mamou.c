@@ -323,6 +323,14 @@ void mamou_assemble(assembler *as)
 		/* Close the file. */
 		
 		_coco_close(root_file.fd);
+		
+		
+		/* Did we have more 'ifs' than 'endcs' ? */
+		
+		if (as->conditional_stack_index != 0)
+		{			
+			error(as, "too many ifs for endcs");
+		}
     }
 
 
@@ -520,7 +528,8 @@ static void mamou_initialize(assembler *as)
 		fwd_reinit(as);
 
 		as->conditional_stack_index = 0;
-		as->conditional_stack[as->conditional_stack_index] = 1;
+		as->conditional_stack[0] = 1;
+//		as->conditional_stack[as->conditional_stack_index] = 1;
 	}
 	
 

@@ -4,6 +4,432 @@
 #include "mamou.h"
 
 
+
+/*****************************************************************************
+ *
+ * OS-9 DIRECTIVES (MOD, EMOD)
+ *
+ *****************************************************************************/
+
+/*!
+	@function _mod
+	@discussion Genereates an OS-9 module header
+	@param as The assembler state structure
+ */
+
+int _mod(assembler *as)
+{
+#define HEADER_LEN	9
+#define	_MODSYNC		0x87CD
+	char *p;
+	unsigned char header_check;
+	BP_int32 modinfo[6], i;
+	int module_size, name_offset;
+
+	
+	as->old_program_counter = as->program_counter = 0;
+	as->data_counter = 0;
+	f_record(as);	/* flush out any bytes */
+	as->do_module_crc = BP_TRUE;
+	
+	as->_crc[0] = 0xFF;
+	as->_crc[1] = 0xFF;
+	as->_crc[2] = 0xFF;
+	
+	/* Start OS-9 module */
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		/* ignore this pseudo op */
+		return 0;
+	}
+	
+	if (as->pass == 1 && *as->line->label != EOS)
+	{
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
+	}
+	
+	/* obtain first parameter -- length of module */
+	if ((p = strtok(as->line->optr, ",")) == NULL)
+	{
+		/* error */
+		error(as, "Missing parameter");
+		return 0;
+	}
+	evaluate(as, &modinfo[0], &p, 0);
+	
+	/* obtain rest of parameters */
+	for (i = 1; i < 6; i++)
+	{
+		if ((p = strtok(NULL, ",")) == NULL)
+		{
+			/* error */
+			error(as, "Missing parameter");
+			return 0;
+		}
+		evaluate(as, &modinfo[i], &p, 0);
+	}	
+	
+	header_check = 0;
+	
+	/* emit sync bytes */
+	eword(as, _MODSYNC);
+	header_check ^= _MODSYNC >> 8;
+	header_check ^= _MODSYNC & 0xFF;
+	
+	/* emit module size */
+	module_size = modinfo[0];
+	eword(as, module_size);
+	header_check ^= module_size >> 8;
+	header_check ^= module_size & 0xFF;
+	
+	/* emit name offset */
+	name_offset = modinfo[1];
+	eword(as, name_offset);
+	header_check ^= name_offset >> 8;
+	header_check ^= name_offset & 0xFF;
+	
+	/* emit type/language and attribute/revision */
+	emit(as, modinfo[2]);
+	header_check ^= modinfo[2];
+	
+	emit(as, modinfo[3]);
+	header_check ^= modinfo[3];
+	
+	/* emit header check */
+	emit(as, ~header_check);
+	
+	/* module type specific output */
+	switch (modinfo[2] & 0xF0)
+	{
+		case 0x10:
+		case 0x20:
+		case 0x30:
+		case 0x40:
+		case 0x50:
+		case 0x60:
+		case 0x70:
+		case 0x80:
+		case 0x90:
+		case 0xA0:
+		case 0xB0:
+		case 0xC0:	/* Systm */
+		case 0xD0:	/* FMgr */
+		case 0xE0:	/* Drvr */
+			/* output exec offset */
+			eword(as, modinfo[4]);
+			/* output storage size */
+			eword(as, modinfo[5]);
+			break;
+		case 0xF0:	/* Desc */
+			/* output fmgr name offset */
+			eword(as, modinfo[4]);
+			/* output drvr name offset */
+			eword(as, modinfo[5]);
+			break;
+	}
+	
+	/* re-adjust PC to undo effects of emit */
+	print_line(as, 0, ' ', 0);
+	return 0;
+}
+
+
+
+/*
+ * emod: generate OS-9 module CRC
+ */
+
+int _emod(assembler *as)
+{
+	/* End OS-9 module (put CRC) */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		/* ignore this pseudo op */
+		
+		return 0;
+	}	
+	
+	f_record(as);
+	as->do_module_crc = BP_FALSE;
+	as->_crc[0] ^= 0xff;		/* invert the CRC prior to publicising it */
+	as->_crc[1] ^= 0xff;
+	as->_crc[2] ^= 0xff;
+	emit(as, as->_crc[0]);
+	emit(as, as->_crc[1]);
+	emit(as, as->_crc[2]);
+	f_record(as);
+	print_line(as, 0, ' ', 0);
+
+	return 0;
+}
+
+
+
+/*****************************************************************************
+ *
+ * CONDITIONALS (IF, IFP1, IFP2, IFNE, IFEQ, ELSE, ENDC, etc.)
+ *
+ *****************************************************************************/
+
+typedef enum
+{
+	_IF,
+	_IFP1,
+	_IFP2,
+	_IFNE,
+	_IFEQ,
+	_IFGT,
+	_IFGE,
+	_IFLT,
+	_IFLE
+} conditional;
+
+
+static int _generic_if(assembler *as, conditional whichone);
+
+
+/*
+ * _generic_if: generic conditional handler
+ */
+
+static int _generic_if(assembler *as, conditional whichone)
+{
+	BP_int32	result;
+	
+	
+	/* 1. First, check to make sure we don't overflow the condition stack. */
+	
+	if (as->conditional_stack_index + 1 > CONDSTACKLEN)
+	{
+		/* Overflow */
+		
+		error(as, "Conditional stack overflow!");
+		
+		return 0;
+	}
+	
+
+	/* 2. Next, check the state of the previous conditional. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		/* Previous conditional false, ignore this one */
+		
+		as->conditional_stack[as->conditional_stack_index++] = 0;
+
+		return 0;
+	}
+
+	
+	/* Previous conditional true, evaluate this one */
+		
+	if (whichone != _IFP1 & whichone != _IFP2)
+	{
+		evaluate(as, &result, &as->line->optr, 1);
+	}
+
+	if (as->Opt_C == BP_TRUE)
+	{
+		print_line(as, 0, ' ', 0);
+	}
+
+	
+	as->conditional_stack_index++;
+
+
+	switch (whichone)
+	{
+		case _IFEQ:
+			as->conditional_stack[as->conditional_stack_index] = (result == 0);
+			break;
+			
+		case _IFP1:
+			as->conditional_stack[as->conditional_stack_index] = (as->pass == 1);
+			break;
+
+		case _IFP2:
+			as->conditional_stack[as->conditional_stack_index] = (as->pass == 2);
+			break;
+			
+		case _IF:
+		case _IFNE:
+			as->conditional_stack[as->conditional_stack_index] = (result != 0);
+			break;
+			
+		case _IFGT:
+			as->conditional_stack[as->conditional_stack_index] = (result > 0);
+			break;
+			
+		case _IFGE:
+			as->conditional_stack[as->conditional_stack_index] = (result >= 0);
+			break;
+			
+		case _IFLT:
+			as->conditional_stack[as->conditional_stack_index] = (result < 0);
+			break;
+			
+		case _IFLE:
+			as->conditional_stack[as->conditional_stack_index] = (result <= 0);
+			break;
+	}
+	
+	
+	return 0;
+}
+
+
+
+/*
+ * ifp1: if pass == 1 conditional
+ */
+
+int _ifp1(assembler *as)
+{
+	return _generic_if(as, _IFP1);
+}
+
+
+
+/*
+ * ifp2: if pass == 2 conditional
+ */
+
+int _ifp2(assembler *as)
+{
+	return _generic_if(as, _IFP2);
+}
+
+
+
+/*
+ * ifeq: if result == 0 conditional
+ */
+
+int _ifeq(assembler *as)
+{
+	return _generic_if(as, _IFEQ);
+}
+
+
+
+/*
+ * ifne: if expression != 0 conditional
+ */
+
+int _ifne(assembler *as)
+{
+	return _generic_if(as, _IFNE);
+}
+
+
+
+/*
+ * iflt: if expression < 0 conditional
+ */
+
+int _iflt(assembler *as)
+{
+	return _generic_if(as, _IFLT);
+}
+
+
+
+/*
+ * ifle: if expression <= 0 conditional
+ */
+
+int _ifle(assembler *as)
+{
+	return _generic_if(as, _IFLE);
+}
+
+
+
+/*
+ * ifgt: if expression > 0 conditional
+ */
+
+int _ifgt(assembler *as)
+{
+	return _generic_if(as, _IFGT);
+}
+
+
+
+/*
+ * ifge: if expression >= 0 conditional
+ */
+
+int _ifge(assembler *as)
+{
+	return _generic_if(as, _IFGE);
+}
+
+
+
+/*
+ * endc - end conditional
+ */
+
+int _endc(assembler *as)
+{
+	if (as->conditional_stack_index == 0)
+	{
+		/* Conditional underflow */
+		
+		error(as, "endc without a conditional if!");
+
+		return 0;
+	}
+
+	as->conditional_stack_index--;
+
+	if (as->Opt_C == BP_TRUE)
+	{
+		print_line(as, 0, ' ', 0);
+	}
+	
+
+	
+	return 0;
+}
+
+
+
+/*
+ * else - change current conditional
+ */
+
+int _else(assembler *as)
+{
+	/* if the previous conditional was false... */
+	if (as->conditional_stack_index > 0 && as->conditional_stack[as->conditional_stack_index-1] == 0)
+	{
+		/* ...then ignore this one */
+		return 0;
+	}
+	/* invert the sense of the conditional */
+	if (as->Opt_C == BP_TRUE)
+	{
+		print_line(as, 0, ' ', 0);
+	}
+	as->conditional_stack[as->conditional_stack_index] = !as->conditional_stack[as->conditional_stack_index];
+	if (as->Opt_C == BP_TRUE)
+	{
+		print_line(as, 0, ' ', 0);
+	}
+	return 0;
+}
+
+
+
+/*****************************************************************************
+ *
+ * ALIGNMENT DIRECTIVES (MOD, EMOD)
+ *
+ *****************************************************************************/
+
 /*
  * align: align program counter on passed boundary
  */
@@ -121,6 +547,12 @@ int _odd(assembler *as)
 
 
 
+/*****************************************************************************
+*
+* PAGING DIRECTIVES (NAM, TTL, PAGE, etc.)
+*
+*****************************************************************************/
+
 /*
  * nam - specify a name for header printing
  */
@@ -210,8 +642,40 @@ int _ttl(assembler *as)
 
 
 /*
+ * page - new page
+ */
+int _page(assembler *as)
+{
+	as->P_force = 0;
+	as->f_new_page = BP_TRUE;
+	
+	if (as->pass == 2)
+	{
+		if (as->o_show_listing == BP_TRUE)  
+		{
+			if (as->o_format_only == BP_TRUE)
+			{
+				printf("* ");
+			}
+			else
+			{
+				printf("\f");
+			}
+			printf("%-10s", extractfilename(as->file_name[as->file_index -1]));
+			printf("                                   ");
+			printf("page %3u\n", (unsigned int)as->page_number++);
+		}
+	}
+	print_line(as, 0, ' ', 0);
+	return 0;
+}
+
+
+
+/*
  * fill - fill memory bytes
  */
+
 int _fill(assembler *as)
 {
 	BP_int32		fill;
@@ -271,14 +735,15 @@ int _fill(assembler *as)
 	}		
 
 	
-	return 0;;
+	return 0;
 }
 
 
 
 /*
- * fcc - form constant characters
+ * fcc - fill constant characters
  */
+
 int _fcc(assembler *as)
 {
 	char fccdelim;
@@ -327,7 +792,7 @@ int _fcc(assembler *as)
 
 
 /*
- * fcz - form constant characters with a nul byte at end
+ * fcz - fill constant characters with a nul byte at end
  */
 int _fcz(assembler *as)
 {
@@ -379,7 +844,7 @@ int _fcz(assembler *as)
 
 
 /*
- * fcs - form constant string
+ * fcs - fill constant string
  */
 
 int _fcs(assembler *as)
@@ -442,7 +907,7 @@ int _fcs(assembler *as)
 
 
 /*
- * fcr - form constant string with CR and nul at end
+ * fcr - fill constant string with CR and nul at end
  */
 
 int _fcr(assembler *as)
@@ -576,7 +1041,7 @@ int _equ(assembler *as)
 
 	if (*as->line->label == EOS)
 	{
-		error(as, "EQU requires label");
+		error(as, "Label required");
 		return 0;
 	}
 	if (evaluate(as, &result, &as->line->optr, 0))
@@ -586,7 +1051,7 @@ int _equ(assembler *as)
 	}
 	else
 	{
-		error(as, "Undefined as->line->operand during Pass One");
+		error(as, "Undefined operand during pass one");
 		return 0;
 	}
 	print_line(as, 0, ' ', result);
@@ -614,7 +1079,7 @@ int _set(assembler *as)
 
 	if (*as->line->label == EOS)
 	{
-		error(as, "SET requires label");
+		error(as, "Label required");
 		return 0;
 	}
 	if (evaluate(as, &result, &as->line->optr, 0))
@@ -734,562 +1199,12 @@ int _opt(assembler *as)
 
 
 /*
- * page - new page
- */
-int _page(assembler *as)
-{
-	as->P_force = 0;
-	as->f_new_page = BP_TRUE;
-	
-	if (as->pass == 2)
-	{
-		if (as->o_show_listing == BP_TRUE)  
-		{
-			if (as->o_format_only == BP_TRUE)
-			{
-				printf("* ");
-			}
-			else
-			{
-				printf("\f");
-			}
-			printf("%-10s", extractfilename(as->file_name[as->file_index -1]));
-			printf("                                   ");
-			printf("page %3u\n", (unsigned int)as->page_number++);
-		}
-	}
-	print_line(as, 0, ' ', 0);
-	return 0;
-}
-
-
-/*
  * unsupported pseudo op
  */
 int _null_op(assembler *as)
 {
 	as->P_force = 0;
-	return 0;
-}
-
-
-/*
- * ifp1 - if pass == 1 conditional
- */
-int _ifp1(assembler *as)
-{
-	BP_int32	result;
-
-
-	if (as->Opt_C == BP_TRUE)
-	{
-		print_line(as, 0, ' ', 0);
-	}
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		/* prev. conditional false, ignore this one */
-		result = 0;
-	}
-	else
-	{
-		/* prev. conditional true, evaluate this one */
-		if (as->pass == 1)
-		{
-			result = 1;
-		}
-		else
-		{
-			result = 0;
-		}
-	}
-	as->conditional_stack_index++;
-	if (as->conditional_stack_index > CONDSTACKLEN)
-	{
-		/* overflow */
-		error(as, "Conditional stack overflow!");
-		return 0;
-	}
-	/* determine if current pass is ok */
-	as->conditional_stack[as->conditional_stack_index] = result;
-	return 0;
-}
-
-
-/*
- * ifp2 - if pass == 2 conditional
- */
-int _ifp2(assembler *as)
-{
-	BP_int32	result;
-
-
-	if (as->Opt_C == BP_TRUE)
-	{
-		print_line(as, 0, ' ', 0);
-	}
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		/* prev. conditional false, ignore this one */
-		result = 0;
-	}
-	else
-	{
-		/* prev. conditional true, evaluate this one */
-		if (as->pass == 2)
-		{
-			result = 1;
-		}
-		else
-		{
-			result = 0;
-		}
-	}
-	as->conditional_stack_index++;
-	if (as->conditional_stack_index > CONDSTACKLEN)
-	{
-		/* overflow */
-		error(as, "Conditional stack overflow!");
-		return 0;
-	}
-	/* determine if current pass is ok */
-	as->conditional_stack[as->conditional_stack_index] = result;
-	return 0;
-}
-
-
-/*
- * ifeq - if expression == 0 conditional
- */
-int _ifeq(assembler *as)
-{
-	BP_int32	result;
-
-
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		/* prev. conditional false, ignore this one */
-		result = 1;
-	}
-	else
-	{
-		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->line->optr, 1);
-		if (as->Opt_C == BP_TRUE)
-		{
-			print_line(as, 0, ' ', 0);
-		}
-	}
-	as->conditional_stack_index++;
-	if (as->conditional_stack_index > CONDSTACKLEN)
-	{
-		/* overflow */
-		error(as, "Conditional stack overflow!");
-		return 0;
-	}
-	if (result == 0)
-	{
-		as->conditional_stack[as->conditional_stack_index] = 1;
-	}
-	else
-	{
-		as->conditional_stack[as->conditional_stack_index] = 0;
-	}
-	return 0;
-}
-
-
-
-/*
- * ifne - if expression != 0 conditional
- */
-int _ifne(assembler *as)
-{
-	BP_int32	result;
-
-
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{	
-		/* prev. conditional false, ignore this one */
-		result = 0;
-	}
-	else
-	{
-		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->line->optr, 1);
-		if (as->Opt_C == BP_TRUE)
-		{
-			print_line(as, 0, ' ', 0);
-		}
-	}
-	as->conditional_stack_index++;
-	if (as->conditional_stack_index > CONDSTACKLEN)
-	{
-		/* overflow */
-		error(as, "Conditional stack overflow!");
-		return 0;
-	}
-	if (result != 0)
-	{
-		as->conditional_stack[as->conditional_stack_index] = 1;
-	}
-	else
-	{
-		as->conditional_stack[as->conditional_stack_index] = 0;
-	}
-	return 0;
-}
-
-
-/*
- * iflt - if expression < 0 conditional
- */
-int _iflt(assembler *as)
-{
-	BP_int32	result;
-
-
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{	
-		/* prev. conditional false, ignore this one */
-		result = 0;
-	}
-	else
-	{
-		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->line->optr, 1);
-		if (as->Opt_C == BP_TRUE)
-		{
-			print_line(as, 0, ' ', 0);
-		}
-	}
-	as->conditional_stack_index++;
-	if (as->conditional_stack_index > CONDSTACKLEN)
-	{
-		/* overflow */
-		error(as, "Conditional stack overflow!");
-		return 0;
-	}
-	if (result < 0)
-	{
-		as->conditional_stack[as->conditional_stack_index] = 1;
-	}
-	else
-	{
-		as->conditional_stack[as->conditional_stack_index] = 0;
-	}
-	return 0;
-}
-
-
-/*
- * ifle - if expression <= 0 conditional
- */
-int _ifle(assembler *as)
-{
-	BP_int32	result;
-
-
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{	
-		/* prev. conditional false, ignore this one */
-		result = 0;
-	}
-	else
-	{
-		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->line->optr, 1);
-		if (as->Opt_C == BP_TRUE)
-		{
-			print_line(as, 0, ' ', 0);
-		}
-	}
-	as->conditional_stack_index++;
-	if (as->conditional_stack_index > CONDSTACKLEN)
-	{
-		/* overflow */
-		error(as, "Conditional stack overflow!");
-		return 0;
-	}
-	if (result <= 0)
-	{
-		as->conditional_stack[as->conditional_stack_index] = 1;
-	}
-	else
-	{
-		as->conditional_stack[as->conditional_stack_index] = 0;
-	}
-	return 0;
-}
-
-
-/*
- * ifgt - if expression > 0 conditional
- */
-int _ifgt(assembler *as)
-{
-	BP_int32	result;
-
-
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{	
-		/* prev. conditional false, ignore this one */
-		result = 0;
-	}
-	else
-	{
-		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->line->optr, 1);
-		if (as->Opt_C == BP_TRUE)
-		{
-			print_line(as, 0, ' ', 0);
-		}
-	}
-	as->conditional_stack_index++;
-	if (as->conditional_stack_index > CONDSTACKLEN)
-	{
-		/* overflow */
-		error(as, "Conditional stack overflow!");
-		return 0;
-	}
-	if (result > 0)
-	{
-		as->conditional_stack[as->conditional_stack_index] = 1;
-	}
-	else
-	{
-		as->conditional_stack[as->conditional_stack_index] = 0;
-	}
-	return 0;
-}
-
-
-/*
- * ifge - if expression >= 0 conditional
- */
-int _ifge(assembler *as)
-{
-	BP_int32	result;
-
-
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{	
-		/* prev. conditional false, ignore this one */
-		result = 0;
-	}
-	else
-	{
-		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->line->optr, 1);
-		if (as->Opt_C == BP_TRUE)
-		{
-			print_line(as, 0, ' ', 0);
-		}
-	}
-	as->conditional_stack_index++;
-	if (as->conditional_stack_index > CONDSTACKLEN)
-	{
-		/* overflow */
-		error(as, "Conditional stack overflow!");
-		return 0;
-	}
-	if (result >= 0)
-	{
-		as->conditional_stack[as->conditional_stack_index] = 1;
-	}
-	else
-	{
-		as->conditional_stack[as->conditional_stack_index] = 0;
-	}
-	return 0;
-}
-
-
-/*
- * endc - end conditional
- */
-int _endc(assembler *as)
-{
-	as->conditional_stack_index--;
-	if (as->conditional_stack_index < 0)
-	{
-		/* underflow */
-		error(as, "endc without a conditional if!");
-		return 0;
-	}
-	if (as->Opt_C == BP_TRUE)
-	{
-		print_line(as, 0, ' ', 0);
-	}
-	return 0;
-}
-
-
-/*
- * else - change current conditional
- */
-int _else(assembler *as)
-{
-	/* if the previous conditional was false... */
-	if (as->conditional_stack_index > 0 && as->conditional_stack[as->conditional_stack_index-1] == 0)
-	{
-		/* ...then ignore this one */
-		return 0;
-	}
-	/* invert the sense of the conditional */
-	if (as->Opt_C == BP_TRUE)
-	{
-		print_line(as, 0, ' ', 0);
-	}
-	as->conditional_stack[as->conditional_stack_index] = !as->conditional_stack[as->conditional_stack_index];
-	if (as->Opt_C == BP_TRUE)
-	{
-		print_line(as, 0, ' ', 0);
-	}
-	return 0;
-}
-
-
-/*
- * mod - generate OS-9 header module
- */
-int _mod(assembler *as)
-{
-#define HEADER_LEN	9
-#define	_MODSYNC		0x87CD
-	char *p;
-	unsigned char header_check;
-	BP_int32 modinfo[6], i;
-	int module_size, name_offset;
-
-	as->old_program_counter = as->program_counter = 0;
-	as->data_counter = 0;
-	f_record(as);	/* flush out any bytes */
-	as->do_module_crc = BP_TRUE;
-
-	as->_crc[0] = 0xFF;
-	as->_crc[1] = 0xFF;
-	as->_crc[2] = 0xFF;
-
-	/* Start OS-9 module */
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		/* ignore this pseudo op */
-		return 0;
-	}
-
-	if (as->pass == 1 && *as->line->label != EOS)
-	{
-		symbol_add(as, as->line->label, as->old_program_counter, 0);
-	}
-
-	/* obtain first parameter -- length of module */
-	if ((p = strtok(as->line->optr, ",")) == NULL)
-	{
-		/* error */
-		error(as, "Missing parameter");
-		return 0;
-	}
-	evaluate(as, &modinfo[0], &p, 0);
-
-	/* obtain rest of parameters */
-	for (i = 1; i < 6; i++)
-	{
-		if ((p = strtok(NULL, ",")) == NULL)
-		{
-			/* error */
-			error(as, "Missing parameter");
-			return 0;
-		}
-		evaluate(as, &modinfo[i], &p, 0);
-	}	
-
-	header_check = 0;
-
-	/* emit sync bytes */
-	eword(as, _MODSYNC);
-	header_check ^= _MODSYNC >> 8;
-	header_check ^= _MODSYNC & 0xFF;
-
-	/* emit module size */
-	module_size = modinfo[0];
-	eword(as, module_size);
-	header_check ^= module_size >> 8;
-	header_check ^= module_size & 0xFF;
-
-	/* emit name offset */
-	name_offset = modinfo[1];
-	eword(as, name_offset);
-	header_check ^= name_offset >> 8;
-	header_check ^= name_offset & 0xFF;
-
-	/* emit type/language and attribute/revision */
-	emit(as, modinfo[2]);
-	header_check ^= modinfo[2];
-
-	emit(as, modinfo[3]);
-	header_check ^= modinfo[3];
-
-	/* emit header check */
-	emit(as, ~header_check);
-
-	/* module type specific output */
-	switch (modinfo[2] & 0xF0)
-	{
-		case 0x10:
-		case 0x20:
-		case 0x30:
-		case 0x40:
-		case 0x50:
-		case 0x60:
-		case 0x70:
-		case 0x80:
-		case 0x90:
-		case 0xA0:
-		case 0xB0:
-		case 0xC0:	/* Systm */
-		case 0xD0:	/* FMgr */
-		case 0xE0:	/* Drvr */
-			/* output exec offset */
-			eword(as, modinfo[4]);
-			/* output storage size */
-			eword(as, modinfo[5]);
-			break;
-		case 0xF0:	/* Desc */
-			/* output fmgr name offset */
-			eword(as, modinfo[4]);
-			/* output drvr name offset */
-			eword(as, modinfo[5]);
-			break;
-	}
-
-	/* re-adjust PC to undo effects of emit */
-	print_line(as, 0, ' ', 0);
-	return 0;
-}
-
-
-/*
- * emod - generate OS-9 module CRC
- */
-int _emod(assembler *as)
-{
-	/* End OS-9 module (put CRC) */
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		/* ignore this pseudo op */
-		return 0;
-	}	
-
-	f_record(as);
-	as->do_module_crc = BP_FALSE;
-	as->_crc[0] ^= 0xff;		/* invert the CRC prior to publicising it */
-	as->_crc[1] ^= 0xff;
-	as->_crc[2] ^= 0xff;
-	emit(as, as->_crc[0]);
-	emit(as, as->_crc[1]);
-	emit(as, as->_crc[2]);
-	f_record(as);
-	print_line(as, 0, ' ', 0);
+	
 	return 0;
 }
 
@@ -1468,7 +1383,12 @@ int __end(assembler *as)
 
 
 
-/***** RESERVE MEMORY STORAGE *****/
+
+/*****************************************************************************
+*
+* RESERVE MEMORY STORAGE (RMB, etc.)
+*
+*****************************************************************************/
 
 static int _reserve_memory(assembler *as, BP_int32 size);
 
@@ -1565,16 +1485,21 @@ int _rmq(assembler *as)
 }
 
 
-/***** FORM CONSTANT *****/
+/*****************************************************************************
+ *
+ * FILL CONSTANT DATA
+ *
+ *****************************************************************************/
 
-static int _form_constant(assembler *as, BP_int32 size);
+
+static int _fill_constant(assembler *as, BP_int32 size);
 
 
 /*
- * form_constant - form constant data
+ * fill_constant - fill constant data
  */
 
-int _form_constant(assembler *as, BP_int32 size)
+int _fill_constant(assembler *as, BP_int32 size)
 {
 	BP_int32	result;
 	
@@ -1633,46 +1558,51 @@ int _form_constant(assembler *as, BP_int32 size)
 
 
 /*
- * fcb - form constant bytes
+ * fcb - fill constant bytes
  */
 
 int _fcb(assembler *as)
 {
-	return _form_constant(as, 1);
+	return _fill_constant(as, 1);
 }
 
 
 
 /*
- * fdb - form double bytes
+ * fdb - fill double bytes
  */
 int _fdb(assembler *as)
 {
-	return _form_constant(as, 2);
+	return _fill_constant(as, 2);
 }
 
 
 
 /*
- * fqb - form quad bytes
+ * fqb - fill quad bytes
  */
 int _fqb(assembler *as)
 {
-	return _form_constant(as, 4);
+	return _fill_constant(as, 4);
 }
 
 
 
-/***** FORM CONSTANT WITH VALUE *****/
+/*****************************************************************************
+ *
+ * FILL CONSTANT DATA WITH VALUE
+ *
+ *****************************************************************************/
 
-static int _form_constant_with_value(assembler *as, BP_int32 size, BP_int32 value);
+
+static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 value);
 
 
 
 /*
- * form_constant_with_value
+ * fill_constant_with_value
  */
-static int _form_constant_with_value(assembler *as, BP_int32 size, BP_int32 value)
+static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 value)
 {
 	BP_int32	result;
 
@@ -1746,7 +1676,7 @@ static int _form_constant_with_value(assembler *as, BP_int32 size, BP_int32 valu
  */
 int _zmb(assembler *as)
 {
-	return _form_constant_with_value(as, 1, 0);
+	return _fill_constant_with_value(as, 1, 0);
 }
 
 
@@ -1756,7 +1686,7 @@ int _zmb(assembler *as)
  */
 int _zmd(assembler *as)
 {
-	return _form_constant_with_value(as, 2, 0);
+	return _fill_constant_with_value(as, 2, 0);
 }
 
 
@@ -1766,7 +1696,7 @@ int _zmd(assembler *as)
  */
 int _zmq(assembler *as)
 {
-	return _form_constant_with_value(as, 4, 0);
+	return _fill_constant_with_value(as, 4, 0);
 }
 
 
