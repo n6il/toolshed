@@ -240,9 +240,23 @@ void decb_trailer_emit(assembler *as, BP_uint32 exec)
 		
 	
 		/* EXEC address */
-		
-		as->E_bytes[as->E_total++] = (as->orgs[0].org & 0xFF00) >> 8;
-		as->E_bytes[as->E_total++] = (as->orgs[0].org & 0x00FF);
+
+		{
+			/* 1. Assume no org was specified. */
+			
+			BP_uint32   exec = 0;
+			
+			
+			if (as->current_org > 0)
+			{
+				/* 1. Use the first org we encountered. */
+
+				exec = as->orgs[1].org;
+			}
+
+			as->E_bytes[as->E_total++] = (exec & 0xFF00) >> 8;
+			as->E_bytes[as->E_total++] = (exec & 0x00FF);
+		}
 
 
 		if (as->E_total > E_LIMIT + MAXBUF)
