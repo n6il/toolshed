@@ -12,9 +12,10 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	char Tmp_buff[512];
 	char Line_buff[512];
 
+	
 	Line_buff[0] = EOS;
 
-
+	
 	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
 	{
 		/* We are currently in a false condition -- return. */
@@ -233,7 +234,7 @@ void print_summary(assembler *as)
 	{
 		printf(" - Output file: \"%s\"\n", as->object_name);
 	}
-	
+
 	
 	return;
 }
@@ -242,19 +243,16 @@ void print_summary(assembler *as)
 
 void print_header(assembler *as)
 {
-#if 0
-	time_t now;
 	struct tm *tm;
 
-	now = time(NULL);
-	tm = localtime(&now);
-#endif
+	
+	tm = localtime(&as->start_time);
 	
 	printf("The Mamou Assembler Version %02d.%02d      %02d/%02d/%02d %02d:%02d:%02d      Page %03u\n",
 		   VERSION_MAJOR,
 		   VERSION_MINOR,
-	       as->start_time->tm_mon + 1, as->start_time->tm_mday, as->start_time->tm_year + 1900,
-	       as->start_time->tm_hour, as->start_time->tm_min, as->start_time->tm_sec,
+	       tm->tm_mon + 1, tm->tm_mday, tm->tm_year + 1900,
+	       tm->tm_hour, tm->tm_min, tm->tm_sec,
 	       (unsigned int)as->current_page);
 
 	if (as->name_header[0] != EOS && as->title_header != EOS)

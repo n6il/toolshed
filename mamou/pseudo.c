@@ -375,6 +375,58 @@ int _fcc(assembler *as)
 
 
 /*
+ * fcz - form constant characters with a nul byte at end
+ */
+int _fcz(assembler *as)
+{
+	char fccdelim;
+	
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		return 0;
+	}
+	
+	
+	if (*as->line->operand == EOS)
+	{
+		return 0;
+	}
+	
+	fccdelim = *as->line->optr++;
+	
+	while (*as->line->optr != EOS && *as->line->optr != fccdelim)
+	{
+		emit(as, *as->line->optr++);
+	}
+	
+	emit(as, EOS);
+	
+	if (*as->line->optr == fccdelim)
+	{
+		as->line->optr++;
+	}
+	else
+	{
+		error(as, "Missing Delimiter");
+		return 0;
+	}
+	
+	if (*as->line->label != EOS)
+	{
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
+	}		
+	
+	print_line(as, 0, ' ', as->old_program_counter);
+	
+	
+	return 0;
+}
+
+
+
+/*
  * fcs - form constant string
  */
 
@@ -425,21 +477,15 @@ int _fcs(assembler *as)
 	else
 	{
 		error(as, "Missing Delimiter");
-
 		return 0;
 	}
-
 	if (*as->line->label != EOS)
 	{
 		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
-
 	print_line(as, 0, ' ', as->old_program_counter);
-
-	
 	return 0;
 }
-
 
 
 /*
@@ -452,7 +498,6 @@ int _org(assembler *as)
 
 
 	as->P_force = 1;
-
 
 	/* 1. If we are currently in a FALSE conditional, just return. */
 	

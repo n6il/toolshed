@@ -279,14 +279,7 @@ void mamou_assemble(assembler *as)
 {
 	/* Get the current time for future reference. */
 
-	{
-		time_t  t;
-		
-		t = time(NULL);
-		
-		
-		as->start_time = localtime(&t);
-	}
+	as->start_time = time(NULL);
 	
 	
 	/* 1. Initialize the assembler for the first pass. */

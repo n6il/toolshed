@@ -100,6 +100,7 @@ typedef enum _pseudo_class
      RMB,             /* Reserve Memory Bytes         */
      FCB,             /* Form Constant Bytes          */
      FDB,             /* Form Double Bytes (words)    */
+	FCZ,             /* Form Constant Characters     */
      FCC,             /* Form Constant Characters     */
      ORG,             /* Origin                       */
      EQU,             /* Equate                       */
@@ -227,7 +228,7 @@ typedef enum
 
 typedef struct _assembler
 {
-	struct tm			*start_time;
+	time_t				start_time;
 	struct source_line  *line;						/* current source line */
 	object_file_type	output_type;				/* type of output file */
 	BP_uint32			num_errors;					/* total number of errors */
@@ -379,6 +380,7 @@ int	_else(assembler *as),
 	_fcb(assembler *as),
 	_fcc(assembler *as),
 	_fcs(assembler *as),
+	_fcz(assembler *as),
 	_fill(assembler *as),
 	_ifeq(assembler *as),
 	_ifge(assembler *as),

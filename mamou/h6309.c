@@ -932,6 +932,66 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 	}
 	else if (mode == OTHER)
 	{
+#if 0
+		evaluate(as, &result, &as->line->optr, 0);
+		
+		if (as->line->force_byte == BP_TRUE)
+		{
+			/* Case #1: < has been prepeneded to expression */
+			
+			emit(as, op + 0x10);
+
+			if (hibyte(result) != as->DP)
+			{
+				error(as, "as->DP out of range");
+				return 0;
+			}
+
+			emit(as, lobyte(result));
+
+			as->cumulative_cycles += 2;
+
+			return 0;
+		}
+		else if (as->line->force_word == BP_TRUE)
+		{
+			/* Case #1: > has been prepeneded to expression */
+			
+			if ((hibyte(result) == as->DP))
+			{
+				as->line->has_warning = BP_TRUE;
+			}
+			
+			emit(as, op + 0x30);
+
+			eword(as, result);
+
+			as->cumulative_cycles += 3;
+			
+			return 0;
+		}
+		else
+		{
+			/* Case #3: Ambiguous... look to as->DP for guidance. */
+			
+			emit(as, op + 0x30);
+
+			if ((hibyte(result) == as->DP))
+			{
+				emit(as, lobyte(result));
+				
+				as->cumulative_cycles += 2;
+			}
+			else
+			{
+				eword(as, result);
+				
+				as->cumulative_cycles += 3;
+			}
+			
+			return 0;
+		}
+#else
 		evaluate(as, &result, &as->line->optr, 0);
 		if (as->line->force_byte == BP_TRUE)
 		{
@@ -960,6 +1020,7 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 
 			return 0;
 		}
+#endif
 	}
 	else
 	{

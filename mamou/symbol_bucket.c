@@ -19,7 +19,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 
 	/* 1. Does the symbol name meet our criteria? */
 	
-	if (!alpha(*name))
+	if (!alpha(*name) && *name != '@')
 	{
 		error(as, "Illegal Symbol Name");
 
@@ -31,9 +31,10 @@ int symbol_add(assembler *as, char *name, int val, int override)
      *    current file index and number of blank lines.
 	 */
 	 
-	if (name[strlen(name) - 1] == '@')
+//	if (name[strlen(name) - 1] == '@')
+	if (strchr(name, '@') != NULL)
 	{
-		sprintf(tmp_label, "%s%03d%05d", name, (int)as->use_depth, (int)as->current_file->num_blank_lines);
+		sprintf(tmp_label, "_tmp%s%04X%04X", name, (int)as->use_depth, (int)as->current_file->num_blank_lines);
 		
 		name = tmp_label;
 	}
@@ -164,7 +165,12 @@ int symbol_add(assembler *as, char *name, int val, int override)
 	while (p != NULL) 
 	{
 		backp = p;
+		
+#ifdef CASE_SENSITIVE
+		i = strcmp(name, p->name);
+#else
 		i = strcasecmp(name, p->name);
+#endif
 		if (i < 0)
 		{
 			p = p->Lnext;
@@ -178,7 +184,11 @@ int symbol_add(assembler *as, char *name, int val, int override)
 	{
 		as->bucket = np;
 	}
+#ifdef CASE_SENSITIVE
+	else if (strcmp(name, backp->name) < 0)
+#else
 	else if (strcasecmp(name, backp->name) < 0)
+#endif
 	{
 		backp->Lnext = np;
 	}
@@ -202,26 +212,31 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 {
 	struct nlist *np;
 	int     i;
-	BP_char tmp_label[MAXLAB];
-
-
-	/* 2. If it's a temporary symbol, generate a unique symbol name based on
-     *    current file index and number of blank lines.
+	BP_char			tmp_label[MAXLAB];
+		
+	
+	/* 1. If it's a temporary symbol that hasn't had the _tmp tag prepended,
+	 *    then generate a unique symbol name based on the current use depth
+	 *    and number of blank lines.
 	 */
-	 
-	if (name[strlen(name) - 1] == '@')
+	
+	if (strchr(name, '@') != NULL && strncmp(name, "_tmp", 4) != 0)
 	{
-		sprintf(tmp_label, "%s%03d%05d", name, (int)as->use_depth, (int)as->current_file->num_blank_lines);
+		sprintf(tmp_label, "_tmp%s%04X%04X", name, (int)as->use_depth, (int)as->current_file->num_blank_lines);
 		
 		name = tmp_label;
 	}
-	
+
 	
 	np = as->bucket;
 
 	while (np != NULL)
 	{
+#ifdef CASE_SENSITIVE
+		i = strcmp(name, np->name);
+#else
 		i = strcasecmp(name, np->name);
+#endif
 		if (i == 0)
 		{
 			as->last_symbol = np->def;
@@ -236,12 +251,15 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 			np = np->Rnext;
 		}
 	}
+
 	as->last_symbol = 0;
+
 	if (as->pass == 2 && ignoreUndefined == 0)
 	{
-		error(as, "symbol Undefined on pass 2");
+		error(as, "symbol undefined on pass 2");
 	}
 
+	
 	return(NULL); 
 }
 
