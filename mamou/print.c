@@ -239,24 +239,35 @@ void print_summary(assembler *as)
 }
 
 
+
 void print_header(assembler *as)
 {
+#if 0
 	time_t now;
 	struct tm *tm;
 
 	now = time(NULL);
 	tm = localtime(&now);
-
+#endif
+	
 	printf("The Mamou Assembler Version %02d.%02d      %02d/%02d/%02d %02d:%02d:%02d      Page %03u\n",
 		   VERSION_MAJOR,
 		   VERSION_MINOR,
-	       tm->tm_mon + 1, tm->tm_mday, tm->tm_year + 1900,
-	       tm->tm_hour, tm->tm_min, tm->tm_sec,
+	       as->start_time->tm_mon + 1, as->start_time->tm_mday, as->start_time->tm_year + 1900,
+	       as->start_time->tm_hour, as->start_time->tm_min, as->start_time->tm_sec,
 	       (unsigned int)as->current_page);
 
-	if (as->name_header[0] != EOS || as->title_header != EOS)
+	if (as->name_header[0] != EOS && as->title_header != EOS)
 	{
 		printf("%s - %s\n", as->name_header, as->title_header);
+	}
+	else if (as->name_header[0] != EOS)
+	{
+		printf("%s\n", as->name_header);
+	}
+	else if (as->title_header[0] != EOS)
+	{
+		printf("%s\n", as->title_header);
 	}
 	else
 	{
@@ -271,11 +282,13 @@ void print_header(assembler *as)
 }
 
 
+
 void print_footer(assembler *as)
 {
 	printf("\n");
 	printf("\n");
 	printf("\n");
+	
 	as->current_line += as->footer_depth;
 
 	return;

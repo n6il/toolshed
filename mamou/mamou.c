@@ -277,6 +277,18 @@ int main(int argc, char **argv)
 
 void mamou_assemble(assembler *as)
 {
+	/* Get the current time for future reference. */
+
+	{
+		time_t  t;
+		
+		t = time(NULL);
+		
+		
+		as->start_time = localtime(&t);
+	}
+	
+	
 	/* 1. Initialize the assembler for the first pass. */
 		
 	as->pass = 1;

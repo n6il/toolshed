@@ -227,6 +227,7 @@ typedef enum
 
 typedef struct _assembler
 {
+	struct tm			*start_time;
 	struct source_line  *line;						/* current source line */
 	object_file_type	output_type;				/* type of output file */
 	BP_uint32			num_errors;					/* total number of errors */

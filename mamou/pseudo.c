@@ -169,14 +169,16 @@ int _zmb(assembler *as)
 }
 
 
+
 /*
  * fill - fill memory bytes
  */
 int _fill(assembler *as)
 {
 	BP_int32		fill;
-	BP_int32	result;
+	BP_int32		result;
 
+	
 	as->P_force = 1;
 
 	/* 1. If we are currently in a FALSE conditional, just return. */
@@ -188,7 +190,9 @@ int _fill(assembler *as)
 
 
 	evaluate(as, &result, &as->line->optr, 0);
+
 	fill = result;
+
 	if (*as->line->optr++ != ',')
 	{
 		error(as, "Bad fill");
@@ -196,16 +200,20 @@ int _fill(assembler *as)
 	else
 	{
 		as->line->optr = skip_white(as->line->optr);
+
 		evaluate(as, &result, &as->line->optr, 0);
+
 		if (result < 0)
 		{
 			error(as, "Illegal value for fill");
+
 			return 0;
 		}
 
 		while (result--)
 		{
 			emit(as, fill);
+
 			/* In order to not overflow our emit buffer, we flush
 			 * every MAXBUF bytes.
 			 */
@@ -214,19 +222,25 @@ int _fill(assembler *as)
 				f_record(as);     /* flush out bytes so far */
 			}
 		}
+
 		print_line(as, 0, ' ', as->old_program_counter);
 	}
+
 	if (*as->line->label != EOS)
 	{
-		symbol_add(as, as->line->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, BP_FALSE);
 	}		
+
+	
 	return 0;;
 }
+
 
 
 /*
  * fcb - form constant bytes
  */
+
 int _fcb(assembler *as)
 {
 	BP_int32	result;
@@ -243,25 +257,35 @@ int _fcb(assembler *as)
 	do
 	{
 		as->line->optr = skip_white(as->line->optr);
+
 		evaluate(as, &result, &as->line->optr, 0);
+
 		if (result > 0xFF)
 		{
 			if (as->line->force_byte == BP_FALSE)
 			{
 				error(as, "Value truncated");
 			}
+
 			result = lobyte(result);
 		}
+
 		emit(as, result);
 	}
+
 	while (*as->line->optr++ == ',');
+
 	if (*as->line->label != EOS)
 	{
-		symbol_add(as, as->line->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, BP_FALSE);
 	}		
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
+
 
 
 /*
@@ -286,13 +310,18 @@ int _fdb(assembler *as)
 		evaluate(as, &result, &as->line->optr,0 );
 		eword(as, result);
 	} while (*as->line->optr++ == ',');
+
 	if (*as->line->label != EOS)
 	{
 		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
+
 
 
 /*
@@ -314,11 +343,14 @@ int _fcc(assembler *as)
 	{
 		return 0;
 	}
+	
 	fccdelim = *as->line->optr++;
+
 	while (*as->line->optr != EOS && *as->line->optr != fccdelim)
 	{
 		emit(as, *as->line->optr++);
 	}
+
 	if (*as->line->optr == fccdelim)
 	{
 		as->line->optr++;
@@ -328,25 +360,32 @@ int _fcc(assembler *as)
 		error(as, "Missing Delimiter");
 		return 0;
 	}
+
 	if (*as->line->label != EOS)
 	{
 		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
+
 
 
 /*
  * fcs - form constant string
  */
+
 int _fcs(assembler *as)
 {
 	char fccdelim;
 
+	
 	/* 1. If we are currently in a FALSE conditional, just return. */
 	
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
 	{
 		return 0;
 	}
@@ -357,19 +396,23 @@ int _fcs(assembler *as)
 		return 0;
 	}
 
-	/* get delimiter character */
+
+	/* Get delimiter character. */
+	
 	fccdelim = *as->line->optr++;
+
 	while (*as->line->optr != EOS && *as->line->optr != fccdelim)
 	{
-		/* look ahead to the next char */
+		/* Look ahead to the next char. */
+		
 		if (*(as->line->optr + 1) != fccdelim)
 		{
 			emit(as, *as->line->optr++);
 		}
 		else
 		{
-			/* next char is fccdelim, so */
-			/* set hi bit of last char */
+			/* Next char is fccdelim, so set hi bit of last char. */
+			
 			emit(as, *as->line->optr + 128);
 			as->line->optr++;
 		}
@@ -382,15 +425,21 @@ int _fcs(assembler *as)
 	else
 	{
 		error(as, "Missing Delimiter");
+
 		return 0;
 	}
+
 	if (*as->line->label != EOS)
 	{
 		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
+
 
 
 /*
@@ -403,6 +452,7 @@ int _org(assembler *as)
 
 
 	as->P_force = 1;
+
 
 	/* 1. If we are currently in a FALSE conditional, just return. */
 	
