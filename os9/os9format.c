@@ -15,7 +15,9 @@
 
 #define BUFFSIZ	256
 
-static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int bytesPerSector, int formatEntire);
+#define DragonBootSize	16	/* Size of Dragon boot area in sectors */
+
+static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int bytesPerSector, int formatEntire, int isDragon);
 
 /* Help message */
 static char *helpMessage[] =
@@ -39,6 +41,7 @@ static char *helpMessage[] =
 	"     -ds  = double sided\n",
 	"     -tX  = tracks (default = 35)\n",
 	"     -stX = sectors per track (default = 18)\n",
+	"     -dr  = format a Dragon disk\n",
 	" Hard Drive Options:\n",
 	"     -lX  = number of logical sectors\n",
 	NULL
@@ -63,7 +66,8 @@ int os9format(int argc, char **argv)
 	int sectorAllocationSize = 8;	/* default */
 	int os968k = 0;		/* assume OS-9/6809 LSN0 */
 	int formatEntire = 0;	/* format entire disk image */
-
+	int isDragon = 0;		/* format disk as Dragon, with reserved boot sectors at begining */
+	
 	/* if no arguments, show help and return */
 	if (argv[1] == NULL)
 	{
@@ -134,6 +138,10 @@ int os9format(int argc, char **argv)
 
 							case 's':
 								heads = 2;
+								break;
+								
+							case 'r':
+								isDragon = 1;
 								break;
 
 							default:
@@ -237,7 +245,7 @@ int os9format(int argc, char **argv)
 		}
 		else
 		{
-			do_format(argv, argv[i], os968k, quiet, tracks, sectorsPerTrack, heads, bytesPerSector, clusterSize, diskName, sectorAllocationSize, tpi, density, bytesPerSector, formatEntire);
+			do_format(argv, argv[i], os968k, quiet, tracks, sectorsPerTrack, heads, bytesPerSector, clusterSize, diskName, sectorAllocationSize, tpi, density, bytesPerSector, formatEntire, isDragon);
 		}
 	}
 
@@ -246,7 +254,7 @@ int os9format(int argc, char **argv)
 
 
 
-static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int bytesPerSector, int formatEntire)
+static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int bytesPerSector, int formatEntire, int isDragon)
 {
 	error_code	ec = 0;
 	native_path_id path;
@@ -319,9 +327,18 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	_int2(clusterSize, s0.dd_bit);
 
 	/* Compute starting location of root directory */
-	_int3((int2(s0.dd_map) + sectorSize) / sectorSize + 
-		(int2(s0.dd_map) % sectorSize != 0), s0.dd_dir);
-
+	/* The dragon uses sectors 3..18 of the first track for storing the boot program */
+	/* so we have to place the root directory beyond this */
+	if(isDragon)
+	{
+		_int3(18,s0.dd_dir);
+	}
+	else
+	{
+		_int3((int2(s0.dd_map) + sectorSize) / sectorSize + 
+			(int2(s0.dd_map) % sectorSize != 0), s0.dd_dir);
+	}
+	
 	_int2(0, s0.dd_own);
 	_int1(0xFF, s0.dd_att);
 	_int2(0x0180, s0.dd_dsk);	// Disk ID, is this random???
@@ -462,6 +479,11 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 			sectorsToAlloc++;	/* LSN0 */
 			sectorsToAlloc += bitmapSectors;	/* Bitmap sectors */
 
+			if(isDragon)
+			{
+				sectorsToAlloc += DragonBootSize;			/* Dragon boot area */
+			}
+
 			rootSects = 1;				/* Root FD Sector */
 			rootSects += sectorAllocationSize;	/* Root dirent sectors */
 
@@ -493,16 +515,38 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 		free(bitmap);
 	}
 
+	/* If this is a Dragon disk, write out Dragon boot area */
+	if(isDragon)
+	{
+		char	*DragonBoot;
+		int		BootSize;
+
+		BootSize=DragonBootSize*sectorSize;
+
+		DragonBoot=(char *)calloc(BootSize,1);
+		memset(DragonBoot,0x55,BootSize);	
+		_native_write(path,DragonBoot,&BootSize);
+	
+		free(DragonBoot);
+	}
+
 	/* Write Root Directory FD and Root Sectors */
 	{
 		char *allocedSectors;
 		int totalSectors;
 		int totalBytes;
 
-		totalSectors = sectorsToAlloc - 1 - bitmapSectors;
+		if(isDragon)
+		{
+			totalSectors = sectorsToAlloc - 1 - bitmapSectors - DragonBootSize;
+		}
+		else
+		{
+			totalSectors = sectorsToAlloc - 1 - bitmapSectors;
+		}
 		totalBytes = totalSectors * sectorSize;
-
 		allocedSectors = (char *)malloc(totalBytes);
+
 		if (allocedSectors == NULL)
 		{
 			return(1);
@@ -595,3 +639,4 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 
 	return(ec);
 }
+
