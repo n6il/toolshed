@@ -237,7 +237,8 @@ typedef enum
 typedef enum
 {
 	ASM_OS9,
-	ASM_DECB
+	ASM_DECB,
+	ASM_ROM
 } asm_mode;
 
 

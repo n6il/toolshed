@@ -78,6 +78,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Assembler modes (select only one):\n");
         fprintf(stderr, " -9        OS-9/6809 (default)\n");
         fprintf(stderr, " -b        Disk BASIC\n");
+		fprintf(stderr, " -r        Rom Absolute mode\n");
 		fprintf(stderr, "Object generation options (select only one):\n");
         fprintf(stderr, " -tb       binary object output (default)\n");
         fprintf(stderr, " -th       hex object output\n");
@@ -199,6 +200,11 @@ int main(int argc, char **argv)
                 case 'q':
                     /* Quiet mode */
                     as.o_quiet_mode = 1;
+                    break;
+				
+				case 'r':
+					/* Rom mode, like basic mode without header, footer */
+                    as.o_asm_mode = ASM_ROM;
                     break;
 					
                 case 's':

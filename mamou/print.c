@@ -231,7 +231,7 @@ void print_summary(assembler *as)
 		(unsigned int)as->cumulative_comment_lines
 	);
 
-	if (as->o_asm_mode == ASM_DECB)
+	if ((as->o_asm_mode == ASM_DECB) || (as->o_asm_mode == ASM_ROM))
 	{
 		printf(" - $%04X (%u) bytes generated\n",
 			   (unsigned int)as->code_bytes,

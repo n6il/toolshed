@@ -1178,9 +1178,9 @@ int _org(assembler *as)
 
 	if (evaluate(as, &result, &as->line.optr, 0) == 1)
 	{
-		if (as->o_asm_mode == ASM_DECB)
+		if ((as->o_asm_mode == ASM_DECB) || (as->o_asm_mode == ASM_ROM))
 		{
-			/* Disk BASIC BIN file -- set program counter to result. */
+			/* Disk BASIC BIN file or ROM -- set program counter to result. */
 			
 			as->program_counter = result;
 		}
