@@ -71,15 +71,13 @@ error_code _os9_delete(char *pathlist)
 
     while (_os9_gs_eof(parent_path) == 0)
     {
-        int size;
         os9_dir_entry dentry;
         char fname[32];
 
 
-        size = sizeof(dentry);
         ec = _os9_readdir(parent_path, &dentry);
 
-        if (ec != 0 || size != sizeof(dentry))
+        if (ec != 0)
         {
             break;
         }
@@ -104,14 +102,14 @@ error_code _os9_delete(char *pathlist)
             }
 
             /* Back up file pointer in preparation of updating directory entry */
-            _os9_seek( parent_path, -(int)sizeof(dentry), SEEK_CUR );
+            _os9_seek(parent_path, -(int)sizeof(dentry), SEEK_CUR);
 			
             /* Putting a NULL in the first charcter position identifies the file
                 as deleted */
             dentry.name[0] = '\0';
 			
             /* Write the directory entry back to the image */
-            ec = _os9_write( parent_path, &dentry, &size );
+            ec = _os9_writedir( parent_path, &dentry);
 
 			/* Flag that the file has been deleted. */
 			deleted = 1;

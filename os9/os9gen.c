@@ -279,7 +279,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		/* 3. Open a path to the device raw */
 		sprintf(buffer, "%s,@", device);
 
-		ec = _os9_open(&opath, device, FAM_WRITE);
+		ec = _os9_open(&opath, buffer, FAM_WRITE);
 		if (ec != 0)
 		{
 			return(ec);
