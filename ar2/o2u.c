@@ -24,14 +24,21 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
- * Revision 1.1  1996/07/20 17:10:39  cc
- * Initial revision
+ * Revision 1.2  1996/07/20 22:31:13  cc
+ * Merged in pwz's unixification (Sunos).
  *
+ * Revision 1.1  96/07/20  17:10:39  cc
+ * Initial revision
+ * 
  *------------------------------------------------------------------
  */
 
 # include "o2u.h"
+#ifndef SYSV
 # include <time.h>
+#else 
+# include <sys/time.h>
+#endif 
 
 # define YEAR_LENGTH(Y) (((Y) & 3) ? 365 : 366)
 
@@ -84,6 +91,10 @@ char	*buf;
 	int				minute;
 	long			result;
 	extern long		time();
+
+#ifdef NEEC_TIMEZONE
+	int				timezone = 5*60*60;   /* I'm in the Eastern Time zone GMT + 5 */
+#endif
 
 	/* set up the timezone variable */
 	time(&result);
