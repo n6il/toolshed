@@ -71,6 +71,7 @@ int main(int argc, char **argv)
         fprintf(stderr, " -c        show symbol cross reference table\n");
         fprintf(stderr, " -l        list file\n");
         fprintf(stderr, " -ls       source only list (no line numbers)\n");
+        fprintf(stderr, " -ln       format source in 'new style' assembly\n");
         fprintf(stderr, " -lt       use tabs instead of spaces\n");
         fprintf(stderr, " -np       suppress 'page' pseudo output\n");
         fprintf(stderr, " -o<file>  output to file\n");
@@ -174,6 +175,10 @@ int main(int argc, char **argv)
                     if (tolower(argv[j][2]) == 't')
                     {
                         as.tabbed = 1;
+                    }
+                    if (tolower(argv[j][2]) == 'n')
+                    {
+                        as.newstyle = 1;
                     }
                     as.o_show_listing = 1;
                     break;
@@ -1014,6 +1019,7 @@ void mamou_init_assembler(assembler *as)
     as->header_depth = 3;
     as->footer_depth = 3;
     as->o_asm_mode = ASM_OS9;
+	as->newstyle = 0;
 
     return;
 }

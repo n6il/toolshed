@@ -130,6 +130,41 @@ void print_line(assembler *as, int override, char infochar, int counter)
 
 	as->current_line++;
 	
+	if (as->newstyle == 1)
+	{
+		if (as->line.label[0] != EOS)
+		{
+			char tmp[512];
+			
+			sprintf(tmp, "%s:", as->line.label);
+			strcpy(as->line.label, tmp);
+		}
+		
+		if (as->line.Op[0] != EOS && as->line.mnemonic.type == OPCODE_PSEUDO)
+		{
+			char tmp[512];
+			
+			sprintf(tmp, ".%s", as->line.Op);
+			strcpy(as->line.Op, tmp);
+		}
+		
+		if (as->line.comment[0] != EOS)
+		{
+			char tmp[512];
+			
+			if (as->line.comment[0] == '*')
+			{
+				as->line.comment[0] = ';';
+			}
+			else
+			{
+				sprintf(tmp, "; %s", as->line.comment);
+				strcpy(as->line.comment, tmp);
+			}
+		}
+	}
+	
+	
 	if (as->line.type == LINETYPE_COMMENT)
 //	if (*as->line.label == EOS && *as->line.Op == EOS && *as->line.operand == EOS)
 	{

@@ -325,6 +325,7 @@ typedef struct _assembler
 	int			current_psect;
 	int				code_segment_start;
 	unsigned int			decb_exec_address;
+	int					newstyle;
 } assembler;
 
 
