@@ -104,6 +104,10 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		
 		if (free_granules == 0)
 		{
+			fclose((*path)->fd);
+			
+			term_pd(*path);
+
 			return EOS_DF;
 		}
 	}
@@ -117,8 +121,8 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		
 		/* 1. Clear memory. */
 		
-		memset(&(*path)->dir_entry, 0x20, 11);
-		memset(&(*path)->dir_entry + 11, 0, sizeof(decb_dir_entry) - 11);
+		memset(&((*path)->dir_entry), 0x20, 11);
+		memset(&((*path)->dir_entry) + 11, 0, sizeof(decb_dir_entry) - 11);
 		
 		
 		if (p == NULL)
@@ -186,6 +190,10 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 			{
 				/* 1. A file of this type already exists. */
 				
+				fclose((*path)->fd);
+				
+				term_pd(*path);
+				
 				return EOS_FAE;
 			}
 		}
@@ -194,6 +202,10 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		if (empty_entry == -1)
 		{
 			/* 1. There are no more directory entries left. */
+			
+			fclose((*path)->fd);
+			
+			term_pd(*path);
 			
 			return EOS_DF;
 		}
@@ -289,17 +301,6 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 	}
 	else
 	{
-#if 0
-		/* 1. No, normal mode */
-
-		if ((*path)->mode & FAM_DIR)
-		{
-			term_pd(*path);
-
-			return EOS_BMODE;
-		}
-#endif
-		
 		(*path)->israw = 0;
 	}
 
@@ -466,6 +467,7 @@ static int _decb_cmp(decb_dir_entry *entry, char *name)
  *	foo,bar.bas		Opens file bar.bas in disk image foo
  *	foo,bar.bin:1	Opens file bar.bin in second disk image in file foo
  */
+
 static int validate_pathlist(decb_path_id *path, char *pathlist)
 {
 	error_code  ec = 0;
@@ -515,7 +517,7 @@ static int init_pd(decb_path_id *path, int mode)
 
 	/* 2. Clear out newly allocated path structure. */
 
-	memset(*path, 0, sizeof(**path));
+	memset(*path, 0, sizeof(struct _decb_path_id));
 	
 	(*path)->mode = mode;
 
