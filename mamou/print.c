@@ -25,7 +25,10 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	
 	if (override == 0 && (as->o_show_listing == BP_FALSE || as->f_new_page == BP_TRUE))
 	{
-		if (as->line->has_warning) as->num_warnings++;
+		if (as->line->has_warning)
+		{
+			as->num_warnings++;
+		}
 		
 		return;
 	}
@@ -102,7 +105,8 @@ void print_line(assembler *as, int override, char infochar, int counter)
 
 	as->current_line++;
 	
-	if (*as->line->label == EOS && *as->line->Op == EOS && *as->line->operand == EOS)
+	if (as->line->type == LINETYPE_COMMENT)
+//	if (*as->line->label == EOS && *as->line->Op == EOS && *as->line->operand == EOS)
 	{
 		/* possibly a comment? */
 		if (*as->line->comment != EOS)
@@ -139,6 +143,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		}
 	}
 
+
 	if (as->Opt_G == BP_TRUE)
 	{
 		int Temp_pc = as->old_program_counter;
@@ -157,13 +162,17 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		}
 	}
 
-	/* print out the built up line */
+	
+	/* Print out the built up line. */
+	
 	strncpy(Tmp_buff, Line_buff, as->o_pagewidth);
 	Tmp_buff[as->o_pagewidth] = EOS;
 	printf("%s\n", Tmp_buff);
 
-	/* check if we are at last line before footer should be printed */
-	if (as->o_format_only == 0)
+	
+	/* Check if we are at last line before footer should be printed. */
+	
+	if (as->o_format_only == BP_FALSE)
 	{
 		if (as->current_line == as->o_page_depth - as->footer_depth)
 		{
@@ -172,8 +181,8 @@ void print_line(assembler *as, int override, char infochar, int counter)
 			as->current_page++;
 		}
 	}
-
-	as->line->has_warning = 0;
+	
+	
 	return;
 }
 
@@ -183,7 +192,7 @@ void print_summary(assembler *as)
 	printf("\n");
 	printf("Assembler Summary:\n");
 	printf(" - %u errors, %u warnings\n", (unsigned int)as->num_errors, (unsigned int)as->num_warnings);
-	printf(" - %u lines (%u code, %u blank, %u comment)\n",
+	printf(" - %u lines (%u source, %u blank, %u comment)\n",
 		(unsigned int)as->cumulative_total_lines,
 		(unsigned int)(as->cumulative_total_lines - (as->cumulative_blank_lines + as->cumulative_comment_lines)),
 		(unsigned int)as->cumulative_blank_lines,
