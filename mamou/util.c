@@ -95,7 +95,7 @@ void error(assembler *as, char *str)
 	@param c Character to evaluate
  */
 
-BP_Bool delim(BP_char c)
+int delim(BP_char c)
 {
 	if (any(c, " \t\n\r"))
 	{
@@ -114,7 +114,7 @@ BP_Bool delim(BP_char c)
 	@param c Character to evaluate
  */
 
-BP_Bool eol(BP_char c)
+int eol(BP_char c)
 {
 	if (any(c, "\n\r"))
 	{
@@ -153,7 +153,7 @@ BP_char *skip_white(BP_char *ptr)
 	@param qwd Quad word to emit
  */
 
-void equad(assembler *as, BP_int32 qwd)
+void equad(assembler *as, int qwd)
 {
 	eword(as, hiword(qwd));
 	eword(as, loword(qwd));
@@ -267,7 +267,7 @@ void emit(assembler *as, int byte)
 	@param size Size of code
  */
 
-void decb_header_emit(assembler *as, BP_uint32 start, BP_uint32 size)
+void decb_header_emit(assembler *as, unsigned int start, unsigned int size)
 {
 	/* 1. If this is pass 2... */
 	
@@ -312,7 +312,7 @@ void decb_header_emit(assembler *as, BP_uint32 start, BP_uint32 size)
 	@param exec Execution address
  */
  
-void decb_trailer_emit(assembler *as, BP_uint32 exec)
+void decb_trailer_emit(assembler *as, unsigned int exec)
 {
 	/* 1. If this is pass 2... */
 	
@@ -553,7 +553,7 @@ void finish_outfile(assembler *as)
 	@param str String to search
  */
 
-BP_Bool any(BP_char c, BP_char *str)
+int any(BP_char c, BP_char *str)
 {
 	while (*str != EOS)
 	{
@@ -618,7 +618,7 @@ int hibyte(int i)
 	@param i Integer to process
  */
 
-int loword(BP_int32 i)
+int loword(int i)
 {
 	return i & 0xFFFF;
 }
@@ -631,7 +631,7 @@ int loword(BP_int32 i)
 	@param i Integer to process
  */
 
-int hiword(BP_int32 i)
+int hiword(int i)
 {
 	return (i >> 16) & 0xFFFF;
 }
@@ -682,7 +682,7 @@ int head(char *str1, char *str2)
 	@param c Character to evaluate
  */
 
-BP_Bool alpha(BP_char c)
+int alpha(BP_char c)
 {
 	if (c <= 'z' && c >= 'a')
 	{
@@ -713,7 +713,7 @@ BP_Bool alpha(BP_char c)
 	@param c Character to evaluate
  */
 
-BP_Bool alphan(BP_char c)
+int alphan(BP_char c)
 {
 	if (alpha(c))
 	{
@@ -742,7 +742,7 @@ BP_Bool alphan(BP_char c)
 	@param c Character to evaluate
  */
 
-BP_Bool numeric(BP_char c)
+int numeric(BP_char c)
 {
 	if (c <= '9' && c >= '0')
 	{

@@ -24,11 +24,11 @@
 
 int symbol_add(assembler *as, char *name, int val, int override)
 {
-	BP_error		bp_status = BPE_OK;
+	int				status = 0;
 	struct link		*lp;
 	struct nlist	*np, *p, *backp;
 	int				i;
-	BP_char			tmp_label[MAXLAB];
+	char			tmp_label[MAXLAB];
 
 
 	/* 1. Does the symbol name meet our criteria? */
@@ -37,7 +37,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 	{
 		error(as, "Illegal Symbol Name");
 
-		return BP_FALSE;
+		return 0;
 	}
 
 
@@ -75,7 +75,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 					np->def = val;
 				}
 				
-				return(BP_TRUE);
+				return(1);
 			}
 			else
 			{
@@ -83,7 +83,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 				
 				error(as, "Phasing Error");
 
-				return BP_FALSE;
+				return 0;
 			}
 		}
 
@@ -96,7 +96,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 			
 			np->def = val;
 			
-			return(BP_TRUE);
+			return(1);
 		}
 		else
 		{
@@ -107,7 +107,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 				error(as, "Symbol Redefined");
 			}
 			
-			return BP_FALSE;
+			return 0;
 		}
 	}
 
@@ -122,21 +122,23 @@ int symbol_add(assembler *as, char *name, int val, int override)
 
 	/* 4. Allocate memory for a symbol entry. */
 	
-	if (BP_kal_mem_alloc((void **)&np, sizeof(struct nlist)) != BPE_OK)
+	np = (struct nlist *)malloc(sizeof(struct nlist));
+	if (np == NULL)
 	{
 		error(as, "Symbol table full");
 
-		return BP_FALSE;
+		return 0;
 	}
 	
 	
 	/* 5. Allocate memory for the symbol name. */
 	
-	if (BP_kal_mem_alloc((void **)&np->name, strlen(name) + 1) != BPE_OK)
+	np->name = (char *)malloc(strlen(name) + 1);
+	if (np->name == NULL)
 	{
 		error(as, "Symbol table full");
 
-		return BP_FALSE;
+		return 0;
 	}
 
 
@@ -150,9 +152,10 @@ int symbol_add(assembler *as, char *name, int val, int override)
 
 	/* 7. Allocate a link. */
 	
-	if ((bp_status = BP_kal_mem_alloc((void **)&lp, sizeof(struct link))) != BPE_OK)
+	lp = (struct link *)malloc(sizeof(struct link));
+	if (lp == NULL)
 	{
-		return bp_status;
+		return status;
 	}
 	
 	np->L_list = lp;
@@ -214,7 +217,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 
 	/* 9. We're done, and we were successful. */
 	
-	return(BP_TRUE);  
+	return(1);  
 }
 
 
@@ -231,7 +234,7 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 {
 	struct nlist *np;
 	int     i;
-	BP_char			tmp_label[MAXLAB];
+	char			tmp_label[MAXLAB];
 		
 	
 	/* 1. If it's a temporary symbol that hasn't had the _tmp tag prepended,
@@ -324,7 +327,7 @@ int mne_look(assembler *as, char *str, mnemonic *m)
 		}
 		else
 		{
-			if (as->o_h6309 == BP_FALSE && mid->h6309 == BP_TRUE)
+			if (as->o_h6309 == 0 && mid->h6309 == 1)
 			{
 				return 1;
 			}
@@ -371,7 +374,7 @@ int mne_look(assembler *as, char *str, mnemonic *m)
 
 
 static void symbol_dump_bucket_r(struct nlist *ptr);
-static BP_uint32	counter;
+static unsigned int	counter;
 
 /*!
 	@function symbol_bucket_dump

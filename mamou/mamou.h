@@ -18,8 +18,6 @@
 
 #include "bp_types.h"
 #include "bp_errno.h"
-#include "bp_kal.h"
-#include "bp_dal.h"
 #include "cocopath.h"
 
 #define VERSION_MAJOR   1
@@ -112,10 +110,10 @@ struct filestack
 {
 	coco_path_id	fd;
 	char			file[FNAMESIZE];
-	BP_int32		current_line;
-	BP_int32		num_blank_lines;
-	BP_int32		num_comment_lines;
-	BP_Bool			end_encountered;
+	int		current_line;
+	int		num_blank_lines;
+	int		num_comment_lines;
+	int			end_encountered;
 };
 
 
@@ -124,15 +122,15 @@ struct filestack
 
 struct link
 {
-	BP_int32		L_num; /* line number */
+	int		L_num; /* line number */
 	struct link		*next; /* pointer to next node */
 };
 
 struct nlist
 {	/* basic symbol table entry */
-	BP_char			*name;
-	BP_int32		def;
-	BP_Bool			overridable;
+	char			*name;
+	int		def;
+	int			overridable;
 	struct nlist	*Lnext ; /* left node of the tree leaf */
 	struct nlist	*Rnext; /* right node of the tree leaf */ 
 	struct link		*L_list; /* pointer to linked list of line numbers */
@@ -142,8 +140,8 @@ struct nlist
 
 struct psect
 {
-	BP_int32		org;
-	BP_int32		size;
+	int		org;
+	int		size;
 	struct psect	*next;
 };
 
@@ -212,15 +210,15 @@ typedef enum
 struct source_line
 {
 	line_type			type;
-	BP_Bool				has_warning;				/* allow assembler warnings */
-	BP_char				label[MAXLAB];				/* label on current line */
-	BP_char				Op[MAXOP];					/* opcode mnemonic on current line */
-	BP_char				operand[MAXBUF];			/* remainder of line after op */
-	BP_char				comment[MAXBUF];			/* comment after operand, or entire line */
+	int				has_warning;				/* allow assembler warnings */
+	char				label[MAXLAB];				/* label on current line */
+	char				Op[MAXOP];					/* opcode mnemonic on current line */
+	char				operand[MAXBUF];			/* remainder of line after op */
+	char				comment[MAXBUF];			/* comment after operand, or entire line */
 	mnemonic			mnemonic;
-	BP_char				*optr;						/* pointer into current operand field */
-	BP_Bool				force_word;					/* Result should be a word when set */
-	BP_Bool				force_byte;					/* result should be a byte when set */
+	char				*optr;						/* pointer into current operand field */
+	int				force_word;					/* Result should be a word when set */
+	int				force_byte;					/* result should be a byte when set */
 };
 
 
@@ -253,81 +251,81 @@ typedef struct _assembler
 	time_t				start_time;
 	struct source_line  line;						/* current source line */
 	object_file_type	output_type;				/* type of output file */
-	BP_uint32			num_errors;					/* total number of errors */
-	BP_uint32			num_warnings;				/* assembler warnings */
-	BP_uint32			cumulative_blank_lines;		/* blank line count across all files */
-	BP_uint32			cumulative_comment_lines;   /* comment line count across all files */
-	BP_uint32			cumulative_total_lines;		/* total line count across all files */
-	BP_char				input_line[MAXBUF];			/* input line buffer */
-	BP_uint32			program_counter;			/* Program Counter */
-	BP_uint32			data_counter;				/* data counter */
-	BP_uint32			old_program_counter;		/* Program Counter at beginning */
-	BP_uint32			DP;							/* Direct Page pointer */
-	BP_uint32			last_symbol;				/* result of last symbol_find */
-	BP_uint32			pass;						/* current pass */
+	unsigned int			num_errors;					/* total number of errors */
+	unsigned int			num_warnings;				/* assembler warnings */
+	unsigned int			cumulative_blank_lines;		/* blank line count across all files */
+	unsigned int			cumulative_comment_lines;   /* comment line count across all files */
+	unsigned int			cumulative_total_lines;		/* total line count across all files */
+	char				input_line[MAXBUF];			/* input line buffer */
+	unsigned int			program_counter;			/* Program Counter */
+	unsigned int			data_counter;				/* data counter */
+	unsigned int			old_program_counter;		/* Program Counter at beginning */
+	unsigned int			DP;							/* Direct Page pointer */
+	unsigned int			last_symbol;				/* result of last symbol_find */
+	unsigned int			pass;						/* current pass */
 	struct filestack	*current_file;
-	BP_uint32			use_depth;					/* depth of includes/uses */
+	unsigned int			use_depth;					/* depth of includes/uses */
 #define MAXAFILE	16
-	BP_int32			file_index;
-	BP_char				*file_name[MAXAFILE];		/* assembly file name on cmd line */
-	BP_uint32			current_filename_index;		/* file number count            */
+	int			file_index;
+	char				*file_name[MAXAFILE];		/* assembly file name on cmd line */
+	unsigned int			current_filename_index;		/* file number count            */
 #define INCSIZE 16
-	BP_uint32			include_index;
-	BP_char				*includes[INCSIZE];	
+	unsigned int			include_index;
+	char				*includes[INCSIZE];	
 	int					Ffn;						/* forward ref file #           */
-	BP_uint32			F_ref;						/* next line with forward ref   */
-	BP_char				**arguments;				/* pointer to file names        */
-	BP_uint32			E_total;					/* total # bytes for one line   */
-	BP_char				E_bytes[E_LIMIT + MAXBUF];  /* Emitted held bytes           */
-	BP_uint32			E_pc;						/* Pc at beginning of collection*/
-	BP_uint32			P_force;					/* force listing line to include Old_pc */
-	BP_uint32			P_total;					/* current number of bytes collected    */
-	BP_char				P_bytes[P_LIMIT + 60];		/* Bytes collected for listing  */
-	BP_uint32			cumulative_cycles;			/* # of cycles per instruction  */
-	BP_uint32			Ctotal;						/* # of cycles seen so far */
-	BP_Bool				f_new_page;					/* new page flag */
-	BP_uint32			page_number;				/* page number */
-	BP_Bool				o_show_cross_reference;		/* cross reference table flag */
-	BP_Bool				f_count_cycles;				/* cycle count flag */
-	BP_uint32			Opt_C;						/* */
-	BP_int32			o_page_depth;				/* page depth */
-	BP_Bool				o_show_error;				/* show error */
-	BP_uint32			Opt_F;						/* */
-	BP_uint32			Opt_G;						/* */
-	BP_Bool				o_show_listing;				/* listing flag 0=nolist, 1=list*/
+	unsigned int			F_ref;						/* next line with forward ref   */
+	char				**arguments;				/* pointer to file names        */
+	unsigned int			E_total;					/* total # bytes for one line   */
+	char				E_bytes[E_LIMIT + MAXBUF];  /* Emitted held bytes           */
+	unsigned int			E_pc;						/* Pc at beginning of collection*/
+	unsigned int			P_force;					/* force listing line to include Old_pc */
+	unsigned int			P_total;					/* current number of bytes collected    */
+	char				P_bytes[P_LIMIT + 60];		/* Bytes collected for listing  */
+	unsigned int			cumulative_cycles;			/* # of cycles per instruction  */
+	unsigned int			Ctotal;						/* # of cycles seen so far */
+	int				f_new_page;					/* new page flag */
+	unsigned int			page_number;				/* page number */
+	int				o_show_cross_reference;		/* cross reference table flag */
+	int				f_count_cycles;				/* cycle count flag */
+	unsigned int			Opt_C;						/* */
+	int			o_page_depth;				/* page depth */
+	int				o_show_error;				/* show error */
+	unsigned int			Opt_F;						/* */
+	unsigned int			Opt_G;						/* */
+	int				o_show_listing;				/* listing flag 0=nolist, 1=list*/
 	asm_mode			o_asm_mode;					/* assembler mode */
-	BP_uint32			Opt_N;						/* */
-	BP_Bool				o_quiet_mode;				/* quiet mode */
-	BP_Bool				o_show_symbol_table;		/* symbol table flag, 0=no symbol */
-	BP_uint32			o_pagewidth;				/* page width */
-	BP_uint32			current_line;				/* line counter for printing */
-	BP_uint32			current_page;				/* page counter for printing */
-	BP_uint32			header_depth;				/* page header number of lines */
-	BP_uint32			footer_depth;				/* page footer of lines */
-	BP_Bool				o_format_only;              /* format only flag, 0=no symbol */
-	BP_Bool				o_debug;					/* debug flag */
+	unsigned int			Opt_N;						/* */
+	int				o_quiet_mode;				/* quiet mode */
+	int				o_show_symbol_table;		/* symbol table flag, 0=no symbol */
+	unsigned int			o_pagewidth;				/* page width */
+	unsigned int			current_line;				/* line counter for printing */
+	unsigned int			current_page;				/* page counter for printing */
+	unsigned int			header_depth;				/* page header number of lines */
+	unsigned int			footer_depth;				/* page footer of lines */
+	int				o_format_only;              /* format only flag, 0=no symbol */
+	int				o_debug;					/* debug flag */
 	coco_path_id		fd_object;					/* object file's file descriptor*/
-	BP_Bool				object_output;
-	BP_char				object_name[FNAMESIZE];
-	BP_char				_crc[3];
-	BP_uint32			do_module_crc;
-	BP_Bool				ignore_errors;
-	BP_Bool				tabbed;
+	int				object_output;
+	char				object_name[FNAMESIZE];
+	char				_crc[3];
+	unsigned int			do_module_crc;
+	int				ignore_errors;
+	int				tabbed;
 #define	CONDSTACKLEN	256
-	BP_uint32			conditional_stack_index;
+	unsigned int			conditional_stack_index;
 	char				conditional_stack[CONDSTACKLEN];
-	BP_Bool				o_do_parsing;
-	BP_Bool				o_h6309;
-	BP_uint32			code_bytes;					/* number of emitted code bytes */
+	int				o_do_parsing;
+	int				o_h6309;
+	unsigned int			code_bytes;					/* number of emitted code bytes */
 #define NAMLEN 64
 #define TTLLEN NAMLEN
-	BP_char				name_header[NAMLEN];
-	BP_char				title_header[TTLLEN];
+	char				name_header[NAMLEN];
+	char				title_header[TTLLEN];
 	struct nlist		*bucket;					/* root node of the tree */
 	struct psect		psect[256];
-	BP_int32			current_psect;
-	BP_Bool				code_segment_start;
-	BP_uint32			decb_exec_address;
+	int			current_psect;
+	int				code_segment_start;
+	unsigned int			decb_exec_address;
 } assembler;
 
 
@@ -335,7 +333,7 @@ typedef struct _assembler
 /* mamou.c */
 int main(int argc, char **argv);
 void mamou_pass(assembler *as);
-void mamou_parse_line(assembler *as, BP_char *input_line);
+void mamou_parse_line(assembler *as, char *input_line);
 void process(assembler *as);
 void mamou_init_assembler(assembler *as);
 
@@ -346,7 +344,7 @@ void local_init(void);
 void env_init(assembler *as);
 
 /* evaluator.c */
-BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool);
+int evaluate(assembler *as, int *result, char **eptr, int);
 
 /* ffwd.c */
 void fwd_init(assembler *as);
@@ -373,24 +371,24 @@ void symbol_cross_reference(struct nlist *ptr);
 
 /* util.c */
 char *extractfilename(char *pathlist);
-BP_Bool alpha(BP_char c);
-BP_Bool numeric(BP_char c);
-BP_Bool alphan(BP_char c);
-BP_Bool any(BP_char c, BP_char *str);
-BP_Bool delim(BP_char c);
-BP_Bool eol(BP_char c);
-void decb_header_emit(assembler *as, BP_uint32 start, BP_uint32 size);
-void decb_trailer_emit(assembler *as, BP_uint32 exec);
+int alpha(char c);
+int numeric(char c);
+int alphan(char c);
+int any(char c, char *str);
+int delim(char c);
+int eol(char c);
+void decb_header_emit(assembler *as, unsigned int start, unsigned int size);
+void decb_trailer_emit(assembler *as, unsigned int exec);
 void emit(assembler *as, int byte);
 void error(assembler *as, char *str);
 void eword(assembler *as, int wd);
-void equad(assembler *as, BP_int32 qwd);
+void equad(assembler *as, int qwd);
 void f_record(assembler *as);
 void fatal(char *str);
 void finish_outfile(assembler *as);
 int head(char *str1, char *str2);
-int hiword(BP_int32 i);
-int loword(BP_int32 i);
+int hiword(int i);
+int loword(int i);
 int hibyte(int i);
 int lobyte(int i);
 char mapdn(char c);

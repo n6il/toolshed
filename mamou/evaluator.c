@@ -47,13 +47,13 @@
 
 /* Static functions */
 
-static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool ignoreUndefined);
-static BP_Bool is_op(BP_char c);
+static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefined);
+static int is_op(BP_char c);
 
 
 /* Static variables */
 
-static BP_Bool forward = BP_FALSE;
+static int forward = BP_FALSE;
 
 
 
@@ -66,14 +66,14 @@ static BP_Bool forward = BP_FALSE;
 	@param ignoreUndefined Ignore any undefined symbols
  */
 
-BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignoreUndefined)
+int evaluate(assembler *as, int *result, BP_char **eptr, int ignoreUndefined)
 {
-	BP_int32	left, right;		/* left and right terms for expression */
+	int	left, right;		/* left and right terms for expression */
 	BP_char		o;					/* operator character */
 
 
 	/* 1. Do any debugging output. */
-	
+
 	if (as->o_debug)
 	{
 		printf("Evaluating %s\n", *eptr);
@@ -190,7 +190,7 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 	@param c Character to evaluate
  */
 
-static BP_Bool is_op(BP_char c)
+static int is_op(BP_char c)
 {
 	if (any(c, "+-*/&%|^!"))
 	{
@@ -212,13 +212,13 @@ static BP_Bool is_op(BP_char c)
 	@param ignoreUndefined Ignore any undefined symbols
  */
 
-static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool ignoreUndefined)
+static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefined)
 {
 	char			hold[MAXBUF];
 	char			*tmp;
-	BP_int32		val = 0;				/* local value being built */
-	BP_Bool			minus = BP_FALSE;		/* unary minus flag */
-	BP_Bool			complement = BP_FALSE;		/* complement flag */
+	int		val = 0;				/* local value being built */
+	int			minus = BP_FALSE;		/* unary minus flag */
+	int			complement = BP_FALSE;		/* complement flag */
 	struct nlist	*pointer;
 	struct link		*pnt, *bpnt;
 
@@ -290,8 +290,8 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	
 	if (**eptr == '^')
 	{
-		BP_int32	term2;
-		BP_Bool		ret;
+		int	term2;
+		int		ret;
 
 
 		/* 1. Complement next term. */
@@ -448,7 +448,8 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 					pnt = pnt->next;
 				}
 				
-				if (BP_kal_mem_alloc((void **)&pnt, sizeof(struct link)) != BPE_OK)
+				pnt = (struct link *)malloc(sizeof(struct link));
+				if (pnt == NULL)
 				{
 					pointer->L_list = pnt;
 				}

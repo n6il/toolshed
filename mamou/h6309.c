@@ -35,7 +35,7 @@ typedef enum _h6309_reg
 
 
 /* static functions */
-static int do_gen(assembler *as, int opcode, int amode, BP_Bool always_word);
+static int do_gen(assembler *as, int opcode, int amode, int always_word);
 static int do_indexed(assembler *as, int opcode);
 static int abd_index(assembler *as, int pbyte);
 static int reg_type(assembler *as, int reg);
@@ -178,9 +178,9 @@ int _gen(assembler *as, int opcode)
 
 int _imgen(assembler *as, int opcode)
 {
-	BP_int32	result;
-	BP_int32	amode;
-	BP_int32	old;
+	int	result;
+	int	amode;
+	int	old;
 	BP_char		*p;
 
 	
@@ -293,7 +293,7 @@ int _imgen(assembler *as, int opcode)
 
 int _imm(assembler *as, int opcode)
 {
-	BP_int32	result;
+	int	result;
 	int amode;  /* indicated addressing mode */
 
 	
@@ -352,7 +352,7 @@ int _p3imm(assembler *as, int opcode)
 
 int _rel(assembler *as, int opcode)
 {
-	BP_int32	result;
+	int	result;
 	int dist;
 
 	/* Short relative branches */
@@ -388,7 +388,7 @@ int _rel(assembler *as, int opcode)
 
 int _p2rel(assembler *as, int opcode)
 {
-	BP_int32	result;
+	int	result;
 	int			dist;
 
 	
@@ -423,7 +423,7 @@ int _p2rel(assembler *as, int opcode)
 
 int _p1rel(assembler *as, int opcode)
 {
-	BP_int32	result;
+	int	result;
 	int amode;
 	int dist;
 
@@ -528,7 +528,7 @@ int _p3noimm(assembler *as, int opcode)
 
 static int _pxgen(assembler *as, int opcode, int amode)
 {
-	BP_int32	result;
+	int	result;
 
 	
 	if ((amode == IMMED) || (amode == IMMED8))
@@ -576,7 +576,7 @@ int _ldqgen(assembler *as, int opcode)
 	
 	if (amode == IMMED)
 	{
-	  BP_int32 result;
+	  int result;
 
 	  evaluate(as, &result, &as->line.optr, 0);
 	  emit(as, 0xcd);
@@ -1043,7 +1043,7 @@ int _rlist(assembler *as, int opcode)
 
 int _longimm(assembler *as, int opcode)
 {
-	BP_int32 result;
+	int result;
 	int amode;
 
 
@@ -1078,7 +1078,7 @@ int _longimm(assembler *as, int opcode)
 
 int _grp2(assembler *as, int opcode)
 {
-	BP_int32 result;
+	int result;
 	int amode;
 
 	
@@ -1173,7 +1173,7 @@ int _grp2(assembler *as, int opcode)
 
 int _sys(assembler *as, int opcode)
 {
-	BP_int32	result;
+	int	result;
 
 	/* system call */
 
@@ -1196,9 +1196,9 @@ int _sys(assembler *as, int opcode)
 	@param opcode The op-code value to emit
  */
 
-static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
+static int do_gen(assembler *as, int op, int mode, int always_word)
 {
-	BP_int32	result;
+	int	result;
 
 	
 	if (mode == IMMED)
@@ -1438,7 +1438,7 @@ static int do_indexed(assembler *as, int op)
 	int     pbyte;
 	int     j,k;
 	int     predec,pstinc;
-	BP_int32	result;
+	int	result;
 
 	
 	as->cumulative_cycles += 2;    /* indexed is always 2+ base cycle count */
