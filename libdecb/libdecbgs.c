@@ -16,9 +16,10 @@ error_code _decb_gs_fd(decb_path_id path, decb_file_stat *stat)
 {
     error_code		ec = 0;
 	int				size;
-	decb_dir_entry  de;
+//	decb_dir_entry  de;
 
 
+#if 0
 	{
 		int mode = path->mode;
 		
@@ -28,9 +29,10 @@ error_code _decb_gs_fd(decb_path_id path, decb_file_stat *stat)
 		_decb_readdir(path, &de);
 		path->mode = mode;
 	}
+#endif
 	
-	stat->file_type = de.file_type;
-	stat->data_type = de.ascii_flag;
+	stat->file_type = path->dir_entry.file_type;
+	stat->data_type = path->dir_entry.ascii_flag;
 	
 	ec = _decb_gs_size(path, &size);
 	
@@ -86,19 +88,6 @@ error_code _decb_gs_size(decb_path_id path, int *size)
 
 	*size += 256 * ((path->FAT[curr_granule] & 0x3f) - 1)+ int2(path->dir_entry.last_sector_size);
 	
-#if 0
-	if (path->FAT[curr_granule] > 0xC0)
-	{
-		*size += 256 * ((path->FAT[curr_granule]) & 0x3F);
-
-		if (path->dir_entry.last_sector_size[1] != 0)
-		{
-			*size += path->dir_entry.last_sector_size[1];
-		
-			*size -= 256;
-		}
-	}
-#endif
 
     return(ec);
 }

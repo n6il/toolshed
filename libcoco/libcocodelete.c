@@ -20,7 +20,7 @@ error_code _coco_delete(char *pathlist)
 	
 	/* 1. Determine the path type. */
 	
-	_coco_gs_pathtype(pathlist, &disk_type);
+	_coco_identify_image(pathlist, &disk_type);
 	
 	
     /* 2. Call appropriate function. */

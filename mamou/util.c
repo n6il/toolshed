@@ -233,6 +233,12 @@ void decb_trailer_emit(assembler *as, BP_uint32 exec)
 		as->E_bytes[as->E_total++] = 0xFF;
 		
 		
+		/* SIZE (0) */
+		
+		as->E_bytes[as->E_total++] = 0;
+		as->E_bytes[as->E_total++] = 0;
+		
+	
 		/* EXEC address */
 		
 		as->E_bytes[as->E_total++] = (as->orgs[0].org & 0xFF00) >> 8;

@@ -20,7 +20,6 @@
 error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 {
     error_code	ec = 0;
-	_path_type type;
 
 
 	/* 1. Allocate memory for the path id. */
@@ -35,7 +34,7 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 	
     /* 2. Determine the pathlist type. */
 	
-    ec = _coco_gs_pathtype(pathlist, &type);
+    ec = _coco_identify_image(pathlist, &(*path)->type);
 		
     if (ec != 0)
     {
@@ -45,7 +44,7 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 
     /* 3. Call appropriate create function. */
 	
-	switch (type)
+	switch ((*path)->type)
 	{
 		case NATIVE:
 			ec = _native_create(&((*path)->path.native), pathlist, mode, perms);
@@ -63,8 +62,6 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 			}
 			break;
 	}
-
-	(*path)->type = type;
 
 	
 	return ec;
@@ -90,7 +87,6 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 error_code _coco_open(coco_path_id *path, char *pathlist, int mode)
 {
     error_code	ec = 0;
-	_path_type type;
 	
 
 	/* 1. Allocate memory for the path id. */
@@ -105,7 +101,7 @@ error_code _coco_open(coco_path_id *path, char *pathlist, int mode)
 	
     /* 2. Determine the pathlist type. */
 	
-    ec = _coco_gs_pathtype(pathlist, &type);
+    ec = _coco_identify_image(pathlist, &(*path)->type);
 		
     if (ec != 0)
     {
@@ -115,7 +111,7 @@ error_code _coco_open(coco_path_id *path, char *pathlist, int mode)
 
     /* 3. Call appropriate create function. */
 	
-	switch (type)
+	switch ((*path)->type)
 	{
 		case NATIVE:
 			ec = _native_open(&((*path)->path.native), pathlist, mode);
@@ -130,8 +126,6 @@ error_code _coco_open(coco_path_id *path, char *pathlist, int mode)
 			break;
 			
 	}
-
-	(*path)->type = type;
 	
 	
 	return ec;
@@ -172,5 +166,109 @@ error_code _coco_close(coco_path_id path)
 	
 	
 	return ec;
+}
+
+
+/*
+ * _get_pathtype()
+ *
+ * Determines if the passed <image,path> pathlist is native, OS-9 or Disk BASIC.
+ */
+error_code _coco_identify_image(char *pathlist, _path_type *type)
+{
+	error_code		ec = 0;
+    char *p;
+    char *tmppathlist;
+	FILE *fp;
+	
+	
+    if (strchr(pathlist, ',') == NULL)
+    {
+        /* 1. No native/coco delimiter in pathlist, it's native. */
+		
+		*type = NATIVE;
+		
+        return 0;
+    }
+	
+	
+    /* 2. Check validity of pathlist. */
+	
+    tmppathlist = strdup(pathlist);
+	
+    p = strtok(tmppathlist, ",");
+	
+    if (p == NULL)
+    {
+        free(tmppathlist);
+		
+        return EOS_BPNAM;
+    }
+	
+	
+    /* 3. Determine if this is an OS-9 or DECB image. */
+	
+	fp = fopen(tmppathlist, "r");
+	
+	if (fp != NULL)
+	{
+		u_char sector_buffer[256];
+		
+		
+		/* 1. Read sector 0. */
+		
+		if (fread(sector_buffer, 1, 256, fp) < 256)
+		{
+			ec = EOS_BPNAM;
+		}
+		else
+		{
+			Lsn0_sect   os9_sector = (Lsn0_sect)sector_buffer;
+			int dir_sector_offset;
+			int bps = 256;
+			
+			
+			/* 1. Look for markers that this is an OS-9 disk image. */
+			
+			/* First, check out the dir sector for .. and . entries. */
+			
+			dir_sector_offset = (int3(os9_sector->dd_dir) + 1) * bps;
+			
+			fseek(fp, dir_sector_offset, SEEK_SET);
+			
+			if (fread(sector_buffer, 1, 256, fp) < 256)
+			{
+				*type = DECB;
+			}
+			else
+			{
+				if (sector_buffer[0] == 0x2E && sector_buffer[1] == 0xAE &&
+					sector_buffer[32] == 0xAE)
+				{
+					/* 1. This is likely an OS-9 disk image. */
+					
+					*type = OS9;
+				}
+				else
+				{
+					/* 1. This is probably a DECB disk image. */
+					
+					*type = DECB;
+				}
+			}
+		}
+		
+		fclose(fp);
+	}
+	else
+	{
+		ec = EOS_BPNAM;
+	}
+	
+	
+    free(tmppathlist);
+	
+	
+    return 0;
 }
 

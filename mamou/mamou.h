@@ -309,7 +309,7 @@ typedef struct _assembler
 /* mamou.c */
 int main(int argc, char **argv);
 void mamou_pass(assembler *as);
-int mamou_parse_line(assembler *as, BP_char *input_line);
+void mamou_parse_line(assembler *as, BP_char *input_line);
 void process(assembler *as);
 void init_globals(assembler *as);
 

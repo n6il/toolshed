@@ -151,10 +151,10 @@ static int do_dir(char **argv, char *p)
 		switch(de.ascii_flag)
 		{
 			case 0x00:
-				asciiflag = 'A';
+				asciiflag = 'B';
 				break;
 			case 0xFF:
-				asciiflag = 'B';
+				asciiflag = 'A';
 				break;
 			default:
 				asciiflag = '?';

@@ -79,11 +79,11 @@ int decbcopy(int argc, char *argv[])
                         break;
 	
                     case 'a':
-						data_type = 0;
+						data_type = 255;
 						break;
 	
                     case 'b':
-						data_type = 255;
+						data_type = 0;
 						break;
 	
                     case 'l':
@@ -364,6 +364,28 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int r
 		_coco_gs_fd(path, &fd);
 
 		_coco_ss_fd(destpath, &fd);
+	}
+	
+	
+	/* Special -- if this is a DECB file we wrote to, set passed file type and data type. */
+	
+	{
+		_path_type t;
+		
+		_coco_gs_pathtype(destpath, &t);
+		
+		if (t == DECB)
+		{
+			decb_file_stat f;
+			
+			
+			_decb_gs_fd(destpath->path.decb, &f);
+			
+			f.file_type = file_type;
+			f.data_type = data_type;
+			
+			_decb_ss_fd(destpath->path.decb, &f);
+		}
 	}
 	
 	 

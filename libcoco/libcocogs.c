@@ -18,102 +18,14 @@
  *
  * Determines if the passed <image,path> pathlist is native, OS-9 or Disk BASIC.
 */
-error_code _coco_gs_pathtype(char *pathlist, _path_type *disk_type)
+error_code _coco_gs_pathtype(coco_path_id path, _path_type *disk_type)
 {
 	error_code		ec = 0;
-    char *p;
-    char *tmppathlist;
-	FILE *fp;
 
-
-    if (strchr(pathlist, ',') == NULL)
-    {
-        /* 1. No native/coco delimiter in pathlist, it's native. */
-
-		*disk_type = NATIVE;
-
-        return 0;
-    }
-
-
-    /* 2. Check validity of pathlist. */
-	
-    tmppathlist = strdup(pathlist);
-
-    p = strtok(tmppathlist, ",");
-
-    if (p == NULL)
-    {
-        free(tmppathlist);
-
-        return EOS_BPNAM;
-    }
-
-
-    /* 3. Determine if this is an OS-9 or DECB image. */
-	
-	fp = fopen(tmppathlist, "r");
-	
-	if (fp != NULL)
-	{
-		u_char sector_buffer[256];
-		
-		
-		/* 1. Read sector 0. */
-		
-		if (fread(sector_buffer, 1, 256, fp) < 256)
-		{
-			ec = EOS_BPNAM;
-		}
-		else
-		{
-			Lsn0_sect   os9_sector = (Lsn0_sect)sector_buffer;
-			int dir_sector_offset;
-			int bps = 256;
-			
-			
-			/* 1. Look for markers that this is an OS-9 disk image. */
-			
-			/* First, check out the dir sector for .. and . entries. */
-			
-			dir_sector_offset = (int3(os9_sector->dd_dir) + 1) * bps;
-			
-			fseek(fp, dir_sector_offset, SEEK_SET);
-			
-			if (fread(sector_buffer, 1, 256, fp) < 256)
-			{
-				*disk_type = DECB;
-			}
-			else
-			{
-				if (sector_buffer[0] == 0x2E && sector_buffer[1] == 0xAE &&
-					sector_buffer[32] == 0xAE)
-				{
-					/* 1. This is likely an OS-9 disk image. */
-					
-					*disk_type = OS9;
-				}
-				else
-				{
-					/* 1. This is probably a DECB disk image. */
-					
-					*disk_type = DECB;
-				}
-			}
-		}
-
-		fclose(fp);
-	}
-	else
-	{
-		ec = EOS_BPNAM;
-	}
+    *disk_type = path->type;
 	
 	
-    free(tmppathlist);
-
-	
-    return 0;
+	return ec;
 }
 
 

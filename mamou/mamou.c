@@ -617,7 +617,7 @@ void mamou_pass(assembler *as)
  * Returns: 0 if a blank line, 1 if a comment, 2 if an actual line
  */
  
-int mamou_parse_line(assembler *as, BP_char *input_line)
+void mamou_parse_line(assembler *as, BP_char *input_line)
 {
     register char *ptrfrm = input_line;
     char *ptrto = as->line->label;

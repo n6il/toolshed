@@ -15,7 +15,7 @@
 error_code _decb_ss_fd(decb_path_id path, decb_file_stat *stat)
 {
     error_code		ec = 0;
-	decb_dir_entry  de;
+//	decb_dir_entry  de;
 
 
 	{
@@ -24,14 +24,14 @@ error_code _decb_ss_fd(decb_path_id path, decb_file_stat *stat)
 		
 		path->mode |= FAM_DIR;
 
-		_decb_seekdir(path, path->this_directory_entry_index);
-		_decb_readdir(path, &de);
+//		_decb_seekdir(path, path->this_directory_entry_index);
+//		_decb_readdir(path, &de);
 
-		de.file_type = stat->file_type;
-		de.ascii_flag = stat->data_type;
+		path->dir_entry.file_type = stat->file_type;
+		path->dir_entry.ascii_flag = stat->data_type;
 		
 		_decb_seekdir(path, path->this_directory_entry_index);
-		_decb_writedir(path, &de);
+		_decb_writedir(path, &path->dir_entry);
 
 		path->mode = mode;
 	}
