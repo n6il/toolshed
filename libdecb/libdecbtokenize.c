@@ -13,6 +13,7 @@
 
 #include "decbpath.h"
 
+/* CoCo function tokens */
 const char* functions[128] = {"SGN", "INT", "ABS", "USR", "RND", "SIN", "PEEK",
 							"LEN", "STR$", "VAL", "ASC", "CHR$", "EOF", "JOYSTK",
 							"LEFT$", "RIGHT$", "MID$", "POINT", "INKEY$", "MEM",
@@ -30,6 +31,15 @@ const char* functions[128] = {"SGN", "INT", "ABS", "USR", "RND", "SIN", "PEEK",
 							NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 							NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
+/* Dragon Function tokens */
+const char* d_functions[128] = {"SGN", "INT", "ABS", "POS", "RND", "SQR", "LOG",
+							"EXP", "SIN", "COS", "TAN", "ATN", "PEEK", "LEN",
+							"STR$", "VAL", "ASC", "CHR$", "EOF", "JOYSTK",
+							"FIX", "HEX$", "LEFT$", "RIGHT$", "MID$", "POINT", "INKEY$", "MEM",
+							"VARPTR", "INSTR", "TIMER", "PPOINT", "STRING$", "USR", "LOF",
+							"FREE", "ERL", "ERR", "HIMEM", "LOC", "FRE$", NULL };
+
+/* CoCo command tokens */
 const char* commands[128] = {"FOR", "GO", "REM", "'", "ELSE", "IF",
 							"DATA", "PRINT", "ON", "INPUT", "END", "NEXT",
 							"DIM", "READ", "RUN", "RESTORE", "RETURN", "STOP",
@@ -52,13 +62,29 @@ const char* commands[128] = {"FOR", "GO", "REM", "'", "ELSE", "IF",
 							"HSET", "HRESET", "HDRAW", "CMP", "RGB", "ATTR",
 							NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
-size_t malloc_size(void *ptr);
-error_code buffer_sprintf(int *position, char **str, const char *format, ...);
+/* Dragon command tokens */
+const char* d_commands[128] = {"FOR", "GO", "REM", "'", "ELSE", "IF", "DATA", "PRINT",
+							  "ON", "INPUT", "END", "NEXT", "DIM", "READ", "LET", "RUN",
+							  "RESTORE", "RETURN", "STOP", "POKE", "CONT", "LIST", "CLEAR",
+							  "NEW", "DEF", "CLOAD", "CSAVE", "OPEN", "CLOSE", "LLIST",
+							  "SET", "RESET", "CLS", "MOTOR", "SOUND", "AUDIO", "EXEC",
+							  "SKIPF", "DEL", "EDIT", "TRON", "TROFF", "LINE", "PCLS", "PSET",
+							  "PRESET", "SCREEN", "PCLEAR", "COLOR", "CIRCLE", "PAINT",
+							  "GET", "PUT", "DRAW", "PCOPY", "PMODE", "PLAY", "DLOAD", "RENUM",
+							  "TAB(", "TO", "SUB", "FN", "THEN", "NOT", "STEP", "OFF", "+",
+							  "-", "*", "/", "^", "AND", "OR", ">", "=", "<", "USING", "AUTO",
+							  "BACKUP", "BEEP", "BOOT", "CHAIN", "COPY", "CREATE", "DIR",
+							  "DRIVE", "DSKINIT", "FREAD", "FWRITE", "ERROR", "KILL", "LOAD",
+							  "MERGE", "PROTECT", "WAIT", "RENAME", "SAVE", "SREAD", "SWRITE",
+							  "VERIFY", "FROM", "FLREAD", "SWAP",  NULL };
+
+//size_t malloc_size(void *ptr);
+error_code buffer_sprintf(int *position, char **str, size_t *buffersize, const char *format, ...);
 int tok_strcmp( const char *str1, char *str2 );
 
-/* _decb_entoken()
+/* _decb_detoken()
 
-   This subroutine will en-token a textual BASIC program in in_buffer of size in_size.
+   This subroutine will de-token a binary BASIC program in in_buffer of size in_size.
    The resulting textual data will be in out_buffer and have a size of out_size
    
    The caller is responsible for free()ing out_buffer
@@ -70,6 +96,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 	int file_size, value, line_number;
 	unsigned char character;
 	error_code ec;
+	size_t	buffer_size;
 	
 	*out_size = 0;
 
@@ -89,6 +116,8 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 	}
 	
 	*out_buffer = malloc( BLOCK_QUANTUM );
+	buffer_size = BLOCK_QUANTUM;
+	
 	if( *out_buffer == NULL )
 	{
 		/* Memory Error */
@@ -105,7 +134,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 		line_number = in_buffer[in_pos++] << 8;
 		line_number += in_buffer[in_pos++];
 		
-		if( ec = buffer_sprintf( &out_pos, out_buffer, "%d ", line_number ) )
+		if( ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%d ", line_number ) )
 			return ec;
 		
 		while( (character = in_buffer[in_pos++]) != 0 )
@@ -117,12 +146,12 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 				
 				if( functions[character - 0x80] != NULL )
 				{
-					if( ec = buffer_sprintf( &out_pos, out_buffer, "%s", functions[character - 0x80] ) )
+					if( ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%s", functions[character - 0x80] ) )
 						return ec;
 				}
 				else
 				{
-					if( ec = buffer_sprintf( &out_pos, out_buffer, "!" ) )
+					if( ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "!" ) )
 						return ec;
 				}
 			}
@@ -131,12 +160,12 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 				/* A Command call */
 				if( commands[character - 0x80] != NULL )
 				{
-					if( ec = buffer_sprintf( &out_pos, out_buffer, "%s", commands[character - 0x80] ) )
+					if( ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%s", commands[character - 0x80] ) )
 						return ec;
 				}
 				else
 				{
-					if( ec = buffer_sprintf( &out_pos, out_buffer, "!" ) )
+					if( ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "!" ) )
 						return ec;
 				}
 			}
@@ -147,7 +176,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 			}
 			else
 			{
-				if( ec = buffer_sprintf( &out_pos, out_buffer, "%c", character ) )
+				if( ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%c", character ) )
 					return ec;
 			}
 		}
@@ -155,7 +184,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 		value = in_buffer[in_pos++] << 8;
 		value += in_buffer[in_pos++];
 
-		if( ec = buffer_sprintf( &out_pos, out_buffer, "\n" ) )
+		if( ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "\n" ) )
 			return ec;
 	}
 
@@ -368,17 +397,15 @@ error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size )
 }
 
 /* This sprintf will use realloc to make the buffer larger if needed */
-error_code buffer_sprintf(int *position, char **str, const char *format, ...)
+error_code buffer_sprintf(int *position, char **str, size_t *buffer_size, const char *format, ...)
 {
 	va_list	ap;
 	
-	size_t buffer_size =  malloc_size( *str );
-	
-	if( *position > (buffer_size - 20) )
+	if( *position > ((*buffer_size) - 20) )
 	{
 		char *buffer;
 		
-		buffer = realloc( *str, buffer_size + BLOCK_QUANTUM );
+		buffer = realloc( *str, (*buffer_size) + BLOCK_QUANTUM );
 		
 		if( buffer == NULL )
 		{
@@ -386,6 +413,7 @@ error_code buffer_sprintf(int *position, char **str, const char *format, ...)
 			return EOS_OM;
 		}
 		
+		*buffer_size = *buffer_size + BLOCK_QUANTUM;
 		*str = buffer;
 	}
 
