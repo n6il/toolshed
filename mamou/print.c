@@ -34,7 +34,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	
 	if (override == 0 && (as->o_show_listing == BP_FALSE || as->f_new_page == BP_TRUE))
 	{
-		if (as->line->has_warning)
+		if (as->line.has_warning)
 		{
 			as->num_warnings++;
 		}
@@ -60,7 +60,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	
 		/* TODO! warnings, errors will go here later */
 
-		if (as->line->has_warning)
+		if (as->line.has_warning)
 		{
 			as->num_warnings++;
 			
@@ -114,27 +114,27 @@ void print_line(assembler *as, int override, char infochar, int counter)
 
 	as->current_line++;
 	
-	if (as->line->type == LINETYPE_COMMENT)
-//	if (*as->line->label == EOS && *as->line->Op == EOS && *as->line->operand == EOS)
+	if (as->line.type == LINETYPE_COMMENT)
+//	if (*as->line.label == EOS && *as->line.Op == EOS && *as->line.operand == EOS)
 	{
 		/* possibly a comment? */
-		if (*as->line->comment != EOS)
+		if (*as->line.comment != EOS)
 		{
-			sprintf(Tmp_buff, "%s", as->line->comment);
+			sprintf(Tmp_buff, "%s", as->line.comment);
 			strcat(Line_buff, Tmp_buff);
 		}
 	}
 	else
 	{
-		if (*as->line->comment == EOS)
+		if (*as->line.comment == EOS)
 		{
 			if (as->tabbed)
 			{
-				sprintf(Tmp_buff, "%s\t%s\t%s", as->line->label, as->line->Op, as->line->operand);
+				sprintf(Tmp_buff, "%s\t%s\t%s", as->line.label, as->line.Op, as->line.operand);
 			}
 			else
 			{
-				sprintf(Tmp_buff, "%-8s %-4s  %-10s", as->line->label, as->line->Op, as->line->operand);
+				sprintf(Tmp_buff, "%-8s %-4s  %-10s", as->line.label, as->line.Op, as->line.operand);
 			}
 			strcat(Line_buff, Tmp_buff);
 		}
@@ -142,11 +142,11 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		{
 			if (as->tabbed)
 			{
-				sprintf(Tmp_buff, "%s\t%s\t%s\t%s", as->line->label, as->line->Op, as->line->operand, as->line->comment);
+				sprintf(Tmp_buff, "%s\t%s\t%s\t%s", as->line.label, as->line.Op, as->line.operand, as->line.comment);
 			}
 			else
 			{
-				sprintf(Tmp_buff, "%-8s %-4s  %-10s %s", as->line->label, as->line->Op, as->line->operand, as->line->comment);
+				sprintf(Tmp_buff, "%-8s %-4s  %-10s %s", as->line.label, as->line.Op, as->line.operand, as->line.comment);
 			}
 			strcat(Line_buff, Tmp_buff);
 		}
