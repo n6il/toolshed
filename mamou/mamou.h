@@ -163,86 +163,86 @@ struct oper
 /* Assembler state */
 typedef struct _assembler
 {
-	int					num_errors;					/* total number of errors */
-	int					num_warnings;				/* assembler warnings */
-	int					cumulative_blank_lines;		/* blank line count across all files */
-	int					cumulative_comment_lines;   /* comment line count across all files */
-	int					cumulative_total_lines;		/* total line count across all files */
-	char				input_line[MAXBUF];			/* input line buffer */
-	char				label[MAXLAB];				/* label on current line */
-	char				Op[MAXOP];					/* opcode mnemonic on current line */
-	char				operand[MAXBUF];			/* remainder of line after op */
-	char				comment[MAXBUF];			/* comment after operand, or entire line */
-	char				*optr;						/* pointer into current operand field */
-	int					force_word;					/* Result should be a word when set */
-	int					force_byte;					/* result should be a byte when set */
-	int					program_counter;			/* Program Counter */
-	int					data_counter;				/* data counter */
-	int					old_program_counter;		/* Program Counter at beginning */
-	int					DP;							/* Direct Page pointer */
-	int					allow_warnings;				/* allow assembler warnings */
-	int					last_symbol;				/* result of last symbol_find */
-	int					pass;						/* current pass */
+	BP_uint32			num_errors;					/* total number of errors */
+	BP_uint32			num_warnings;				/* assembler warnings */
+	BP_uint32			cumulative_blank_lines;		/* blank line count across all files */
+	BP_uint32			cumulative_comment_lines;   /* comment line count across all files */
+	BP_uint32			cumulative_total_lines;		/* total line count across all files */
+	BP_char				input_line[MAXBUF];			/* input line buffer */
+	BP_char				label[MAXLAB];				/* label on current line */
+	BP_char				Op[MAXOP];					/* opcode mnemonic on current line */
+	BP_char				operand[MAXBUF];			/* remainder of line after op */
+	BP_char				comment[MAXBUF];			/* comment after operand, or entire line */
+	BP_char				*optr;						/* pointer into current operand field */
+	BP_Bool				force_word;					/* Result should be a word when set */
+	BP_Bool				force_byte;					/* result should be a byte when set */
+	BP_uint32			program_counter;			/* Program Counter */
+	BP_uint32			data_counter;				/* data counter */
+	BP_uint32			old_program_counter;		/* Program Counter at beginning */
+	BP_uint32			DP;							/* Direct Page pointer */
+	BP_Bool				allow_warnings;				/* allow assembler warnings */
+	BP_uint32			last_symbol;				/* result of last symbol_find */
+	BP_uint32			pass;						/* current pass */
 	struct filestack	*current_file;
-	BP_int32			use_depth;					/* depth of includes/uses */
+	BP_Bool				use_depth;					/* depth of includes/uses */
 #define MAXAFILE	16
-	int					file_index;
-	char				*file_name[MAXAFILE];		/* assembly file name on cmd line */
-	int					current_filename_index;		/* file number count            */
+	BP_int32			file_index;
+	BP_char				*file_name[MAXAFILE];		/* assembly file name on cmd line */
+	BP_uint32			current_filename_index;		/* file number count            */
 #define INCSIZE 16
-	int					include_index;
-	char				*includes[INCSIZE];	
+	BP_uint32			include_index;
+	BP_char				*includes[INCSIZE];	
 	int					Ffn;						/* forward ref file #           */
-	int					F_ref;						/* next line with forward ref   */
-	char				**arguments;				/* pointer to file names        */
-	int					E_total;					/* total # bytes for one line   */
+	BP_uint32			F_ref;						/* next line with forward ref   */
+	BP_char				**arguments;				/* pointer to file names        */
+	BP_uint32			E_total;					/* total # bytes for one line   */
 	BP_char				E_bytes[E_LIMIT + MAXBUF];  /* Emitted held bytes           */
-	int					E_pc;						/* Pc at beginning of collection*/
-	int					P_force;					/* force listing line to include Old_pc */
-	int					P_total;					/* current number of bytes collected    */
+	BP_uint32			E_pc;						/* Pc at beginning of collection*/
+	BP_uint32			P_force;					/* force listing line to include Old_pc */
+	BP_uint32			P_total;					/* current number of bytes collected    */
 	BP_char				P_bytes[P_LIMIT + 60];		/* Bytes collected for listing  */
-	int					cumulative_cycles;			/* # of cycles per instruction  */
-	long				Ctotal;						/* # of cycles seen so far */
-	int					N_page;						/* new page flag */
-	int					page_number;				/* page number */
-	int					o_show_cross_reference;					/* cross reference table flag */
-	int					Cflag;						/* cycle count flag */
-	int					Opt_C;						/* */
+	BP_uint32			cumulative_cycles;			/* # of cycles per instruction  */
+	BP_uint32			Ctotal;						/* # of cycles seen so far */
+	BP_uint32			N_page;						/* new page flag */
+	BP_uint32			page_number;				/* page number */
+	BP_Bool				o_show_cross_reference;		/* cross reference table flag */
+	BP_Bool				Cflag;						/* cycle count flag */
+	BP_uint32			Opt_C;						/* */
 	BP_int32			o_page_depth;				/* page depth */
 	BP_Bool				o_show_error;				/* show error */
-	int					Opt_F;						/* */
-	int					Opt_G;						/* */
+	BP_uint32			Opt_F;						/* */
+	BP_uint32			Opt_G;						/* */
 	BP_Bool				o_show_listing;				/* listing flag 0=nolist, 1=list*/
 	BP_Bool				o_decb;						/* */
-	int					Opt_N;						/* */
+	BP_uint32			Opt_N;						/* */
 	BP_Bool				o_quiet_mode;				/* quiet mode */
-	int					o_show_symbol_table;		/* symbol table flag, 0=no symbol */
-	int					o_pagewidth;						/* */
-	int					current_line;				/* line counter for printing */
-	int					current_page;				/* page counter for printing */
-	int					header_depth;				/* page header number of lines */
-	int					footer_depth;				/* page footer of lines */
-	int					o_format_only;              /* format only flag, 0=no symbol */
-	int					o_debug;					/* debug flag */
-	int					o_binaryfile;						/* binary image file output flag */
-	int					Hexfil;						/* Intel Hex file output flag */
-	unsigned char		Memmap[65536];				/* Memory image of output data */
+	BP_Bool				o_show_symbol_table;		/* symbol table flag, 0=no symbol */
+	BP_uint32			o_pagewidth;						/* */
+	BP_uint32			current_line;				/* line counter for printing */
+	BP_uint32			current_page;				/* page counter for printing */
+	BP_uint32			header_depth;				/* page header number of lines */
+	BP_uint32			footer_depth;				/* page footer of lines */
+	BP_Bool				o_format_only;              /* format only flag, 0=no symbol */
+	BP_Bool				o_debug;					/* debug flag */
+	BP_Bool				o_binaryfile;						/* binary image file output flag */
+	BP_Bool				Hexfil;						/* Intel Hex file output flag */
+	BP_uchar			Memmap[65536];				/* Memory image of output data */
 	FILE				*fd_object;					/* object file's file descriptor*/
-	char				object_name[FNAMESIZE];
-	u_int				accum;
-	char				_crc[3];
-	int					do_module_crc;
-	int					SuppressFlag;
-	int					tabbed;
+	BP_char				object_name[FNAMESIZE];
+	BP_uint32			accum;
+	BP_char				_crc[3];
+	BP_uint32			do_module_crc;
+	BP_Bool				SuppressFlag;
+	BP_Bool				tabbed;
 #define	CONDSTACKLEN	256
-	int					conditional_stack_index;
+	BP_uint32			conditional_stack_index;
 	char				conditional_stack[CONDSTACKLEN];
-	int					Preprocess;
+	BP_Bool				Preprocess;
 	BP_Bool				o_h6309;
 #define NAMLEN 64
 #define TTLLEN NAMLEN
-	char				Nam[NAMLEN];
-	char				Ttl[TTLLEN];
+	BP_char				Nam[NAMLEN];
+	BP_char				Ttl[TTLLEN];
 	struct nlist		*bucket;            /* root node of the tree */
 	struct orglist		orgs[256];
 	BP_uint32			current_org;

@@ -59,7 +59,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		{
 			if (as->cumulative_cycles)
 			{
-				sprintf(Tmp_buff, "[%2d] ", as->cumulative_cycles);
+				sprintf(Tmp_buff, "[%2u] ", (unsigned int)as->cumulative_cycles);
 				strcat(Line_buff, Tmp_buff);
 			}
 			else
@@ -167,18 +167,18 @@ void report_summary(assembler *as)
 {
 	printf("\n");
 	printf("Assembler Summary:\n");
-	printf(" - %d errors, %d warnings\n", as->num_errors, as->num_warnings);
-	printf(" - %d lines (%d code, %d blank, %d comment)\n",
-		(int)as->cumulative_total_lines,
-		(int)(as->cumulative_total_lines - (as->cumulative_blank_lines + as->cumulative_comment_lines)),
-		(int)as->cumulative_blank_lines,
-		(int)as->cumulative_comment_lines
+	printf(" - %u errors, %u warnings\n", (unsigned int)as->num_errors, (unsigned int)as->num_warnings);
+	printf(" - %u lines (%u code, %u blank, %u comment)\n",
+		(unsigned int)as->cumulative_total_lines,
+		(unsigned int)(as->cumulative_total_lines - (as->cumulative_blank_lines + as->cumulative_comment_lines)),
+		(unsigned int)as->cumulative_blank_lines,
+		(unsigned int)as->cumulative_comment_lines
 	);
-	printf(" - $%04X (%d) program bytes, $%04X (%d) data bytes\n",
-		as->program_counter,
-		as->program_counter,
-		as->data_counter,
-		as->data_counter
+	printf(" - $%04X (%u) program bytes, $%04X (%u) data bytes\n",
+		(unsigned int)as->program_counter,
+		(unsigned int)as->program_counter,
+		(unsigned int)as->data_counter,
+		(unsigned int)as->data_counter
 	);
 
 	if (as->object_name[0] == '\0')
@@ -203,10 +203,10 @@ void print_header(assembler *as)
 	now = time(NULL);
 	tm = localtime(&now);
 
-	printf("The Mamou Assembler Version 01.00.00    %02d/%02d/%02d %02d:%02d:%02d      Page %03d\n",
+	printf("The Mamou Assembler Version 01.00.00    %02d/%02d/%02d %02d:%02d:%02d      Page %03u\n",
 	       tm->tm_mon + 1, tm->tm_mday, tm->tm_year + 1900,
 	       tm->tm_hour, tm->tm_min, tm->tm_sec,
-	       as->current_page);
+	       (unsigned int)as->current_page);
 	printf("%s - %s\n", as->Nam, as->Ttl);
 	printf("\n");
 	as->current_line += as->header_depth;

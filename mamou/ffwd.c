@@ -65,7 +65,7 @@ void fwd_reinit(assembler *as)
 
 	if (as->o_debug)
 	{
-		printf("First fwd ref: %d,%d\n", as->Ffn, as->F_ref);
+		printf("First fwd ref: %d,%u\n", as->Ffn, (unsigned int)as->F_ref);
 	}
 
 
@@ -127,7 +127,7 @@ void fwd_next(assembler *as)
 
 	if (as->o_debug)
 	{
-		printf("Next Fwd ref: %d,%d\n", as->Ffn, as->F_ref);
+		printf("Next Fwd ref: %d,%u\n", as->Ffn, (unsigned int)as->F_ref);
 	}
 
 

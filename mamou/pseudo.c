@@ -670,7 +670,7 @@ int _page(assembler *as)
 			}
 			printf("%-10s", extractfilename(as->file_name[as->file_index -1]));
 			printf("                                   ");
-			printf("page %3d\n", as->page_number++);
+			printf("page %3u\n", (unsigned int)as->page_number++);
 		}
 	}
 	print_line(as, 0, ' ', 0);

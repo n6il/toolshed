@@ -152,7 +152,7 @@ void emit(assembler *as, int byte)
 	
 	if (as->o_debug)
 	{
-		printf("Emit       %04x[%02x]\n", as->program_counter, byte);
+		printf("Emit       %04X[%02X]\n", (unsigned int)as->program_counter, byte);
 	}	
 
 

@@ -423,7 +423,7 @@ static void mamou_initialize(assembler *as)
 {
     if (as->o_debug)
     {
-        printf("Initializing for pass %d\n", as->pass);
+        printf("Initializing for pass %u\n", (unsigned int)as->pass);
     }
 
 	if (as->pass == 1)
@@ -523,7 +523,7 @@ void mamou_pass(assembler *as)
     if (as->o_debug)
     {
         printf("\n------");
-        printf("\nPass %d", as->pass);
+        printf("\nPass %u", (unsigned int)as->pass);
         printf("\n------\n");
     }
 
