@@ -174,12 +174,24 @@ void report_summary(assembler *as)
 		(unsigned int)as->cumulative_blank_lines,
 		(unsigned int)as->cumulative_comment_lines
 	);
-	printf(" - $%04X (%u) program bytes, $%04X (%u) data bytes\n",
-		(unsigned int)as->program_counter,
-		(unsigned int)as->program_counter,
-		(unsigned int)as->data_counter,
-		(unsigned int)as->data_counter
-	);
+
+	if (as->o_decb == BP_TRUE)
+	{
+		printf(" - $%04X (%u) bytes generated\n",
+			   (unsigned int)as->code_bytes,
+			   (unsigned int)as->code_bytes
+			);
+	}
+	else
+	{
+		printf(" - $%04X (%u) program bytes, $%04X (%u) data bytes\n",
+			   (unsigned int)as->code_bytes,
+			   (unsigned int)as->code_bytes,
+			   (unsigned int)as->data_counter,
+			   (unsigned int)as->data_counter
+			   );
+	}
+	
 
 	if (as->object_name[0] == '\0')
 	{

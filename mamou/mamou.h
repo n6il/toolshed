@@ -244,6 +244,7 @@ typedef struct _assembler
 	char				conditional_stack[CONDSTACKLEN];
 	BP_Bool				Preprocess;
 	BP_Bool				o_h6309;
+	BP_uint32			code_bytes;					/* number of emitted code bytes */
 #define NAMLEN 64
 #define TTLLEN NAMLEN
 	BP_char				Nam[NAMLEN];
@@ -353,14 +354,12 @@ int	_else(assembler *as),
 /* do9.c */
 int	_gen(assembler *as, int opcode),
 	_grp2(assembler *as, int opcode),
-	_grp2_16(assembler *as, int opcode),
 	_indexed(assembler *as, int opcode),
 	_inh(assembler *as, int opcode),
 	_imm(assembler *as, int opcode),
 	_imgen(assembler *as, int opcode),
 	_longimm(assembler *as, int opcode),
 	_noimm(assembler *as, int opcode),
-	_noimm_16(assembler *as, int opcode),
 	_p1rel(assembler *as, int opcode),
 	_p2gen(assembler *as, int opcode),
 	_ldqgen(assembler *as, int opcode),

@@ -932,6 +932,7 @@ void init_globals(assembler *as)
     as->SuppressFlag = 0;	/* suppress errors and warnings */
     as->tabbed = 0;
     as->o_h6309 = BP_FALSE;		/* assume 6809 mode only */
+	as->code_bytes = 0;
 
     return;
 }

@@ -169,8 +169,8 @@ void emit(assembler *as, int byte)
 			printf("Overflow in E_bytes array\n");
 		}
 	}
+
 	
-		
 	return;
 }
 
@@ -267,6 +267,8 @@ void f_record(assembler *as)
 	
 	if (as->pass == 2)
 	{
+		as->code_bytes += as->E_total;
+		
 		if (as->E_total == 0)
 		{
 			as->E_pc = as->program_counter;

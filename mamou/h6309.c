@@ -272,12 +272,15 @@ int _imm(assembler *as, int opcode)
 
 	amode = set_mode(as);     /* pickup indicated addressing mode */
 
-	/* immediate addressing */
+	/* Immediate addressing ONLY. */
+
 	if (amode != IMMED)
 	{
 		error(as, "Immediate Operand Required");
+
 		return 0;
 	}
+
 	as->line->optr++;
 	evaluate(as, &result, &as->line->optr, 0);
 	emit(as, opcode);
@@ -384,25 +387,6 @@ int _noimm(assembler *as, int opcode)
 
 
 
-int _noimm_16(assembler *as, int opcode)
-{
-	int amode;
-
-	amode = set_mode(as);     /* pickup indicated addressing mode */
-
-	if (amode == IMMED)
-	{
-		error(as, "Immediate Addressing Illegal");
-		return 0;
-	}
-	
-	do_gen(as, opcode, amode, BP_TRUE);
-	print_line(as, 0, ' ', as->old_program_counter);
-	return 0;
-}
-
-
-
 int _p2noimm(assembler *as, int opcode)
 {
 	emit(as, PAGE2);
@@ -439,8 +423,11 @@ static int _pxgen(assembler *as, int opcode, int amode)
 		print_line(as, 0, ' ', as->old_program_counter);
 		return 0;
 	}
+
 	do_gen(as, opcode, amode, BP_FALSE);
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
 	return 0;
 }
 
@@ -813,12 +800,16 @@ int _grp2(assembler *as, int opcode)
 
 	if (amode == IND)
 	{
+		/* Indexed mode (i.e. $5,y) */
+		
 		do_indexed(as, opcode + 0x60);
 		print_line(as, 0, ' ', as->old_program_counter);
 		return 0;
 	}
 	else if (amode == INDIR)
 	{
+		/* Indrect mode (i.e. [$FFFE]) */
+		
 		as->line->optr++;
 		emit(as, opcode + 0x60);
 		emit(as, IPBYTE);
@@ -834,7 +825,36 @@ int _grp2(assembler *as, int opcode)
 		error(as, "Missing ']'");
 		return 0;
 	}
+
 	evaluate(as, &result, &as->line->optr, 0);
+
+#if 1
+	if (as->line->force_byte)
+	{
+		if (hibyte(result) != as->DP)
+		{
+			error(as, "as->DP out of range");
+			return 0;
+		}
+		emit(as, opcode);
+		emit(as, lobyte(result));
+		as->cumulative_cycles += 2;
+	}
+#if 0
+	else if (hibyte(result) == as->DP)
+	{
+		emit(as, opcode);
+		emit(as, lobyte(result));
+		as->cumulative_cycles += 2;
+	}
+#endif
+	else
+	{
+		emit(as, opcode + 0x70);
+		eword(as, result);
+		as->cumulative_cycles += 3;
+	}
+#else
 	if (as->line->force_word)
 	{
 		emit(as, opcode + 0x70);
@@ -864,50 +884,11 @@ int _grp2(assembler *as, int opcode)
 		eword(as, result);
 		as->cumulative_cycles += 3;
 	}
+#endif
+	
 	print_line(as, 0, ' ', as->old_program_counter);
-	return 0;
-}
 
-
-
-int _grp2_16(assembler *as, int opcode)
-{
-	BP_int32 result;
-	int amode;
-
-	amode = set_mode(as);     /* pickup indicated addressing mode */
-
-	if (amode == IND)
-	{
-		do_indexed(as, opcode + 0x60);
-		print_line(as, 0, ' ', as->old_program_counter);
-		return 0;
-	}
-	else if (amode == INDIR)
-	{
-		as->line->optr++;
-		emit(as, opcode + 0x60);
-		emit(as, IPBYTE);
-		evaluate(as, &result, &as->line->optr, 0);
-		eword(as, result);
-		as->cumulative_cycles += 7;
-		if (*as->line->optr == ']')
-		{
-			as->line->optr++;
-			print_line(as, 0, ' ', as->old_program_counter);
-			return 0;
-		}
-		error(as, "Missing ']'");
-		return 0;
-	}
-	evaluate(as, &result, &as->line->optr, 0);
-
-	{
-		emit(as, opcode + 0x70);
-		eword(as, result);
-		as->cumulative_cycles += 3;
-	}
-	print_line(as, 0, ' ', as->old_program_counter);
+	
 	return 0;
 }
 
@@ -935,46 +916,107 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 {
 	BP_int32	result;
 
+	
 	if (mode == IMMED)
 	{
+		/* Immediate addressing mode (i.e. #$123) */
+		
 		as->line->optr++;
 		emit(as, op);
+
+		
+		/* Evaluate the result. */
+		
 		evaluate(as, &result, &as->line->optr, 0);
+
+		
+		/* If the result is > 255, return error. */
+		
 		if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 		{
 			error(as, "Result >255");
 
 			return 0;
 		}
+		
+		
+		/* Emit the low byte result. */
+		
 		emit(as, lobyte(result));
 
 		return 0;
 	}
 	else if (mode == IND)
 	{
+		/* Indexed mode (i.e. $5,y) */
+		
 		do_indexed(as, op + 0x20);
 
 		return 0;
 	}
 	else if (mode == INDIR)
 	{
+		/* Indirect mode (i.e. [$FFFE] */
+		
 		as->line->optr++;
+
 		emit(as, op + 0x20);
 		emit(as, IPBYTE);
+
+		
+		/* Evaluate. */
+		
 		evaluate(as, &result, &as->line->optr, 0);
+
+
+		/* Emit word. */
 		eword(as, result);
+
 		as->cumulative_cycles += 7;
+
 		if (*as->line->optr == ']')
 		{
 			as->line->optr++;
+
 			return 0;
 		}
+
 		error(as, "Missing ']'");
+
 		return 0;
 	}
 	else if (mode == OTHER)
 	{
 		evaluate(as, &result, &as->line->optr, 0);
+#if 1
+		if (as->line->force_byte == BP_TRUE)
+		{
+			emit(as, op + 0x10);
+#if 0			
+			if (hibyte(result) != as->DP)
+			{
+				error(as, "as->DP out of range");
+				return 0;
+			}
+#endif
+			emit(as, lobyte(result));
+			as->cumulative_cycles += 2;
+			return 0;
+		}
+		else
+		{
+			if ((hibyte(result) == as->DP))
+			{
+				as->line->has_warning = BP_TRUE;
+			}
+			
+			emit(as, op + 0x30);
+			eword(as, result);
+			as->cumulative_cycles += 3;
+
+			return 0;
+		}
+#else
 		if (as->line->force_word || always_word == BP_TRUE)
 		{
 			if ((hibyte(result) == as->DP)) as->line->has_warning = BP_TRUE;
@@ -1010,6 +1052,7 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 			as->cumulative_cycles += 3;
 			return 0;
 		}
+#endif
 	}
 	else
 	{
