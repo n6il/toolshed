@@ -33,7 +33,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 	 
 	if (name[strlen(name) - 1] == '@')
 	{
-		sprintf(tmp_label, "%s%03d%05d", name, (int)as->file_stack_index, (int)as->file_stack[as->file_stack_index].num_blank_lines);
+		sprintf(tmp_label, "%s%03d%05d", name, (int)as->use_depth, (int)as->current_file->num_blank_lines);
 		
 		name = tmp_label;
 	}
@@ -141,7 +141,18 @@ int symbol_add(assembler *as, char *name, int val, int override)
 	}
 	
 	np->L_list = lp;
-	lp->L_num = as->file_stack[as->file_stack_index].current_line;
+
+	if (as->current_file != NULL)
+	{
+		lp->L_num = as->current_file->current_line;
+	}
+	else
+	{
+		/* 1. Symbol was defined on the command line. */
+		
+		lp->L_num = 0;
+	}
+	
 	lp->next = NULL;
 	p = as->bucket;
 
@@ -200,7 +211,7 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 	 
 	if (name[strlen(name) - 1] == '@')
 	{
-		sprintf(tmp_label, "%s%03d%05d", name, (int)as->file_stack_index, (int)as->file_stack[as->file_stack_index].num_blank_lines);
+		sprintf(tmp_label, "%s%03d%05d", name, (int)as->use_depth, (int)as->current_file->num_blank_lines);
 		
 		name = tmp_label;
 	}
@@ -264,7 +275,7 @@ struct oper *mne_look(assembler *as, char *str)
 		}
 		else
 		{
-			if (as->h6309 == 0 && mid->h6309 == 1)
+			if (as->o_h6309 == BP_FALSE && mid->h6309 == BP_TRUE)
 			{
 				return(NULL);
 			}
@@ -295,3 +306,118 @@ struct oper *mne_look(assembler *as, char *str)
 
 	return(NULL);
 }
+
+
+
+/*
+ *  symbol_dump_bucket: prints the symbol table in alphabetical order
+ */
+
+static void symbol_dump_bucket_r(struct nlist *ptr);
+static BP_uint32	counter;
+
+void symbol_dump_bucket(struct nlist *ptr)
+{
+	/* 1. Reset the counter. */
+	
+	counter = 0;
+	
+
+	/* 2. Print the symbol table heading. */
+	
+	printf("Symbol table:\n");
+
+	
+	/* 3. Do the dump. */
+	
+	symbol_dump_bucket_r(ptr);
+}
+
+
+static void symbol_dump_bucket_r(struct nlist *ptr)
+{
+	if (ptr != NULL)
+	{
+		symbol_dump_bucket_r(ptr->Lnext);
+		
+		printf("%-10s $%04X", ptr->name, (int)ptr->def);
+		
+		counter++;
+		
+		if (counter >= 4)
+		{
+			printf("\n");
+			
+			counter = 0;
+		}
+		else
+		{
+			printf("     ");
+		}
+		
+		symbol_dump_bucket_r(ptr->Rnext);
+	}
+	
+	
+	return;
+}
+
+
+
+/*
+ *  cross: prints the cross reference table
+ */
+
+static void symbol_cross_reference_r(struct nlist *ptr);
+
+void symbol_cross_reference(struct nlist *ptr)
+{
+	/* 1. Print the heading. */
+	
+	printf("Cross-Reference table:\n");
+	
+	
+	/* 2. Do the cross reference. */
+	
+	symbol_cross_reference_r(ptr);
+}
+
+
+static void symbol_cross_reference_r(struct nlist *ptr)
+{
+	struct link *tp;
+	int i = 1;
+	
+	
+	if (ptr != NULL)
+	{
+		symbol_cross_reference_r(ptr->Lnext);
+		
+		printf("%-10s ($%04X) referenced from lines ", ptr->name, (int)ptr->def);
+		
+		tp = ptr->L_list;
+		
+		while (tp != NULL)
+		{
+			if (i++ > 10)
+			{
+				i = 1;
+				
+				printf("\n                      ");
+			}
+			
+			printf("%05d ", (int)tp->L_num);
+			
+			tp = tp->next;
+		}
+		
+		printf("\n");
+		
+		symbol_cross_reference_r(ptr->Rnext);
+	}
+	
+	
+	return;
+}
+
+
