@@ -214,9 +214,10 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 			return ec;
 		}
 		
-		(*path)->FAT[new_granule] = 0xC0;
+		(*path)->FAT[new_granule] = 0xC1;
+		(*path)->dir_entry.first_granule = new_granule;
 		
-		(*path)->dir_entry.last_sector_size[1] = 0;
+		_int2(0, (*path)->dir_entry.last_sector_size);
 	}
 	
 
@@ -490,7 +491,7 @@ static int validate_pathlist(decb_path_id *path, char *pathlist)
 	
 		if (count < 3)
 		{
-			count = sscanf(pathlist, "%512[^,]%*c%*c%d", (*path)->imgfile, &((*path)->drive));
+//			count = sscanf(pathlist, "%512[^,]%*c%*c%d", (*path)->imgfile, &((*path)->drive));
 		}
 	}
 
@@ -517,7 +518,7 @@ static int init_pd(decb_path_id *path, int mode)
 	/* 2. Clear out newly allocated path structure. */
 
 	memset(*path, 0, sizeof(**path));
-
+	
 	(*path)->mode = mode;
 
 

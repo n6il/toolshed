@@ -84,6 +84,9 @@ error_code _decb_gs_size(decb_path_id path, int *size)
 		*size += 2304;
 	}
 
+	*size += 256 * ((path->FAT[curr_granule] & 0x3f) - 1)+ int2(path->dir_entry.last_sector_size);
+	
+#if 0
 	if (path->FAT[curr_granule] > 0xC0)
 	{
 		*size += 256 * ((path->FAT[curr_granule]) & 0x3F);
@@ -95,7 +98,7 @@ error_code _decb_gs_size(decb_path_id path, int *size)
 			*size -= 256;
 		}
 	}
-
+#endif
 
     return(ec);
 }

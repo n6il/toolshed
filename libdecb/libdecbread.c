@@ -126,9 +126,9 @@ error_code _decb_read(decb_path_id path, void *buffer, int *size)
 		
 		_decb_gs_granule(path, curr_granule, granule_buffer);
 		
-		if (path->FAT[curr_granule] > 0xC0)
+		if (path->FAT[curr_granule] >= 0xC0)
 		{
-			bytes_in_last_granule = ((path->FAT[curr_granule] & 0x3F) * 256) + path->dir_entry.last_sector_size[1];
+			bytes_in_last_granule = (((path->FAT[curr_granule] & 0x3F) - 1) * 256) + int2(path->dir_entry.last_sector_size);
 		}
 		else
 		{
@@ -138,6 +138,7 @@ error_code _decb_read(decb_path_id path, void *buffer, int *size)
 
 		offset_in_granule = path->filepos % 2304;
 
+		
 		read_size = bytes_in_last_granule - offset_in_granule;
 
 		if (read_size > bytes_left)
@@ -275,9 +276,9 @@ error_code _decb_readln(decb_path_id path, void *buffer, int *size)
 		
 		_decb_gs_granule(path, curr_granule, granule_buffer);
 		
-		if (path->FAT[curr_granule] > 0xC0)
+		if (path->FAT[curr_granule] >= 0xC0)
 		{
-			bytes_in_last_granule = ((path->FAT[curr_granule] & 0x3F) * 256) - 256 + path->dir_entry.last_sector_size[1];
+			bytes_in_last_granule = ((path->FAT[curr_granule] & 0x3F) * 256) + int2(path->dir_entry.last_sector_size);
 		}
 		else
 		{
