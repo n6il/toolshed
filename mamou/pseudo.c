@@ -100,6 +100,9 @@ int _rmb(assembler *as)
 
 	
 	as->P_force = 1;
+	
+	as->rm_encountered = BP_TRUE;
+
 
 	/* 1. If we are currently in a FALSE conditional, just return. */
 	
@@ -525,6 +528,9 @@ int _org(assembler *as)
 
 	as->P_force = 1;
 
+	as->rm_encountered = BP_TRUE;
+	
+		
 	/* 1. If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
@@ -540,41 +546,6 @@ int _org(assembler *as)
 			/* 1. Disk BASIC BIN file -- set program counter to result. */
 			
 			as->program_counter = result;
-			
-
-			/* 2. In pass 1, we count up the psect for Disk BASIC. */
-			
-			if (as->pass == 1)
-			{
-				/* Set up new org. */
-				
-				as->current_psect++;
-
-				as->psect[as->current_psect].org = as->program_counter;
-				as->psect[as->current_psect].size = 0;
-
-			}
-
-
-			/* 3. In pass 2, we write out the Disk BASIC headers. */
-			
-			else
-			{
-				/* Emit Disk BASIC 5 byte preamble if size of org is > 0. */
-
-				BP_uint32   org = as->psect[as->current_psect].org;
-				BP_uint32   size = as->psect[as->current_psect].size;
-					
-				if (size > 0)
-				{
-					decb_header_emit(as, org, size);
-				
-					f_record(as);
-				}
-
-				
-				as->current_psect++;
-			}
 		}
 		else
 		{
@@ -1493,7 +1464,14 @@ int __end(assembler *as)
 	}
 	else
 	{
-		/* 1. Read the remainder of the file's lines. */
+		/* If we are in pass 2 and this is DECB mode, evaluate the operand,
+		 * if any, for the EXEC address.
+		 */
+
+		if (as->pass == 2 && as->o_asm_mode == ASM_DECB)
+		{
+			evaluate(as, &as->decb_exec_address, &as->line->optr, 0);
+		}
 		
 		print_line(as, 0, ' ', 0);
 

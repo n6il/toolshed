@@ -158,11 +158,11 @@ struct nlist
 
 
 
-struct orglist
+struct psect
 {
 	BP_int32		org;
 	BP_int32		size;
-	BP_Bool			code_encountered;
+	struct psect	*next;
 };
 
 
@@ -296,7 +296,6 @@ typedef struct _assembler
 	BP_uint32			conditional_stack_index;
 	char				conditional_stack[CONDSTACKLEN];
 	BP_Bool				o_do_parsing;
-	BP_Bool				encountered_reserve_storage;
 	BP_Bool				o_h6309;
 	BP_uint32			code_bytes;					/* number of emitted code bytes */
 #define NAMLEN 64
@@ -304,8 +303,10 @@ typedef struct _assembler
 	BP_char				name_header[NAMLEN];
 	BP_char				title_header[TTLLEN];
 	struct nlist		*bucket;            /* root node of the tree */
-	struct orglist		psect[256];
-	BP_uint32			current_psect;
+	struct psect		psect[256];
+	BP_int32			current_psect;
+	BP_Bool				rm_encountered;
+	BP_uint32			decb_exec_address;
 } assembler;
 
 

@@ -343,16 +343,6 @@ void mamou_assemble(assembler *as)
 		/* 2. Re-initialize the assembler. */
 		
         mamou_initialize(as);
-
-
-		/* 3. If this is a DECB .BIN file, emit the initial header. */
-		
-		if (as->o_asm_mode == ASM_DECB && as->psect[as->current_psect].size > 0)
-		{
-			decb_header_emit(as, as->psect[as->current_psect].org, as->psect[as->current_psect].size);
-		}
-		
-		as->current_psect++;
 		
 		
 		/* 4. Walk the file list again... */
@@ -466,7 +456,8 @@ static void mamou_initialize(assembler *as)
 	{
 		/* Pass 1 initialization. */
 
-		as->encountered_reserve_storage = BP_FALSE;
+		as->current_psect			= -1;
+		as->rm_encountered			= BP_TRUE;
 		as->num_errors				= 0;
 		as->cumulative_blank_lines  = 0;
 		as->cumulative_comment_lines  = 0;
@@ -480,11 +471,6 @@ static void mamou_initialize(assembler *as)
 		
 		as->conditional_stack_index = 0;
 		as->conditional_stack[0]	= 1;
-
-		as->current_psect = 0;
-		as->psect[as->current_psect].org = 0;
-		as->psect[as->current_psect].size = 0;
-		as->psect[as->current_psect].code_encountered = BP_FALSE;
 
 		if (as->object_name[0] != EOS)
 		{
@@ -505,7 +491,7 @@ static void mamou_initialize(assembler *as)
 	{
 		/* Pass 2 initialization. */
 
-		as->encountered_reserve_storage = BP_FALSE;
+		as->current_psect			= -1;
 		as->cumulative_blank_lines  = 0;
 		as->cumulative_comment_lines  = 0;
 		as->cumulative_total_lines  = 0;
@@ -517,9 +503,7 @@ static void mamou_initialize(assembler *as)
 		as->Ctotal			= 0;
 		as->f_new_page		= BP_FALSE;
 		as->use_depth		= 0;
-		
-		as->current_psect		= 0;
-		
+				
 		fwd_reinit(as);
 
 		as->conditional_stack_index = 0;

@@ -143,19 +143,37 @@ void emit(assembler *as, int byte)
 	}	
 
 	
-	/* 2. Increment program counter. */
-	
-	as->program_counter++;
-
-
-	/* 3. If this is pass 2... */
+	/* 3. If this is pass 1... */
 	
 	if (as->pass == 1)
 	{
+		if (as->rm_encountered == BP_TRUE)
+		{
+			as->rm_encountered = BP_FALSE;
+
+			if (as->o_asm_mode == ASM_DECB)
+			{
+				as->current_psect++;
+				as->psect[as->current_psect].org = as->program_counter;
+				as->psect[as->current_psect].size = 0;
+				printf("Emit header!\n");
+			}
+		}
+
 		as->psect[as->current_psect].size++;
 	}
 	else
 	{
+		if (as->rm_encountered == BP_TRUE)
+		{
+			as->current_psect++;
+			
+			decb_header_emit(as, as->psect[as->current_psect].org, as->psect[as->current_psect].size);
+			
+			as->rm_encountered = BP_FALSE;
+		}
+		
+		
 		if (as->P_total < P_LIMIT)
 		{
 			as->P_bytes[as->P_total++] = byte;
@@ -170,6 +188,12 @@ void emit(assembler *as, int byte)
 		}
 	}
 
+
+	/* 2. Increment program counter. */
+	
+	as->program_counter++;
+	
+	
 	
 	return;
 }
@@ -241,22 +265,8 @@ void decb_trailer_emit(assembler *as, BP_uint32 exec)
 	
 		/* EXEC address */
 
-		{
-			/* 1. Assume no org was specified. */
-			
-			BP_uint32   exec = 0;
-			
-			
-			if (as->current_psect > 0)
-			{
-				/* 1. Use the first org we encountered. */
-
-				exec = as->psect[1].org;
-			}
-
-			as->E_bytes[as->E_total++] = (exec & 0xFF00) >> 8;
-			as->E_bytes[as->E_total++] = (exec & 0x00FF);
-		}
+		as->E_bytes[as->E_total++] = (as->decb_exec_address & 0xFF00) >> 8;
+		as->E_bytes[as->E_total++] = (as->decb_exec_address & 0x00FF);
 
 
 		if (as->E_total > E_LIMIT + MAXBUF)
