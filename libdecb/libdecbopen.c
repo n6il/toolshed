@@ -112,7 +112,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		}
 	}
 	
-	
+
 	/* 6. Construct a directory entry. */
 	
 	{
@@ -121,8 +121,8 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		
 		/* 1. Clear memory. */
 		
+		memset(&((*path)->dir_entry), 0, sizeof(decb_dir_entry));
 		memset(&((*path)->dir_entry), 0x20, 11);
-		memset(&((*path)->dir_entry) + 11, 0, sizeof(decb_dir_entry) - 11);
 		
 		
 		if (p == NULL)
