@@ -365,12 +365,16 @@ void f_record(assembler *as)
 			
 			_coco_write(as->fd_object, "\n", &size);
 		}
-		
+	}
+	
+	if (as->pass == 2)
+	{
+		/* 1. On pass 2, reset PC and total. */
 		as->E_pc = as->program_counter;
 		as->E_total = 0;
 	}
 	
-	
+
 	return;
 }
 

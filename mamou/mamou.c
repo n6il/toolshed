@@ -182,7 +182,14 @@ int main(int argc, char **argv)
                 case 'o':
                     /* output file */
                     p = &argv[j][2];
-					strncpy(as.object_name, p, FNAMESIZE - 1);
+					if (*p == EOS)
+					{
+						strcpy(as.object_name, "mamouobj");
+					}
+					else
+					{
+						strncpy(as.object_name, p, FNAMESIZE - 1);
+					}
 					as.object_output = BP_TRUE;
                     break;
 					
