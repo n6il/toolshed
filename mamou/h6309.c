@@ -815,6 +815,7 @@ int _grp2(assembler *as, int opcode)
 		emit(as, lobyte(result));
 		as->cumulative_cycles += 2;
 	}
+	else
 #if 0
 	else if (hibyte(result) == as->DP)
 	{
@@ -823,8 +824,12 @@ int _grp2(assembler *as, int opcode)
 		as->cumulative_cycles += 2;
 	}
 #endif
-	else
 	{
+		if ((hibyte(result) == as->DP))
+		{
+			as->line->has_warning = BP_TRUE;
+		}
+		
 		emit(as, opcode + 0x70);
 		eword(as, result);
 		as->cumulative_cycles += 3;

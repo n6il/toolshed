@@ -19,7 +19,6 @@ error_code _decb_rename(char *pathlist, char *new_name)
     char filename[33];
 	decb_path_id path;
 	decb_dir_entry dirent;
-	int mode;
 	
 
     /* 1. Test if path is native. */
@@ -40,10 +39,6 @@ error_code _decb_rename(char *pathlist, char *new_name)
 
     /* 2. Start reading directory file and search for match */
 
-	mode = path->mode;
-	
-	path->mode |= FAM_DIR;
-	
 	_decb_seekdir(path, 0);
 	
     while (_decb_readdir(path, &dirent) == 0)
@@ -63,8 +58,6 @@ error_code _decb_rename(char *pathlist, char *new_name)
         }
     }
 	
-	path->mode = mode;
-
 	_decb_close(path);
 
 

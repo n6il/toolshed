@@ -98,7 +98,7 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 
 	bytes_left = (path->filepos + *size) - current_size;
 
-#if 1
+
     while (bytes_left > 0)
     {
 		char granule_buffer[2304];
@@ -138,53 +138,6 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 		curr_granule = path->FAT[curr_granule];
 	}
 	
-#else
-	while (bytes_left > 0)
-	{
-		int write_size, offset_in_granule;
-		char granule[2304];
-		
-		
-		offset_in_granule = path->filepos % 2304;
-		
-		/* 1. Set up write_size. */
-		
-		write_size = *size;
-		if (write_size > 2304) write_size = 2304;
-		if (write_size > bytes_left) write_size = bytes_left;
-		
-		
-		/* 2. Get the granule. */
-		
-		_decb_gs_granule(path, curr_granule, granule);
-	
-		
-		/* 3. Copy the data. */
-
-		memcpy(granule, buffer, write_size);
-		
-		buffer += write_size;
-		bytes_left -= write_size;
-		
-		
-		/* 3. Put back the granule. */
-		
-		_decb_ss_granule(path, curr_granule, granule);
-		
-		curr_granule = path->FAT[curr_granule];		
-	}
-#endif
-
-#if 0
-	if (*size % 256 == 0)
-	{
-		_int2(256, path->dir_entry.last_sector_size);
-	}
-	else
-	{
-		_int2(*size % 256, path->dir_entry.last_sector_size);
-	}
-#endif	
 	
 	/* 9. Write updated file descriptor back to image file. */
 
@@ -221,15 +174,14 @@ error_code _decb_writedir(decb_path_id path, decb_dir_entry *dirent)
 	int entry_in_sector;
 	
 
-#if 0
 	/* 1. Check the mode. */
 	
-	if (path->mode & FAM_DIR == 0 || path->mode & FAM_WRITE == 0)
+	if (path->mode & FAM_WRITE == 0)
     {
         return EOS_BMODE;
     }
-#endif
 
+	
 	entry_in_sector = (path->directory_entry_index * sizeof(decb_dir_entry)) % 256;
 
 

@@ -289,6 +289,7 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 	}
 	else
 	{
+#if 0
 		/* 1. No, normal mode */
 
 		if ((*path)->mode & FAM_DIR)
@@ -297,6 +298,7 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 
 			return EOS_BMODE;
 		}
+#endif
 		
 		(*path)->israw = 0;
 	}
@@ -342,12 +344,6 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 	/* 8. Find directory entry matching filename. */
 
 	{
-		int mode = (*path)->mode;
-		
-		
-		(*path)->mode |= FAM_DIR;
-		
-		
 		/* 1. Seek to the first directory entry. */
 
 		_decb_seekdir(*path, 0);
@@ -369,9 +365,6 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 			}
 		}
 
-		(*path)->mode = mode;
-		
-		
 		if (ec != 0)
 		{
 			ec = EOS_PNNF;

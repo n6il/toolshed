@@ -48,25 +48,14 @@ error_code _decb_seekdir(decb_path_id path, int entry)
 	error_code  ec = 0;
 	
 	
-	/* 1. Check mode. */
-	
-#if 0
-	if (!(path->mode & FAM_DIR))
+	if (entry > 72)
 	{
-		ec = EOS_BMODE;
-	}
-	else
-#endif
-	{
-		if (entry > 72)
-		{
-			/* 1. Illegal entry number -- return error. */
+		/* 1. Illegal entry number -- return error. */
 		
-			ec = EOS_EOF;
-		}
-
-		path->directory_entry_index = entry;
+		ec = EOS_EOF;
 	}
+
+	path->directory_entry_index = entry;
 	
 
     return ec;

@@ -16,20 +16,7 @@ error_code _decb_gs_fd(decb_path_id path, decb_file_stat *stat)
 {
     error_code		ec = 0;
 	int				size;
-//	decb_dir_entry  de;
 
-
-#if 0
-	{
-		int mode = path->mode;
-		
-		
-		path->mode |= FAM_DIR;
-		_decb_seekdir(path, path->this_directory_entry_index);
-		_decb_readdir(path, &de);
-		path->mode = mode;
-	}
-#endif
 	
 	stat->file_type = path->dir_entry.file_type;
 	stat->data_type = path->dir_entry.ascii_flag;

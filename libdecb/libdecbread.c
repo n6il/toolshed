@@ -22,10 +22,8 @@ error_code _decb_read(decb_path_id path, void *buffer, int *size)
 
 	/* 1. Check the mode. */
 	
-    if (path->mode & FAM_DIR || path->mode & FAM_READ == 0)
+    if (path->mode & FAM_READ == 0)
     {
-        /* 1. Must use _decb_readdir if FAM_DIR. */
-		
         return EOS_FNA;
     }
 
@@ -171,10 +169,8 @@ error_code _decb_readln(decb_path_id path, void *buffer, int *size)
 	
 	/* 1. Check the mode. */
 	
-    if (path->mode & FAM_DIR || path->mode & FAM_READ == 0)
+    if (path->mode & FAM_READ == 0)
     {
-        /* 1. Must use _decb_readdir if FAM_DIR. */
-		
         return EOS_FNA;
     }
 	
@@ -332,17 +328,15 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 	int entry_in_sector;
 	
 
-#if 0
 	/* 1. Check the mode. */
 	
-	if (path->mode & FAM_DIR == 0 || path->mode & FAM_READ == 0)
+	if (path->mode & FAM_READ == 0)
     {
         /* 1. Must be a directory. */
 
         return EOS_BMODE;
     }
-#endif
-	
+
 
 	sector = (path->directory_entry_index * sizeof(decb_dir_entry)) / 256;
 	entry_in_sector = (path->directory_entry_index++ * sizeof(decb_dir_entry)) % 256;
