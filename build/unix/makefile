@@ -4,7 +4,7 @@ vpath %.c ../../mamou:../../os9
 
 PACKAGENAME	= cocotools.tgz
 INSTALLDIR	= /usr/local/bin
-DIRS		= libnative librbf libcoco libdecb libmisc libsys libdecb os9 mamou decb
+DIRS		= libbp_kal libbp_dal libnative librbf libcoco libdecb libmisc libsys libdecb os9 mamou decb
 #		rma rdump as6809 aslink
 
 all:
