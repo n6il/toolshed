@@ -787,26 +787,50 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
             {
                 char fccdelim;
 
-				
-                /* Pseudo opcode with delimiter bounded data (i.e. fcc, fcs). */
-				
-                fccdelim = *ptrfrm;
 
-                do
-                {
-                    *ptrto++ = *ptrfrm++;
-                } while (*ptrfrm != EOS && *ptrfrm != fccdelim);
+				/* Check for nul operand */
 				
-                *ptrto++ = *ptrfrm++;
+				if (*ptrfrm == EOS || eol(*ptrfrm))
+				{
+					if (as->pass == 2)
+					{
+						error(as, "Operand required");
+					}
+				}
+				else
+				{
+					/* Pseudo opcode with delimiter bounded data (i.e. fcc, fcs). */
+				
+					fccdelim = *ptrfrm;
+
+					do
+					{
+						*ptrto++ = *ptrfrm++;
+					} while (*ptrfrm != EOS && *ptrfrm != fccdelim);
+				
+					*ptrto++ = *ptrfrm++;
+				}
             }
             else if (as->line.mnemonic.type == OPCODE_PSEUDO && as->line.mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_SPACES)
             {
                 /* Pseudo opcode with spaces in the operand. */
 				
-                do
-                {
-                    *ptrto++ = *ptrfrm++;
-                } while (*ptrfrm != EOS && !eol(*ptrfrm));
+				/* Check for nul operand */
+				
+				if (*ptrfrm == EOS || eol(*ptrfrm))
+				{
+					if (as->pass == 2)
+					{
+						error(as, "Operand required");
+					}
+				}
+				else
+				{
+					do
+					{
+						*ptrto++ = *ptrfrm++;
+					} while (*ptrfrm != EOS && !eol(*ptrfrm));
+				}
             }
             else
             {
