@@ -77,7 +77,7 @@ error_code _os9_delete(char *pathlist)
 
 
         size = sizeof(dentry);
-        ec = _os9_read(parent_path, &dentry, &size);
+        ec = _os9_readdir(parent_path, &dentry);
 
         if (ec != 0 || size != sizeof(dentry))
         {
