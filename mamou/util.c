@@ -70,7 +70,7 @@ void fatal(char *str)
 
 void error(assembler *as, char *str)
 {
-	if (as->ignore_errors == BP_TRUE)
+	if (as->ignore_errors == 1)
 	{
 		return;
 	}
@@ -95,15 +95,15 @@ void error(assembler *as, char *str)
 	@param c Character to evaluate
  */
 
-int delim(BP_char c)
+int delim(char c)
 {
 	if (any(c, " \t\n\r"))
 	{
-		return BP_TRUE;
+		return 1;
 	}
 	
 	
-	return BP_FALSE;
+	return 0;
 }
 
 
@@ -114,15 +114,15 @@ int delim(BP_char c)
 	@param c Character to evaluate
  */
 
-int eol(BP_char c)
+int eol(char c)
 {
 	if (any(c, "\n\r"))
 	{
-		return BP_TRUE;
+		return 1;
 	}
 	
 	
-	return BP_FALSE;
+	return 0;
 }
 
 
@@ -133,7 +133,7 @@ int eol(BP_char c)
 	@param ptr String to process
  */
 
-BP_char *skip_white(BP_char *ptr)
+char *skip_white(char *ptr)
 {
 	while (*ptr == BLANK || *ptr == TAB)
 	{
@@ -203,11 +203,11 @@ void emit(assembler *as, int byte)
 	{
 		/* Is this the start of a code segment? */
 		
-		if (as->code_segment_start == BP_TRUE)
+		if (as->code_segment_start == 1)
 		{
 			/* Yes.  Reset the flag. */
 			
-			as->code_segment_start = BP_FALSE;
+			as->code_segment_start = 0;
 
 			/* If this is DECB mode, then set the origination and reset size. */
 			
@@ -223,13 +223,13 @@ void emit(assembler *as, int byte)
 	}
 	else
 	{
-		if (as->code_segment_start == BP_TRUE)
+		if (as->code_segment_start == 1)
 		{
 			as->current_psect++;
 			
 			decb_header_emit(as, as->psect[as->current_psect].org, as->psect[as->current_psect].size);
 			
-			as->code_segment_start = BP_FALSE;
+			as->code_segment_start = 0;
 		}
 		
 		
@@ -387,7 +387,7 @@ void f_record(assembler *as)
 
 	/* Compute module CRC. */
 
-	if (as->do_module_crc == BP_TRUE && as->pass == 2)
+	if (as->do_module_crc == 1 && as->pass == 2)
 	{
 		_os9_crc_compute(as->E_bytes, as->E_total, as->_crc);
 	}
@@ -395,17 +395,17 @@ void f_record(assembler *as)
 
 	/* S-Record and Hex files: record header preamble. */
 
-	if (as->output_type == OUTPUT_BINARY && as->object_output == BP_TRUE)
+	if (as->output_type == OUTPUT_BINARY && as->object_output == 1)
 	{
 		int		size = as->E_total;
 			
 		_coco_write(as->fd_object, as->E_bytes, &size);
 	}
-	else if (as->object_output == BP_TRUE)
+	else if (as->object_output == 1)
 	{
 		int size;
 			
-		if (as->output_type == OUTPUT_HEX && as->object_output == BP_TRUE)
+		if (as->output_type == OUTPUT_HEX && as->object_output == 1)
 		{
 			size = 1;
 				
@@ -414,7 +414,7 @@ void f_record(assembler *as)
 			hexout(as, as->E_total);        /* byte count  */
 			hexout(as, 0);		/* Output 00 */
 		}
-		else if (as->output_type == OUTPUT_SRECORD && as->object_output == BP_TRUE) 		/* S record file */
+		else if (as->output_type == OUTPUT_SRECORD && as->object_output == 1) 		/* S record file */
 		{
 			size = 2;
 				
@@ -472,10 +472,10 @@ char *hexstr = {"0123456789ABCDEF"};
 
 void hexout(assembler *as, int byte)
 {
-	if (as->object_output == BP_TRUE)
+	if (as->object_output == 1)
 	{
 		int size = 2;
-		BP_char tmp[8];
+		char tmp[8];
 		
 		byte = lobyte(byte);
 		sprintf(tmp, "%c%c", hexstr[byte >> 4], hexstr[byte & 017]);
@@ -517,7 +517,7 @@ void finish_outfile(assembler *as)
 	int size;
 	
 	
-	if (as->object_output == BP_FALSE)
+	if (as->object_output == 0)
 	{
 		return;
 	}
@@ -553,18 +553,18 @@ void finish_outfile(assembler *as)
 	@param str String to search
  */
 
-int any(BP_char c, BP_char *str)
+int any(char c, char *str)
 {
 	while (*str != EOS)
 	{
 		if (*str++ == c)
 		{
-			return BP_TRUE;
+			return 1;
 		}
 	}
 
 
-	return BP_FALSE;
+	return 0;
 }
 
 
@@ -659,19 +659,19 @@ int head(char *str1, char *str2)
 
 	if (tolower(*str1) == tolower(*str2))
 	{
-		return(BP_TRUE);
+		return(1);
 	}
 
 	if (*str2 == EOS)
 	{
 		if (any(*str1, " \t\n,+-];*"))
 		{
-			return BP_TRUE;
+			return 1;
 		}
 	}
 
 	
-	return BP_FALSE;
+	return 0;
 }
 
 
@@ -682,27 +682,27 @@ int head(char *str1, char *str2)
 	@param c Character to evaluate
  */
 
-int alpha(BP_char c)
+int alpha(char c)
 {
 	if (c <= 'z' && c >= 'a')
 	{
-		return BP_TRUE;
+		return 1;
 	}
 	if (c <= 'Z' && c >= 'A')
 	{
-		return BP_TRUE;
+		return 1;
 	}
 	if (c == '_')
 	{
-		return BP_TRUE;
+		return 1;
 	}
 	if (c == '.')
 	{
-		return BP_TRUE;
+		return 1;
 	}
 
 
-	return BP_FALSE;
+	return 0;
 }
 
 
@@ -713,25 +713,25 @@ int alpha(BP_char c)
 	@param c Character to evaluate
  */
 
-int alphan(BP_char c)
+int alphan(char c)
 {
 	if (alpha(c))
 	{
-		return BP_TRUE;
+		return 1;
 	}
 
 	if (numeric(c))
 	{
-		return BP_TRUE;
+		return 1;
 	}
 
 	if (c == '$' || c == '@')
 	{
-		return BP_TRUE;      /* allow imbedded $ */
+		return 1;      /* allow imbedded $ */
 	}
 	
 	
-	return BP_FALSE;
+	return 0;
 }
 
 
@@ -742,15 +742,15 @@ int alphan(BP_char c)
 	@param c Character to evaluate
  */
 
-int numeric(BP_char c)
+int numeric(char c)
 {
 	if (c <= '9' && c >= '0')
 	{
-		return BP_TRUE;
+		return 1;
 	}
 
 	
-	return BP_FALSE;
+	return 0;
 }
 
 
@@ -762,9 +762,9 @@ int white(char c)
 {
 	if (c == TAB || c == BLANK || c == '\n')
 	{
-		return(BP_TRUE);
+		return(1);
 	}
-	return BP_FALSE;
+	return 0;
 }
 #endif
 

@@ -32,7 +32,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	Line_buff[0] = EOS;
 
 	
-	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
 		/* We are currently in a false condition -- return. */
 		
@@ -48,7 +48,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	}
 	
 	
-	if (override == 0 && (as->o_show_listing == BP_FALSE || as->f_new_page == BP_TRUE))
+	if (override == 0 && (as->o_show_listing == 0 || as->f_new_page == 1))
 	{
 		if (as->line.has_warning)
 		{
@@ -58,7 +58,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		return;
 	}
 
-	if (as->o_format_only == BP_FALSE)
+	if (as->o_format_only == 0)
 	{
 		if (as->current_line == 0)
 		{
@@ -169,7 +169,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	}
 
 
-	if (as->Opt_G == BP_TRUE)
+	if (as->Opt_G == 1)
 	{
 		int Temp_pc = as->old_program_counter;
 
@@ -197,7 +197,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	
 	/* Check if we are at last line before footer should be printed. */
 	
-	if (as->o_format_only == BP_FALSE)
+	if (as->o_format_only == 0)
 	{
 		if (as->current_line == as->o_page_depth - as->footer_depth)
 		{

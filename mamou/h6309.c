@@ -156,7 +156,7 @@ int _gen(assembler *as, int opcode)
 	
 	/* Do general addressing */
 	
-	do_gen(as, opcode, amode, BP_FALSE);
+	do_gen(as, opcode, amode, 0);
 
 	
 	/* Print the line. */
@@ -181,7 +181,7 @@ int _imgen(assembler *as, int opcode)
 	int	result;
 	int	amode;
 	int	old;
-	BP_char		*p;
+	char		*p;
 
 	
 	/* Get indicated addressing mode. */
@@ -255,7 +255,7 @@ int _imgen(assembler *as, int opcode)
 	
 	/* General addressing */
 
-	do_gen(as, opcode, amode, BP_FALSE);
+	do_gen(as, opcode, amode, 0);
 
 	
 	/* Fix up output */
@@ -401,7 +401,7 @@ int _p2rel(assembler *as, int opcode)
 
 	if ((dist > -128) && (dist < 127))
 	{
-		as->line.has_warning = BP_TRUE;
+		as->line.has_warning = 1;
 	}
 	
 	eword(as, dist);
@@ -443,7 +443,7 @@ int _p1rel(assembler *as, int opcode)
 	
 	if ((dist > -128) && (dist < 127))
 	{
-		as->line.has_warning = BP_TRUE;
+		as->line.has_warning = 1;
 	}
 	
 	emit(as, opcode);
@@ -478,7 +478,7 @@ int _noimm(assembler *as, int opcode)
 		return 0;
 	}
 	
-	do_gen(as, opcode, amode, BP_FALSE);
+	do_gen(as, opcode, amode, 0);
 	print_line(as, 0, ' ', as->old_program_counter);
 
 	
@@ -551,7 +551,7 @@ static int _pxgen(assembler *as, int opcode, int amode)
 		return 0;
 	}
 
-	do_gen(as, opcode, amode, BP_FALSE);
+	do_gen(as, opcode, amode, 0);
 
 	print_line(as, 0, ' ', as->old_program_counter);
 
@@ -1058,7 +1058,7 @@ int _longimm(assembler *as, int opcode)
 	}
 	else
 	{
-		do_gen(as, opcode, amode, BP_FALSE);
+		do_gen(as, opcode, amode, 0);
 	}
 
 	print_line(as, 0, ' ', as->old_program_counter);
@@ -1123,7 +1123,7 @@ int _grp2(assembler *as, int opcode)
 	
 	/* Check for inconsistency in force mode and DP */
 	
-	if (as->line.force_byte == BP_TRUE && hibyte(result) != as->DP)
+	if (as->line.force_byte == 1 && hibyte(result) != as->DP)
 	{
 		error(as, "DP out of range");
 		
@@ -1131,11 +1131,11 @@ int _grp2(assembler *as, int opcode)
 	}
 
 
-	if (as->line.force_word == BP_TRUE || hibyte(result) != as->DP)
+	if (as->line.force_word == 1 || hibyte(result) != as->DP)
 	{
 		if ((hibyte(result) == as->DP))
 		{
-			as->line.has_warning = BP_TRUE;
+			as->line.has_warning = 1;
 		}
 		
 		emit(as, opcode + 0x70);
@@ -1274,7 +1274,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 #if 0
 		evaluate(as, &result, &as->line.optr, 0);
 
-		if (as->line.force_byte == BP_TRUE)
+		if (as->line.force_byte == 1)
 		{
 			/* Case #1: < has been prepeneded to expression */
 			
@@ -1292,13 +1292,13 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 
 			return 0;
 		}
-		else if (as->line.force_word == BP_TRUE)
+		else if (as->line.force_word == 1)
 		{
 			/* Case #1: > has been prepeneded to expression */
 			
 			if ((hibyte(result) == as->DP))
 			{
-				as->line.has_warning = BP_TRUE;
+				as->line.has_warning = 1;
 			}
 			
 			emit(as, op + 0x30);
@@ -1337,7 +1337,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 #if 0
 		evaluate(as, &result, &as->line.optr, 0);
 		
-		if (as->line.force_byte == BP_TRUE)
+		if (as->line.force_byte == 1)
 		{
 			emit(as, op + 0x10);
 
@@ -1358,7 +1358,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 		{
 			if ((hibyte(result) == as->DP))
 			{
-				as->line.has_warning = BP_TRUE;
+				as->line.has_warning = 1;
 			}
 			
 			emit(as, op + 0x30);
@@ -1375,7 +1375,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 		
 		/* Check for inconsistency in force mode and DP */
 		
-		if (as->line.force_byte == BP_TRUE && hibyte(result) != as->DP)
+		if (as->line.force_byte == 1 && hibyte(result) != as->DP)
 		{
 			error(as, "DP out of range");
 
@@ -1384,11 +1384,11 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 		
 		
 
-		if (as->line.force_word == BP_TRUE || hibyte(result) != as->DP)
+		if (as->line.force_word == 1 || hibyte(result) != as->DP)
 		{
 			if ((hibyte(result) == as->DP))
 			{
-				as->line.has_warning = BP_TRUE;
+				as->line.has_warning = 1;
 			}
 			
 			emit(as, op + 0x30);
@@ -1485,7 +1485,7 @@ static int do_indexed(assembler *as, int op)
 		return 0;
 	}
 
-	if (j == RE && as->o_h6309 == BP_TRUE)
+	if (j == RE && as->o_h6309 == 1)
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 7);
@@ -1493,7 +1493,7 @@ static int do_indexed(assembler *as, int op)
 		return 0;
    	}
 
-	if (j == RF && as->o_h6309 == BP_TRUE)
+	if (j == RF && as->o_h6309 == 1)
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 10);
@@ -1501,7 +1501,7 @@ static int do_indexed(assembler *as, int op)
 		return 0;
 	}
 
-	if (j == RW && as->o_h6309 == BP_TRUE)
+	if (j == RW && as->o_h6309 == 1)
 	{
 		as->cumulative_cycles += 4;
 		abd_index(as, pbyte + 14);
@@ -1533,9 +1533,9 @@ static int do_indexed(assembler *as, int op)
 
 	if (j == RPC || j == RPCR)
 	{
-		if (as->line.force_byte == BP_FALSE)
+		if (as->line.force_byte == 0)
 		{
-			as->line.force_word = BP_TRUE;
+			as->line.force_word = 1;
 		}
 		if (pstinc || predec)
 		{
@@ -1693,7 +1693,7 @@ static int do_indexed(assembler *as, int op)
 	    {
 			if ((hibyte(result) == 0))
 			{
-				as->line.has_warning = BP_TRUE;
+				as->line.has_warning = 1;
 			}
 			emit(as, pbyte + 0x09);
 			eword(as, result);
@@ -1712,7 +1712,7 @@ static int do_indexed(assembler *as, int op)
 
 			if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0))
 			{
-				as->line.has_warning = BP_TRUE;
+				as->line.has_warning = 1;
 			}
 
 			emit(as, lobyte(result));
@@ -1763,7 +1763,7 @@ static int do_indexed(assembler *as, int op)
 			return 0;
 		}
 
-		if (pbyte & 0x10 && as->o_h6309 == BP_TRUE)
+		if (pbyte & 0x10 && as->o_h6309 == 1)
 		{
 			/* [,W] */
 			if (as->line.force_word || (result != 0))
@@ -1781,7 +1781,7 @@ static int do_indexed(assembler *as, int op)
 		else
 		{		
 			/* ,W */
-			if (as->line.force_word || (result != 0) && as->o_h6309 == BP_TRUE)
+			if (as->line.force_word || (result != 0) && as->o_h6309 == 1)
 			{
 				emit(as, 0xaf);
 				eword(as, result);
@@ -1851,7 +1851,7 @@ static int reg_type(assembler *as, int r)
 			return(0x60);
 
 		case RW:
-		 	if (as->o_h6309 == BP_TRUE)
+		 	if (as->o_h6309 == 1)
 			{
 				return(0x100);
 			}
@@ -1873,7 +1873,7 @@ static int reg_type(assembler *as, int r)
 
 static int addressing_mode(assembler *as)
 {
-	BP_char *p;
+	char *p;
 
 	
 	if (*as->line.operand == '#')
@@ -1914,90 +1914,90 @@ static int addressing_mode(assembler *as)
 
 static h6309_reg regnum(assembler *as)
 {
-	if (head(as->line.optr, "D") == BP_TRUE)
+	if (head(as->line.optr, "D") == 1)
 	{
 		return(RD);
 	}
 
-	if (head(as->line.optr, "X") == BP_TRUE)
+	if (head(as->line.optr, "X") == 1)
 	{
 		return(RX);
 	}
 
-	if (head(as->line.optr, "Y") == BP_TRUE)
+	if (head(as->line.optr, "Y") == 1)
 	{
 		return(RY);
 	}
 
-	if (head(as->line.optr, "U") == BP_TRUE)
+	if (head(as->line.optr, "U") == 1)
 	{
 		return(RU);
 	}
 
-	if (head(as->line.optr, "S") == BP_TRUE)
+	if (head(as->line.optr, "S") == 1)
 	{
 		return(RS);
 	}
 
-	if (head(as->line.optr, "PC") == BP_TRUE)
+	if (head(as->line.optr, "PC") == 1)
 	{
 		return(RPC);
 	}
 
-	if (head(as->line.optr, "PCR") == BP_TRUE)
+	if (head(as->line.optr, "PCR") == 1)
 	{
 		return(RPCR);
 	}
 
-	if (head(as->line.optr, "A") == BP_TRUE)
+	if (head(as->line.optr, "A") == 1)
 	{
 		return(RA);
 	}
 
-	if (head(as->line.optr, "B") == BP_TRUE)
+	if (head(as->line.optr, "B") == 1)
 	{
 		return(RB);
 	}
 
-	if (head(as->line.optr, "CC") == BP_TRUE)
+	if (head(as->line.optr, "CC") == 1)
 	{
 		return(RCC);
 	}
 
-	if (head(as->line.optr, "DP") == BP_TRUE)
+	if (head(as->line.optr, "DP") == 1)
 	{
 		return(RDP);
 	}
 
-	if (as->o_h6309 == BP_TRUE)
+	if (as->o_h6309 == 1)
 	{
-		if (head(as->line.optr, "E") == BP_TRUE)
+		if (head(as->line.optr, "E") == 1)
 		{
 			return(RE);
 		}
 		
-		if (head(as->line.optr, "F") == BP_TRUE)
+		if (head(as->line.optr, "F") == 1)
 		{
 			return(RF);
 		}
 		
-		if (head(as->line.optr, "W") == BP_TRUE)
+		if (head(as->line.optr, "W") == 1)
 		{
 			return(RW);
 		}
 		
-		if (head(as->line.optr, "V") == BP_TRUE)
+		if (head(as->line.optr, "V") == 1)
 		{
 			return(RV);
 		}
 		
-		if (head(as->line.optr, "0") == BP_TRUE ||
-			head(as->line.optr, "Z") == BP_TRUE)
+		if (head(as->line.optr, "0") == 1 ||
+			head(as->line.optr, "Z") == 1)
 		{
 			return(RZERO);
 		}
 		
-		if (head(as->line.optr, "Z") == BP_TRUE)
+		if (head(as->line.optr, "Z") == 1)
 		{
 			return(RZERO);
 		}		

@@ -47,13 +47,13 @@
 
 /* Static functions */
 
-static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefined);
-static int is_op(BP_char c);
+static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined);
+static int is_op(char c);
 
 
 /* Static variables */
 
-static int forward = BP_FALSE;
+static int forward = 0;
 
 
 
@@ -66,10 +66,10 @@ static int forward = BP_FALSE;
 	@param ignoreUndefined Ignore any undefined symbols
  */
 
-int evaluate(assembler *as, int *result, BP_char **eptr, int ignoreUndefined)
+int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
 	int	left, right;		/* left and right terms for expression */
-	BP_char		o;					/* operator character */
+	char		o;					/* operator character */
 
 
 	/* 1. Do any debugging output. */
@@ -82,31 +82,31 @@ int evaluate(assembler *as, int *result, BP_char **eptr, int ignoreUndefined)
 	
 	/* 2. Assume no forcing of result size. */
 	
-	as->line.force_byte = BP_FALSE;
-	as->line.force_word = BP_FALSE;
+	as->line.force_byte = 0;
+	as->line.force_word = 0;
 
 	
 	/* 3. Force byte or word size? */
 	
 	if (**eptr == '<')
 	{
-		as->line.force_byte = BP_TRUE;
+		as->line.force_byte = 1;
 		(*eptr)++;
 	}
 	else if (**eptr == '>')
 	{
-		as->line.force_word = BP_TRUE;
+		as->line.force_word = 1;
 		(*eptr)++;
 	}
 
 
 	/* 4. Pickup first part of expression. */
 	
-	if ((get_term(as, &left, eptr, ignoreUndefined) == BP_FALSE) && (forward == BP_FALSE))
+	if ((get_term(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
 	{
 //		*result = Dp * 256 + 0xfe;
 		*result = 0;
-//		return BP_FALSE;
+//		return 0;
 	}
 
 
@@ -121,11 +121,11 @@ int evaluate(assembler *as, int *result, BP_char **eptr, int ignoreUndefined)
 
 		/* 2. Pickup current rightmost side. */
 		
-		if (get_term(as, &right, eptr, ignoreUndefined) == BP_FALSE)
+		if (get_term(as, &right, eptr, ignoreUndefined) == 0)
 		{
 //			*result = Dp * 256 + 0xfe;
 			*result = 0;
-//			return BP_FALSE;
+//			return 0;
 		}
 		
 		
@@ -179,7 +179,7 @@ int evaluate(assembler *as, int *result, BP_char **eptr, int ignoreUndefined)
 
 	/* 8. Return status. */
 	
-	return BP_TRUE;
+	return 1;
 }
 
 
@@ -190,15 +190,15 @@ int evaluate(assembler *as, int *result, BP_char **eptr, int ignoreUndefined)
 	@param c Character to evaluate
  */
 
-static int is_op(BP_char c)
+static int is_op(char c)
 {
 	if (any(c, "+-*/&%|^!"))
 	{
-		return BP_TRUE;
+		return 1;
 	}
 	
 	
-	return BP_FALSE;
+	return 0;
 }
 
 
@@ -212,18 +212,18 @@ static int is_op(BP_char c)
 	@param ignoreUndefined Ignore any undefined symbols
  */
 
-static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefined)
+static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 {
 	char			hold[MAXBUF];
 	char			*tmp;
 	int		val = 0;				/* local value being built */
-	int			minus = BP_FALSE;		/* unary minus flag */
-	int			complement = BP_FALSE;		/* complement flag */
+	int			minus = 0;		/* unary minus flag */
+	int			complement = 0;		/* complement flag */
 	struct nlist	*pointer;
 	struct link		*pnt, *bpnt;
 
 
-	forward = BP_FALSE;
+	forward = 0;
 
 	/* 1. If we encounter end of string, something's wrong. */
 	
@@ -231,7 +231,7 @@ static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefine
 	{
 		error(as, "Unbalanced expression");
 
-		return BP_FALSE;
+		return 0;
 	}
 
 	
@@ -241,7 +241,7 @@ static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefine
 	{
 		(*eptr)++;
 
-		minus = BP_TRUE;
+		minus = 1;
 	}
 
 
@@ -251,7 +251,7 @@ static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefine
 	{
 		(*eptr)++;
 
-		complement = BP_TRUE;
+		complement = 1;
 	}
 
 
@@ -267,14 +267,14 @@ static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefine
 		{
 			error(as, "Mismatched brace");
 
-			return BP_FALSE;
+			return 0;
 		}
 	}
 	else if (**eptr == ')')
 	{
 		error(as, "Mismatched brace");
 
-		return BP_FALSE;
+		return 0;
 	}
 
 
@@ -473,13 +473,13 @@ static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefine
 #if 0
 				if (force_byte == NO)
 				{
-					force_word = BP_TRUE;
+					force_word = 1;
 				}
 #endif
-				forward = BP_TRUE;
+				forward = 1;
 				*term = 0;
 
-				return BP_FALSE;
+				return 0;
 			}
 		}
 		if (as->pass == 2 && as->current_file->current_line == as->F_ref && as->current_filename_index == as->Ffn)
@@ -487,7 +487,7 @@ static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefine
 #if 0
 			if (as->line->force_byte == NO)
 			{
-				as->line->force_word = BP_TRUE;
+				as->line->force_word = 1;
 			}
 #endif
 			fwd_next(as);
@@ -529,5 +529,5 @@ static int get_term(assembler *as, int *term, BP_char **eptr, int ignoreUndefine
 	}
 
 	
-	return BP_TRUE;
+	return 1;
 }

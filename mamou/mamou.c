@@ -135,17 +135,17 @@ int main(int argc, char **argv)
 					
                 case 'c':
                     /* Cross reference output */
-                    as.o_show_cross_reference = BP_TRUE;
+                    as.o_show_cross_reference = 1;
                     break;
 					
                 case 'd':
                     /* Debug mode */
-                    as.o_debug = BP_TRUE;
+                    as.o_debug = 1;
                     break;
 					
                 case 'e':
                     /* 6309 extended instruction mode */
-                    as.o_h6309 = BP_TRUE;
+                    as.o_h6309 = 1;
                     break;	
 					
                 case 'i':
@@ -167,14 +167,14 @@ int main(int argc, char **argv)
                     /* List file */
                     if (tolower(argv[j][2]) == 's')
                     {
-                        as.o_format_only = BP_TRUE;
+                        as.o_format_only = 1;
                         as.o_pagewidth = 256;
                     }
                     if (tolower(argv[j][2]) == 't')
                     {
-                        as.tabbed = BP_TRUE;
+                        as.tabbed = 1;
                     }
-                    as.o_show_listing = BP_TRUE;
+                    as.o_show_listing = 1;
                     break;
 					
                 case 'o':
@@ -188,22 +188,22 @@ int main(int argc, char **argv)
 					{
 						strncpy(as.object_name, p, FNAMESIZE - 1);
 					}
-					as.object_output = BP_TRUE;
+					as.object_output = 1;
                     break;
 					
                 case 'p':
                     /* Parse only output */
-                    as.o_do_parsing = BP_FALSE;
+                    as.o_do_parsing = 0;
                     break;
 					
                 case 'q':
                     /* Quiet mode */
-                    as.o_quiet_mode = BP_TRUE;
+                    as.o_quiet_mode = 1;
                     break;
 					
                 case 's':
                     /* Symbol table dump */
-                    as.o_show_symbol_table = BP_TRUE;
+                    as.o_show_symbol_table = 1;
                     break;
 					
                 case 't':
@@ -228,16 +228,16 @@ int main(int argc, char **argv)
 					
                 case 'x':
                     /* Suppress errors and warnings */
-                    as.ignore_errors = BP_TRUE;
+                    as.ignore_errors = 1;
                     break;
 					
                 case 'y':
                     /* Cycle count (sort of works) */
-                    as.f_count_cycles = BP_TRUE;
+                    as.f_count_cycles = 1;
                     break;
 					
                 case 'z':
-                    as.Opt_C = BP_FALSE;
+                    as.Opt_C = 0;
                     break;
                     
                 default:
@@ -302,7 +302,7 @@ void mamou_assemble(assembler *as)
 		root_file.current_line = 0;
 		root_file.num_blank_lines = 0;
 		root_file.num_comment_lines = 0;
-		root_file.end_encountered = BP_FALSE;
+		root_file.end_encountered = 0;
 		
 		
 		/* Open a path to the file. */
@@ -366,7 +366,7 @@ void mamou_assemble(assembler *as)
 			root_file.current_line = 0;
 			root_file.num_blank_lines = 0;
 			root_file.num_comment_lines = 0;
-			root_file.end_encountered = BP_FALSE;
+			root_file.end_encountered = 0;
 			
 			
 			/* Open a path to the file. */
@@ -400,7 +400,7 @@ void mamou_assemble(assembler *as)
 		
 		/* Do we show the symbol table? */
 		
-        if (as->o_show_symbol_table == BP_TRUE)
+        if (as->o_show_symbol_table == 1)
         {
             printf("\f");
 
@@ -420,7 +420,7 @@ void mamou_assemble(assembler *as)
     }
 
 
-    if ((as->o_quiet_mode == BP_FALSE) && (as->o_format_only == BP_FALSE))
+    if ((as->o_quiet_mode == 0) && (as->o_format_only == 0))
     {
         print_summary(as);
     }
@@ -469,7 +469,7 @@ static void mamou_initialize(assembler *as)
 		/* Pass 1 initialization. */
 
 		as->current_psect			= -1;
-		as->code_segment_start			= BP_TRUE;
+		as->code_segment_start			= 1;
 		as->num_errors				= 0;
 		as->cumulative_blank_lines  = 0;
 		as->cumulative_comment_lines  = 0;
@@ -478,7 +478,7 @@ static void mamou_initialize(assembler *as)
 		as->program_counter			= 0;
 		as->pass					= 1;
 		as->Ctotal					= 0;
-		as->f_new_page				= BP_FALSE;
+		as->f_new_page				= 0;
 		as->use_depth				= 0;
 		
 		as->conditional_stack_index = 0;
@@ -528,7 +528,7 @@ static void mamou_initialize(assembler *as)
 		as->E_total			= 0;
 		as->P_total			= 0;
 		as->Ctotal			= 0;
-		as->f_new_page		= BP_FALSE;
+		as->f_new_page		= 0;
 		as->use_depth		= 0;
 				
 		fwd_reinit(as);
@@ -572,7 +572,7 @@ static void mamou_deinitialize(assembler *as)
 void mamou_pass(assembler *as)
 {
 	int size = MAXBUF - 1;
-	BP_char		input_line[1024];
+	char		input_line[1024];
 	
 	
 	/* 1. If debug mode is on, show output. */
@@ -587,7 +587,7 @@ void mamou_pass(assembler *as)
 	
 	/* 2. While we haven't encountered 'end' and there are more lines to read... */
 	
-	while (as->current_file->end_encountered == BP_FALSE && _coco_readln(as->current_file->fd, input_line, &size) == 0)
+	while (as->current_file->end_encountered == 0 && _coco_readln(as->current_file->fd, input_line, &size) == 0)
 	{
 		char *p = strchr(input_line, 0x0D);
 
@@ -608,11 +608,11 @@ void mamou_pass(assembler *as)
 
 		as->current_file->current_line++;
 		as->P_force = 0;	/* No force unless bytes emitted */
-		as->f_new_page = BP_FALSE;
+		as->f_new_page = 0;
 	
 		mamou_parse_line(as, input_line);
 		
-		if (as->line.type == LINETYPE_SOURCE && as->o_do_parsing == BP_TRUE)
+		if (as->line.type == LINETYPE_SOURCE && as->o_do_parsing == 1)
 		{
 			process(as);
 		}
@@ -663,7 +663,7 @@ void mamou_pass(assembler *as)
 	@param input_line A pointer to the line to parse
  */
 
-void mamou_parse_line(assembler *as, BP_char *input_line)
+void mamou_parse_line(assembler *as, char *input_line)
 {
     char *ptrfrm = input_line;
     char *ptrto = as->line.label;
@@ -671,10 +671,10 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 	
 	/* 1. Initialize line structure. */
 	
-	as->line.has_warning = BP_FALSE;
+	as->line.has_warning = 0;
 	as->line.optr = as->line.Op;
-	as->line.force_word = BP_FALSE;
-	as->line.force_byte = BP_FALSE;
+	as->line.force_word = 0;
+	as->line.force_byte = 0;
     *as->line.label = EOS;
     *as->line.Op = EOS;
     *as->line.operand = EOS;
@@ -686,11 +686,11 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 		*/
 	
 	if (
-		numeric(*(ptrfrm + 0)) == BP_TRUE &&
-		numeric(*(ptrfrm + 1)) == BP_TRUE &&
-		numeric(*(ptrfrm + 2)) == BP_TRUE &&
-		numeric(*(ptrfrm + 3)) == BP_TRUE &&
-		numeric(*(ptrfrm + 4)) == BP_TRUE &&
+		numeric(*(ptrfrm + 0)) == 1 &&
+		numeric(*(ptrfrm + 1)) == 1 &&
+		numeric(*(ptrfrm + 2)) == 1 &&
+		numeric(*(ptrfrm + 3)) == 1 &&
+		numeric(*(ptrfrm + 4)) == 1 &&
 		*(ptrfrm + 5) == ' '
 		)
 	{
@@ -738,7 +738,7 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
         return;
     }
 	
-    while (delim(*ptrfrm) == BP_FALSE)
+    while (delim(*ptrfrm) == 0)
     {
         *ptrto++ = *ptrfrm++;
     }
@@ -757,7 +757,7 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 	
     ptrto = as->line.Op;
 	
-    while (delim(*ptrfrm) == BP_FALSE)
+    while (delim(*ptrfrm) == 0)
     {
         *ptrto++ = mapdn(*ptrfrm++);
     }
@@ -835,7 +835,7 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
             {
 				/* Pseudo or real opcode with regular operand */
                 
-				while (delim(*ptrfrm) == BP_FALSE)
+				while (delim(*ptrfrm) == 0)
                 {
                     *ptrto++ = *ptrfrm++;
                 }
@@ -946,7 +946,7 @@ void process(assembler *as)
         if (as->f_count_cycles)
         {
             as->cumulative_cycles = as->line.mnemonic.opcode.h6309->cycles;
-            if (as->o_h6309 == BP_TRUE)
+            if (as->o_h6309 == 1)
             {
                 as->cumulative_cycles--;
             }
@@ -980,14 +980,14 @@ void mamou_init_assembler(assembler *as)
     as->output_type = OUTPUT_BINARY;
     as->pass = 1;				/* Current pass #               */
     as->page_number = 2;		/* page number */
-    as->Opt_C = BP_TRUE;		/* show conditionals in listing */
+    as->Opt_C = 1;		/* show conditionals in listing */
     as->o_page_depth = 66;
-    as->o_show_error = BP_TRUE;
+    as->o_show_error = 1;
     as->o_pagewidth = 80;
     as->_crc[0] = 0xFF;
     as->_crc[1] = 0xFF;
     as->_crc[2] = 0xFF;
-    as->o_do_parsing = BP_TRUE;
+    as->o_do_parsing = 1;
     as->current_page = 1;
     as->header_depth = 3;
     as->footer_depth = 3;

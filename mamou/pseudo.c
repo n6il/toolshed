@@ -14,12 +14,12 @@
 
 
 /*!
-	@function _date
-	@discussion Generate current date/timestamp
+	@function _dts
+	@discussion Generate current date/timestamp string
 	@param as The assembler state structure
  */
 
-int _date(assembler *as)
+int _dts(assembler *as)
 {
 	char *t;
 	time_t tp;
@@ -55,6 +55,48 @@ int _date(assembler *as)
 
 
 
+/*!
+	@function _dtb
+	@discussion Generate current date/timestamp in byte format
+	@param as The assembler state structure
+ */
+
+int _dtb(assembler *as)
+{
+	struct tm *t;
+	time_t tp;
+	
+	
+	/* If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		return 0;
+	}
+	
+	tp = time(NULL);
+	t = localtime(&tp);
+	
+	emit(as, t->tm_year);
+	emit(as, t->tm_mon + 1);
+	emit(as, t->tm_mday);
+	emit(as, t->tm_hour);
+	emit(as, t->tm_min);
+	emit(as, t->tm_sec);
+	
+	if (*as->line.label != EOS)
+	{
+		symbol_add(as, as->line.label, as->old_program_counter, 0);
+	}		
+	
+	print_line(as, 0, ' ', as->old_program_counter);
+	
+	
+	return 0;
+}
+
+
+
 /*****************************************************************************
  *
  * OS-9 DIRECTIVES (MOD, EMOD)
@@ -73,14 +115,14 @@ int _mod(assembler *as)
 #define	_MODSYNC		0x87CD
 	char *p;
 	unsigned char header_check;
-	BP_int32 modinfo[6], i;
+	int modinfo[6], i;
 	int module_size, name_offset;
 
 	
 	as->old_program_counter = as->program_counter = 0;
 	as->data_counter = 0;
 	f_record(as);	/* flush out any bytes */
-	as->do_module_crc = BP_TRUE;
+	as->do_module_crc = 1;
 	
 	as->_crc[0] = 0xFF;
 	as->_crc[1] = 0xFF;
@@ -226,7 +268,7 @@ int _emod(assembler *as)
 	}	
 	
 	f_record(as);
-	as->do_module_crc = BP_FALSE;
+	as->do_module_crc = 0;
 	as->_crc[0] ^= 0xff;		/* invert the CRC prior to publicising it */
 	as->_crc[1] ^= 0xff;
 	as->_crc[2] ^= 0xff;
@@ -274,7 +316,7 @@ static int _generic_if(assembler *as, conditional whichone);
 
 static int _generic_if(assembler *as, conditional whichone)
 {
-	BP_int32	result;
+	int	result;
 	
 	
 	/* First, check to make sure we don't overflow the condition stack. */
@@ -291,11 +333,11 @@ static int _generic_if(assembler *as, conditional whichone)
 
 	/* Next, check the state of the current conditional. */
 	
-	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
 		/* Current conditional false, make this one false as well. */
 		
-		as->conditional_stack[++as->conditional_stack_index] = BP_FALSE;
+		as->conditional_stack[++as->conditional_stack_index] = 0;
 
 		return 0;
 	}
@@ -308,7 +350,7 @@ static int _generic_if(assembler *as, conditional whichone)
 		evaluate(as, &result, &as->line.optr, 1);
 	}
 
-	if (as->Opt_C == BP_TRUE)
+	if (as->Opt_C == 1)
 	{
 		print_line(as, 0, ' ', 0);
 	}
@@ -482,7 +524,7 @@ int _endc(assembler *as)
 
 	as->conditional_stack_index--;
 
-	if (as->Opt_C == BP_TRUE)
+	if (as->Opt_C == 1)
 	{
 		print_line(as, 0, ' ', 0);
 	}
@@ -514,14 +556,14 @@ int _else(assembler *as)
 	
 	/* Invert the sense of the conditional */
 
-	if (as->Opt_C == BP_TRUE)
+	if (as->Opt_C == 1)
 	{
 		print_line(as, 0, ' ', 0);
 	}
 
 	as->conditional_stack[as->conditional_stack_index] = !as->conditional_stack[as->conditional_stack_index];
 
-	if (as->Opt_C == BP_TRUE)
+	if (as->Opt_C == 1)
 	{
 		print_line(as, 0, ' ', 0);
 	}
@@ -546,12 +588,12 @@ int _else(assembler *as)
 
 int _align(assembler *as)
 {
-	BP_int32	result;
+	int	result;
 	
 	
 	as->P_force = 1;
 	
-	as->code_segment_start = BP_TRUE;
+	as->code_segment_start = 1;
 	
 	
 	/* 1. If we are currently in a FALSE conditional, just return. */
@@ -564,7 +606,7 @@ int _align(assembler *as)
 	
 	if (evaluate(as, &result, &as->line.optr, 0))
 	{
-		BP_int32			whats_left;
+		int			whats_left;
 		
 		
 		f_record(as);     /* flush out bytes */
@@ -599,7 +641,7 @@ int _even(assembler *as)
 {
 	as->P_force = 1;
 	
-	as->code_segment_start = BP_TRUE;
+	as->code_segment_start = 1;
 	
 	
 	/* If we are currently in a FALSE conditional, just return. */
@@ -635,7 +677,7 @@ int _odd(assembler *as)
 {
 	as->P_force = 1;
 	
-	as->code_segment_start = BP_TRUE;
+	as->code_segment_start = 1;
 	
 	
 	/* If we are currently in a FALSE conditional, just return. */
@@ -768,13 +810,13 @@ int _ttl(assembler *as)
 int _page(assembler *as)
 {
 	as->P_force = 0;
-	as->f_new_page = BP_TRUE;
+	as->f_new_page = 1;
 	
 	if (as->pass == 2)
 	{
-		if (as->o_show_listing == BP_TRUE)  
+		if (as->o_show_listing == 1)  
 		{
-			if (as->o_format_only == BP_TRUE)
+			if (as->o_format_only == 1)
 			{
 				printf("* ");
 			}
@@ -805,8 +847,8 @@ int _page(assembler *as)
 
 int _fill(assembler *as)
 {
-	BP_int32		fill;
-	BP_int32		result;
+	int		fill;
+	int		result;
 
 	
 	as->P_force = 1;
@@ -858,7 +900,7 @@ int _fill(assembler *as)
 
 	if (*as->line.label != EOS)
 	{
-		symbol_add(as, as->line.label, as->old_program_counter, BP_FALSE);
+		symbol_add(as, as->line.label, as->old_program_counter, 0);
 	}		
 
 	
@@ -991,7 +1033,7 @@ int _fcs(assembler *as)
 	
 	/* If we are currently in a FALSE conditional, just return. */
 	
-	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
 		return 0;
 	}
@@ -1061,7 +1103,7 @@ int _fcr(assembler *as)
 	
 	/* If we are currently in a FALSE conditional, just return. */
 	
-	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
 		return 0;
 	}
@@ -1117,13 +1159,13 @@ int _fcr(assembler *as)
 
 int _org(assembler *as)
 {
-	BP_int32	result;
-	BP_char		emit_char = ' ' ;
+	int	result;
+	char		emit_char = ' ' ;
 	
 
 	as->P_force = 1;
 
-	as->code_segment_start = BP_TRUE;
+	as->code_segment_start = 1;
 	
 		
 	/* If we are currently in a FALSE conditional, just return. */
@@ -1134,7 +1176,7 @@ int _org(assembler *as)
 	}
 
 
-	if (evaluate(as, &result, &as->line.optr, 0) == BP_TRUE)
+	if (evaluate(as, &result, &as->line.optr, 0) == 1)
 	{
 		if (as->o_asm_mode == ASM_DECB)
 		{
@@ -1176,7 +1218,7 @@ int _org(assembler *as)
 
 int _equ(assembler *as)
 {
-	BP_int32	result;
+	int	result;
 
 
 	as->P_force = 1;
@@ -1224,7 +1266,7 @@ int _equ(assembler *as)
 
 int _set(assembler *as)
 {
-	BP_int32	result;
+	int	result;
 
 
 	as->P_force = 1;
@@ -1267,7 +1309,7 @@ int _set(assembler *as)
 int _opt(assembler *as)
 {
 	char *Opt = as->line.operand;
-	BP_Bool opt_state = BP_TRUE;
+	int opt_state = 1;
 	
 
 	/* If we are currently in a FALSE conditional, just return. */
@@ -1307,7 +1349,7 @@ int _opt(assembler *as)
 	if (*Opt == '-')
 	{
 		Opt++;
-		opt_state = BP_FALSE;
+		opt_state = 0;
 	}
 
 
@@ -1348,7 +1390,7 @@ int _opt(assembler *as)
 			break;
 
 		case 'o':	/* object file name */
-			if (opt_state == BP_FALSE)
+			if (opt_state == 0)
 			{
 				strncpy(as->object_name, as->line.optr + 1, FNAMESIZE - 1);
 			}
@@ -1401,7 +1443,7 @@ int _null_op(assembler *as)
 
 int _setdp(assembler *as)   /* TODO! */
 {
-	BP_int32	newdp;
+	int	newdp;
 
 
 	as->P_force = 1;
@@ -1476,7 +1518,7 @@ int _use(assembler *as)
 
 	{
 		struct filestack use_file, *prev_file;
-		BP_char		path[FNAMESIZE];
+		char		path[FNAMESIZE];
 		int			i = 0;
 		
 		
@@ -1491,7 +1533,7 @@ int _use(assembler *as)
 		use_file.current_line = 0;
 		use_file.num_blank_lines = 0;
 		use_file.num_comment_lines = 0;
-		use_file.end_encountered = BP_FALSE;
+		use_file.end_encountered = 0;
 		
 		
 		/* Open a path to the file. */
@@ -1578,7 +1620,7 @@ int __end(assembler *as)
 		
 		print_line(as, 0, ' ', 0);
 
-		as->current_file->end_encountered = BP_TRUE;
+		as->current_file->end_encountered = 1;
 	}
 
 
@@ -1594,7 +1636,7 @@ int __end(assembler *as)
 *
 *****************************************************************************/
 
-static int _reserve_memory(assembler *as, BP_int32 size);
+static int _reserve_memory(assembler *as, int size);
 
 
 /*!
@@ -1603,14 +1645,14 @@ static int _reserve_memory(assembler *as, BP_int32 size);
 	@param as The assembler state structure
  */
 
-static int _reserve_memory(assembler *as, BP_int32 size)
+static int _reserve_memory(assembler *as, int size)
 {
-	BP_int32	result;
+	int	result;
 	
 	
 	as->P_force = 1;
 	
-	as->code_segment_start = BP_TRUE;
+	as->code_segment_start = 1;
 	
 	
 	/* If we are currently in a FALSE conditional, just return. */
@@ -1704,7 +1746,7 @@ int _rmq(assembler *as)
  *****************************************************************************/
 
 
-static int _fill_constant(assembler *as, BP_int32 size);
+static int _fill_constant(assembler *as, int size);
 
 
 /*!
@@ -1713,9 +1755,9 @@ static int _fill_constant(assembler *as, BP_int32 size);
 	@param as The assembler state structure
  */
 
-int _fill_constant(assembler *as, BP_int32 size)
+int _fill_constant(assembler *as, int size)
 {
-	BP_int32	result;
+	int	result;
 	
 	
 	/* If we are currently in a FALSE conditional, just return. */
@@ -1735,7 +1777,7 @@ int _fill_constant(assembler *as, BP_int32 size)
 		switch (size)
 		{
 			case 1:
-				if (result > 0xFF && as->line.force_byte == BP_FALSE)
+				if (result > 0xFF && as->line.force_byte == 0)
 				{
 					error(as, "Value truncated");
 				}
@@ -1744,7 +1786,7 @@ int _fill_constant(assembler *as, BP_int32 size)
 				break;
 				
 			case 2:
-				if (result > 0xFFFF && as->line.force_byte == BP_FALSE)
+				if (result > 0xFFFF && as->line.force_byte == 0)
 				{
 					error(as, "Value truncated");
 				}
@@ -1760,7 +1802,7 @@ int _fill_constant(assembler *as, BP_int32 size)
 		
 	if (*as->line.label != EOS)
 	{
-		symbol_add(as, as->line.label, as->old_program_counter, BP_FALSE);
+		symbol_add(as, as->line.label, as->old_program_counter, 0);
 	}		
 		
 	print_line(as, 0, ' ', as->old_program_counter);
@@ -1817,7 +1859,7 @@ int _fqb(assembler *as)
  *****************************************************************************/
 
 
-static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 value);
+static int _fill_constant_with_value(assembler *as, int size, int value);
 
 
 
@@ -1827,9 +1869,9 @@ static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 valu
 	@param as The assembler state structure
  */
 
-static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 value)
+static int _fill_constant_with_value(assembler *as, int size, int value)
 {
-	BP_int32	result;
+	int	result;
 
 	
 	as->P_force = 1;
