@@ -1,0 +1,833 @@
+
+#ifndef lint
+static char *id = "$Id$";
+#endif
+
+/*
+ *------------------------------------------------------------------
+ *
+ * $Source$
+ * $RCSfile$
+ * $Revision$
+ * $Date$
+ * $State$
+ * $Author$
+ * $Locker$
+ *
+ *------------------------------------------------------------------
+ *
+ * Carl Kreider
+ * 22305 CR 28
+ * Goshen, IN  46526
+ * (219) 875-7019
+ * (71076.76@compuserve.com, ckreider@skyenet.net, carlk@syscon-intl.com)
+ *
+ *------------------------------------------------------------------
+ * $Log$
+ * Revision 1.1  1996/07/20 17:10:34  cc
+ * Initial revision
+ *
+ *------------------------------------------------------------------
+ */
+
+/*
+ * file archive utility loosely modeled after Kernigan & Plauger
+ *
+ *  written sometime in late 1986 by Carl Kreider
+ *
+ *  02/15/87 Richard Pettit
+ *       Modified to compile and run under Unix SysV on 680x0 boxes
+ *       Has byte order problems on a Vax under SysV
+ *
+ *  05/28/87 Carl Kreider
+ *       Re-organize a bit.  Move system dependent code to one
+ *        module.  A few conditionals left in main body.
+ *       Deal with byte order problems with special routines to
+ *        read and write the header struct in pieces instead of
+ *        in one shot.  Non-character (shorts and longs) are
+ *        read and written a byte at a time using shifts and
+ *        masks to let the machine get the order correct.
+ *       Re-write my directory handler to be compatible with
+ *        OSK and Richard's.
+ *       Put better error checking on I/O in LZ routines.
+ *       LZ stuff should be changed to use char array for 'buf'
+ *        instead of short int array to make life easier on I/O.
+ *
+ * 93-07-01 CrK
+ *	Lots of work.  Intervening mods not recorded, but this is the
+ *	 desired (nee, demanded) rewrite.
+ *	o - -o forces old compression and compatibility and overrides
+ *		other -b or -s options.
+ *  o - -m command moves (adds and deletes) files to the archive
+ *  o - -d command deletes files from the archive
+ *
+ * 95-09-04 CRK
+ *		small bug in lz1 found by Steve Bliss
+ *		(in de_LZ_1, (char) finchar => (u_char) finchar)
+ */
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <memory.h>
+#include <dir.h>
+#include "ar.h"
+
+#ifdef SYSV
+# include <sys/types.h>
+# include <sys/dir.h>
+# include "dir.h"
+#endif
+
+
+FN		*fnhead = (FN *)NULL;
+char	*hid = HID,
+		*suf = SUF;
+char	*mod,							/* pointer to module name			*/
+		*archfile;						/* name of archive file				*/
+int		all = FALSE,					/* true to access old versions		*/
+		oldmode = FALSE,				/* true forces old compression		*/
+		supflag = 0,					/* 1=no binary 2=none at all		*/
+		debug = FALSE,					/* sets debug level					*/
+		compt,							/* default to new compression		*/
+		rmflag = 0;						/* don't rm file after save			*/
+		zflag = FALSE;					/* true if names come from stdin	*/
+/*page*/
+
+main(argc, argv)
+int		argc;
+char	**argv;
+	{
+	char	command, *p, *emalloc();
+	int		n, updating;
+	FILE	*afp;
+
+#ifdef SYSV
+	setuid(0);
+#else
+	pflinit();
+#endif
+	setbuf(stdout, 0);
+	mod = *argv++;						/* save program name			*/
+
+	if ((argc < 3) || (*(p = *argv++) != '-'))
+		help();
+
+	if ('m' == (command = tolower(*++p)))
+		command = 'u', ++rmflag;
+
+	lz1_config(13);						/* set up compression defaults	*/
+	compt = (13 << 4) | COMP3;
+	proc_opt(++p);						/* process command modifiers	*/
+
+	archfile = *argv++;
+	n = strlen(archfile);
+	if ((strcmp(archfile + n - SUFSIZ, suf)) != 0)
+		archfile = strcat(strcpy(emalloc(n + SUFSIZ + 1), archfile), suf);
+
+	if (get_names(argc -= 3, argv, command == 'u') == 0)
+		if (command == 'u')
+			fatal(0, "none of the targets found\n");
+
+	if (command == 'u')
+		{
+		if ((afp = fopen(archfile, F_RP)) == NULL)	/* try old first	*/
+			if ((afp = fopen(archfile, F_WP)) == NULL)	/* create it	*/
+				fatal(errno, "can't create %s\n", archfile);
+		}
+	else
+		if (command == 'd')
+			{
+			if ((afp = fopen(archfile, F_RP)) == NULL)
+				fatal(errno, "can't find %s\n", archfile);
+			}
+		else
+			{
+			if ((afp = fopen(archfile, F_R)) == NULL)
+				fatal(errno, "can't find %s\n", archfile);
+			}
+
+	proc_cmd(command, afp);				/* process a command			*/
+	}
+/*page*/
+/*
+ * process command modifiers
+ */
+
+proc_opt(p)
+char	*p;
+	{
+	int		n;
+
+	while (*p)
+		switch (tolower(*p++))
+			{
+			case 'a' :					/* all - even old ones			*/
+				all = TRUE;
+				break;
+
+			case 'b' :					/* set maxbits to nn			*/
+				n = atoi(p);
+				lz1_config(n);
+				compt = (n << 4) | COMP3;
+				while (*p && isdigit(*p))
+					++p;				/* eat number					*/
+				break;
+
+			case 'd' :
+				debug++;				/* increase debug level			*/
+				break;
+
+			case 'o' :					/* use old compression method	*/
+				oldmode = TRUE;
+				break;
+
+			case 's' :					/* suppress compression			*/
+				supflag++;
+				break;
+
+			case 'z' :					/* get names from stdin			*/
+				zflag = TRUE;
+				break;
+
+			default  :
+				help();
+			}
+
+	if (oldmode)
+		{
+		lz1_config(11);					/* force old bits/code			*/
+		compt = COMP1;					/* force old compression		*/
+		if (supflag == 0)
+			supflag = 1;
+		}
+	}
+/*page*/
+/*
+ * process the command
+ */
+
+proc_cmd(command, afp)
+char	command;
+FILE	*afp;
+	{
+	switch (command)
+		{
+		case 'd' :						/* delete file(s)				*/
+			delete(afp);
+			break;
+
+		case 'p' :						/* print member(s)				*/
+			extract(afp, 0);
+			break;
+
+		case 't' :						/* table of contents			*/
+			table(afp);
+			break;
+
+		case 'u' :						/* update or add				*/
+			update(afp);
+			break;
+
+		case 'x' :						/* extract member(s)			*/
+			extract(afp, 1);
+			break;
+
+		default  :
+			help();
+		}
+	}
+/*page*/
+/*
+ * delete file(s) from the archive
+ */
+
+delete(afp)
+FILE	*afp;
+	{
+	long	archive_size, ftell(), get_fsize();
+	FN		*fnp;
+	HEADER	header;
+	int		found;
+
+	if (fnhead == NULL)
+		fatal(0, "No file(s) specified to delete\n");
+
+	archive_size = get_fsize(fileno(afp));	/* current size of archive	*/
+
+	while ((gethdr(afp, &header)) != EOF)
+		{
+		found = FALSE;
+		/* see if this member of archive is one we want */
+		for (fnp = fnhead; fnp && !found; fnp = fnp->fn_link)
+			if (TRUE == (found = patmatch(fnp->fn_name, header.a_name, TRUE)))
+				{
+				int		n;
+				long	from_pos, to_pos, saved_pos;
+
+				printf("deleting <%s>\n", header.a_name);
+
+				/* Where in archive to move data */
+				saved_pos = to_pos = ftell(afp) - (long) sizeof(HEADER);
+
+				/* This is the next file in the archive */
+				from_pos = ftell(afp) + header.a_size;
+
+				/* Decrease archive size */
+				archive_size -= ((long) sizeof(HEADER) + header.a_size);
+
+				do	{
+					static char buf[BUFSIZ];
+
+					fseek(afp, from_pos, SEEK_SET);	/* next chunk loc	*/
+					if ((n = fread(buf, 1, BUFSIZ, afp)) <= 0)
+						continue;		/* done with this member at EOF	*/
+
+					from_pos += n;
+
+					fseek(afp, to_pos, SEEK_SET);	/* put it back		*/
+					fwrite(buf, 1, n, afp);
+
+					to_pos += n;
+					} while (n > 0);
+
+				fseek(afp, saved_pos, SEEK_SET);	/* recover start pos */
+				set_fsize(fileno(afp), archive_size);	/* resize archive */
+				}
+
+		if (!found)
+			fseek(afp, header.a_size, SEEK_CUR);	/* skip if not del	*/
+		}
+	}
+/*page*/
+/*
+ * extract file(s) from the archive
+ *  copy a file from archive and restore it's origional attrs
+ */
+
+extract(afp, flag)
+FILE	*afp;
+int		flag;						/* 0 = listing, 1 = writing to file	*/
+	{
+	FILE	*ofp;						/* assume just listing			*/
+	HEADER	header;
+	FN		*fnp;
+	FILE	*spl_open();
+
+	if (fnhead == (FN *) NULL)
+		stash_name("*");				/* fake for special case		*/
+
+	while ((gethdr(afp, &header)) != EOF)
+		{
+		for (fnp = fnhead; fnp; fnp = fnp->fn_link)
+			if ((patmatch(fnp->fn_name, header.a_name, TRUE) == TRUE)
+					|| (header.a_stat != 0 && all == TRUE))
+				break;
+
+		if (fnp == 0)
+			fseek(afp, header.a_size, 1);	/* file not found			*/
+		else
+			{
+			if (!flag)
+				copy_from(afp, stdout, &header);
+			else
+				{
+				printf("extracting <%s>\n", header.a_name);
+				ofp = spl_open(&header);
+				copy_from(afp, ofp, &header);
+#ifdef SYSV
+				fclose(ofp);
+				set_fstat(header.a_name, &header.a_attr);
+#else
+				set_fstat(fileno(ofp), &header.a_attr);
+				fclose(ofp);
+#endif
+				}
+			}
+		}
+	}
+/*page*/
+/*
+ * list a table of contents for the archive file
+ *  only show files matching the search mask which are current
+ *  unless the all flag is set, whereupon we will show old ones too
+ */
+
+table(fp)
+FILE	*fp;
+	{
+	HEADER	header;
+	FN		*fnp;
+	long	n, c4tol();
+	static char	*attrs[8] =
+		{"---", "--r", "-w-", "-wr", "e--", "e-r", "ew-", "ewr"};
+
+	if (fnhead == (FN *) NULL)
+		stash_name("*");				/* fake for special case		*/
+
+	printf("                                                  file    file   stored\n");
+	printf("  file name                   ver    file date    attr    size    size\n");
+	printf("----------------------------- --- -------------- ------   -----   -----\n");
+	while ((gethdr(fp, &header)) != EOF)
+		{
+		for (fnp = fnhead; fnp; fnp = fnp->fn_link)
+			{
+			if ((patmatch(fnp->fn_name, header.a_name, TRUE) == TRUE)
+					&& (header.a_stat == 0 || all == TRUE))
+				printf("%-29s %2d  %02d/%02d/%02d %02d:%02d %s%s %7ld %7ld\n",	/*+ek+*/
+					header.a_name, header.a_stat, 
+					header.a_attr.fd_date[0], header.a_attr.fd_date[1], 
+					header.a_attr.fd_date[2], header.a_attr.fd_date[3], 
+					header.a_attr.fd_date[4],
+					attrs[(header.a_attr.fd_attr >> 3) & 7],
+					attrs[header.a_attr.fd_attr & 7],
+					c4tol(header.a_attr.fd_fsize), header.a_size);
+			}
+
+		fseek(fp, header.a_size, 1);
+		}
+	}
+/*page*/
+/*
+ * add new files or replace existing files
+ */
+
+update(afp)
+FILE	*afp;
+	{
+	FILE	*ifp;
+	HEADER	header;
+	FN		*fnp;
+	int		saved = 0;
+	long	bytes, head_pos, tail_pos, copy_to(), c4tol();
+
+	while ((gethdr(afp, &header)) != EOF)
+		{
+		for (fnp = fnhead; fnp; fnp = fnp->fn_link)
+			if (patmatch(fnp->fn_name, header.a_name, TRUE) == TRUE)
+				{
+				++header.a_stat;		/* mark it older				*/
+				fseek(afp, (long) -sizeof(HEADER), 1);
+				if ((puthdr(afp, &header)) == EOF)
+					fatal(errno, "write failure on delete\n");
+				}
+
+		fseek(afp, header.a_size, 1);
+		}
+
+	for (fnp = fnhead; fnp; fnp = fnp->fn_link)
+		{
+		if ((ifp = fopen(fnp->fn_name, F_R)) == NULL)
+			if (errno == 214)
+				continue;				/* a directory, we presume		*/
+			else
+				fatal(errno, "can't find %s\n", fnp->fn_name);
+
+		printf("archiving <%s>\n", fnp->fn_name);
+		++saved;						/* count the files added		*/
+		if ((supflag == 2) || ((supflag == 1) && isobject(ifp)))
+			header.a_type = PLAIN;
+		else
+			header.a_type = compt;
+
+		strcpy(header.a_hid, hid);
+		memset(header.a_name, ' ', FNSIZ + 1);
+		strcpy(header.a_name, fnp->fn_name);
+		get_fstat(fileno(ifp), &header.a_attr);
+		header.a_stat = '\0';
+		rewind(ifp);
+		head_pos = ftell(afp);			/* save for update				*/
+		if (puthdr(afp, &header) == EOF)	/* skip ahead				*/
+			fatal(errno, "write error on header for %s\n", fnp->fn_name);
+
+		bytes = head_pos + c4tol(header.a_attr.fd_fsize) + sizeof(HEADER);
+		set_fsize(fileno(afp), bytes);	/* make it big enough for all	*/
+		header.a_size = copy_to(afp, ifp, &header);	/* now copy it		*/
+		fclose(ifp);
+		tail_pos = ftell(afp);			/* save our final position		*/
+		fseek(afp, head_pos, 0);		/* back up to header pos		*/
+		if ((fwrite(&header, sizeof(HEADER), 1, afp)) == NULL)
+			fatal(errno, "write error on header for %s\n", fnp->fn_name);
+
+		fseek(afp, tail_pos, 0);		/* go to end of file			*/
+		if (rmflag)
+			unlink(fnp->fn_name);
+		}
+
+	if (saved > 0)
+		set_fsize(fileno(afp), tail_pos);	/* now set real file size	*/
+	}
+/*page*/
+/*
+ * gather file names from command line or std in
+ *  use linked list to avoid finite limit on number of names
+ */
+
+get_names(ac, av, updating)
+int		ac;
+char	**av;
+int		updating;						/* TRUE if command is update	*/
+	{
+	char			*p, *q, *r, buf[80];
+	DIR				*dirp;
+	struct direct	*dp;
+	int				found = 0;
+
+	while (ac--)
+		if (!updating || !iswild(*av))
+			if (notdot(av))
+				found += stash_name(*av++);
+			else
+				printf("Cannot archive %s\n", *av++);
+		else
+			{
+			*(p = buf) = '\0';
+			if (q = strrchr((r = *av++), '/'))
+				{
+				strcpy(p, r);			/* copy all to buffer			*/
+				*(r = strrchr(p, '/')) = '\0';	/* break in two			*/
+				++q;					/* pointer to pattern			*/
+				}
+			else
+				{
+				q = r;
+				r = p;					/* swap pointers				*/
+				}
+
+			dirp = opendir(*p ? p : ".");
+			if (*p)
+				*r++ = '/';				/* set up for append			*/
+
+			while (dp = readdir(dirp))
+				if (patmatch(q, strcpy(r, dp->d_name), TRUE))
+					if (strucmp(r, archfile) && notdot(r))
+						found += stash_name(p);
+
+			closedir(dirp);
+			}
+
+	if (zflag)
+		while (gets(buf))
+			if (buf[0] != '\0')
+				found += stash_name(buf);
+
+	return (found);
+	}
+
+
+/*page*/
+/*
+ * squirrel a name away in the linked list of targets
+ */
+
+stash_name(p)
+char	*p;
+	{
+	FN		*fnp;						/* where to insert new name		*/
+	FN		*q;
+
+	if (*p == '/')
+		fatal(1, "absolute path illegal <%s>\n", p);
+
+	q = (FN *) emalloc(sizeof(FN) + strlen(p));
+	q->fn_link = (FN *) 0;
+	strcpy(q->fn_name, p);
+	/* first check for empty list or insertion at head					*/
+	if ((fnhead == (FN *) NULL) || strcmp(p, fnhead->fn_name) < 0)
+		{
+		q->fn_link = fnhead;			/* insert at head				*/
+		fnhead = q;
+		}
+	else
+		{								/* search for right spot		*/
+		fnp = fnhead;
+		while (fnp->fn_link != (FN *) NULL)	/* quit on end of list		*/
+			if (strcmp(p, fnp->fn_link->fn_name) < 0)	/* here?		*/
+				break;					/* found right spot				*/
+			else
+				fnp = fnp->fn_link;		/* follow chain					*/
+
+		q->fn_link = fnp->fn_link;		/* make insertion here			*/
+		fnp->fn_link = q;
+		}
+
+	return (1);							/* we saved one name			*/
+	}
+
+
+/*
+ * trivial function to check for the illegal names "." and ".."
+ *  returns true if name is valid.
+ */
+
+notdot(p)
+char	*p;
+	{
+	return (strcmp(p, ".") && strcmp(p, ".."));
+	}
+
+
+/*
+ * trivial function to check a file spec for meta characters
+ *  returns true if any metachars in file spec
+ */
+
+iswild(p)
+char	*p;
+	{
+	return (strchr(p, '?') || strchr(p, '*'));
+	}
+/*page*/
+/*
+ * get the next header from the file
+ */
+
+gethdr(fp, hp)
+FILE	*fp;
+HEADER	*hp;
+	{
+	long	pos;
+
+	if ((fread(hp->a_hid, HIDSIZ + 1, 1, fp) == NULL)
+			|| (fread(hp->a_name, FNSIZ + 1, 1, fp) == NULL)
+			|| (readlong(fp, &hp->a_size) == EOF)
+			|| ((hp->a_type = getc(fp)) == EOF)
+			|| ((hp->a_stat = getc(fp)) == EOF)
+			|| (fread(&hp->a_attr, sizeof(FILDES), 1, fp) == NULL))
+		return (EOF);
+
+	if (strncmp(hp->a_hid, hid, HIDSIZ) != 0)
+		{
+		if (0 == (pos = ftell(fp) - sizeof(HEADER)))
+			fatal(1, "file not archive\n");
+
+		if ((hp->a_hid[0] == 0) || (hp->a_hid[0] == 0x1a))
+			fatal(1, "probable XModem padding at $%lX\n", pos);
+
+		fatal(1, "file damaged - no header at $%lX\n", pos);
+		}
+
+	return (0);
+	}
+
+
+/*
+ * put a header on the file
+ */
+
+puthdr(fp, hp)
+FILE	*fp;
+HEADER	*hp;
+	{
+	if ((fwrite(hp->a_hid, HIDSIZ + 1, 1, fp) == NULL)
+		|| (fwrite(hp->a_name, FNSIZ + 1, 1, fp) == NULL)
+		|| (writelong(fp, hp->a_size) == EOF)
+		|| (putc(hp->a_type, fp) == EOF)
+		|| (putc(hp->a_stat, fp) == EOF)
+		|| (fwrite(&hp->a_attr, sizeof(FILDES), 1, fp) == NULL))
+		return (EOF);
+
+	return (0);
+	}
+/*page*/
+/*
+ * here we will recreate a tree that was collapsed into the archive file
+ */
+
+FILE	*spl_open(hp)
+HEADER	*hp;
+	{
+	char	buf[FNSIZ + 3];
+	FILE	*ofp;
+	char	*p;
+	long	c4tol();
+
+	p = hp->a_name;
+	while (p = strchr(p, '/'))
+		{
+		*p = '\0';						/* truncate temporarily			*/
+		if (assureDir(hp->a_name))		/* create it if not there		*/
+			fatal(errno, "can't make <%s>\n", hp->a_name);
+
+		*p++ = '/';						/* put back the delim			*/
+		}
+
+	strcpy(buf, hp->a_name);
+	if (hp->a_stat)
+		sprintf(&buf[strlen(buf)], ".%d", hp->a_stat);	/* make unique	*/
+
+	if ((ofp = fopen(buf, F_W)) == NULL)
+		fatal(errno, "create failure on %s\n", buf);
+
+	set_fsize(fileno(ofp), c4tol(hp->a_attr.fd_fsize));
+	return (ofp);
+	}
+/*page*/
+/*
+ * copy an archived file from an archive
+ */
+
+copy_from(ifp, ofp, hp)
+FILE	*ifp, *ofp;
+HEADER	*hp;
+	{
+	long	bytes = hp->a_size;
+	int		byt;
+
+	switch (hp->a_type & 0x0f)
+		{
+		case PLAIN :
+			while (bytes--)
+				{
+				if ((byt = getc(ifp)) == ERROR)
+					fatal(errno, "read error while copying\n");
+
+				if (putc(byt, ofp) == ERROR)
+					fatal(errno, "write error while copying\n");
+				}
+			break;
+
+		case COMP1 :
+		case COMP3 :
+			byt = (hp->a_type >> 4) & 0x0f;
+			lz1_config(byt ? byt : 11);
+			byt = de_LZ_1(ifp, ofp, bytes);
+#ifdef DEBUG
+			if (debug > 1)
+				dump_otbl();
+#endif
+			switch (byt)
+				{
+				case NOT_AR :
+					fatal(1, "not an archive or archive damaged\n");
+
+				case RERR :
+					fatal(1, "read error on archive\n");
+
+				case WERR :
+					fatal(1, "write error on output\n");
+				}
+			break;
+
+		default  :
+			fatal(1, "unknown compression method\n");
+		}
+	}
+/*page*/
+/*
+ * copy an file to an archive
+ */
+
+long	copy_to(ofp, ifp, hp)
+FILE	*ofp, *ifp;
+HEADER	*hp;
+	{
+	long	bytes = 0;
+	int		byt;
+
+	switch (hp->a_type & 0x0f)
+		{
+		case PLAIN :
+			while ((byt = getc(ifp)) != ERROR)
+				if (putc(byt, ofp) == ERROR)
+					fatal(errno, "write error while copying\n");
+				else
+					++bytes;
+
+			if (ferror(ifp))
+				fatal(errno, "read error while copying\n");
+			break;
+
+		case COMP3 :
+		case COMP1 :
+			byt = LZ_1(ifp, ofp, &bytes);
+#ifdef DEBUG
+			if (debug > 1)
+				dump_itbl();
+#endif
+			switch (byt)
+				{
+				case RERR :
+					fatal(1, "read error on input file\n");
+
+				case WERR :
+					fatal(1, "write error on archive\n");
+
+				case TBLOVF :
+					fatal(1, "string table overflow on compression\n");
+				}
+			break;
+
+		default  :
+			fatal(1, "unknown compression method\n");
+		}
+
+	return (bytes);
+	}
+/*page*/
+/*
+ * get memory from the system or die trying
+ */
+
+char	*emalloc(n)
+int		n;
+	{
+	char	*p;
+	char	*malloc();
+
+	if ((p = malloc(n)) == NULL)
+		fatal(errno, "Can't get memory\n");
+
+	return (p);
+	}
+
+
+/*
+ * print a fatal error message and exit
+ */
+
+fatal(code, msg, arg1, arg2)
+int		code;
+char	*msg;
+int		arg1, arg2;
+	{
+	fprintf(stderr, "%s: ", mod);
+	fprintf(stderr, msg, arg1, arg2);
+	exit(code);
+	}
+
+/*page*/
+/*
+ * provide usage info for this command
+ */
+
+static char	*hlpmsg[] = {
+	"Ar V2.01 - archive file manager\n",
+	"Usage:  Ar -<cmd>[<modifier>] archive [file .. ]\n",
+	"      <cmd> is one of the following:\n",
+	"         d   delete file(s) from the archive\n",
+	"         m   move file(s) to archive (add and delete)\n",
+	"         p   print file(s) from the archive\n",
+	"         t   show table of contents for archive\n",
+	"         u   update/add file(s) to the archive\n",
+	"         x   extract file(s) from the archive\n",
+	"      <modifier> is one of the following:\n",
+	"         a   all versions (for extract)\n",
+	"         bnn set max bits to 'nn' (12 default)\n",
+	"         d   incrment debug level\n",
+	"         o   default to 'old' archives\n",
+	"         s   once, suppress binary; twice, suppress all file compression\n",
+	"         z   read names for <cmd> from std in\n",
+	"\n      File names can include the meta chars ",
+	"* and ?, or path lists.\n",
+	0};
+
+help()
+	{
+	register char	**p;
+
+	for (p = hlpmsg; *p; ++p)
+		fputs(*p, stderr);
+
+	exit (1);
+	}

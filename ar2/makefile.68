@@ -1,0 +1,22 @@
+
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  1996/07/20 17:10:48  cc
+# Initial revision
+#
+#
+
+DBG		= -g
+RDIR	= rels
+CFLAGS	= -iq $(DBG) -dDEBUG
+RFILES	= ar.r arsup.r lz1.r
+
+ar2: $(RFILES)
+	chd rels; cc -iq $(DBG) -m=8 -f=ar2 $(RFILES)
+
+lz1.r: lz1.c arerrs.h
+#	cc $(CFLAGS) -r=$(RDIR) $*.c
+
+ar.r arsup.r : ar.h arerrs.h

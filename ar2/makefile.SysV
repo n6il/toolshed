@@ -1,0 +1,26 @@
+
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  1996/07/20 17:10:49  cc
+# Initial revision
+#
+#
+#
+# makefile for SysV running on a 680X0
+#
+
+OBJ		= ar.o arsup.o lz1.o o2u.o
+#SRC	= $(OBJ:.o=.c)
+CFLAGS	= -DSYSV -O
+LIBS	=
+MKDEP	= gcc -MM -w
+
+ar:	$(OBJ)
+	cc -o ar $(OBJ) $(LIBS)
+
+depend:
+	$(MKDEP) *.c > dependencies
+
+include dependencies
