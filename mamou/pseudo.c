@@ -28,7 +28,7 @@ int _nam(assembler *as)
 
 	/* 3. Test for presence of a label and error if found. */
 	
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
 		error(as, "label not allowed");
 
@@ -38,7 +38,7 @@ int _nam(assembler *as)
 	
 	/* 4. Copy the name into our global space for later use. */
 	
-	strncpy(as->Nam, as->optr, NAMLEN-1);
+	strncpy(as->Nam, as->line->optr, NAMLEN-1);
 
 	print_line(as, 0, ' ', 0);
 
@@ -72,7 +72,7 @@ int _ttl(assembler *as)
 
 	/* 3. Test for presence of a label and error if found */
 	
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
 		error(as, "label not allowed");
 
@@ -81,7 +81,7 @@ int _ttl(assembler *as)
 	
 	/* 4. Copy the title into our global space for later use. */
 	
-	strncpy(as->Ttl, as->optr, TTLLEN - 1);
+	strncpy(as->Ttl, as->line->optr, TTLLEN - 1);
 
 	print_line(as, 0, ' ', 0);
 
@@ -107,11 +107,11 @@ int _rmb(assembler *as)
 	}
 
 
-	if (evaluate(as, &result, &as->optr, 0))
+	if (evaluate(as, &result, &as->line->optr, 0))
 	{
-		if (*as->label != EOS)
+		if (*as->line->label != EOS)
 		{
-			symbol_add(as, as->label, as->data_counter, 0);
+			symbol_add(as, as->line->label, as->data_counter, 0);
 		}
 		f_record(as);     /* flush out bytes */
 		print_line(as, 0, 'D', as->data_counter);
@@ -119,7 +119,7 @@ int _rmb(assembler *as)
 	}
 	else
 	{
-		error(as, "Undefined as->operand during Pass One");
+		error(as, "Undefined as->line->operand during Pass One");
 	}
 	return 0;
 }
@@ -142,7 +142,7 @@ int _zmb(assembler *as)
 	}
 
 
-	if (evaluate(as, &result, &as->optr, 0))
+	if (evaluate(as, &result, &as->line->optr, 0))
 	{
 		if (result < 0)
 		{
@@ -158,11 +158,11 @@ int _zmb(assembler *as)
 	}
 	else
 	{
-		error(as, "Undefined as->operand during Pass One");
+		error(as, "Undefined as->line->operand during Pass One");
 	}
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
-		symbol_add(as, as->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
 	return 0;
 }
@@ -186,16 +186,16 @@ int _fill(assembler *as)
 	}
 
 
-	evaluate(as, &result, &as->optr, 0);
+	evaluate(as, &result, &as->line->optr, 0);
 	fill = result;
-	if (*as->optr++ != ',')
+	if (*as->line->optr++ != ',')
 	{
 		error(as, "Bad fill");
 	}
 	else
 	{
-		as->optr = skip_white(as->optr);
-		evaluate(as, &result, &as->optr, 0);
+		as->line->optr = skip_white(as->line->optr);
+		evaluate(as, &result, &as->line->optr, 0);
 		if (result < 0)
 		{
 			error(as, "Illegal value for fill");
@@ -215,9 +215,9 @@ int _fill(assembler *as)
 		}
 		print_line(as, 0, ' ', as->old_program_counter);
 	}
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
-		symbol_add(as, as->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
 	return 0;;
 }
@@ -241,22 +241,22 @@ int _fcb(assembler *as)
 
 	do
 	{
-		as->optr = skip_white(as->optr);
-		evaluate(as, &result, &as->optr, 0);
+		as->line->optr = skip_white(as->line->optr);
+		evaluate(as, &result, &as->line->optr, 0);
 		if (result > 0xFF)
 		{
-			if (as->force_byte == BP_FALSE)
+			if (as->line->force_byte == BP_FALSE)
 			{
-				warn(as, "Value truncated");
+				error(as, "Value truncated");
 			}
 			result = lobyte(result);
 		}
 		emit(as, result);
 	}
-	while (*as->optr++ == ',');
-	if (*as->label != EOS)
+	while (*as->line->optr++ == ',');
+	if (*as->line->label != EOS)
 	{
-		symbol_add(as, as->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
 	print_line(as, 0, ' ', as->old_program_counter);
 	return 0;
@@ -281,13 +281,13 @@ int _fdb(assembler *as)
 
 	do
 	{
-		as->optr = skip_white(as->optr);
-		evaluate(as, &result, &as->optr,0 );
+		as->line->optr = skip_white(as->line->optr);
+		evaluate(as, &result, &as->line->optr,0 );
 		eword(as, result);
-	} while (*as->optr++ == ',');
-	if (*as->label != EOS)
+	} while (*as->line->optr++ == ',');
+	if (*as->line->label != EOS)
 	{
-		symbol_add(as, as->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
 	print_line(as, 0, ' ', as->old_program_counter);
 	return 0;
@@ -309,27 +309,27 @@ int _fcc(assembler *as)
 	}
 
 
-	if (*as->operand == EOS)
+	if (*as->line->operand == EOS)
 	{
 		return 0;
 	}
-	fccdelim = *as->optr++;
-	while (*as->optr != EOS && *as->optr != fccdelim)
+	fccdelim = *as->line->optr++;
+	while (*as->line->optr != EOS && *as->line->optr != fccdelim)
 	{
-		emit(as, *as->optr++);
+		emit(as, *as->line->optr++);
 	}
-	if (*as->optr == fccdelim)
+	if (*as->line->optr == fccdelim)
 	{
-		as->optr++;
+		as->line->optr++;
 	}
 	else
 	{
 		error(as, "Missing Delimiter");
 		return 0;
 	}
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
-		symbol_add(as, as->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
 	print_line(as, 0, ' ', as->old_program_counter);
 	return 0;
@@ -351,41 +351,41 @@ int _fcs(assembler *as)
 	}
 
 
-	if (*as->operand == EOS)
+	if (*as->line->operand == EOS)
 	{
 		return 0;
 	}
 
 	/* get delimiter character */
-	fccdelim = *as->optr++;
-	while (*as->optr != EOS && *as->optr != fccdelim)
+	fccdelim = *as->line->optr++;
+	while (*as->line->optr != EOS && *as->line->optr != fccdelim)
 	{
 		/* look ahead to the next char */
-		if (*(as->optr + 1) != fccdelim)
+		if (*(as->line->optr + 1) != fccdelim)
 		{
-			emit(as, *as->optr++);
+			emit(as, *as->line->optr++);
 		}
 		else
 		{
 			/* next char is fccdelim, so */
 			/* set hi bit of last char */
-			emit(as, *as->optr + 128);
-			as->optr++;
+			emit(as, *as->line->optr + 128);
+			as->line->optr++;
 		}
 	}
 
-	if (*as->optr == fccdelim)
+	if (*as->line->optr == fccdelim)
 	{
-		as->optr++;
+		as->line->optr++;
 	}
 	else
 	{
 		error(as, "Missing Delimiter");
 		return 0;
 	}
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
-		symbol_add(as, as->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
 	print_line(as, 0, ' ', as->old_program_counter);
 	return 0;
@@ -411,7 +411,7 @@ int _org(assembler *as)
 	}
 
 
-	if (evaluate(as, &result, &as->optr, 0) == BP_TRUE)
+	if (evaluate(as, &result, &as->line->optr, 0) == BP_TRUE)
 	{
 		if (as->o_decb == BP_TRUE)
 		{
@@ -490,19 +490,19 @@ int _equ(assembler *as)
 	}
 
 
-	if (*as->label == EOS)
+	if (*as->line->label == EOS)
 	{
 		error(as, "EQU requires label");
 		return 0;
 	}
-	if (evaluate(as, &result, &as->optr, 0))
+	if (evaluate(as, &result, &as->line->optr, 0))
 	{
-		symbol_add(as, as->label, result, 0);
+		symbol_add(as, as->line->label, result, 0);
 		as->old_program_counter = result;        /* override normal */
 	}
 	else
 	{
-		error(as, "Undefined as->operand during Pass One");
+		error(as, "Undefined as->line->operand during Pass One");
 		return 0;
 	}
 	print_line(as, 0, ' ', result);
@@ -528,14 +528,14 @@ int _set(assembler *as)
 	}
 
 
-	if (*as->label == EOS)
+	if (*as->line->label == EOS)
 	{
 		error(as, "SET requires label");
 		return 0;
 	}
-	if (evaluate(as, &result, &as->optr, 0))
+	if (evaluate(as, &result, &as->line->optr, 0))
 	{
-		symbol_add(as, as->label, result, 1);
+		symbol_add(as, as->line->label, result, 1);
 		as->old_program_counter = result;        /* override normal */
 	}
 	print_line(as, 0, ' ', result);
@@ -548,7 +548,7 @@ int _set(assembler *as)
  */
 int _opt(assembler *as)
 {
-	char *Opt = as->operand;
+	char *Opt = as->line->operand;
 	BP_Bool opt_state = BP_TRUE;
 	
 
@@ -561,7 +561,7 @@ int _opt(assembler *as)
 
 
 	/* test for presence of a label and error if found */
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
 		error(as, "label not allowed");
 		return 0;
@@ -623,7 +623,7 @@ int _opt(assembler *as)
 		case 'o':	/* object file name */
 			if (opt_state == BP_FALSE)
 			{
-				strncpy(as->object_name, as->optr + 1, FNAMESIZE - 1);
+				strncpy(as->object_name, as->line->optr + 1, FNAMESIZE - 1);
 			}
 			else
 			{
@@ -788,7 +788,7 @@ int _ifeq(assembler *as)
 	else
 	{
 		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->optr, 1);
+		evaluate(as, &result, &as->line->optr, 1);
 		if (as->Opt_C == BP_TRUE)
 		{
 			print_line(as, 0, ' ', 0);
@@ -830,7 +830,7 @@ int _ifne(assembler *as)
 	else
 	{
 		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->optr, 1);
+		evaluate(as, &result, &as->line->optr, 1);
 		if (as->Opt_C == BP_TRUE)
 		{
 			print_line(as, 0, ' ', 0);
@@ -871,7 +871,7 @@ int _iflt(assembler *as)
 	else
 	{
 		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->optr, 1);
+		evaluate(as, &result, &as->line->optr, 1);
 		if (as->Opt_C == BP_TRUE)
 		{
 			print_line(as, 0, ' ', 0);
@@ -912,7 +912,7 @@ int _ifle(assembler *as)
 	else
 	{
 		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->optr, 1);
+		evaluate(as, &result, &as->line->optr, 1);
 		if (as->Opt_C == BP_TRUE)
 		{
 			print_line(as, 0, ' ', 0);
@@ -953,7 +953,7 @@ int _ifgt(assembler *as)
 	else
 	{
 		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->optr, 1);
+		evaluate(as, &result, &as->line->optr, 1);
 		if (as->Opt_C == BP_TRUE)
 		{
 			print_line(as, 0, ' ', 0);
@@ -994,7 +994,7 @@ int _ifge(assembler *as)
 	else
 	{
 		/* prev. conditional true, evaluate this one */
-		evaluate(as, &result, &as->optr, 1);
+		evaluate(as, &result, &as->line->optr, 1);
 		if (as->Opt_C == BP_TRUE)
 		{
 			print_line(as, 0, ' ', 0);
@@ -1092,13 +1092,13 @@ int _mod(assembler *as)
 		return 0;
 	}
 
-	if (as->pass == 1 && *as->label != EOS)
+	if (as->pass == 1 && *as->line->label != EOS)
 	{
-		symbol_add(as, as->label, as->old_program_counter, 0);
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}
 
 	/* obtain first parameter -- length of module */
-	if ((p = strtok(as->optr, ",")) == NULL)
+	if ((p = strtok(as->line->optr, ",")) == NULL)
 	{
 		/* error */
 		error(as, "Missing parameter");
@@ -1219,7 +1219,7 @@ int _setdp(assembler *as)   /* TODO! */
 
 	as->P_force = 1;
 
-	evaluate(as, &newdp, &as->optr, 0);
+	evaluate(as, &newdp, &as->line->optr, 0);
 	as->DP = newdp;
 
 	as->data_counter = newdp;
@@ -1234,7 +1234,7 @@ int _setdp(assembler *as)   /* TODO! */
  */
 int _spc(assembler *as)	/* TODO! */
 {
-	int lines = atoi(as->operand);
+	int lines = atoi(as->line->operand);
 
 	if (lines == 0)
 	{
@@ -1267,7 +1267,7 @@ int _use(assembler *as)
 
 	/* 2. Test for presence of a label and return error if found. */
 
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
 		error(as, "label not allowed");
 	}
@@ -1289,7 +1289,7 @@ int _use(assembler *as)
 		
 		as->current_file = &use_file;
 		
-		strncpy(use_file.file, as->optr, FNAMESIZE);
+		strncpy(use_file.file, as->line->optr, FNAMESIZE);
 
 		use_file.current_line = 0;
 		use_file.num_blank_lines = 0;
@@ -1353,7 +1353,7 @@ int __end(assembler *as)
 
 
 	/* test for presence of a label and error if found */
-	if (*as->label != EOS)
+	if (*as->line->label != EOS)
 	{
 		error(as, "label not allowed");
 		return 0;

@@ -73,20 +73,20 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 	
 	/* 2. Assume no forcing of result size. */
 	
-	as->force_byte = BP_FALSE;
-	as->force_word = BP_FALSE;
+	as->line->force_byte = BP_FALSE;
+	as->line->force_word = BP_FALSE;
 
 	
 	/* 3. Force byte or word size? */
 	
 	if (**eptr == '<')
 	{
-		as->force_byte = BP_TRUE;
+		as->line->force_byte = BP_TRUE;
 		(*eptr)++;
 	}
 	else if (**eptr == '>')
 	{
-		as->force_word = BP_TRUE;
+		as->line->force_word = BP_TRUE;
 		(*eptr)++;
 	}
 
@@ -163,8 +163,8 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 	if (as->o_debug)
 	{
 		printf("Result     $%x\n", (int)*result);
-		printf("force_byte %d\n", as->force_byte);
-		printf("force_word %d\n", as->force_word);
+		printf("force_byte %d\n", as->line->force_byte);
+		printf("force_word %d\n", as->line->force_word);
 	}
 
 
@@ -435,9 +435,9 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 		if (as->pass == 2 && as->current_file->current_line == as->F_ref && as->current_filename_index == as->Ffn)
 		{
 #if 0
-			if (as->force_byte == NO)
+			if (as->line->force_byte == NO)
 			{
-				as->force_word = BP_TRUE;
+				as->line->force_word = BP_TRUE;
 			}
 #endif
 			fwd_next(as);

@@ -73,7 +73,7 @@ void local_init(void)
 /*
  *      do_op --- process mnemonic
  *
- *	Called with the base opcode and it's class. as->optr points to
+ *	Called with the base opcode and it's class. as->line->optr points to
  *	the beginning of the operand field.
  */
 void do_op(int opcode, int class)
@@ -182,9 +182,9 @@ int _imgen(assembler *as, int opcode)
 		return 0;
 	}
 	
-	as->optr++;
+	as->line->optr++;
 
-	evaluate(as, &result, &as->optr, 0);
+	evaluate(as, &result, &as->line->optr, 0);
 
 	if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 	{
@@ -193,23 +193,23 @@ int _imgen(assembler *as, int opcode)
 		return 0;
 	}
 
-	if (*as->optr++ != ',')
+	if (*as->line->optr++ != ',')
 	{
 		error(as, "Comma required between operands");
 
 		return 0;
 	}
 
-	while (*as->optr == ' ') as->optr++;
+	while (*as->line->optr == ' ') as->line->optr++;
 
-	if (*as->optr == '#')
+	if (*as->line->optr == '#')
 	{
 		error(as, "Immediate Addressing Illegal");
 
 		return 0;
 	}
 
-	if (*as->optr == '[')
+	if (*as->line->optr == '[')
 	{
 		emit(as, opcode + 0x60);
 		do_indexed(as, result);
@@ -219,7 +219,7 @@ int _imgen(assembler *as, int opcode)
 	}
 
 	amode = OTHER;		/* default */
-	p = as->optr;
+	p = as->line->optr;
 
 	while (*p != EOS && *p != BLANK && *p != TAB)
 	{
@@ -278,8 +278,8 @@ int _imm(assembler *as, int opcode)
 		error(as, "Immediate Operand Required");
 		return 0;
 	}
-	as->optr++;
-	evaluate(as, &result, &as->optr, 0);
+	as->line->optr++;
+	evaluate(as, &result, &as->line->optr, 0);
 	emit(as, opcode);
 	if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 	{
@@ -307,7 +307,7 @@ int _rel(assembler *as, int opcode)
 	int dist;
 
 	/* short relative branches */
-	evaluate(as, &result, &as->optr, 0);
+	evaluate(as, &result, &as->line->optr, 0);
 	dist = result - (as->program_counter + 2);
 	emit(as, opcode);
 	if ((dist > 127 || dist < -128) && as->pass == 2)
@@ -329,12 +329,12 @@ int _p2rel(assembler *as, int opcode)
 	int dist;
 
 	/* long relative branches */
-	evaluate(as, &result, &as->optr, 0);
+	evaluate(as, &result, &as->line->optr, 0);
 	dist = result - (as->program_counter + 4);
 	emit(as, PAGE2);
 	emit(as, opcode);
 
-	if ((dist > -128) && (dist < 127)) as->allow_warnings = BP_TRUE;
+	if ((dist > -128) && (dist < 127)) as->line->has_warning = BP_TRUE;
 	eword(as, dist);
 	print_line(as, 0, ' ', as->old_program_counter);
 	return 0;
@@ -352,11 +352,11 @@ int _p1rel(assembler *as, int opcode)
 	/* lbra and lbsr */
 	if (amode == IMMED)
 	{
-		as->optr++; /* kludge for C compiler */
+		as->line->optr++; /* kludge for C compiler */
 	}
-	evaluate(as, &result, &as->optr, 0);
+	evaluate(as, &result, &as->line->optr, 0);
 	dist = result - (as->program_counter + 3);
-	if ((dist > -128) && (dist < 127)) as->allow_warnings = BP_TRUE;
+	if ((dist > -128) && (dist < 127)) as->line->has_warning = BP_TRUE;
 	emit(as, opcode);
 	eword(as, dist);
 	print_line(as, 0, ' ', as->old_program_counter);
@@ -426,8 +426,8 @@ static int _pxgen(assembler *as, int opcode, int amode)
 	if ((amode == IMMED) || (amode == IMMED8))
 	{
 		emit(as, opcode);
-		as->optr++;
-		evaluate(as, &result, &as->optr, 0);
+		as->line->optr++;
+		evaluate(as, &result, &as->line->optr, 0);
 		if (amode == IMMED)
 		{
 			eword(as, result);
@@ -455,7 +455,7 @@ int _ldqgen(assembler *as, int opcode)
 	{
 	  BP_int32 result;
 
-	  evaluate(as, &result, &as->optr, 0);
+	  evaluate(as, &result, &as->line->optr, 0);
 	  emit(as, 0xcd);
 	  emit(as, (result >> 24) & 0xff);
 	  emit(as, (result >> 16) & 0xff);
@@ -515,9 +515,9 @@ int _rtor(assembler *as, int opcode)
 	/* tfr and exg */
 	emit(as, opcode);
 	src = regnum(as);
-	while (alpha(*as->optr) || (*as->optr == '0'))
+	while (alpha(*as->line->optr) || (*as->line->optr == '0'))
 	{
-		as->optr++;
+		as->line->optr++;
 	}
 	if (src == ERR)
 	{
@@ -525,16 +525,16 @@ int _rtor(assembler *as, int opcode)
 		emit(as, 0);
 		return 0;
 	}
-	if (*as->optr++ != ',')
+	if (*as->line->optr++ != ',')
 	{
 		error(as, "Missing ,");
 		emit(as, 0);
 		return 0;
 	}
 	dst = regnum(as);
-	while (alpha(*as->optr))
+	while (alpha(*as->line->optr))
 	{
-		as->optr++;
+		as->line->optr++;
 	}
 	if (dst == ERR)
 	{
@@ -562,7 +562,7 @@ int _rtor(assembler *as, int opcode)
 		emit(as, 0);
 		return 0;
 	}
-	if (*as->optr && (*as->optr != BLANK) && (*as->optr != TAB))
+	if (*as->line->optr && (*as->line->optr != BLANK) && (*as->line->optr != TAB))
 	{
 		error(as, "Invalid trailing text");
 		return 0;
@@ -590,9 +590,9 @@ int _p3rtor(assembler *as, int opcode)
 	int form = 0;
 
 	src = regnum(as);
-	while (alpha(*as->optr) || (*as->optr == '0'))
+	while (alpha(*as->line->optr) || (*as->line->optr == '0'))
 	{
-		as->optr++;
+		as->line->optr++;
 	}
 	if (src == ERR)
 	{
@@ -600,16 +600,16 @@ int _p3rtor(assembler *as, int opcode)
 		return 0;
 	}
 
-	switch (*as->optr)
+	switch (*as->line->optr)
 	  {
 	  case '+':
 	    form = 1;
-	    as->optr++;
+	    as->line->optr++;
 	    break;
 
 	  case '-':
 	    form = 2;
-	    as->optr++;
+	    as->line->optr++;
 	    break;
 	    
 	  case ',':
@@ -620,7 +620,7 @@ int _p3rtor(assembler *as, int opcode)
 	    return 0;
 	  }
 
-	if (*as->optr++ != ',')
+	if (*as->line->optr++ != ',')
 	{
 		error(as, "Missing ,");
 		emit(as, 0);
@@ -628,9 +628,9 @@ int _p3rtor(assembler *as, int opcode)
 	}
 
 	dst = regnum(as);
-	while (alpha(*as->optr))
+	while (alpha(*as->line->optr))
 	{
-		as->optr++;
+		as->line->optr++;
 	}
 	if (dst == ERR)
 	{
@@ -654,14 +654,14 @@ int _p3rtor(assembler *as, int opcode)
 		return 0;
 	}
 
-	switch (*as->optr)
+	switch (*as->line->optr)
 	  {
 	  case '+':
 	    if (form == 0) {
 	      form = 4;
-	      as->optr++;
+	      as->line->optr++;
 	    } else if (form == 1) {
-	      as->optr++;
+	      as->line->optr++;
 	    } else {
 	      error(as, "Unexpected trailing '+'");
 	      return 0;
@@ -670,7 +670,7 @@ int _p3rtor(assembler *as, int opcode)
 	    
 	  case '-':
 	    if (form == 2) {
-	      as->optr++;
+	      as->line->optr++;
 	    } else {
 	      error(as, "Unexpected trailing '-'");
 	      return 0;
@@ -688,7 +688,7 @@ int _p3rtor(assembler *as, int opcode)
 
 	  }
 
-	if (*as->optr && (*as->optr != BLANK) && (*as->optr != TAB))
+	if (*as->line->optr && (*as->line->optr != BLANK) && (*as->line->optr != TAB))
 	{
 		error(as, "Invalid trailing text");
 		return 0;
@@ -709,9 +709,9 @@ int _indexed(assembler *as, int opcode)
 
 	amode = set_mode(as);     /* pickup indicated addressing mode */
 	/* indexed addressing only */
-	if (*as->optr == '#')
+	if (*as->line->optr == '#')
 	{
-		as->optr++;         /* kludge city */
+		as->line->optr++;         /* kludge city */
 		amode = IND;
 	}
 	if (amode != IND)
@@ -732,7 +732,7 @@ int _rlist(assembler *as, int opcode)
 	int j;
 
 	/* pushes and pulls */
-	if (*as->operand == EOS)
+	if (*as->line->operand == EOS)
 	{
 		error(as, "Register List Required");
 		return 0;
@@ -769,11 +769,11 @@ int _rlist(assembler *as, int opcode)
 			pbyte |= _regs[j];
 			as->cumulative_cycles += rcycl[j];
 		}
-		while(*as->optr != EOS && alpha(*as->optr))
+		while(*as->line->optr != EOS && alpha(*as->line->optr))
 		{
-			as->optr++;
+			as->line->optr++;
 		}
-	} while(*as->optr++ == ',');
+	} while(*as->line->optr++ == ',');
 	emit(as, lobyte(pbyte));
 	print_line(as, 0, ' ', as->old_program_counter);
 	return 0;
@@ -790,8 +790,8 @@ int _longimm(assembler *as, int opcode)
 	if (amode == IMMED)
 	{
 		emit(as, opcode);
-		as->optr++;
-		evaluate(as, &result, &as->optr, 0);
+		as->line->optr++;
+		evaluate(as, &result, &as->line->optr, 0);
 		eword(as, result);
 	}
 	else
@@ -819,29 +819,29 @@ int _grp2(assembler *as, int opcode)
 	}
 	else if (amode == INDIR)
 	{
-		as->optr++;
+		as->line->optr++;
 		emit(as, opcode + 0x60);
 		emit(as, IPBYTE);
-		evaluate(as, &result, &as->optr, 0);
+		evaluate(as, &result, &as->line->optr, 0);
 		eword(as, result);
 		as->cumulative_cycles += 7;
-		if (*as->optr == ']')
+		if (*as->line->optr == ']')
 		{
-			as->optr++;
+			as->line->optr++;
 			print_line(as, 0, ' ', as->old_program_counter);
 			return 0;
 		}
 		error(as, "Missing ']'");
 		return 0;
 	}
-	evaluate(as, &result, &as->optr, 0);
-	if (as->force_word)
+	evaluate(as, &result, &as->line->optr, 0);
+	if (as->line->force_word)
 	{
 		emit(as, opcode + 0x70);
 		eword(as, result);
 		as->cumulative_cycles += 3;
 	}
-	else if (as->force_byte)
+	else if (as->line->force_byte)
 	{
 		if (hibyte(result) != as->DP)
 		{
@@ -885,22 +885,22 @@ int _grp2_16(assembler *as, int opcode)
 	}
 	else if (amode == INDIR)
 	{
-		as->optr++;
+		as->line->optr++;
 		emit(as, opcode + 0x60);
 		emit(as, IPBYTE);
-		evaluate(as, &result, &as->optr, 0);
+		evaluate(as, &result, &as->line->optr, 0);
 		eword(as, result);
 		as->cumulative_cycles += 7;
-		if (*as->optr == ']')
+		if (*as->line->optr == ']')
 		{
-			as->optr++;
+			as->line->optr++;
 			print_line(as, 0, ' ', as->old_program_counter);
 			return 0;
 		}
 		error(as, "Missing ']'");
 		return 0;
 	}
-	evaluate(as, &result, &as->optr, 0);
+	evaluate(as, &result, &as->line->optr, 0);
 
 	{
 		emit(as, opcode + 0x70);
@@ -920,7 +920,7 @@ int _sys(assembler *as, int opcode)
 	/* system call */
 	emit(as, PAGE2);
 	emit(as, opcode);
-	evaluate(as, &result, &as->optr, 0);
+	evaluate(as, &result, &as->line->optr, 0);
 	emit(as, lobyte(result));
 	print_line(as, 0, ' ', as->old_program_counter);
 	return 0;
@@ -937,9 +937,9 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 
 	if (mode == IMMED)
 	{
-		as->optr++;
+		as->line->optr++;
 		emit(as, op);
-		evaluate(as, &result, &as->optr, 0);
+		evaluate(as, &result, &as->line->optr, 0);
 		if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 		{
 			error(as, "Result >255");
@@ -958,15 +958,15 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 	}
 	else if (mode == INDIR)
 	{
-		as->optr++;
+		as->line->optr++;
 		emit(as, op + 0x20);
 		emit(as, IPBYTE);
-		evaluate(as, &result, &as->optr, 0);
+		evaluate(as, &result, &as->line->optr, 0);
 		eword(as, result);
 		as->cumulative_cycles += 7;
-		if (*as->optr == ']')
+		if (*as->line->optr == ']')
 		{
-			as->optr++;
+			as->line->optr++;
 			return 0;
 		}
 		error(as, "Missing ']'");
@@ -974,17 +974,17 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 	}
 	else if (mode == OTHER)
 	{
-		evaluate(as, &result, &as->optr, 0);
-		if (as->force_word || always_word == BP_TRUE)
+		evaluate(as, &result, &as->line->optr, 0);
+		if (as->line->force_word || always_word == BP_TRUE)
 		{
-			if ((hibyte(result) == as->DP)) as->allow_warnings = BP_TRUE;
+			if ((hibyte(result) == as->DP)) as->line->has_warning = BP_TRUE;
 
 			emit(as, op + 0x30);
 			eword(as, result);
 			as->cumulative_cycles += 3;
 			return 0;
 		}
-		if (as->force_byte)
+		if (as->line->force_byte)
 		{
 			emit(as, op + 0x10);
 			if (hibyte(result) != as->DP)
@@ -1035,11 +1035,11 @@ static int do_indexed(assembler *as, int op)
 	pstinc = 0;
 	pbyte = 128;
 	emit(as, op);
-	if (*as->optr == '[')
+	if (*as->line->optr == '[')
 	{
 		pbyte |= 0x10;    /* set indirect bit */
-		as->optr++;
-		if (!any((char)']', as->optr))
+		as->line->optr++;
+		if (!any((char)']', as->line->optr))
 		{
 			error(as, "Missing ']'");
 		}
@@ -1083,32 +1083,32 @@ static int do_indexed(assembler *as, int op)
 		return 0;
 	}
 
-	evaluate(as, &result, &as->optr, 0);
-	as->optr++;
-	while (*as->optr == '-')
+	evaluate(as, &result, &as->line->optr, 0);
+	as->line->optr++;
+	while (*as->line->optr == '-')
 	{
 		predec++;
-		as->optr++;
+		as->line->optr++;
 	}
 	j = regnum(as);
-	while (alpha(*as->optr))
+	while (alpha(*as->line->optr))
 	{
-		as->optr++;
+		as->line->optr++;
 	}
-	while (*as->optr == '+')
+	while (*as->line->optr == '+')
 	{
 		pstinc++;
-		as->optr++;
+		as->line->optr++;
 	}
 	if (j == RPC || j == RPCR)
 	{
 #if 0
-		int as->force_word = NO;
+		int as->line->force_word = NO;
 #endif
 
-		if (as->force_byte == BP_FALSE)
+		if (as->line->force_byte == BP_FALSE)
 		{
-			as->force_word = BP_TRUE;
+			as->line->force_word = BP_TRUE;
 		}
 		if (pstinc || predec)
 		{
@@ -1117,17 +1117,17 @@ static int do_indexed(assembler *as, int op)
 		}
 
 		/* PC or PCR addressing */
-		if (as->force_word)
+		if (as->line->force_word)
 		{
 			emit(as, pbyte + 13);
 			eword(as, result - (as->program_counter + 2));
 			as->cumulative_cycles += 5;
 			return 0;
 		}
-		if (as->force_byte)
+		if (as->line->force_byte)
 		{
 			emit(as, pbyte + 12);
-			/* as->allow_warnings */
+			/* as->line->has_warning */
 			emit(as, lobyte(result - (as->program_counter + 1)));
 			as->cumulative_cycles++;
 			return 0;
@@ -1225,15 +1225,15 @@ static int do_indexed(assembler *as, int op)
 	j = rtype(as, j);
 	if (j != 0x100) {
 	  pbyte += j;
-	  if (as->force_word)
+	  if (as->line->force_word)
 	    {
-	      if ((hibyte(result) == 0)) as->allow_warnings = BP_TRUE;
+	      if ((hibyte(result) == 0)) as->line->has_warning = BP_TRUE;
 	      emit(as, pbyte + 0x09);
 	      eword(as, result);
 	      as->cumulative_cycles += 4;
 	      return 0;
 	    }
-	  if (as->force_byte)
+	  if (as->line->force_byte)
 	    {
 	      emit(as, pbyte + 0x08);
 	      if (result <-128 || result >127)
@@ -1242,7 +1242,7 @@ static int do_indexed(assembler *as, int op)
 		  return 0;
 		}
 	      if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0)) {
-		as->allow_warnings = BP_TRUE;
+		as->line->has_warning = BP_TRUE;
 	      }
 	      emit(as, lobyte(result));
 	      as->cumulative_cycles++;
@@ -1274,13 +1274,13 @@ static int do_indexed(assembler *as, int op)
 	  return 0;
 	} else {		/* ,W  n,W [n,W] */
 
-	  if (as->force_byte) {
+	  if (as->line->force_byte) {
 	    error(as, "Byte indexing is invalid for W");
 	    return 0;
 	  }
 
 	  if (pbyte & 0x10 && as->o_h6309 == BP_TRUE) {	/* [,W] */
-	    if (as->force_word || (result != 0)) {
+	    if (as->line->force_word || (result != 0)) {
 	      emit(as, 0xb0);
 	      eword(as, result);
 	      as->cumulative_cycles += 6;
@@ -1290,7 +1290,7 @@ static int do_indexed(assembler *as, int op)
 	    emit(as, 0x90);
 	    return 0;
 	  } else {		/* ,W */
-	    if (as->force_word || (result != 0) && as->o_h6309 == BP_TRUE) {
+	    if (as->line->force_word || (result != 0) && as->o_h6309 == BP_TRUE) {
 	      emit(as, 0xaf);
 	      eword(as, result);
 	      as->cumulative_cycles += 3;
@@ -1312,7 +1312,7 @@ static int abd_index(assembler *as, int pbyte)
 {
 	int     k;
 
-	as->optr += 2;
+	as->line->optr += 2;
 	k = regnum(as);
 	k = rtype(as, k);
 	if (k == 0x100)
@@ -1358,11 +1358,11 @@ static int set_mode(assembler *as)
 {
 	register char *p;
 
-	if (*as->operand == '#')
+	if (*as->line->operand == '#')
 	{
 		return(IMMED);          /* immediate addressing */
 	}
-	p = as->operand;
+	p = as->line->operand;
 	while (*p != EOS && *p != BLANK && *p != TAB)
 	{
 		/* any , before break */
@@ -1372,7 +1372,7 @@ static int set_mode(assembler *as)
 		}
 		p++;
 	}
-	if (*as->operand == '[')
+	if (*as->line->operand == '[')
 	{
 		return(INDIR);          /* indirect addressing */
 	}
@@ -1382,140 +1382,140 @@ static int set_mode(assembler *as)
 
 
 /*
- *      regnum --- return register number of *as->optr
+ *      regnum --- return register number of *as->line->optr
  */
 static h6309_reg regnum(assembler *as)
 {
-	if (head(as->optr, "D"))
+	if (head(as->line->optr, "D"))
 	{
 		return(RD);
 	}
-	if (head(as->optr, "d"))
+	if (head(as->line->optr, "d"))
 	{
 		return(RD);
 	}
-	if (head(as->optr, "X"))
+	if (head(as->line->optr, "X"))
 	{
 		return(RX);
 	}
-	if (head(as->optr, "x"))
+	if (head(as->line->optr, "x"))
 	{
 		return(RX);
 	}
-	if (head(as->optr, "Y"))
+	if (head(as->line->optr, "Y"))
 	{
 		return(RY);
 	}
-	if (head(as->optr, "y"))
+	if (head(as->line->optr, "y"))
 	{
 		return(RY);
 	}
-	if (head(as->optr, "U"))
+	if (head(as->line->optr, "U"))
 	{
 		return(RU);
 	}
-	if (head(as->optr, "u"))
+	if (head(as->line->optr, "u"))
 	{
 		return(RU);
 	}
-	if (head(as->optr, "S"))
+	if (head(as->line->optr, "S"))
 	{
 		return(RS);
 	}
-	if (head(as->optr, "s"))
+	if (head(as->line->optr, "s"))
 	{
 		return(RS);
 	}
-	if (head(as->optr, "PC"))
+	if (head(as->line->optr, "PC"))
 	{
 		return(RPC);
 	}
-	if (head(as->optr, "pc"))
+	if (head(as->line->optr, "pc"))
 	{
 		return(RPC);
 	}
-	if (head(as->optr, "W") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "W") && as->o_h6309 == BP_TRUE)
 	{
 		return(RW);
 	}
-	if (head(as->optr, "w") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "w") && as->o_h6309 == BP_TRUE)
 	{
 		return(RW);
 	}
-	if (head(as->optr, "V") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "V") && as->o_h6309 == BP_TRUE)
 	{
 		return(RV);
 	}
-	if (head(as->optr, "v") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "v") && as->o_h6309 == BP_TRUE)
 	{
 		return(RV);
 	}
 
-	if (head(as->optr, "PCR"))
+	if (head(as->line->optr, "PCR"))
 	{
 		return(RPCR);
 	}
-	if (head(as->optr, "pcr"))
+	if (head(as->line->optr, "pcr"))
 	{
 		return(RPCR);
 	}
-	if (head(as->optr, "A"))
+	if (head(as->line->optr, "A"))
 	{
 		return(RA);
 	}
-	if (head(as->optr, "a"))
+	if (head(as->line->optr, "a"))
 	{
 		return(RA);
 	}
-	if (head(as->optr, "B"))
+	if (head(as->line->optr, "B"))
 	{
 		return(RB);
 	}
-	if (head(as->optr, "b"))
+	if (head(as->line->optr, "b"))
 	{
 		return(RB);
 	}
-	if (head(as->optr, "CC"))
+	if (head(as->line->optr, "CC"))
 	{
 		return(RCC);
 	}
-	if (head(as->optr, "cc"))
+	if (head(as->line->optr, "cc"))
 	{
 		return(RCC);
 	}
-	if (head(as->optr, "DP"))
+	if (head(as->line->optr, "DP"))
 	{
 		return(RDP);
 	}
-	if (head(as->optr, "dp"))
+	if (head(as->line->optr, "dp"))
 	{
 		return(RDP);
 	}
-	if (head(as->optr, "0") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "0") && as->o_h6309 == BP_TRUE)
 	{
 		return(RZERO);
 	}
-	if (head(as->optr, "Z") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "Z") && as->o_h6309 == BP_TRUE)
 	{
 		return(RZERO);
 	}
-	if (head(as->optr, "z") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "z") && as->o_h6309 == BP_TRUE)
 	{
 		return(RZERO);
 	}
-	if (head(as->optr, "E") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "E") && as->o_h6309 == BP_TRUE)
 	{
 		return(RE);
 	}
-	if (head(as->optr, "e") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "e") && as->o_h6309 == BP_TRUE)
 	{
 		return(RE);
 	}
-	if (head(as->optr, "F") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "F") && as->o_h6309 == BP_TRUE)
 	{
 		return(RF);
 	}
-	if (head(as->optr, "f") && as->o_h6309 == BP_TRUE)
+	if (head(as->line->optr, "f") && as->o_h6309 == BP_TRUE)
 	{
 		return(RF);
 	}

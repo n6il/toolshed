@@ -479,7 +479,6 @@ static void mamou_initialize(assembler *as)
 		as->data_counter    = 0;
 		as->program_counter	= 0;
 		as->DP				= 0;
-		as->allow_warnings	= 0;
 		as->E_total			= 0;
 		as->P_total			= 0;
 		as->Ctotal			= 0;
@@ -534,7 +533,11 @@ void mamou_pass(assembler *as)
 	{
 		char *p = strchr(as->input_line, 0x0D);
 		BP_int32		line_type;
-			
+		struct source_line		line;
+		
+		
+		as->line = &line;
+		
 			
 		size = MAXBUF - 1;
 		if (p != NULL)
@@ -597,16 +600,20 @@ void mamou_pass(assembler *as)
 int mamou_parse_line(assembler *as)
 {
     register char *ptrfrm = as->input_line;
-    char *ptrto = as->label;
+    char *ptrto = as->line->label;
     static char hold_lbl[80];
     static int cont_prev = 0;
     register struct oper *i;
 
 
-    *as->label = EOS;
-    *as->Op = EOS;
-    *as->operand = EOS;
-    *as->comment = EOS;
+	as->line->has_warning = BP_FALSE;
+	as->line->optr = as->line->Op;
+	as->line->force_word = BP_FALSE;
+	as->line->force_byte = BP_FALSE;
+    *as->line->label = EOS;
+    *as->line->Op = EOS;
+    *as->line->operand = EOS;
+    *as->line->comment = EOS;
 
 
 	/* 1. First, check to see if this is a blank line. */
@@ -628,8 +635,8 @@ int mamou_parse_line(assembler *as)
     if (*ptrfrm == '*' || *ptrfrm == '\n' ||
         *ptrfrm == ';' || *ptrfrm == '#')
     {
-        strcpy(as->comment, as->input_line);
-        ptrto = as->comment;
+        strcpy(as->line->comment, as->input_line);
+        ptrto = as->line->comment;
 
         while (!eol(*ptrto))
         {
@@ -646,7 +653,7 @@ int mamou_parse_line(assembler *as)
         *ptrto++ = *ptrfrm++;
     }
 
-    if (ptrto > as->label && *--ptrto != ':')
+    if (ptrto > as->line->label && *--ptrto != ':')
     {
         ptrto++;     /* allow trailing : */
     }
@@ -655,7 +662,7 @@ int mamou_parse_line(assembler *as)
 
     ptrfrm = skip_white(ptrfrm);
 
-    ptrto = as->Op;
+    ptrto = as->line->Op;
 
     while (delim(*ptrfrm) == BP_FALSE)
     {
@@ -667,13 +674,13 @@ int mamou_parse_line(assembler *as)
     ptrfrm = skip_white(ptrfrm);
 
     /* determine whether this op code has a parameter */
-    i = mne_look(as, as->Op);
+    i = mne_look(as, as->line->Op);
     if (i != NULL)
     {
         if ((i->class == PSEUDO && i->cycles & 1 == 1) ||
             (i->class != INH && i->class != P2INH && i->class != P3INH) )
         {
-            ptrto = as->operand;
+            ptrto = as->line->operand;
             if (i->class == PSEUDO && i->cycles == 0x2)
             {
                 char fccdelim;
@@ -707,7 +714,7 @@ int mamou_parse_line(assembler *as)
         }
     }
 
-    ptrto = as->comment;
+    ptrto = as->line->comment;
     while (!eol(*ptrfrm))
     {
         *ptrto++ = *ptrfrm++;
@@ -719,18 +726,18 @@ int mamou_parse_line(assembler *as)
     if (cont_prev)
     {
             cont_prev = 0;
-            strcpy(as->label, hold_lbl);
+            strcpy(as->line->label, hold_lbl);
     }
 
-    if (as->Op[0] == ';')
+    if (as->line->Op[0] == ';')
     {
-        if (as->label[0] == '\0')
+        if (as->line->label[0] == '\0')
         {
             return 0;	/* a comment line */
         }
         else	/* save this label for the next mamou_parse_line() */
         {
-            strcpy(hold_lbl, as->label);
+            strcpy(hold_lbl, as->line->label);
             cont_prev = 1;
 
             return 1;	/* a comment line */
@@ -741,9 +748,9 @@ int mamou_parse_line(assembler *as)
     if (as->o_debug)
     {
         printf("\n");
-        printf("Label      %s\n", as->label);
-        printf("Op         %s\n", as->Op);
-        printf("Operand    %s\n", as->operand);
+        printf("Label      %s\n", as->line->label);
+        printf("Op         %s\n", as->line->Op);
+        printf("Operand    %s\n", as->line->operand);
     }
 
 
@@ -759,12 +766,12 @@ void process(assembler *as)
     register struct oper *i;
 
     as->old_program_counter = as->program_counter;		/* setup `old' program counter */
-    as->optr = as->operand; 	/* point to beginning of operand field */
+    as->line->optr = as->line->operand; 	/* point to beginning of operand field */
 
     if (as->conditional_stack[as->conditional_stack_index] == 0)
     {
         /* we should ignore this line unless it's an endc */
-        i = mne_look(as, as->Op);
+        i = mne_look(as, as->line->Op);
         if (i != NULL && i->class == PSEUDO)
         {
             i->func(as);
@@ -772,16 +779,16 @@ void process(assembler *as)
         return;
     }
 
-    if (*as->Op == EOS)
+    if (*as->line->Op == EOS)
     {
         /* no mnemonic */
-        if (*as->label != EOS)
+        if (*as->line->label != EOS)
         {
-            symbol_add(as, as->label, as->program_counter, 0);
+            symbol_add(as, as->line->label, as->program_counter, 0);
             print_line(as, 0, ' ', 0);
         }
     }
-    else if ((i = mne_look(as, as->Op)) == NULL)
+    else if ((i = mne_look(as, as->line->Op)) == NULL)
     {
         error(as, "Unrecognized Mnemonic");
     }
@@ -796,9 +803,9 @@ void process(assembler *as)
     }
     else
     {
-        if (*as->label)
+        if (*as->line->label)
         {
-            symbol_add(as, as->label, as->program_counter, 0);
+            symbol_add(as, as->line->label, as->program_counter, 0);
         }
         if (as->Cflag)
         {
@@ -827,16 +834,8 @@ void init_globals(assembler *as)
 	as->current_file = NULL;
     as->num_errors = 0;		/* total number of errors       */
     as->input_line[0] = 0;		/* input line buffer            */
-    as->label[0] = 0;		/* label on current line        */
-    as->Op[0] = 0;		/* opcode mnemonic on current line      */
-    as->operand[0] = 0;		/* remainder of line after op           */
-    as->comment[0] = 0;		/* comment after operand or line        */
-    as->optr = 0;		/* pointer into current Operand field   */
-    as->force_word = 1;		/* Result should be a word when set     */
-    as->force_byte = BP_FALSE;	/* Result should be a byte when set     */
     as->program_counter = 0;			/* Program Counter              */
     as->DP = 0;			/* Direct Page                  */
-    as->allow_warnings = 0;		/* allow_warningss                     */
     as->num_warnings = 0;		/* total warnings               */
     as->old_program_counter = 0;		/* Program Counter at beginning */
 

@@ -16,7 +16,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 
 	if (override == 0 && (as->pass == 1 || as->o_show_listing == BP_FALSE || as->N_page || !as->conditional_stack[as->conditional_stack_index]))
 	{
-		as->allow_warnings = 0;
+		as->line->has_warning = 0;
 		
 		return;
 	}
@@ -38,8 +38,8 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		strcat(Line_buff, Tmp_buff);
 	
 		/* TODO! warnings, errors will go here later */
-		if ((infochar == ' ') && as->allow_warnings) infochar = 'W';
-		if (as->allow_warnings) as->num_warnings++;
+		if ((infochar == ' ') && as->line->has_warning) infochar = 'W';
+		if (as->line->has_warning) as->num_warnings++;
 		
 		sprintf(Tmp_buff, " %c ", infochar);
 
@@ -87,26 +87,26 @@ void print_line(assembler *as, int override, char infochar, int counter)
 
 	mamou_parse_line(as);
 	
-	if (*as->label == EOS && *as->Op == EOS && *as->operand == EOS)
+	if (*as->line->label == EOS && *as->line->Op == EOS && *as->line->operand == EOS)
 	{
 		/* possibly a comment? */
-		if (*as->comment != EOS)
+		if (*as->line->comment != EOS)
 		{
-			sprintf(Tmp_buff, "%s", as->comment);
+			sprintf(Tmp_buff, "%s", as->line->comment);
 			strcat(Line_buff, Tmp_buff);
 		}
 	}
 	else
 	{
-		if (*as->comment == EOS)
+		if (*as->line->comment == EOS)
 		{
 			if (as->tabbed)
 			{
-				sprintf(Tmp_buff, "%s\t%s\t%s", as->label, as->Op, as->operand);
+				sprintf(Tmp_buff, "%s\t%s\t%s", as->line->label, as->line->Op, as->line->operand);
 			}
 			else
 			{
-				sprintf(Tmp_buff, "%-8s %-4s  %-10s", as->label, as->Op, as->operand);
+				sprintf(Tmp_buff, "%-8s %-4s  %-10s", as->line->label, as->line->Op, as->line->operand);
 			}
 			strcat(Line_buff, Tmp_buff);
 		}
@@ -114,11 +114,11 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		{
 			if (as->tabbed)
 			{
-				sprintf(Tmp_buff, "%s\t%s\t%s\t%s", as->label, as->Op, as->operand, as->comment);
+				sprintf(Tmp_buff, "%s\t%s\t%s\t%s", as->line->label, as->line->Op, as->line->operand, as->line->comment);
 			}
 			else
 			{
-				sprintf(Tmp_buff, "%-8s %-4s  %-10s %s", as->label, as->Op, as->operand, as->comment);
+				sprintf(Tmp_buff, "%-8s %-4s  %-10s %s", as->line->label, as->line->Op, as->line->operand, as->line->comment);
 			}
 			strcat(Line_buff, Tmp_buff);
 		}
@@ -158,7 +158,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		}
 	}
 
-	as->allow_warnings = 0;
+	as->line->has_warning = 0;
 	return;
 }
 

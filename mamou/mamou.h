@@ -159,16 +159,9 @@ struct oper
 	int	(*func)();	/* function */
 };
 
-
-/* Assembler state */
-typedef struct _assembler
+struct source_line
 {
-	BP_uint32			num_errors;					/* total number of errors */
-	BP_uint32			num_warnings;				/* assembler warnings */
-	BP_uint32			cumulative_blank_lines;		/* blank line count across all files */
-	BP_uint32			cumulative_comment_lines;   /* comment line count across all files */
-	BP_uint32			cumulative_total_lines;		/* total line count across all files */
-	BP_char				input_line[MAXBUF];			/* input line buffer */
+	BP_Bool				has_warning;				/* allow assembler warnings */
 	BP_char				label[MAXLAB];				/* label on current line */
 	BP_char				Op[MAXOP];					/* opcode mnemonic on current line */
 	BP_char				operand[MAXBUF];			/* remainder of line after op */
@@ -176,11 +169,23 @@ typedef struct _assembler
 	BP_char				*optr;						/* pointer into current operand field */
 	BP_Bool				force_word;					/* Result should be a word when set */
 	BP_Bool				force_byte;					/* result should be a byte when set */
+};
+
+
+/* Assembler state */
+typedef struct _assembler
+{
+	struct source_line  *line;						/* current source line */
+	BP_uint32			num_errors;					/* total number of errors */
+	BP_uint32			num_warnings;				/* assembler warnings */
+	BP_uint32			cumulative_blank_lines;		/* blank line count across all files */
+	BP_uint32			cumulative_comment_lines;   /* comment line count across all files */
+	BP_uint32			cumulative_total_lines;		/* total line count across all files */
+	BP_char				input_line[MAXBUF];			/* input line buffer */
 	BP_uint32			program_counter;			/* Program Counter */
 	BP_uint32			data_counter;				/* data counter */
 	BP_uint32			old_program_counter;		/* Program Counter at beginning */
 	BP_uint32			DP;							/* Direct Page pointer */
-	BP_Bool				allow_warnings;				/* allow assembler warnings */
 	BP_uint32			last_symbol;				/* result of last symbol_find */
 	BP_uint32			pass;						/* current pass */
 	struct filestack	*current_file;
@@ -309,7 +314,7 @@ int hibyte(int i);
 int lobyte(int i);
 char mapdn(char c);
 char *skip_white(char *ptr);
-void warn(assembler *as, char *str);
+
 
 /* pseudo.c */
 int	_else(assembler *as),
