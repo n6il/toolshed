@@ -38,7 +38,7 @@ int _nam(assembler *as)
 	
 	/* 4. Copy the name into our global space for later use. */
 	
-	strncpy(as->Nam, as->line->optr, NAMLEN-1);
+	strncpy(as->name_header, as->line->optr, NAMLEN-1);
 
 	print_line(as, 0, ' ', 0);
 
@@ -78,10 +78,11 @@ int _ttl(assembler *as)
 
 		return 0;
 	}
+
 	
 	/* 4. Copy the title into our global space for later use. */
 	
-	strncpy(as->Ttl, as->line->optr, TTLLEN - 1);
+	strncpy(as->title_header, as->line->optr, TTLLEN - 1);
 
 	print_line(as, 0, ' ', 0);
 
@@ -413,7 +414,7 @@ int _org(assembler *as)
 
 	if (evaluate(as, &result, &as->line->optr, 0) == BP_TRUE)
 	{
-		if (as->o_decb == BP_TRUE)
+		if (as->o_asm_mode == ASM_DECB)
 		{
 			/* 1. Disk BASIC BIN file -- set program counter to result. */
 			
@@ -588,6 +589,10 @@ int _opt(assembler *as)
 	/* parse the option */
 	switch (tolower(*Opt))
 	{
+		case 'b':	/* Disk BASIC compatible mode */
+			as->o_asm_mode = opt_state;
+			break;
+						
 		case 'c':	/* conditional assembly in listing */
 			as->Opt_C = opt_state;
 			break;
@@ -610,10 +615,6 @@ int _opt(assembler *as)
 
 		case 'l':	/* listing */
 			as->o_show_listing = opt_state;
-			break;
-
-		case 'm':	/* Disk BASIC compatible mode */
-			as->o_decb = opt_state;
 			break;
 
 		case 'n':	/* narrow listing */
@@ -655,7 +656,8 @@ int _opt(assembler *as)
 int _page(assembler *as)
 {
 	as->P_force = 0;
-	as->N_page = 1;
+	as->f_new_page = BP_TRUE;
+	
 	if (as->pass == 2)
 	{
 		if (as->o_show_listing == BP_TRUE)  
@@ -1319,12 +1321,16 @@ int _use(assembler *as)
 		{
 			/* 1. Make the first pass. */
 			
+			as->use_depth++;
+			
 			mamou_pass(as);
 			
 			
 			/* 2. Close the file. */
 			
 			_coco_close(use_file.fd);
+
+			as->use_depth--;
 		}
 		else
 		{
@@ -1333,7 +1339,7 @@ int _use(assembler *as)
 
 		as->current_file = prev_file;			
 	}
-
+	
 	
 	return 0;
 }

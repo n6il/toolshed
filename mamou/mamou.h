@@ -22,6 +22,9 @@
 #include "bp_dal.h"
 #include "cocopath.h"
 
+#define VERSION_MAJOR   1
+#define VERSION_MINOR   0
+
 #define ERR     (-1)
 
 
@@ -172,10 +175,34 @@ struct source_line
 };
 
 
+
+/* Object generation types. */
+
+typedef enum
+{
+	OUTPUT_BINARY,
+	OUTPUT_HEX,
+	OUTPUT_SRECORD
+} object_file_type;
+
+
+
+/* Assembly modes. */
+
+typedef enum
+{
+	ASM_OS9,
+	ASM_DECB
+} asm_mode;
+
+
+
 /* Assembler state */
+
 typedef struct _assembler
 {
 	struct source_line  *line;						/* current source line */
+	object_file_type	output_type;				/* type of output file */
 	BP_uint32			num_errors;					/* total number of errors */
 	BP_uint32			num_warnings;				/* assembler warnings */
 	BP_uint32			cumulative_blank_lines;		/* blank line count across all files */
@@ -189,7 +216,7 @@ typedef struct _assembler
 	BP_uint32			last_symbol;				/* result of last symbol_find */
 	BP_uint32			pass;						/* current pass */
 	struct filestack	*current_file;
-	BP_Bool				use_depth;					/* depth of includes/uses */
+	BP_uint32			use_depth;					/* depth of includes/uses */
 #define MAXAFILE	16
 	BP_int32			file_index;
 	BP_char				*file_name[MAXAFILE];		/* assembly file name on cmd line */
@@ -208,30 +235,27 @@ typedef struct _assembler
 	BP_char				P_bytes[P_LIMIT + 60];		/* Bytes collected for listing  */
 	BP_uint32			cumulative_cycles;			/* # of cycles per instruction  */
 	BP_uint32			Ctotal;						/* # of cycles seen so far */
-	BP_uint32			N_page;						/* new page flag */
+	BP_Bool				f_new_page;					/* new page flag */
 	BP_uint32			page_number;				/* page number */
 	BP_Bool				o_show_cross_reference;		/* cross reference table flag */
-	BP_Bool				Cflag;						/* cycle count flag */
+	BP_Bool				f_count_cycles;				/* cycle count flag */
 	BP_uint32			Opt_C;						/* */
 	BP_int32			o_page_depth;				/* page depth */
 	BP_Bool				o_show_error;				/* show error */
 	BP_uint32			Opt_F;						/* */
 	BP_uint32			Opt_G;						/* */
 	BP_Bool				o_show_listing;				/* listing flag 0=nolist, 1=list*/
-	BP_Bool				o_decb;						/* */
+	asm_mode			o_asm_mode;					/* assembler mode */
 	BP_uint32			Opt_N;						/* */
 	BP_Bool				o_quiet_mode;				/* quiet mode */
 	BP_Bool				o_show_symbol_table;		/* symbol table flag, 0=no symbol */
-	BP_uint32			o_pagewidth;						/* */
+	BP_uint32			o_pagewidth;				/* page width */
 	BP_uint32			current_line;				/* line counter for printing */
 	BP_uint32			current_page;				/* page counter for printing */
 	BP_uint32			header_depth;				/* page header number of lines */
 	BP_uint32			footer_depth;				/* page footer of lines */
 	BP_Bool				o_format_only;              /* format only flag, 0=no symbol */
 	BP_Bool				o_debug;					/* debug flag */
-	BP_Bool				o_binaryfile;						/* binary image file output flag */
-	BP_Bool				Hexfil;						/* Intel Hex file output flag */
-//	BP_uchar			Memmap[65536];				/* Memory image of output data */
 	FILE				*fd_object;					/* object file's file descriptor*/
 	BP_char				object_name[FNAMESIZE];
 	BP_uint32			accum;
@@ -242,13 +266,13 @@ typedef struct _assembler
 #define	CONDSTACKLEN	256
 	BP_uint32			conditional_stack_index;
 	char				conditional_stack[CONDSTACKLEN];
-	BP_Bool				Preprocess;
+	BP_Bool				o_do_parsing;
 	BP_Bool				o_h6309;
 	BP_uint32			code_bytes;					/* number of emitted code bytes */
 #define NAMLEN 64
 #define TTLLEN NAMLEN
-	BP_char				Nam[NAMLEN];
-	BP_char				Ttl[TTLLEN];
+	BP_char				name_header[NAMLEN];
+	BP_char				title_header[TTLLEN];
 	struct nlist		*bucket;            /* root node of the tree */
 	struct orglist		orgs[256];
 	BP_uint32			current_org;

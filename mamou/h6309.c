@@ -38,8 +38,8 @@ typedef enum _h6309_reg
 static int do_gen(assembler *as, int opcode, int amode, BP_Bool always_word);
 static int do_indexed(assembler *as, int opcode);
 static int abd_index(assembler *as, int pbyte);
-static int rtype(assembler *as, int reg);
-static int set_mode(assembler *as);
+static int reg_type(assembler *as, int reg);
+static int addressing_mode(assembler *as);
 static h6309_reg regnum(assembler *as);
 
 #define PAGE2	0x10
@@ -68,30 +68,6 @@ void local_init(void)
 {
 }
 
-
-#if 0
-/*
- *      do_op --- process mnemonic
- *
- *	Called with the base opcode and it's class. as->line->optr points to
- *	the beginning of the operand field.
- */
-void do_op(int opcode, int class)
-int opcode;	/* base opcode */
-int class;	/* mnemonic class */
-{
-	int     dist;   /* relative branch distance */
-	int     src,dst;/* source and destination registers */
-	int     pbyte;  /* postbyte value */
-	int     amode;  /* indicated addressing mode */
-	int	j;
-	int	result;
-
-	amode = set_mode();     /* pickup indicated addressing mode */
-
-	switch (class)
-	{
-#endif
 
 
 int _inh(assembler *as, int opcode)
@@ -142,7 +118,7 @@ int _gen(assembler *as, int opcode)
 	
      /* 1. Get addressing mode. */
 	
-	amode = set_mode(as);
+	amode = addressing_mode(as);
 
 	
 	/* 2. Do general addressing */
@@ -170,7 +146,7 @@ int _imgen(assembler *as, int opcode)
 	
 	/* 1. Get indicated addressing mode. */
 	
-	amode = set_mode(as);
+	amode = addressing_mode(as);
 	
 	
 	/* 2. Verify immediate addressing. */
@@ -270,7 +246,7 @@ int _imm(assembler *as, int opcode)
 	BP_int32	result;
 	int amode;  /* indicated addressing mode */
 
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	/* Immediate addressing ONLY. */
 
@@ -351,7 +327,7 @@ int _p1rel(assembler *as, int opcode)
 	int amode;
 	int dist;
 
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 	/* lbra and lbsr */
 	if (amode == IMMED)
 	{
@@ -372,7 +348,7 @@ int _noimm(assembler *as, int opcode)
 {
 	int amode;
 
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	if (amode == IMMED)
 	{
@@ -437,7 +413,7 @@ int _ldqgen(assembler *as, int opcode)
 {
 	int amode;
 
-	amode = set_mode(as);
+	amode = addressing_mode(as);
 	if (amode == IMMED)
 	{
 	  BP_int32 result;
@@ -462,7 +438,7 @@ int _p2gen(assembler *as, int opcode)
 	int amode;
 
 	emit(as, PAGE2);
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 	return _pxgen(as, opcode, amode);
 }
 
@@ -473,7 +449,7 @@ int _p3gen(assembler *as, int opcode)
 	int amode;
 
 	emit(as, PAGE3);
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 	return _pxgen(as, opcode, amode);
 }
 
@@ -484,7 +460,7 @@ int _p3gen8(assembler *as, int opcode)
 	int amode;
 
 	emit(as, PAGE3);
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 	if (amode == IMMED)
 	{
 		amode = IMMED8;
@@ -694,7 +670,7 @@ int _indexed(assembler *as, int opcode)
 {
 	int amode;
 
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 	/* indexed addressing only */
 	if (*as->line->optr == '#')
 	{
@@ -773,7 +749,7 @@ int _longimm(assembler *as, int opcode)
 	BP_int32 result;
 	int amode;
 
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 	if (amode == IMMED)
 	{
 		emit(as, opcode);
@@ -796,7 +772,7 @@ int _grp2(assembler *as, int opcode)
 	BP_int32 result;
 	int amode;
 
-	amode = set_mode(as);     /* pickup indicated addressing mode */
+	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	if (amode == IND)
 	{
@@ -828,7 +804,6 @@ int _grp2(assembler *as, int opcode)
 
 	evaluate(as, &result, &as->line->optr, 0);
 
-#if 1
 	if (as->line->force_byte)
 	{
 		if (hibyte(result) != as->DP)
@@ -854,37 +829,7 @@ int _grp2(assembler *as, int opcode)
 		eword(as, result);
 		as->cumulative_cycles += 3;
 	}
-#else
-	if (as->line->force_word)
-	{
-		emit(as, opcode + 0x70);
-		eword(as, result);
-		as->cumulative_cycles += 3;
-	}
-	else if (as->line->force_byte)
-	{
-		if (hibyte(result) != as->DP)
-		{
-			error(as, "as->DP out of range");
-			return 0;
-		}
-		emit(as, opcode);
-		emit(as, lobyte(result));
-		as->cumulative_cycles += 2;
-	}
-	else if (hibyte(result) == as->DP)
-	{
-		emit(as, opcode);
-		emit(as, lobyte(result));
-		as->cumulative_cycles += 2;
-	}
-	else
-	{
-		emit(as, opcode + 0x70);
-		eword(as, result);
-		as->cumulative_cycles += 3;
-	}
-#endif
+
 	
 	print_line(as, 0, ' ', as->old_program_counter);
 
@@ -988,7 +933,6 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 	else if (mode == OTHER)
 	{
 		evaluate(as, &result, &as->line->optr, 0);
-#if 1
 		if (as->line->force_byte == BP_TRUE)
 		{
 			emit(as, op + 0x10);
@@ -1016,43 +960,6 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 
 			return 0;
 		}
-#else
-		if (as->line->force_word || always_word == BP_TRUE)
-		{
-			if ((hibyte(result) == as->DP)) as->line->has_warning = BP_TRUE;
-
-			emit(as, op + 0x30);
-			eword(as, result);
-			as->cumulative_cycles += 3;
-			return 0;
-		}
-		if (as->line->force_byte)
-		{
-			emit(as, op + 0x10);
-			if (hibyte(result) != as->DP)
-			{
-				error(as, "as->DP out of range");
-				return 0;
-			}
-			emit(as, lobyte(result));
-			as->cumulative_cycles += 2;
-			return 0;
-		}
-		if (hibyte(result) == as->DP)
-		{
-			emit(as, op + 0x10);
-			emit(as, lobyte(result));
-			as->cumulative_cycles += 2;
-			return 0;
-		}
-		else
-		{
-			emit(as, op + 0x30);
-			eword(as, result);
-			as->cumulative_cycles += 3;
-			return 0;
-		}
-#endif
 	}
 	else
 	{
@@ -1145,10 +1052,6 @@ static int do_indexed(assembler *as, int op)
 	}
 	if (j == RPC || j == RPCR)
 	{
-#if 0
-		int as->line->force_word = NO;
-#endif
-
 		if (as->line->force_byte == BP_FALSE)
 		{
 			as->line->force_word = BP_TRUE;
@@ -1215,7 +1118,7 @@ static int do_indexed(assembler *as, int op)
 			return 0;
 		}
 
-		j = rtype(as, j);
+		j = reg_type(as, j);
 		if (j < 0x100)
 		{
 			if (predec)
@@ -1265,7 +1168,7 @@ static int do_indexed(assembler *as, int op)
 		  }
 		}
 	}
-	j = rtype(as, j);
+	j = reg_type(as, j);
 	if (j != 0x100) {
 	  pbyte += j;
 	  if (as->line->force_word)
@@ -1357,7 +1260,7 @@ static int abd_index(assembler *as, int pbyte)
 
 	as->line->optr += 2;
 	k = regnum(as);
-	k = rtype(as, k);
+	k = reg_type(as, k);
 	if (k == 0x100)
 	{
 		error(as, "Cannot use W for register indirect");
@@ -1371,54 +1274,73 @@ static int abd_index(assembler *as, int pbyte)
 
 
 /*
- *      rtype --- return register type in post-byte format
+ * reg_type: return register type in post-byte format
  */
-static int rtype(assembler *as, int r)
+
+static int reg_type(assembler *as, int r)
 {
 	switch(r)
 	{
 		case RX:
 			return(0x00);
+
 		case RY:
 			return(0x20);
+
 		case RU:
 			return(0x40);
+
 		case RS:
 			return(0x60);
+
 		case RW:
-		 	if (as->o_h6309 == BP_TRUE) return(0x100);
+		 	if (as->o_h6309 == BP_TRUE)
+			{
+				return(0x100);
+			}
 	}
+
 	error(as, "Illegal Register for Indexed");
+
+	
 	return 0;
 }
 
 
 
 /*
- *      set_mode --- determine addressing mode from operand field
+ * addressing_mode: determine addressing mode from operand field
  */
-static int set_mode(assembler *as)
+static int addressing_mode(assembler *as)
 {
-	register char *p;
+	BP_char *p;
 
+	
 	if (*as->line->operand == '#')
 	{
 		return(IMMED);          /* immediate addressing */
 	}
+	
 	p = as->line->operand;
+	
 	while (*p != EOS && *p != BLANK && *p != TAB)
 	{
-		/* any , before break */
+		/* Any , before break? */
+
 		if (*p == ',')
 		{
 			return(IND);    /* indexed addressing */
 		}
+
 		p++;
 	}
+
 	if (*as->line->operand == '[')
 	{
 		return(INDIR);          /* indirect addressing */
 	}
+
+	
 	return(OTHER);                  /* NOTA */
 }
 

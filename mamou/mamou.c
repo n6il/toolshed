@@ -18,8 +18,9 @@ static void mamou_assemble(assembler *as);
 static void mamou_initialize(assembler *as);
 static void mamou_deinitialize(assembler *as);
 
-char *product_name = "The Mamou Assembler for the Hitachi 6309";
-char *product_copyright = "Copyright (C) 2004 Boisy G. Pitre";
+char product_name[256];
+char product_copyright[256];
+
 
 /*
  * main:
@@ -43,6 +44,12 @@ int main(int argc, char **argv)
     init_globals(&as);
 
  
+	sprintf(product_name, "The Mamou Assembler Version %02d.%02d",
+			VERSION_MAJOR, VERSION_MINOR);
+	
+	sprintf(product_copyright, "Copyright (C) 2004 Boisy G. Pitre");
+
+	
 	/* 2. Display help, if necessary. */
 	
 	if (argc < 2)
@@ -50,26 +57,31 @@ int main(int argc, char **argv)
 		fprintf(stderr, "%s\n", product_name);
 		fprintf(stderr, "%s\n", product_copyright);
 		fprintf(stderr, "\n");
-        fprintf(stderr, "Options:\n");
-        fprintf(stderr, "    -a<sym>[=<val>] assign val to sym\n");
-        fprintf(stderr, "    -b              no binary image file output\n");
-        fprintf(stderr, "    -c              cross reference output\n");
-        fprintf(stderr, "    -d              debug mode\n");
-        fprintf(stderr, "    -e              enhanced 6309 assembler mode\n");
-        fprintf(stderr, "    -h              Intel hex file output\n");
-        fprintf(stderr, "    -i[=]<dir>      additional include directories\n");
-        fprintf(stderr, "    -l              list file\n");
-        fprintf(stderr, "    -ls             source only list\n");
-        fprintf(stderr, "    -lt             use tabs instead of spaces\n");
-        fprintf(stderr, "    -m              Disk BASIC mode (non-OS-9 assembly behavior)\n");
-        fprintf(stderr, "    -np             supress 'page' pseudo output\n");
-        fprintf(stderr, "    -o[=]<file>     output to file\n");
-        fprintf(stderr, "    -p              don't assemble, just parse\n");
-        fprintf(stderr, "    -q              quiet mode\n");
-        fprintf(stderr, "    -s              symbol table dump\n");
-        fprintf(stderr, "    -x              suppress warnings and errors\n");
-        fprintf(stderr, "    -y              include instruction cycle count\n");
-        fprintf(stderr, "    -z              suppress conditionals in assembly list output\n");
+		fprintf(stderr, "General options:\n");
+        fprintf(stderr, " -a<sym>[=<val>] assign val to sym\n");
+        fprintf(stderr, " -d        debug mode\n");
+        fprintf(stderr, " -e        enhanced 6309 assembler mode\n");
+        fprintf(stderr, " -i<dir>   additional include directories\n");
+        fprintf(stderr, " -p        don't assemble, just parse\n");
+        fprintf(stderr, " -q        quiet mode\n");
+        fprintf(stderr, " -x        suppress warnings and errors\n");
+        fprintf(stderr, " -y        include instruction cycle count\n");
+        fprintf(stderr, " -z        suppress conditionals in assembly list output\n");
+		fprintf(stderr, "Source listing options:\n");
+        fprintf(stderr, " -c        show symbol cross reference table\n");
+        fprintf(stderr, " -l        list file\n");
+        fprintf(stderr, " -ls       source only list (no line numbers)\n");
+        fprintf(stderr, " -lt       use tabs instead of spaces\n");
+        fprintf(stderr, " -np       suppress 'page' pseudo output\n");
+        fprintf(stderr, " -o<file>  output to file\n");
+        fprintf(stderr, " -s        show symbol table\n");
+		fprintf(stderr, "Assembler modes (select only one):\n");
+        fprintf(stderr, " -9        OS-9/6809 (default)\n");
+        fprintf(stderr, " -b        Disk BASIC\n");
+		fprintf(stderr, "Object generation options (select only one):\n");
+        fprintf(stderr, " -tb       binary object output (default)\n");
+        fprintf(stderr, " -th       hex object output\n");
+        fprintf(stderr, " -ts       s-record object output\n");
 
         exit(1);
     }
@@ -83,56 +95,60 @@ int main(int argc, char **argv)
         {
             switch (tolower(argv[j][1]))
             {
+				case '9':
+                    as.o_asm_mode = ASM_OS9;
+                    break;
+										
                 case 'a':
                     /* 1. Assembly define specification */
 					
                     p = &argv[j][2];
 
-                    if (*p == '\0')
+                    if (*p != EOS)
                     {
-                        /* 1. No symbol */
+						i = p;
+
+						while (*i != '=' && *i != '\0')
+						{
+							i++;
+						}
+
+						/* now i points to '=' or \0 */
+
+						if (*i == '=')
+						{
+							*i = '\0';
+							i++;
+							v = atoi(i);
+						}
+						else
+						{
+							v = 1;
+						}
 						
-                        break;
-                    }
-					
-                    i = p;
-
-                    while (*i != '=' && *i != '\0')
-                    {
-                        i++;
-                    }
-
-                    /* now i points to '=' or \0 */
-
-					if (*i == '=')
-                    {
-                        *i = '\0';
-                        i++;
-                        v = atoi(i);
-                    }
-                    else
-                    {
-                        v = 1;
-                    }
-						
-                    /* add value */
-                    symbol_add(&as, p, v, 0);
+						/* add value */
+						symbol_add(&as, p, v, 0);
+					}
                     break;
 					
                 case 'b':
-                    /* Binary file output */
-                    as.o_binaryfile = 0;
-                    break;	
+                    as.o_asm_mode = ASM_DECB;
+                    break;
+					
+                case 'c':
+                    /* cross reference output */
+                    as.o_show_cross_reference = BP_TRUE;
+                    break;
+					
+                case 'd':
+                    /* debug mode */
+                    as.o_debug = BP_TRUE;
+                    break;
 					
                 case 'e':
                     /* 6309 extended instruction mode */
                     as.o_h6309 = BP_TRUE;
                     break;	
-					
-                case 'h':
-                    /* Hex file output */
-                    as.Hexfil = BP_TRUE;
-                    break;
 					
                 case 'i':
                     /* include directive */
@@ -151,7 +167,6 @@ int main(int argc, char **argv)
 					
                 case 'l':
                     /* list file */
-					
                     if (tolower(argv[j][2]) == 's')
                     {
                         as.o_format_only = BP_TRUE;
@@ -164,63 +179,55 @@ int main(int argc, char **argv)
                     as.o_show_listing = BP_TRUE;
                     break;
 					
-                case 'm':
-                    as.o_decb = BP_TRUE;
-                    break;
-					
                 case 'o':
                     /* output file */
-					
                     p = &argv[j][2];
-					
-                    if (*p == '=')
-                    {
-                        p++;
-                    }
-
 					strncpy(as.object_name, p, FNAMESIZE - 1);
                     break;
 					
                 case 'p':
                     /* parse only output */
-					
-                    as.Preprocess = BP_FALSE;
+                    as.o_do_parsing = BP_FALSE;
                     break;
 					
                 case 'q':
                     /* quiet mode */
-					
                     as.o_quiet_mode = BP_TRUE;
                     break;
 					
                 case 's':
                     /* symbol table dump */
-					
                     as.o_show_symbol_table = BP_TRUE;
                     break;
 					
-                case 'd':
-                    /* o_debug mode */
-					
-                    as.o_debug = BP_TRUE;
-                    break;
-					
-                case 'c':
-                    /* cross reference output */
-					
-                    as.o_show_cross_reference = BP_TRUE;
+                case 't':
+                    /* object type */
+                    if (tolower(argv[j][2]) == 'b')
+                    {
+                        as.output_type = OUTPUT_BINARY;
+                    }
+					else if (tolower(argv[j][2]) == 'h')
+                    {
+                        as.output_type = OUTPUT_HEX;
+                    }
+					else if (tolower(argv[j][2]) == 's')
+                    {
+                        as.output_type = OUTPUT_SRECORD;
+                    }
+					else
+                    {
+						fprintf(stderr, "bad option\n");
+                    }
                     break;
 					
                 case 'x':
                     /* suppress errors and warnings */
-					
                     as.SuppressFlag = BP_TRUE;
                     break;
 					
                 case 'y':
                     /* cycle count (sort of works) */
-					
-                    as.Cflag = BP_TRUE;
+                    as.f_count_cycles = BP_TRUE;
                     break;
 					
                 case 'z':
@@ -229,7 +236,6 @@ int main(int argc, char **argv)
                     
                 default:
                     /* Bad option */
-					
                     fprintf(stderr, "Unknown option\n");
                     exit(0);
             }
@@ -328,7 +334,7 @@ void mamou_assemble(assembler *as)
 
 		/* 3. If this is a DECB .BIN file, emit the initial header. */
 		
-		if (as->o_decb == BP_TRUE && as->orgs[as->current_org].size > 0)
+		if (as->o_asm_mode == ASM_DECB && as->orgs[as->current_org].size > 0)
 		{
 			decb_header_emit(as, as->orgs[as->current_org].org, as->orgs[as->current_org].size);
 		}
@@ -377,7 +383,7 @@ void mamou_assemble(assembler *as)
 
 		/* 5. Emit Disk BASIC trailer. */
 		
-		if (as->o_decb == BP_TRUE)
+		if (as->o_asm_mode == ASM_DECB)
 		{
 			decb_trailer_emit(as, 0xEEAA);
 		}
@@ -455,7 +461,7 @@ static void mamou_initialize(assembler *as)
 		as->program_counter			= 0;
 		as->pass					= 1;
 		as->Ctotal					= 0;
-		as->N_page					= 0;
+		as->f_new_page					= BP_FALSE;
 //		as->input_line[MAXBUF-1]	= '\n';
 		as->use_depth				= 0;
 		
@@ -499,7 +505,7 @@ static void mamou_initialize(assembler *as)
 		as->E_total			= 0;
 		as->P_total			= 0;
 		as->Ctotal			= 0;
-		as->N_page			= 0;
+		as->f_new_page			= BP_FALSE;
 		as->use_depth				= 0;
 		
 		as->current_org		= 0;
@@ -572,11 +578,11 @@ void mamou_pass(assembler *as)
 
 		as->current_file->current_line++;
 		as->P_force = 0;	/* No force unless bytes emitted */
-		as->N_page = 0;
+		as->f_new_page = BP_FALSE;
 	
 		line_type = mamou_parse_line(as, input_line);
 		
-		if (line_type == 2 && as->Preprocess == BP_TRUE)
+		if (line_type == 2 && as->o_do_parsing == BP_TRUE)
 		{
 			process(as);
 		}
@@ -845,7 +851,7 @@ void process(assembler *as)
         {
             symbol_add(as, as->line->label, as->program_counter, 0);
         }
-        if (as->Cflag)
+        if (as->f_count_cycles)
         {
             as->cumulative_cycles = i->cycles;
             if (as->o_h6309 == BP_TRUE)
@@ -859,7 +865,7 @@ void process(assembler *as)
             f_record(as);
         }
         
-        if (as->Cflag)
+        if (as->f_count_cycles)
         {
             as->Ctotal += as->cumulative_cycles;
         }
@@ -869,9 +875,9 @@ void process(assembler *as)
 
 void init_globals(assembler *as)
 {
+    as->output_type = OUTPUT_BINARY;
 	as->current_file = NULL;
     as->num_errors = 0;		/* total number of errors       */
-//    as->input_line[0] = 0;		/* input line buffer            */
     as->program_counter = 0;			/* Program Counter              */
     as->DP = 0;			/* Direct Page                  */
     as->num_warnings = 0;		/* total warnings               */
@@ -880,7 +886,6 @@ void init_globals(assembler *as)
     as->last_symbol = 0;		/* result of last symbol_find        */
 
     as->pass = 1;		/* Current pass #               */
-//    as->file_count = 0;		/* Number of files to assemble  */
     as->Ffn = 0;		/* forward ref file #           */
     as->F_ref = 0;		/* next line with forward ref   */
     as->arguments = 0;		/* pointer to file names        */
@@ -895,24 +900,22 @@ void init_globals(assembler *as)
 
     as->cumulative_cycles = 0;		/* # of cycles per instruction  */
     as->Ctotal = 0;		/* # of cycles seen so far */
-    as->N_page = 0;		/* new page flag */
+    as->f_new_page = BP_FALSE;		/* new page flag */
     as->page_number = 2;		/* page number */
     as->o_show_cross_reference = 0;		/* cross reference table flag */
-    as->Cflag = 0;		/* cycle count flag */
+    as->f_count_cycles = 0;		/* cycle count flag */
     as->Opt_C = BP_TRUE;		/* show conditionals in listing */
     as->o_page_depth = 66;
     as->o_show_error = BP_TRUE;
     as->Opt_F = BP_FALSE;
     as->Opt_G = BP_FALSE;
     as->o_show_listing = 0;		/* listing flag 0=nolist, 1=list*/
-    as->o_decb			= BP_FALSE;
+    as->o_asm_mode			= ASM_OS9;
     as->Opt_N = BP_FALSE;
     as->o_quiet_mode = BP_FALSE;
     as->o_show_symbol_table = BP_FALSE;		/* symbol table flag, 0=no symbol */
     as->o_pagewidth = 80;
     as->o_debug = 0;		/* debug flag */
-    as->o_binaryfile = 1;		/* binary image file output flag */
-    as->Hexfil = 0;		/* Intel Hex file output flag */
     as->fd_object = NULL;		/* object file's file descriptor*/
     as->object_name[0] = EOS;
     as->bucket = NULL;
@@ -921,14 +924,14 @@ void init_globals(assembler *as)
     as->_crc[1] = 0xFF;
     as->_crc[2] = 0xFF;
     as->accum = 0x00ffffff;
-    as->Preprocess = BP_TRUE;
+    as->o_do_parsing = BP_TRUE;
     as->include_index = 0;
     as->file_index = 0;
     as->current_line = 0;
     as->current_page = 1;
     as->header_depth = 3;
     as->footer_depth = 3;
-    as->o_decb = 0;
+    as->o_asm_mode = ASM_OS9;
     as->SuppressFlag = 0;	/* suppress errors and warnings */
     as->tabbed = 0;
     as->o_h6309 = BP_FALSE;		/* assume 6809 mode only */

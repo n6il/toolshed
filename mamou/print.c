@@ -14,14 +14,23 @@ void print_line(assembler *as, int override, char infochar, int counter)
 
 	Line_buff[0] = EOS;
 
-	if (override == 0 && (as->pass == 1 || as->o_show_listing == BP_FALSE || as->N_page || !as->conditional_stack[as->conditional_stack_index]))
+
+	if (as->pass == 1 || as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
 	{
-		as->line->has_warning = 0;
+		/* We do nothing on pass 1 here. */
+		
+		return;
+	}
+	
+	
+	if (override == 0 && (as->o_show_listing == BP_FALSE || as->f_new_page == BP_TRUE))
+	{
+		if (as->line->has_warning) as->num_warnings++;
 		
 		return;
 	}
 
-	if (as->o_format_only == 0)
+	if (as->o_format_only == BP_FALSE)
 	{
 		if (as->current_line == 0)
 		{
@@ -55,7 +64,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 			strcat(Line_buff, "     ");
 		}
 	
-		if (as->Cflag)
+		if (as->f_count_cycles)
 		{
 			if (as->cumulative_cycles)
 			{
@@ -175,7 +184,7 @@ void report_summary(assembler *as)
 		(unsigned int)as->cumulative_comment_lines
 	);
 
-	if (as->o_decb == BP_TRUE)
+	if (as->o_asm_mode == ASM_DECB)
 	{
 		printf(" - $%04X (%u) bytes generated\n",
 			   (unsigned int)as->code_bytes,
@@ -215,11 +224,13 @@ void print_header(assembler *as)
 	now = time(NULL);
 	tm = localtime(&now);
 
-	printf("The Mamou Assembler Version 01.00.00    %02d/%02d/%02d %02d:%02d:%02d      Page %03u\n",
+	printf("The Mamou Assembler Version %02d.%02d      %02d/%02d/%02d %02d:%02d:%02d      Page %03u\n",
+		   VERSION_MAJOR,
+		   VERSION_MINOR,
 	       tm->tm_mon + 1, tm->tm_mday, tm->tm_year + 1900,
 	       tm->tm_hour, tm->tm_min, tm->tm_sec,
 	       (unsigned int)as->current_page);
-	printf("%s - %s\n", as->Nam, as->Ttl);
+	printf("%s - %s\n", as->name_header, as->title_header);
 	printf("\n");
 	as->current_line += as->header_depth;
 

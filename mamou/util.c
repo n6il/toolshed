@@ -184,7 +184,7 @@ void decb_header_emit(assembler *as, BP_uint32 start, BP_uint32 size)
 {
 	/* 1. If this is pass 2... */
 	
-	if (as->pass == 2 && as->o_decb == BP_TRUE)
+	if (as->pass == 2 && as->o_asm_mode == ASM_DECB)
 	{
 		/* Disk BASIC Preamble */
 		
@@ -226,7 +226,7 @@ void decb_trailer_emit(assembler *as, BP_uint32 exec)
 {
 	/* 1. If this is pass 2... */
 	
-	if (as->pass == 2 && as->o_decb == BP_TRUE)
+	if (as->pass == 2 && as->o_asm_mode == ASM_DECB)
 	{
 		/* Disk BASIC trailer */
 		
@@ -265,7 +265,7 @@ void f_record(assembler *as)
 
 	/* 1. Pass 2 only. */
 	
-	if (as->pass == 2)
+	if (as->pass == 2 && as->fd_object)
 	{
 		as->code_bytes += as->E_total;
 		
@@ -291,38 +291,32 @@ void f_record(assembler *as)
 
 		/* S-Record and Hex files: record header preamble. */
 
-		if (as->Hexfil && as->fd_object)
-		{
-			fprintf(as->fd_object, ":");
-			hexout(as, as->E_total);        /* byte count  */
-		}
-		else if (!as->o_binaryfile && as->fd_object) 		/* S record file */
-		{
-			chksum += 3;
-
-			fprintf(as->fd_object, "S1");
-			hexout(as, as->E_total + 3);      /* byte count +3 */
-		}
-
-
-		/* If this is a binary file, output bytes directly to file. */
-		
-		if (as->o_binaryfile && as->fd_object)
+		if (as->output_type == OUTPUT_BINARY && as->fd_object)
 		{
 			for (i = 0; i < as->E_total; i++)
 			{
 				fputc(as->E_bytes[i], as->fd_object);
 			}
 		}
-		else if (as->fd_object)
+		else
 		{
+			if (as->output_type == OUTPUT_HEX && as->fd_object)
+			{
+				fprintf(as->fd_object, ":");
+				hexout(as, as->E_total);        /* byte count  */
+				hexout(as, 0);		/* Output 00 */
+			}
+			else if (as->output_type == OUTPUT_SRECORD && as->fd_object) 		/* S record file */
+			{
+				chksum += 3;
+
+				fprintf(as->fd_object, "S1");
+				hexout(as, as->E_total + 3);      /* byte count +3 */
+			}
+
 			hexout(as, as->E_pc >> 8);        	/* high byte of PC */
 			hexout(as, lobyte(as->E_pc));		/* low byte of PC */
 
-			if (as->Hexfil)
-			{
-				hexout(as, 0);		/* Output 00 */
-			}
 
 			for (i = 0; i < as->E_total; i++)
 			{
@@ -333,7 +327,7 @@ void f_record(assembler *as)
 			/* ones or twos complement checksum then output it */
 
 			chksum =~ chksum;
-			if (as->Hexfil)
+			if (as->output_type == OUTPUT_HEX)
 			{
 				chksum++;
 			}
@@ -397,10 +391,10 @@ void finish_outfile(assembler *as)
 		return;
 	}
 
-	if (as->o_binaryfile)	/* dump the binary bytes to the object file */
+	if (as->output_type == OUTPUT_BINARY)	/* dump the binary bytes to the object file */
 	{
 	}
-	else if (as->Hexfil)
+	else if (as->output_type == OUTPUT_HEX)
 	{
 		fprintf(as->fd_object, ":00000001FF\n");
 	}
