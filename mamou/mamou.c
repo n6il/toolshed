@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 	
     as.arguments = argv;
 
-    init_globals(&as);
+    mamou_init_assembler(&as);
 
  
 	sprintf(product_name, "The Mamou Assembler Version %02d.%02d",
@@ -886,7 +886,6 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 	@param as The assembler state structure
  */
 
-
 void process(assembler *as)
 {
 	
@@ -969,12 +968,18 @@ void process(assembler *as)
 
 
 
-void init_globals(assembler *as)
+/*!
+	@function mamou_init_assembler
+	@discussion Initializes an instance of the assembler to default values
+	@param as The assembler state structure
+ */
+
+void mamou_init_assembler(assembler *as)
 {
 	memset(as, 0, sizeof(assembler));
 	
     as->output_type = OUTPUT_BINARY;
-    as->pass = 1;		/* Current pass #               */
+    as->pass = 1;				/* Current pass #               */
     as->page_number = 2;		/* page number */
     as->Opt_C = BP_TRUE;		/* show conditionals in listing */
     as->o_page_depth = 66;

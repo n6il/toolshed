@@ -7,10 +7,12 @@ coco_path_id	forward_path;		/* temp file's file descriptor	*/
 
 char	fwd_name[] = { "fwd_refs" } ;
 
-/*
- *      fwd_init --- initialize forward ref file
+/*!
+	@function fwd_init
+	@discussion Initializes the forward reference file
+	@param as The assembler state structure
  */
- 
+
 void fwd_init(assembler *as)
 {
 	if (_coco_create(&forward_path, fwd_name, FAM_READ | FAM_WRITE, FAP_READ | FAP_WRITE) != 0)
@@ -31,6 +33,12 @@ void fwd_init(assembler *as)
 
 
 
+/*!
+	@function fwd_deinit
+	@discussion Deinitializes the forward reference file
+	@param as The assembler state structure
+ */
+
 void fwd_deinit(assembler *as)
 {
 	_coco_close(forward_path);
@@ -42,9 +50,13 @@ void fwd_deinit(assembler *as)
 }
 
 
-/*
- * fwd_reinit --- reinitialize forward ref file
+
+/*!
+	@function fwd_reinit
+	@discussion Reinitializes the forward reference file
+	@param as The assembler state structure
  */
+
 void fwd_reinit(assembler *as)
 {
 	int			size;
@@ -74,9 +86,12 @@ void fwd_reinit(assembler *as)
 
 
 
-/*
- * fwd_mark --- mark current file/line as containing a forward ref
+/*!
+	@function fwd_mark
+	@discussion Marks the current file/line as containing a forward reference
+	@param as The assembler state structure
  */
+
 void fwd_mark(assembler *as)
 {
 	int		size;
@@ -94,8 +109,10 @@ void fwd_mark(assembler *as)
 
 
 
-/*
- * fwd_next --- get next forward ref
+/*!
+	@function fwd_next
+	@discussion Obtains the next forward reference
+	@param as The assembler state structure
  */
  
 void fwd_next(assembler *as)

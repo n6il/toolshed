@@ -337,7 +337,7 @@ int main(int argc, char **argv);
 void mamou_pass(assembler *as);
 void mamou_parse_line(assembler *as, BP_char *input_line);
 void process(assembler *as);
-void init_globals(assembler *as);
+void mamou_init_assembler(assembler *as);
 
 /* h6309.c */
 void local_init(void);

@@ -5,8 +5,10 @@
 
 
 
-/*
- * date: generate current date/timestamp
+/*!
+	@function _date
+	@discussion Generate current date/timestamp
+	@param as The assembler state structure
  */
 
 int _date(assembler *as)
@@ -15,7 +17,7 @@ int _date(assembler *as)
 	time_t tp;
 	
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -77,9 +79,11 @@ int _mod(assembler *as)
 	as->_crc[2] = 0xFF;
 	
 	/* Start OS-9 module */
+
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
 		/* ignore this pseudo op */
+
 		return 0;
 	}
 	
@@ -88,57 +92,74 @@ int _mod(assembler *as)
 		symbol_add(as, as->line.label, as->old_program_counter, 0);
 	}
 	
-	/* obtain first parameter -- length of module */
+	
+	/* Obtain first parameter -- length of module */
+
 	if ((p = strtok(as->line.optr, ",")) == NULL)
 	{
-		/* error */
+		/* Error */
+
 		error(as, "Missing parameter");
+
 		return 0;
 	}
+
 	evaluate(as, &modinfo[0], &p, 0);
 	
-	/* obtain rest of parameters */
+
+	/* Obtain rest of parameters */
+
 	for (i = 1; i < 6; i++)
 	{
 		if ((p = strtok(NULL, ",")) == NULL)
 		{
-			/* error */
+			/* Error */
+
 			error(as, "Missing parameter");
+
 			return 0;
 		}
+
 		evaluate(as, &modinfo[i], &p, 0);
 	}	
 	
 	header_check = 0;
 	
-	/* emit sync bytes */
+	
+	/* Emit sync bytes */
+
 	eword(as, _MODSYNC);
 	header_check ^= _MODSYNC >> 8;
 	header_check ^= _MODSYNC & 0xFF;
 	
-	/* emit module size */
+	/* Emit module size */
+	
 	module_size = modinfo[0];
 	eword(as, module_size);
 	header_check ^= module_size >> 8;
 	header_check ^= module_size & 0xFF;
 	
-	/* emit name offset */
+	/* Emit name offset */
+	
 	name_offset = modinfo[1];
 	eword(as, name_offset);
 	header_check ^= name_offset >> 8;
 	header_check ^= name_offset & 0xFF;
 	
-	/* emit type/language and attribute/revision */
+	/* Emit type/language and attribute/revision */
+	
 	emit(as, modinfo[2]);
 	header_check ^= modinfo[2];
 	
 	emit(as, modinfo[3]);
 	header_check ^= modinfo[3];
 	
-	/* emit header check */
+	/* Emit header check */
+	
 	emit(as, ~header_check);
 	
-	/* module type specific output */
+	/* Module type specific output */
+	
 	switch (modinfo[2] & 0xF0)
 	{
 		case 0x10:
@@ -168,15 +189,21 @@ int _mod(assembler *as)
 			break;
 	}
 	
-	/* re-adjust PC to undo effects of emit */
+	
+	/* Re-adjust PC to undo effects of emit */
+	
 	print_line(as, 0, ' ', 0);
+	
+	
 	return 0;
 }
 
 
 
-/*
- * emod: generate OS-9 module CRC
+/*!
+	@function _emod
+	@discussion Generate OS-9 module CRC
+	@param as The assembler state structure
  */
 
 int _emod(assembler *as)
@@ -201,6 +228,7 @@ int _emod(assembler *as)
 	f_record(as);
 	print_line(as, 0, ' ', 0);
 
+	
 	return 0;
 }
 
@@ -229,8 +257,11 @@ typedef enum
 static int _generic_if(assembler *as, conditional whichone);
 
 
-/*
- * _generic_if: generic conditional handler
+/*!
+	@function _generic_if
+	@discussion Generic conditional handler
+	@param as The assembler state structure
+	@param whichone The proper conditional
  */
 
 static int _generic_if(assembler *as, conditional whichone)
@@ -238,7 +269,7 @@ static int _generic_if(assembler *as, conditional whichone)
 	BP_int32	result;
 	
 	
-	/* 1. First, check to make sure we don't overflow the condition stack. */
+	/* First, check to make sure we don't overflow the condition stack. */
 	
 	if (as->conditional_stack_index + 1 > CONDSTACKLEN)
 	{
@@ -250,7 +281,7 @@ static int _generic_if(assembler *as, conditional whichone)
 	}
 	
 
-	/* 2. Next, check the state of the current conditional. */
+	/* Next, check the state of the current conditional. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
 	{
@@ -320,8 +351,10 @@ static int _generic_if(assembler *as, conditional whichone)
 
 
 
-/*
- * ifp1: if pass == 1 conditional
+/*!
+	@function _ifp1
+	@discussion IF PASS = 1 conditional
+	@param as The assembler state structure
  */
 
 int _ifp1(assembler *as)
@@ -331,8 +364,10 @@ int _ifp1(assembler *as)
 
 
 
-/*
- * ifp2: if pass == 2 conditional
+/*!
+	@function _ifp1
+	@discussion IF PASS = 2 conditional
+	@param as The assembler state structure
  */
 
 int _ifp2(assembler *as)
@@ -342,8 +377,10 @@ int _ifp2(assembler *as)
 
 
 
-/*
- * ifeq: if result == 0 conditional
+/*!
+	@function _ifeq
+	@discussion IF result = 0 conditional
+	@param as The assembler state structure
  */
 
 int _ifeq(assembler *as)
@@ -353,8 +390,10 @@ int _ifeq(assembler *as)
 
 
 
-/*
- * ifne: if expression != 0 conditional
+/*!
+	@function _ifne
+	@discussion IF result != 0 conditional
+	@param as The assembler state structure
  */
 
 int _ifne(assembler *as)
@@ -364,8 +403,10 @@ int _ifne(assembler *as)
 
 
 
-/*
- * iflt: if expression < 0 conditional
+/*!
+	@function _iflt
+	@discussion IF result < 0 conditional
+	@param as The assembler state structure
  */
 
 int _iflt(assembler *as)
@@ -375,8 +416,10 @@ int _iflt(assembler *as)
 
 
 
-/*
- * ifle: if expression <= 0 conditional
+/*!
+	@function _ifle
+	@discussion IF result <= 0 conditional
+	@param as The assembler state structure
  */
 
 int _ifle(assembler *as)
@@ -386,8 +429,10 @@ int _ifle(assembler *as)
 
 
 
-/*
- * ifgt: if expression > 0 conditional
+/*!
+	@function _ifgt
+	@discussion IF result > 0 conditional
+	@param as The assembler state structure
  */
 
 int _ifgt(assembler *as)
@@ -397,8 +442,10 @@ int _ifgt(assembler *as)
 
 
 
-/*
- * ifge: if expression >= 0 conditional
+/*!
+	@function _ifge
+	@discussion IF result >= 0 conditional
+	@param as The assembler state structure
  */
 
 int _ifge(assembler *as)
@@ -408,8 +455,10 @@ int _ifge(assembler *as)
 
 
 
-/*
- * endc - end conditional
+/*!
+	@function _endc
+	@discussion End conditional
+	@param as The assembler state structure
  */
 
 int _endc(assembler *as)
@@ -437,8 +486,10 @@ int _endc(assembler *as)
 
 
 
-/*
- * else - change current conditional
+/*!
+	@function _else
+	@discussion Change current conditional
+	@param as The assembler state structure
  */
 
 int _else(assembler *as)
@@ -479,8 +530,10 @@ int _else(assembler *as)
  *
  *****************************************************************************/
 
-/*
- * align: align program counter on passed boundary
+/*!
+	@function _align
+	@discussion Align program counter on passed boundary
+	@param as The assembler state structure
  */
 
 int _align(assembler *as)
@@ -528,8 +581,10 @@ int _align(assembler *as)
 
 
 
-/*
- * even - align PC on even boundary
+/*!
+	@function _even
+	@discussion Align PC on even boundary
+	@param as The assembler state structure
  */
 
 int _even(assembler *as)
@@ -539,7 +594,7 @@ int _even(assembler *as)
 	as->code_segment_start = BP_TRUE;
 	
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -562,8 +617,10 @@ int _even(assembler *as)
 
 
 
-/*
- * odd - align PC on odd boundary
+/*!
+	@function _odd
+	@discussion Align PC on odd boundary
+	@param as The assembler state structure
  */
 
 int _odd(assembler *as)
@@ -573,7 +630,7 @@ int _odd(assembler *as)
 	as->code_segment_start = BP_TRUE;
 	
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -602,13 +659,15 @@ int _odd(assembler *as)
 *
 *****************************************************************************/
 
-/*
- * nam - specify a name for header printing
+/*!
+	@function nam
+	@discussion Specify a name for header printing
+	@param as The assembler state structure
  */
  
 int _nam(assembler *as)
 {
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -616,7 +675,7 @@ int _nam(assembler *as)
 	}
 
 
-	/* 2. Ignore this directive in any file but the root (main) file. */
+	/* Ignore this directive in any file but the root (main) file. */
 	
 	if (as->use_depth > 0)
 	{
@@ -624,7 +683,7 @@ int _nam(assembler *as)
 	}
 
 
-	/* 3. Test for presence of a label and error if found. */
+	/* Test for presence of a label and error if found. */
 	
 	if (*as->line.label != EOS)
 	{
@@ -634,7 +693,7 @@ int _nam(assembler *as)
 	}
 	
 	
-	/* 4. Copy the name into our global space for later use. */
+	/* Copy the name into our global space for later use. */
 	
 	strncpy(as->name_header, as->line.optr, NAMLEN-1);
 
@@ -646,13 +705,15 @@ int _nam(assembler *as)
 
 
 
-/*
- * ttl - specify a title for printing
+/*!
+	@function _ttl
+	@discussion Specify a title for printing
+	@param as The assembler state structure
  */
  
 int _ttl(assembler *as)
 {
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -660,7 +721,7 @@ int _ttl(assembler *as)
 	}
 
 
-	/* 2. Ignore this directive in any file but the root (main) file. */
+	/* Ignore this directive in any file but the root (main) file. */
 
 	if (as->use_depth > 0)
 	{
@@ -668,7 +729,7 @@ int _ttl(assembler *as)
 	}
 
 
-	/* 3. Test for presence of a label and error if found */
+	/* Test for presence of a label and error if found */
 	
 	if (*as->line.label != EOS)
 	{
@@ -678,7 +739,7 @@ int _ttl(assembler *as)
 	}
 
 	
-	/* 4. Copy the title into our global space for later use. */
+	/* Copy the title into our global space for later use. */
 
 	strncpy(as->title_header, as->line.optr, TTLLEN - 1);
 	
@@ -690,9 +751,12 @@ int _ttl(assembler *as)
 
 
 
-/*
- * page - new page
+/*!
+	@function _page
+	@discussion New page
+	@param as The assembler state structure
  */
+
 int _page(assembler *as)
 {
 	as->P_force = 0;
@@ -710,19 +774,25 @@ int _page(assembler *as)
 			{
 				printf("\f");
 			}
+	
 			printf("%-10s", extractfilename(as->file_name[as->file_index -1]));
 			printf("                                   ");
 			printf("page %3u\n", (unsigned int)as->page_number++);
 		}
 	}
+
 	print_line(as, 0, ' ', 0);
+
+	
 	return 0;
 }
 
 
 
-/*
- * fill - fill memory bytes
+/*!
+	@function _fill
+	@discussion Fill memory bytes
+	@param as The assembler state structure
  */
 
 int _fill(assembler *as)
@@ -733,7 +803,7 @@ int _fill(assembler *as)
 	
 	as->P_force = 1;
 
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -789,15 +859,17 @@ int _fill(assembler *as)
 
 
 
-/*
- * fcc - fill constant characters
+/*!
+	@function _fcc
+	@discussion Fill constant characters
+	@param as The assembler state structure
  */
 
 int _fcc(assembler *as)
 {
 	char fccdelim;
 
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -824,6 +896,7 @@ int _fcc(assembler *as)
 	else
 	{
 		error(as, "Missing Delimiter");
+
 		return 0;
 	}
 
@@ -840,14 +913,18 @@ int _fcc(assembler *as)
 
 
 
-/*
- * fcz - fill constant characters with a nul byte at end
+/*!
+	@function _fcz
+	@discussion Fill constant characters with a nul byte at end
+	@param as The assembler state structure
  */
+
 int _fcz(assembler *as)
 {
 	char fccdelim;
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -876,6 +953,7 @@ int _fcz(assembler *as)
 	else
 	{
 		error(as, "Missing Delimiter");
+
 		return 0;
 	}
 	
@@ -892,8 +970,10 @@ int _fcz(assembler *as)
 
 
 
-/*
- * fcs - fill constant string
+/*!
+	@function _fcs
+	@discussion Fill constant string
+	@param as The assembler state structure
  */
 
 int _fcs(assembler *as)
@@ -901,7 +981,7 @@ int _fcs(assembler *as)
 	char fccdelim;
 
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
 	{
@@ -943,20 +1023,27 @@ int _fcs(assembler *as)
 	else
 	{
 		error(as, "Missing Delimiter");
+
 		return 0;
 	}
+
 	if (*as->line.label != EOS)
 	{
 		symbol_add(as, as->line.label, as->old_program_counter, 0);
 	}		
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
 
-/*
- * fcr - fill constant string with CR and nul at end
+/*!
+	@function _fcr
+	@discussion Fill constant string with CR and nul at end
+	@param as The assembler state structure
  */
 
 int _fcr(assembler *as)
@@ -964,7 +1051,7 @@ int _fcr(assembler *as)
 	char fccdelim;
 	
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
 	{
@@ -1014,8 +1101,10 @@ int _fcr(assembler *as)
 
 
 
-/*
- * org: set origin for PC (Disk BASIC mode) or DATA (OS-9 mode)
+/*!
+	@function _org
+	@discussion Set origin for PC (Disk BASIC mode) or DATA (OS-9 mode)
+	@param as The assembler state structure
  */
 
 int _org(assembler *as)
@@ -1029,7 +1118,7 @@ int _org(assembler *as)
 	as->code_segment_start = BP_TRUE;
 	
 		
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1041,13 +1130,13 @@ int _org(assembler *as)
 	{
 		if (as->o_asm_mode == ASM_DECB)
 		{
-			/* 1. Disk BASIC BIN file -- set program counter to result. */
+			/* Disk BASIC BIN file -- set program counter to result. */
 			
 			as->program_counter = result;
 		}
 		else
 		{
-			/* 1. OS-9 mode... our emit character is 'D'. */
+			/* OS-9 mode... our emit character is 'D'. */
 			
 			emit_char = 'D';
 		}
@@ -1070,9 +1159,13 @@ int _org(assembler *as)
 }
 
 
-/*
- * equ - equate label to an expression
+
+/*!
+	@function _equ
+	@discussion Equate a label to an expression
+	@param as The assembler state structure
  */
+
 int _equ(assembler *as)
 {
 	BP_int32	result;
@@ -1080,7 +1173,7 @@ int _equ(assembler *as)
 
 	as->P_force = 1;
 
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1091,8 +1184,10 @@ int _equ(assembler *as)
 	if (*as->line.label == EOS)
 	{
 		error(as, "Label required");
+
 		return 0;
 	}
+
 	if (evaluate(as, &result, &as->line.optr, 0))
 	{
 		symbol_add(as, as->line.label, result, 0);
@@ -1101,16 +1196,24 @@ int _equ(assembler *as)
 	else
 	{
 		error(as, "Undefined operand during pass one");
+
 		return 0;
 	}
+
 	print_line(as, 0, ' ', result);
+
+	
 	return 0;
 }
 
 
-/*
- * set - set label to an expression
+
+/*!
+	@function _set
+	@discussion Set label to an expression
+	@param as The assembler state structure
  */
+
 int _set(assembler *as)
 {
 	BP_int32	result;
@@ -1118,7 +1221,7 @@ int _set(assembler *as)
 
 	as->P_force = 1;
 
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1129,28 +1232,37 @@ int _set(assembler *as)
 	if (*as->line.label == EOS)
 	{
 		error(as, "Label required");
+
 		return 0;
 	}
+
 	if (evaluate(as, &result, &as->line.optr, 0))
 	{
 		symbol_add(as, as->line.label, result, 1);
 		as->old_program_counter = result;        /* override normal */
 	}
+
 	print_line(as, 0, ' ', result);
+
+	
 	return 0;
 }
 
 
-/*
- * opt - set assembler options
+
+/*!
+	@function _opt
+	@discussion Set assembler options
+	@param as The assembler state structure
  */
+
 int _opt(assembler *as)
 {
 	char *Opt = as->line.operand;
 	BP_Bool opt_state = BP_TRUE;
 	
 
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1158,32 +1270,41 @@ int _opt(assembler *as)
 	}
 
 
-	/* test for presence of a label and error if found */
+	/* Test for presence of a label and error if found. */
+
 	if (*as->line.label != EOS)
 	{
 		error(as, "label not allowed");
+
 		return 0;
 	}
+
 
 	if (as->use_depth > 0)
 	{
 		/* OPTs are ignored in files brought in by
 		 * the 'use' directive, but are still printed.
 		 */
+
 		print_line(as, 0, ' ', 0);
+
 		return 0;
 	}
 
+
 	as->P_force = 0;
 
-	/* does a minus precede the option? */
+	/* Does a minus precede the option? */
+
 	if (*Opt == '-')
 	{
 		Opt++;
 		opt_state = BP_FALSE;
 	}
 
-	/* parse the option */
+
+	/* Parse the option */
+
 	switch (tolower(*Opt))
 	{
 		case 'b':	/* Disk BASIC compatible mode */
@@ -1243,13 +1364,19 @@ int _opt(assembler *as)
 	}
 
 	print_line(as, 0, ' ', 0);
+
+	
 	return 0;
 }
 
 
-/*
- * unsupported pseudo op
+
+/*!
+	@function _null_op
+	@discussion Unsupported pseudo-op
+	@param as The assembler state structure
  */
+
 int _null_op(assembler *as)
 {
 	as->P_force = 0;
@@ -1258,9 +1385,12 @@ int _null_op(assembler *as)
 }
 
 
-/*
- * setdp - set direct page (motorola mode)
+/*!
+	@function _setdp
+	@discussion Set direct page
+	@param as The assembler state structure
  */
+
 int _setdp(assembler *as)   /* TODO! */
 {
 	BP_int32	newdp;
@@ -1274,13 +1404,19 @@ int _setdp(assembler *as)   /* TODO! */
 	as->data_counter = newdp;
 	f_record(as);
 	print_line(as, 0, 'D', as->data_counter);
+
+	
 	return 0;
 }
 
 
-/*
- * spc - add spaces to printed output
+
+/*!
+	@function _spc
+	@discussion Add spaces to printed output
+	@param as The assembler state structure
  */
+
 int _spc(assembler *as)	/* TODO! */
 {
 	int lines = atoi(as->line.operand);
@@ -1298,15 +1434,19 @@ int _spc(assembler *as)	/* TODO! */
 }
 
 
-/*
- * use - include other assembly or definition files
+
+/*!
+	@function use
+	@discussion Include other assembly or definition files
+	@param as The assembler state structure
  */
+
 int _use(assembler *as)
 {
 	error_code ec = 0;
 
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1314,7 +1454,7 @@ int _use(assembler *as)
 	}
 
 
-	/* 2. Test for presence of a label and return error if found. */
+	/* Test for presence of a label and return error if found. */
 
 	if (*as->line.label != EOS)
 	{
@@ -1322,7 +1462,7 @@ int _use(assembler *as)
 	}
 
 	
-	/* 3. Print the line. */
+	/* Print the line. */
 	
 	print_line(as, 0, ' ', 0);
 
@@ -1332,7 +1472,7 @@ int _use(assembler *as)
 		int			i = 0;
 		
 		
-		/* 1. Set up the structure. */
+		/* Set up the structure. */
 
 		prev_file = as->current_file;
 		
@@ -1346,7 +1486,7 @@ int _use(assembler *as)
 		use_file.end_encountered = BP_FALSE;
 		
 		
-		/* 2. Open a path to the file. */
+		/* Open a path to the file. */
 		
 		strncpy(path, use_file.file, FNAMESIZE);
 
@@ -1356,7 +1496,7 @@ int _use(assembler *as)
 
 			if (ec != 0 && i < as->include_index)
 			{
-				/* 1. Try any alternate include directories. */
+				/* Try any alternate include directories. */
 			
 				strcpy(path, as->includes[i]);
 				strcat(path, "/");
@@ -1366,14 +1506,14 @@ int _use(assembler *as)
 		
 		if (ec == 0)
 		{
-			/* 1. Make the first pass. */
+			/* Make the first pass. */
 			
 			as->use_depth++;
 			
 			mamou_pass(as);
 			
 			
-			/* 2. Close the file. */
+			/* Close the file. */
 			
 			_coco_close(use_file.fd);
 
@@ -1392,12 +1532,16 @@ int _use(assembler *as)
 }
 
 
-/*
- * end - stop further processesing in this pass
+
+/*!
+	@function __end
+	@discussion Stop further processing in this pass
+	@param as The assembler state structure
  */
+
 int __end(assembler *as)
 {
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1405,10 +1549,12 @@ int __end(assembler *as)
 	}
 
 
-	/* test for presence of a label and error if found */
+	/* Test for presence of a label and error if found. */
+	
 	if (*as->line.label != EOS)
 	{
 		error(as, "label not allowed");
+
 		return 0;
 	}
 	else
@@ -1427,6 +1573,7 @@ int __end(assembler *as)
 		as->current_file->end_encountered = BP_TRUE;
 	}
 
+
 	return 0;
 }
 
@@ -1442,8 +1589,10 @@ int __end(assembler *as)
 static int _reserve_memory(assembler *as, BP_int32 size);
 
 
-/*
- * reserve_memory
+/*!
+	@function _reserve_memory
+	@discussion Reserve memory
+	@param as The assembler state structure
  */
 
 static int _reserve_memory(assembler *as, BP_int32 size)
@@ -1456,7 +1605,7 @@ static int _reserve_memory(assembler *as, BP_int32 size)
 	as->code_segment_start = BP_TRUE;
 	
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1502,8 +1651,10 @@ static int _reserve_memory(assembler *as, BP_int32 size)
 
 
 
-/*
- * rmb - reserve memory bytes
+/*!
+	@function _rmb
+	@discussion Reserve memory bytes
+	@param as The assembler state structure
  */
 
 int _rmb(assembler *as)
@@ -1513,8 +1664,10 @@ int _rmb(assembler *as)
 
 
 
-/*
- * rmd - reserve memory double bytes
+/*!
+	@function _rmd
+	@discussion Reserve memory double bytes
+	@param as The assembler state structure
  */
 
 int _rmd(assembler *as)
@@ -1524,8 +1677,10 @@ int _rmd(assembler *as)
 
 
 
-/*
- * rmq - reserve memory quad bytes
+/*!
+	@function _rmq
+	@discussion Reserve memory quad bytes
+	@param as The assembler state structure
  */
 
 int _rmq(assembler *as)
@@ -1544,8 +1699,10 @@ int _rmq(assembler *as)
 static int _fill_constant(assembler *as, BP_int32 size);
 
 
-/*
- * fill_constant - fill constant data
+/*!
+	@function _fill_constant
+	@discussion Fill constant data
+	@param as The assembler state structure
  */
 
 int _fill_constant(assembler *as, BP_int32 size)
@@ -1553,7 +1710,7 @@ int _fill_constant(assembler *as, BP_int32 size)
 	BP_int32	result;
 	
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1606,8 +1763,10 @@ int _fill_constant(assembler *as, BP_int32 size)
 
 
 
-/*
- * fcb - fill constant bytes
+/*!
+	@function _fcb
+	@discussion Fill constant bytes
+	@param as The assembler state structure
  */
 
 int _fcb(assembler *as)
@@ -1617,9 +1776,12 @@ int _fcb(assembler *as)
 
 
 
-/*
- * fdb - fill double bytes
+/*!
+	@function _fdb
+	@discussion Fill double bytes
+	@param as The assembler state structure
  */
+
 int _fdb(assembler *as)
 {
 	return _fill_constant(as, 2);
@@ -1627,9 +1789,12 @@ int _fdb(assembler *as)
 
 
 
-/*
- * fqb - fill quad bytes
+/*!
+	@function _fqb
+	@discussion Fill quad bytes
+	@param as The assembler state structure
  */
+
 int _fqb(assembler *as)
 {
 	return _fill_constant(as, 4);
@@ -1648,9 +1813,12 @@ static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 valu
 
 
 
-/*
- * fill_constant_with_value
+/*!
+	@function fill_constant_with_value
+	@discussion Fill constant space with value
+	@param as The assembler state structure
  */
+
 static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 value)
 {
 	BP_int32	result;
@@ -1658,7 +1826,7 @@ static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 valu
 	
 	as->P_force = 1;
 	
-	/* 1. If we are currently in a FALSE conditional, just return. */
+	/* If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
@@ -1720,9 +1888,12 @@ static int _fill_constant_with_value(assembler *as, BP_int32 size, BP_int32 valu
 
 
 
-/*
- * zmb - zero memory bytes
+/*!
+	@function _zmb
+	@discussion Zero memory bytes
+	@param as The assembler state structure
  */
+
 int _zmb(assembler *as)
 {
 	return _fill_constant_with_value(as, 1, 0);
@@ -1730,9 +1901,12 @@ int _zmb(assembler *as)
 
 
 
-/*
- * zmd - zero memory double bytes
+/*!
+	@function _zmd
+	@discussion Zero memory double bytes
+	@param as The assembler state structure
  */
+
 int _zmd(assembler *as)
 {
 	return _fill_constant_with_value(as, 2, 0);
@@ -1740,12 +1914,13 @@ int _zmd(assembler *as)
 
 
 
-/*
- * zmq - zero memory quad bytes
+/*!
+	@function _zmq
+	@discussion Zero memory quad bytes
+	@param as The assembler state structure
  */
+
 int _zmq(assembler *as)
 {
 	return _fill_constant_with_value(as, 4, 0);
 }
-
-

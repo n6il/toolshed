@@ -51,6 +51,15 @@ static BP_Bool forward = BP_FALSE;
 
 
 
+/*!
+	@function evaluator
+	@discussion Evaluates mathematical expressions and symbols
+	@param as The assembler state structure
+	@param result A pointer to the result of the evaluated expression
+	@param eptr The expression to be evaluated
+	@param ignoreUndefined Ignore any undefined symbols
+ */
+
 /*
  * evaluator: evaluate a mathematical expression
  *
@@ -175,8 +184,10 @@ BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool ignore
 
 
 
-/*
- * is_op: is character an expression operator?
+/*!
+	@function is_op
+	@discussion Determines if a character is an expression operator
+	@param c Character to evaluate
  */
 
 static BP_Bool is_op(BP_char c)
@@ -192,8 +203,13 @@ static BP_Bool is_op(BP_char c)
 
 
 
-/*
- * get_term: evaluate a single item in an expression
+/*!
+	@function get_term
+	@discussion Evaluates a single item in an expression
+	@param as The assembler state structure
+	@param term A pointer to the term that is returned
+	@param eptr The address of a pointer to the expression to be evaluated
+	@param ignoreUndefined Ignore any undefined symbols
  */
 
 static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool ignoreUndefined)

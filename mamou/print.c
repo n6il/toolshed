@@ -3,9 +3,15 @@
 #include "mamou.h"
 
 
-/*
- *      print_line --- pretty print input line
+/*!
+	@function print_line
+	@discussion Prints an assembly output line
+	@param as The assembler state structure
+	@param override Overrides the printing rules
+	@param infochar Character to be placed in the info field of the line
+	@param counter Line counter?
  */
+
 void print_line(assembler *as, int override, char infochar, int counter)
 {
 	int i = 0;
@@ -196,6 +202,13 @@ void print_line(assembler *as, int override, char infochar, int counter)
 }
 
 
+
+/*!
+	@function print_summary
+	@discussion Prints the summary of the assembler's work
+	@param as The assembler state structure
+ */
+
 void print_summary(assembler *as)
 {
 	printf("\n");
@@ -241,6 +254,12 @@ void print_summary(assembler *as)
 
 
 
+/*!
+	@function print_header
+	@discussion Prints the header of the assembler's output page
+	@param as The assembler state structure
+ */
+
 void print_header(assembler *as)
 {
 	struct tm *tm;
@@ -280,6 +299,12 @@ void print_header(assembler *as)
 }
 
 
+
+/*!
+	@function print_footer
+	@discussion Prints the footer of the assembler's output page
+	@param as The assembler state structure
+ */
 
 void print_footer(assembler *as)
 {

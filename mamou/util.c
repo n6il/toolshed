@@ -4,10 +4,11 @@
 #include	"os9module.h"
 
 
-/*
- * Returns the filename component of a string
- *
- * (e.g.  /home/darthvader/file.c returns file.c)
+/*!
+	@function extractfilename
+	@discussion Returns the filename component of a string
+	@discussion (e.g. /home/darthvader/file.c returns file.c
+	@param pathlist Pointer to the pathlist to evaluate
  */
 
 char *extractfilename(char *pathlist)
@@ -35,20 +36,30 @@ void imageinit(void);
 int white(char c);
 #endif
 
-/*
- *      fatal --- fatal error handler
+
+/*!
+	@function fatal
+	@discussion Fatal error handler
+	@param str String to report
  */
+
 void fatal(char *str)
 {
 	fprintf(stderr, "%s\n", str);
+
+	
 	exit(-1);
 }
 
 
-/*
- *      error --- error in a line
- *                      print line number and error
+
+/*!
+	@function error
+	@discussion Reports an error in a line.
+	@param as The assembler state structure
+	@param str String to report
  */
+
 void error(assembler *as, char *str)
 {
 	if (as->ignore_errors == BP_TRUE)
@@ -69,8 +80,11 @@ void error(assembler *as, char *str)
 }
 
 
-/*
- *      delim --- check if character is a delimiter
+
+/*!
+	@function delim
+	@discussion Determine if the character is a delimiter
+	@param c Character to evaluate
  */
 
 BP_Bool delim(BP_char c)
@@ -86,8 +100,10 @@ BP_Bool delim(BP_char c)
 
 
 
-/*
- *      eol --- check if character is eol
+/*!
+	@function eol
+	@discussion Determine if character is an end-of-line character
+	@param c Character to evaluate
  */
 
 BP_Bool eol(BP_char c)
@@ -102,9 +118,13 @@ BP_Bool eol(BP_char c)
 }
 
 
-/*
- *      skip_white --- move pointer to next non-whitespace char
+
+/*!
+	@function skip_white
+	@discussion Move poiner to next non-whitespace character
+	@param ptr String to process
  */
+
 BP_char *skip_white(BP_char *ptr)
 {
 	while (*ptr == BLANK || *ptr == TAB)
@@ -118,9 +138,13 @@ BP_char *skip_white(BP_char *ptr)
 
 
 
-/*
- *      eqword --- emit a quad word to code file
+/*!
+	@function eqword
+	@discussion Emit a quad word to the code file
+	@param as The assembler state structure
+	@param qwd Quad word to emit
  */
+
 void equad(assembler *as, BP_int32 qwd)
 {
 	eword(as, hiword(qwd));
@@ -131,9 +155,13 @@ void equad(assembler *as, BP_int32 qwd)
 
 
 
-/*
- *      eword --- emit a word to code file
+/*!
+	@function eword
+	@discussion Emit a word to the code file
+	@param as The assembler state structure
+	@param wd Word to emit
  */
+
 void eword(assembler *as, int wd)
 {
 	emit(as, hibyte(wd));
@@ -144,10 +172,13 @@ void eword(assembler *as, int wd)
 
 
 
-/*
- * emit: emit a byte to code file
+/*!
+	@function emit
+	@discussion Emit a byte to the code file
+	@param as The assembler state structure
+	@param byte Byte to emit
  */
- 
+
 void emit(assembler *as, int byte)
 {
 	/* 1. Show debug output if flagged. */
@@ -220,10 +251,14 @@ void emit(assembler *as, int byte)
 
 
 
-/*
- * decb_header_emit: emit code segment header to code file
+/*!
+	@function decb_header_emit
+	@discussion Emit a Disk BASIC code segment header to the code file
+	@param as The assembler state structure
+	@param start Start of code
+	@param size Size of code
  */
- 
+
 void decb_header_emit(assembler *as, BP_uint32 start, BP_uint32 size)
 {
 	/* 1. If this is pass 2... */
@@ -262,8 +297,11 @@ void decb_header_emit(assembler *as, BP_uint32 start, BP_uint32 size)
 
 
 
-/*
- * decb_trailer_emit: emit trailer to object file
+/*!
+	@function decb_trailer_emit
+	@discussion Emit a Disk BASIC trailer to an object file
+	@param as The assembler state structure
+	@param exec Execution address
  */
  
 void decb_trailer_emit(assembler *as, BP_uint32 exec)
@@ -304,10 +342,12 @@ void decb_trailer_emit(assembler *as, BP_uint32 exec)
 
 
 
-/*
- *      f_record --- flush one line out in Motorola S or Intel Hex format
- *			or binary
+/*!
+	@function f_record
+	@discussion Flush one line out in Motorola S or Intel Hex format or binary
+	@param as The assembler state structure
  */
+
 void f_record(assembler *as)
 {
 	int i, chksum;
@@ -415,6 +455,13 @@ void f_record(assembler *as)
 char *hexstr = {"0123456789ABCDEF"};
 
 
+/*!
+	@function hex_out
+	@discussion Output a byte in hexadecimal
+	@param as The assembler state structure
+	@param byte Byte to output
+ */
+
 void hexout(assembler *as, int byte)
 {
 	if (as->object_output == BP_TRUE)
@@ -451,9 +498,12 @@ void imageinit(void)
 
 
 
-/*
- * Terminate the output file.
+/*!
+	@function finish_outfile
+	@discussion Close the output file
+	@param as The assembler state structure
  */
+
 void finish_outfile(assembler *as)
 {
 	int size;
@@ -488,9 +538,13 @@ void finish_outfile(assembler *as)
 
 
 
-/*
- *      any --- does str contain c?
+/*!
+	@function any
+	@discussion Determines of the string contains the passed character
+	@param c Character to search for
+	@param str String to search
  */
+
 BP_Bool any(BP_char c, BP_char *str)
 {
 	while (*str != EOS)
@@ -507,31 +561,42 @@ BP_Bool any(BP_char c, BP_char *str)
 
 
 
-/*
- *      mapdn --- convert A-Z to a-z
+/*!
+	@function mapdn
+	@discussion Converts uppercase to lowercase
+	@param c Character to convert
  */
+
 char mapdn(char c)
 {
 	if (c >= 'A' && c <= 'Z')
 	{
 		return(c + 040);
 	}
+
 	return(c);
 }
 
 
-/*
- *      lobyte --- return low byte of an int
+
+/*!
+	@function lobyte
+	@discussion Returns the low byte of an integer
+	@param i Integer to process
  */
+
 int lobyte(int i)
 {
 	return(i & 0xFF);
 }
 
 
-/*
- *      hibyte --- return high byte of an int
+/*!
+	@function lobyte
+	@discussion Returns the high byte of an integer
+	@param i Integer to process
  */
+
 int hibyte(int i)
 {
 	return((i >> 8) & 0xFF);
@@ -539,9 +604,12 @@ int hibyte(int i)
 
 
 
-/*
- *      loword --- return loword of a BP_int32
+/*!
+	@function loword
+	@discussion Returns the low word of an integer
+	@param i Integer to process
  */
+
 int loword(BP_int32 i)
 {
 	return i & 0xFFFF;
@@ -549,49 +617,63 @@ int loword(BP_int32 i)
 
 
 
-/*
- *      hiword --- return hiword of a BP_int32
+/*!
+	@function hiword
+	@discussion Returns the high word of an integer
+	@param i Integer to process
  */
+
 int hiword(BP_int32 i)
 {
 	return (i >> 16) & 0xFFFF;
 }
 
 
-/*
- *      head --- is str2 the head of str1?
- *      ATD: ??? should be using strncasecmp... the code will get smaller
+
+/*!
+	@function head
+	@discussion Determines if str2 is the head of str1
+	@param str1 String to search
+	@param str2 String to search for
  */
+
 int head(char *str1, char *str2)
 {
-	while (*str1 != EOS && *str2 != EOS)
+	while (tolower(*str1) != EOS && tolower(*str2) != EOS)
 	{
-		if (*str1 != *str2)
+		if (tolower(*str1) != tolower(*str2))
 		{
 			break;
 		}
 		str1++;
 		str2++;
 	}
-	if (*str1 == *str2)
+
+	if (tolower(*str1) == tolower(*str2))
 	{
 		return(BP_TRUE);
 	}
+
 	if (*str2 == EOS)
 	{
 		if (any(*str1, " \t\n,+-];*"))
 		{
-			return(BP_TRUE);
+			return BP_TRUE;
 		}
 	}
+
+	
 	return BP_FALSE;
 }
 
 
 
-/*
- *      alpha --- is character a legal letter
+/*!
+	@function alpha
+	@discussion Determins if character is a legal letter
+	@param c Character to evaluate
  */
+
 BP_Bool alpha(BP_char c)
 {
 	if (c <= 'z' && c >= 'a')
@@ -617,8 +699,10 @@ BP_Bool alpha(BP_char c)
 
 
 
-/*
- *      alphan --- is character a legal letter or digit
+/*!
+	@function alphan
+	@discussion Determines if character is a legal letter or digit
+	@param c Character to evaluate
  */
 
 BP_Bool alphan(BP_char c)
@@ -644,8 +728,10 @@ BP_Bool alphan(BP_char c)
 
 
 
-/*
- * numeric: is character a legal digit?
+/*!
+	@function numeric
+	@discussion Determines if character is a legal digit
+	@param c Character to evaluate
  */
 
 BP_Bool numeric(BP_char c)

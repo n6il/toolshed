@@ -5,9 +5,15 @@
 #include "pseudo.h"
 
 
-/*
- *      symbol_add --- add a symbol to the bucket
+/*!
+	@function symbol_add
+	@discussion Adds a symbol to the symbol bucket
+	@param as The assembler state structure
+	@param name The name of the symbol to be added
+	@param val The value of the symbol
+	@param override A flag which allows the changing of an existing symbol
  */
+
 int symbol_add(assembler *as, char *name, int val, int override)
 {
 	BP_error		bp_status = BPE_OK;
@@ -205,9 +211,14 @@ int symbol_add(assembler *as, char *name, int val, int override)
 
 
 
-/*
- * symbol_find: find string in symbol table
+/*!
+	@function symbol_find
+	@discussion Finds a symbol in the symbol bucket
+	@param as The assembler state structure
+	@param name Name of the symbol to search for
+	@param ignoreUndefined Ignore the symbol if it is not found
  */
+
 struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 {
 	struct nlist *np;
@@ -264,14 +275,16 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 }
 
 
+
 #define NMNE (sizeof(table) / sizeof(struct h6309_opcode))
 #define NPSE (sizeof(pseudo) / sizeof(struct pseudo_opcode))
 
-/*
- *      mne_look --- mnemonic lookup
- *
- *      Return pointer to an oper structure if found.
- *      Searches both the machine mnemonic table and the pseudo table.
+/*!
+	@function mne_look
+	@discussion Looks up a mnemonic
+	@param as The assembler state structure
+	@param str A pointer to the text of the mnemonic
+	@param m A pointer to the mnemonic structure
  */
 
 int mne_look(assembler *as, char *str, mnemonic *m)
@@ -349,12 +362,14 @@ int mne_look(assembler *as, char *str, mnemonic *m)
 
 
 
-/*
- *  symbol_dump_bucket: prints the symbol table in alphabetical order
- */
-
 static void symbol_dump_bucket_r(struct nlist *ptr);
 static BP_uint32	counter;
+
+/*!
+	@function symbol_bucket_dump
+	@discussion Prints the symbol table in alphabetical order
+	@param ptr Pointer to the symbol bucket tree
+ */
 
 void symbol_dump_bucket(struct nlist *ptr)
 {
@@ -404,8 +419,10 @@ static void symbol_dump_bucket_r(struct nlist *ptr)
 
 
 
-/*
- *  cross: prints the cross reference table
+/*!
+	@function symbol_cross_reference
+	@discussion Prints the cross reference table
+	@param ptr Pointer to the symbol table
  */
 
 static void symbol_cross_reference_r(struct nlist *ptr);

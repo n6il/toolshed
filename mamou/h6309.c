@@ -60,24 +60,32 @@ int     rcycl[]= { 2,2, 2, 2, 2, 2,  0,0,1,1,1,1,0};
 
 
 
-/*
- *      local_init --- machine specific initialization
+/*!
+	@function local_init
+	@discussion Machine specific initialization
  */
- 
+
 void local_init(void)
 {
 }
 
 
 
+/*!
+	@function _inh
+	@discussion Inherent instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _inh(assembler *as, int opcode)
 {
-	/* 1. Emit opcode. */
+	/* Emit opcode. */
 	
 	emit(as, opcode);
 
 
-	/* 1. Print the line. */
+	/* Print the line. */
 	
 	print_line(as, 0, ' ', as->old_program_counter);
 
@@ -87,46 +95,71 @@ int _inh(assembler *as, int opcode)
 
 
 
+/*!
+	@function _p2inh
+	@discussion Part 2 inherent instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _p2inh(assembler *as, int opcode)
 {
-	/* 1. Emit leading opcode. */
+	/* Emit leading opcode. */
 	
 	emit(as, PAGE2);
 	
 
+	/* Let the primary function handle the rest. */
+	
 	return _inh(as, opcode);
 }
 
 
 
+/*!
+	@function _p3inh
+	@discussion Part 3 inherent instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _p3inh(assembler *as, int opcode)
 {
-	/* 1. Emit leading opcode. */
+	/* Emit leading opcode. */
 	
 	emit(as, PAGE3);
 
 
+	/* Let the primary function handle the rest. */
+	
 	return _inh(as, opcode);
 }
 
 
+
+/*!
+	@function _gen
+	@discussion Generic instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _gen(assembler *as, int opcode)
 {
 	int     amode;
 
 	
-     /* 1. Get addressing mode. */
+     /* Get addressing mode. */
 	
 	amode = addressing_mode(as);
 
 	
-	/* 2. Do general addressing */
+	/* Do general addressing */
 	
 	do_gen(as, opcode, amode, BP_FALSE);
 
 	
-	/* 3. Print the line. */
+	/* Print the line. */
 	
 	print_line(as, 0, ' ', as->old_program_counter);
 
@@ -135,6 +168,13 @@ int _gen(assembler *as, int opcode)
 }
 
 
+
+/*!
+	@function _imgen
+	@discussion Immediate generic instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _imgen(assembler *as, int opcode)
 {
@@ -144,12 +184,12 @@ int _imgen(assembler *as, int opcode)
 	BP_char		*p;
 
 	
-	/* 1. Get indicated addressing mode. */
+	/* Get indicated addressing mode. */
 	
 	amode = addressing_mode(as);
 	
 	
-	/* 2. Verify immediate addressing. */
+	/* Verify immediate addressing. */
 	
 	if (amode != IMMED)
 	{
@@ -200,6 +240,7 @@ int _imgen(assembler *as, int opcode)
 	while (*p != EOS && *p != BLANK && *p != TAB)
 	{
 		/* any , before break */
+		
 		if (*p == ',')
 		{
 			amode = IND;    /* indexed addressing */
@@ -211,10 +252,12 @@ int _imgen(assembler *as, int opcode)
 	old = as->E_total;
 	emit(as, lobyte(result));
 
+	
 	/* General addressing */
 
 	do_gen(as, opcode, amode, BP_FALSE);
 
+	
 	/* Fix up output */
 
 	as->E_bytes[old] = as->E_bytes[old + 1];
@@ -241,11 +284,19 @@ int _imgen(assembler *as, int opcode)
 
 
 
+/*!
+	@function _imm
+	@discussion Immediate instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _imm(assembler *as, int opcode)
 {
 	BP_int32	result;
 	int amode;  /* indicated addressing mode */
 
+	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	/* Immediate addressing ONLY. */
@@ -260,66 +311,115 @@ int _imm(assembler *as, int opcode)
 	as->line.optr++;
 	evaluate(as, &result, &as->line.optr, 0);
 	emit(as, opcode);
+
 	if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 	{
 		error(as, "Result >255");
 		return 0;
 	}
+
 	emit(as, lobyte(result));
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
 
+/*!
+	@function _p3imm
+	@discussion Part 3 immediate instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _p3imm(assembler *as, int opcode)
 {
 	emit(as, PAGE3);
+
 	return _imm(as, opcode);
 }
 
 
+
+/*!
+	@function _rel
+	@discussion Relative instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _rel(assembler *as, int opcode)
 {
 	BP_int32	result;
 	int dist;
 
-	/* short relative branches */
+	/* Short relative branches */
+	
 	evaluate(as, &result, &as->line.optr, 0);
 	dist = result - (as->program_counter + 2);
 	emit(as, opcode);
+	
 	if ((dist > 127 || dist < -128) && as->pass == 2)
 	{
 		error(as, "Branch out of Range");
 		emit(as, lobyte(-2));
+
 		return 0;
 	}
+
 	emit(as, lobyte(dist));
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
 
+/*!
+	@function _p2rel
+	@discussion Part 2 relative instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _p2rel(assembler *as, int opcode)
 {
 	BP_int32	result;
-	int dist;
+	int			dist;
 
-	/* long relative branches */
+	
+	/* Long relative branches */
+	
 	evaluate(as, &result, &as->line.optr, 0);
 	dist = result - (as->program_counter + 4);
 	emit(as, PAGE2);
 	emit(as, opcode);
 
-	if ((dist > -128) && (dist < 127)) as->line.has_warning = BP_TRUE;
+	if ((dist > -128) && (dist < 127))
+	{
+		as->line.has_warning = BP_TRUE;
+	}
+	
 	eword(as, dist);
+	
 	print_line(as, 0, ' ', as->old_program_counter);
+	
+	
 	return 0;
 }
 
 
+
+/*!
+	@function _p1rel
+	@discussion Part 1 relative instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _p1rel(assembler *as, int opcode)
 {
@@ -328,66 +428,115 @@ int _p1rel(assembler *as, int opcode)
 	int dist;
 
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
+
+	
 	/* lbra and lbsr */
+	
 	if (amode == IMMED)
 	{
 		as->line.optr++; /* kludge for C compiler */
 	}
+
 	evaluate(as, &result, &as->line.optr, 0);
 	dist = result - (as->program_counter + 3);
-	if ((dist > -128) && (dist < 127)) as->line.has_warning = BP_TRUE;
+
+	
+	if ((dist > -128) && (dist < 127))
+	{
+		as->line.has_warning = BP_TRUE;
+	}
+	
 	emit(as, opcode);
 	eword(as, dist);
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
+
+/*!
+	@function _noimm
+	@discussion Non immediate instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _noimm(assembler *as, int opcode)
 {
 	int amode;
 
+	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	if (amode == IMMED)
 	{
 		error(as, "Immediate Addressing Illegal");
+
 		return 0;
 	}
 	
 	do_gen(as, opcode, amode, BP_FALSE);
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
 
+/*!
+	@function _p2noimm
+	@discussion Part 2 non-immediate instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _p2noimm(assembler *as, int opcode)
 {
 	emit(as, PAGE2);
+	
 	return _noimm(as, opcode);
 }
 
 
+
+/*!
+	@function _p3noimm
+	@discussion Part 3 non-immediate instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _p3noimm(assembler *as, int opcode)
 {
 	emit(as, PAGE3);
+	
 	return _noimm(as, opcode);
 }
 
 
+
+/*!
+	@function _pxgen
+	@discussion Part X generic instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 static int _pxgen(assembler *as, int opcode, int amode)
 {
 	BP_int32	result;
 
+	
 	if ((amode == IMMED) || (amode == IMMED8))
 	{
 		emit(as, opcode);
 		as->line.optr++;
 		evaluate(as, &result, &as->line.optr, 0);
+
 		if (amode == IMMED)
 		{
 			eword(as, result);
@@ -396,7 +545,9 @@ static int _pxgen(assembler *as, int opcode, int amode)
 		{
 			emit(as, lobyte(result));
 		}
+
 		print_line(as, 0, ' ', as->old_program_counter);
+
 		return 0;
 	}
 
@@ -404,16 +555,25 @@ static int _pxgen(assembler *as, int opcode, int amode)
 
 	print_line(as, 0, ' ', as->old_program_counter);
 
+
 	return 0;
 }
 
 
+
+/*!
+	@function _ldqgen
+	@discussion LDQ generic instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _ldqgen(assembler *as, int opcode)
 {
 	int amode;
 
 	amode = addressing_mode(as);
+	
 	if (amode == IMMED)
 	{
 	  BP_int32 result;
@@ -425,13 +585,22 @@ int _ldqgen(assembler *as, int opcode)
 	  emit(as, (result >> 8) & 0xff);
 	  emit(as, result & 0xff);
 	  print_line(as, 0, ' ', as->old_program_counter);
+
 	  return 0;
 	}
 
+	
 	return _p2gen(as, 0xcc);
 }
 
 
+
+/*!
+	@function _p2gen
+	@discussion Part 2 generic instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _p2gen(assembler *as, int opcode)
 {
@@ -439,36 +608,67 @@ int _p2gen(assembler *as, int opcode)
 
 	emit(as, PAGE2);
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
+	
+	
 	return _pxgen(as, opcode, amode);
 }
 
 
+
+/*!
+	@function _p3gen
+	@discussion Part 3 generic instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _p3gen(assembler *as, int opcode)
 {
 	int amode;
 
+
 	emit(as, PAGE3);
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
+	
+	
 	return _pxgen(as, opcode, amode);
 }
 
 
+
+/*!
+	@function _p3gen8
+	@discussion Part 3 generic 8-bit instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _p3gen8(assembler *as, int opcode)
 {
 	int amode;
 
+	
 	emit(as, PAGE3);
+	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
+
 	if (amode == IMMED)
 	{
 		amode = IMMED8;
 	}
+	
+	
 	return _pxgen(as, opcode, amode);
 }
 
 
+
+/*!
+	@function _rtor
+	@discussion Register-to-register instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _rtor(assembler *as, int opcode)
 {
@@ -476,41 +676,51 @@ int _rtor(assembler *as, int opcode)
 	int dst;
 
 	/* tfr and exg */
+	
 	emit(as, opcode);
+	
 	src = regnum(as);
+	
 	while (alpha(*as->line.optr) || (*as->line.optr == '0'))
 	{
 		as->line.optr++;
 	}
+	
 	if (src == ERR)
 	{
 		error(as, "Register Name Required");
 		emit(as, 0);
 		return 0;
 	}
+	
 	if (*as->line.optr++ != ',')
 	{
 		error(as, "Missing ,");
 		emit(as, 0);
 		return 0;
 	}
+	
 	dst = regnum(as);
+	
 	while (alpha(*as->line.optr))
 	{
 		as->line.optr++;
 	}
+	
 	if (dst == ERR)
 	{
 		error(as, "Register Name Required");
 		emit(as, 0);
 		return 0;
 	}
+	
 	if (src == RPCR || dst == RPCR)
 	{
 		error(as, "PCR illegal here");
 		emit(as, 0);
 		return 0;
 	}
+	
 	if (dst == RZERO)
 	{
 		error(as, "Destination Zero register is illegal");
@@ -531,6 +741,7 @@ int _rtor(assembler *as, int opcode)
 		emit(as, 0);
 		return 0;
 	}
+
 	if (*as->line.optr && (*as->line.optr != BLANK) && (*as->line.optr != TAB))
 	{
 		error(as, "Invalid trailing text");
@@ -539,18 +750,35 @@ int _rtor(assembler *as, int opcode)
 
 	emit(as, (src << 4) + dst);
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
 
+/*!
+	@function _p2rtor
+	@discussion Part 2 register-to-register instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _p2rtor(assembler *as, int opcode)
 {
 	emit(as, PAGE2);
+	
 	return _rtor(as, opcode);
 }
 
 
+
+/*!
+	@function _p3rtor
+	@discussion Part 3 register-to-register instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _p3rtor(assembler *as, int opcode)
 {
@@ -558,41 +786,46 @@ int _p3rtor(assembler *as, int opcode)
 	int dst;
 	int form = 0;
 
+	
 	src = regnum(as);
+
 	while (alpha(*as->line.optr) || (*as->line.optr == '0'))
 	{
 		as->line.optr++;
 	}
+
 	if (src == ERR)
 	{
 		error(as, "Register Name Required");
+
 		return 0;
 	}
 
 	switch (*as->line.optr)
-	  {
-	  case '+':
-	    form = 1;
-	    as->line.optr++;
-	    break;
+	{
+		case '+':
+			form = 1;
+			as->line.optr++;
+			break;
 
-	  case '-':
-	    form = 2;
-	    as->line.optr++;
-	    break;
+		case '-':
+			form = 2;
+			as->line.optr++;
+			break;
 	    
-	  case ',':
-	    break;
+		case ',':
+			break;
 
-	  default:
-	    error(as, "Invalid text");
-	    return 0;
-	  }
+		default:
+			error(as, "Invalid text");
+			return 0;
+	}
 
 	if (*as->line.optr++ != ',')
 	{
 		error(as, "Missing ,");
 		emit(as, 0);
+
 		return 0;
 	}
 
@@ -601,65 +834,83 @@ int _p3rtor(assembler *as, int opcode)
 	{
 		as->line.optr++;
 	}
+
 	if (dst == ERR)
 	{
 		error(as, "Register Name Required");
+
 		return 0;
 	}
+
 	if (src == RPCR || dst == RPCR)
 	{
 		error(as, "PCR illegal here");
+
 		return 0;
 	}
+
 	if (dst == RZERO)
 	{
 		error(as, "Destination Zero register is illegal");
+
 		return 0;
 	}
 
 	if ((dst > 4) || ((src > 4) && (src != RZERO)))
 	{
 		error(as, "Invalid Register");
+
 		return 0;
 	}
 
 	switch (*as->line.optr)
-	  {
-	  case '+':
-	    if (form == 0) {
-	      form = 4;
-	      as->line.optr++;
-	    } else if (form == 1) {
-	      as->line.optr++;
-	    } else {
-	      error(as, "Unexpected trailing '+'");
-	      return 0;
-	    }
-	    break;
+	{
+		case '+':
+			if (form == 0)
+			{
+				form = 4;
+				as->line.optr++;
+			} else if (form == 1)
+			{
+				as->line.optr++;
+			}
+			else
+			{
+				error(as, "Unexpected trailing '+'");
+				return 0;
+			}
+			break;
 	    
-	  case '-':
-	    if (form == 2) {
-	      as->line.optr++;
-	    } else {
-	      error(as, "Unexpected trailing '-'");
-	      return 0;
-	    }
-	    break;
+		case '-':
+			if (form == 2)
+			{
+				as->line.optr++;
+			}
+			else
+			{
+				error(as, "Unexpected trailing '-'");
+				return 0;
+			}
+			break;
 	    
 	  default:
-	    if (form == 1) {
-	      form = 3;
-	    } else {
-	      error(as, "Expected addressing mode '+' or '-'");
-	      return 0;
-	    }
-	    break;
+		  if (form == 1)
+		  {
+			  form = 3;
+		  }
+		  else
+		  {
+			  error(as, "Expected addressing mode '+' or '-'");
 
-	  }
+			  return 0;
+		  }
+		  break;
+	}
 
 	if (*as->line.optr && (*as->line.optr != BLANK) && (*as->line.optr != TAB))
 	{
 		error(as, "Invalid trailing text");
+
 		return 0;
 	}
 
@@ -667,50 +918,80 @@ int _p3rtor(assembler *as, int opcode)
 	emit(as, opcode + form - 1);
 	emit(as, (src << 4) + dst);
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
+
+/*!
+	@function _indexed
+	@discussion Indexed instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _indexed(assembler *as, int opcode)
 {
 	int amode;
 
+	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
+
 	/* indexed addressing only */
+
 	if (*as->line.optr == '#')
 	{
 		as->line.optr++;         /* kludge city */
 		amode = IND;
 	}
+
 	if (amode != IND)
 	{
 		error(as, "Indexed Addressing Required");
+
 		return 0;
 	}
+
 	do_indexed(as, opcode);
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
+
+/*!
+	@function _rlist
+	@discussion Register list instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _rlist(assembler *as, int opcode)
 {
 	int pbyte;
 	int j;
 
+	
 	/* pushes and pulls */
+
 	if (*as->line.operand == EOS)
 	{
 		error(as, "Register List Required");
+
 		return 0;
 	}
+
 	emit(as, opcode);
 	pbyte = 0;
+
 	do
 	{
 		j = regnum(as);
+		
 		if (j == ERR || j == RPCR)
 		{
 			error(as, "Illegal Register Name");
@@ -743,19 +1024,31 @@ int _rlist(assembler *as, int opcode)
 			as->line.optr++;
 		}
 	} while(*as->line.optr++ == ',');
+
 	emit(as, lobyte(pbyte));
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
+
+/*!
+	@function _longimm
+	@discussion Long immediate instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _longimm(assembler *as, int opcode)
 {
 	BP_int32 result;
 	int amode;
 
+
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
+
 	if (amode == IMMED)
 	{
 		emit(as, opcode);
@@ -767,17 +1060,28 @@ int _longimm(assembler *as, int opcode)
 	{
 		do_gen(as, opcode, amode, BP_FALSE);
 	}
+
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
+
+/*!
+	@function _grp2
+	@discussion Generic instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
 
 int _grp2(assembler *as, int opcode)
 {
 	BP_int32 result;
 	int amode;
 
+	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	if (amode == IND)
@@ -798,13 +1102,16 @@ int _grp2(assembler *as, int opcode)
 		evaluate(as, &result, &as->line.optr, 0);
 		eword(as, result);
 		as->cumulative_cycles += 7;
+
 		if (*as->line.optr == ']')
 		{
 			as->line.optr++;
 			print_line(as, 0, ' ', as->old_program_counter);
 			return 0;
 		}
+
 		error(as, "Missing ']'");
+
 		return 0;
 	}
 
@@ -857,24 +1164,38 @@ int _grp2(assembler *as, int opcode)
 
 
 
+/*!
+	@function _sys
+	@discussion System call instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+
 int _sys(assembler *as, int opcode)
 {
 	BP_int32	result;
 
 	/* system call */
+
 	emit(as, PAGE2);
 	emit(as, opcode);
 	evaluate(as, &result, &as->line.optr, 0);
 	emit(as, lobyte(result));
 	print_line(as, 0, ' ', as->old_program_counter);
+
+	
 	return 0;
 }
 
 
 
-/*
- *      do_gen --- process general addressing mode stuff
+/*!
+	@function do_gen
+	@discussion General addressing instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
  */
+
 static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 {
 	BP_int32	result;
@@ -1105,9 +1426,13 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 
 
 
-/*
- *      do_indexed --- handle all weird stuff for indexed addressing
+/*!
+	@function do_indexed
+	@discussion Weird index addressing instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
  */
+
 static int do_indexed(assembler *as, int op)
 {
 	int     pbyte;
@@ -1115,11 +1440,13 @@ static int do_indexed(assembler *as, int op)
 	int     predec,pstinc;
 	BP_int32	result;
 
+	
 	as->cumulative_cycles += 2;    /* indexed is always 2+ base cycle count */
 	predec = 0;
 	pstinc = 0;
 	pbyte = 128;
 	emit(as, op);
+
 	if (*as->line.optr == '[')
 	{
 		pbyte |= 0x10;    /* set indirect bit */
@@ -1128,63 +1455,82 @@ static int do_indexed(assembler *as, int op)
 		{
 			error(as, "Missing ']'");
 		}
+
 		as->cumulative_cycles += 3;    /* indirection takes this much longer */
 	}
+
 	j = regnum(as);
+
 	if (j == RA)
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 6);
+
 		return 0;
    	}
+
 	if (j == RB)
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 5);
+
 		return 0;
 	}
+
 	if (j == RD)
 	{
 		as->cumulative_cycles += 4;
 		abd_index(as, pbyte + 11);
+
 		return 0;
 	}
+
 	if (j == RE && as->o_h6309 == BP_TRUE)
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 7);
+
 		return 0;
    	}
+
 	if (j == RF && as->o_h6309 == BP_TRUE)
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 10);
+
 		return 0;
 	}
+
 	if (j == RW && as->o_h6309 == BP_TRUE)
 	{
 		as->cumulative_cycles += 4;
 		abd_index(as, pbyte + 14);
+
 		return 0;
 	}
 
 	evaluate(as, &result, &as->line.optr, 0);
 	as->line.optr++;
+
 	while (*as->line.optr == '-')
 	{
 		predec++;
 		as->line.optr++;
 	}
+
 	j = regnum(as);
+
 	while (alpha(*as->line.optr))
 	{
 		as->line.optr++;
 	}
+
 	while (*as->line.optr == '+')
 	{
 		pstinc++;
 		as->line.optr++;
 	}
+
 	if (j == RPC || j == RPCR)
 	{
 		if (as->line.force_byte == BP_FALSE)
@@ -1194,31 +1540,41 @@ static int do_indexed(assembler *as, int op)
 		if (pstinc || predec)
 		{
 			error(as, "Auto Inc/Dec Illegal on PC");
+
 			return 0;
 		}
 
+		
 		/* PC or PCR addressing */
+
 		if (as->line.force_word)
 		{
 			emit(as, pbyte + 13);
 			eword(as, result - (as->program_counter + 2));
 			as->cumulative_cycles += 5;
+
 			return 0;
 		}
+
 		if (as->line.force_byte)
 		{
 			emit(as, pbyte + 12);
+
 			/* as->line.has_warning */
 			emit(as, lobyte(result - (as->program_counter + 1)));
 			as->cumulative_cycles++;
+
 			return 0;
 		}
+
 		k = result - (as->program_counter + 2);
+
 		if (k >= -128 && k <= 127)
 		{
 			emit(as, pbyte + 12);
 			emit(as, lobyte(result - (as->program_counter + 1)));
 			as->cumulative_cycles++;
+
 			return 0;
 		}
 		else
@@ -1226,34 +1582,44 @@ static int do_indexed(assembler *as, int op)
 			emit(as, pbyte + 13);
 			eword(as, result - (as->program_counter + 2));
 			as->cumulative_cycles += 5;
+
 			return 0;
 		}
 	}
+
 	if (predec || pstinc)
 	{
 		if (result != 0)
 		{
 			error(as, "Offset must be Zero");
+
 			return 0;
 		}
+
 		if (predec > 2 || pstinc > 2)
 		{
 			error(as, "Auto Inc/Dec by 1 or 2 only");
+
 			return 0;
 		}
+
 		if ((predec == 1 && (pbyte & 0x10) != 0) ||
 			(pstinc == 1 && (pbyte & 0x10) != 0))
 		{
 			error(as, "No Auto Inc/Dec by 1 for Indirect");
+
 			return 0;
 		}
+
 		if (predec && pstinc)
 		{
 			error(as, "Can't do both!");
+
 			return 0;
 		}
 
 		j = reg_type(as, j);
+
 		if (j < 0x100)
 		{
 			if (predec)
@@ -1268,127 +1634,178 @@ static int do_indexed(assembler *as, int op)
 			pbyte += j;
 			emit(as, pbyte);
 			as->cumulative_cycles += 1 + predec + pstinc;
+
 			return 0;
 		}
 
 		if ((predec != 2) && (pstinc != 2))
 		{
 			error(as, "Only ,--W and ,W++ allowed for W indexing");
+
 			return 0;
 		}
 
 		/* handle ,W++  ,--W */
+
 		if (pbyte & 0x10)  /* [,W++] */
 		{
-		  if (predec == 2) {
-		    emit(as, 0xf0);
-		    as->cumulative_cycles += 6;
-		    return 0;
-		  } else if (pstinc == 2) {
-		    emit(as, 0xd0);
-		    as->cumulative_cycles += 6;
-		    return 0;
-		  }
+			if (predec == 2)
+			{
+				emit(as, 0xf0);
+				as->cumulative_cycles += 6;
+
+				return 0;
+			}
+			else if (pstinc == 2)
+			{
+				emit(as, 0xd0);
+				as->cumulative_cycles += 6;
+
+				return 0;
+			}
 		}
 		else		/* ,W++ */
 		{
-		  if (predec == 2) {
-		    emit(as, 0xef);
-		    as->cumulative_cycles += 2;
-		    return 0;
-		  } else if (pstinc == 2) {
-		    emit(as, 0xcf);
-		    as->cumulative_cycles += 2;
-		    return 0;
-		  }
+			if (predec == 2)
+			{
+				emit(as, 0xef);
+				as->cumulative_cycles += 2;
+
+				return 0;
+			}
+			else if (pstinc == 2)
+			{
+				emit(as, 0xcf);
+				as->cumulative_cycles += 2;
+
+				return 0;
+			}
 		}
 	}
+
 	j = reg_type(as, j);
-	if (j != 0x100) {
+
+	if (j != 0x100)
+	{
 	  pbyte += j;
-	  if (as->line.force_word)
+
+		if (as->line.force_word)
 	    {
-	      if ((hibyte(result) == 0)) as->line.has_warning = BP_TRUE;
-	      emit(as, pbyte + 0x09);
-	      eword(as, result);
-	      as->cumulative_cycles += 4;
-	      return 0;
-	    }
-	  if (as->line.force_byte)
-	    {
-	      emit(as, pbyte + 0x08);
-	      if (result <-128 || result >127)
-		{
-		  error(as, "value out of range 2");
-		  return 0;
+			if ((hibyte(result) == 0))
+			{
+				as->line.has_warning = BP_TRUE;
+			}
+			emit(as, pbyte + 0x09);
+			eword(as, result);
+			as->cumulative_cycles += 4;
+			return 0;
 		}
-	      if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0)) {
-		as->line.has_warning = BP_TRUE;
-	      }
-	      emit(as, lobyte(result));
-	      as->cumulative_cycles++;
-	      return 0;
-	    }
-	  if (result == 0)
+
+		if (as->line.force_byte)
 	    {
-	      emit(as, pbyte + 0x04);
-	      return 0;
-	    }
-	  if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0))
+			emit(as, pbyte + 0x08);
+			if (result <-128 || result >127)
+			{
+				error(as, "value out of range 2");
+				return 0;
+			}
+
+			if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0))
+			{
+				as->line.has_warning = BP_TRUE;
+			}
+
+			emit(as, lobyte(result));
+			as->cumulative_cycles++;
+
+			return 0;
+		}
+
+		if (result == 0)
 	    {
-	      pbyte &= 127;
-	      pbyte += result & 31;
-	      emit(as, pbyte);
-	      as->cumulative_cycles++;
-	      return 0;
+			emit(as, pbyte + 0x04);
+
+			return 0;
 	    }
-	  if (result >= -128 && result <= 127)
+
+		if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0))
 	    {
-	      emit(as, pbyte + 0x08);
-	      emit(as, lobyte(result));
-	      as->cumulative_cycles++;
-	      return 0;
-	    }
-	  emit(as, pbyte + 0x09);
-	  eword(as, result);
-	  as->cumulative_cycles += 4;
-	  return 0;
-	} else {		/* ,W  n,W [n,W] */
+			pbyte &= 127;
+			pbyte += result & 31;
+			emit(as, pbyte);
+			as->cumulative_cycles++;
 
-	  if (as->line.force_byte) {
-	    error(as, "Byte indexing is invalid for W");
-	    return 0;
-	  }
-
-	  if (pbyte & 0x10 && as->o_h6309 == BP_TRUE) {	/* [,W] */
-	    if (as->line.force_word || (result != 0)) {
-	      emit(as, 0xb0);
-	      eword(as, result);
-	      as->cumulative_cycles += 6;
-	      return 0;
+			return 0;
 	    }
 
-	    emit(as, 0x90);
-	    return 0;
-	  } else {		/* ,W */
-	    if (as->line.force_word || (result != 0) && as->o_h6309 == BP_TRUE) {
-	      emit(as, 0xaf);
-	      eword(as, result);
-	      as->cumulative_cycles += 3;
-	      return 0;
+		if (result >= -128 && result <= 127)
+	    {
+			emit(as, pbyte + 0x08);
+			emit(as, lobyte(result));
+			as->cumulative_cycles++;
+
+			return 0;
 	    }
 
-	    emit(as, 0x8f);
-	    return 0;
-	  }
+		emit(as, pbyte + 0x09);
+		eword(as, result);
+		as->cumulative_cycles += 4;
+
+		return 0;
+	}
+	else
+	{
+		/* ,W  n,W [n,W] */
+		if (as->line.force_byte)
+		{
+			error(as, "Byte indexing is invalid for W");
+
+			return 0;
+		}
+
+		if (pbyte & 0x10 && as->o_h6309 == BP_TRUE)
+		{
+			/* [,W] */
+			if (as->line.force_word || (result != 0))
+			{
+				emit(as, 0xb0);
+				eword(as, result);
+				as->cumulative_cycles += 6;
+				return 0;
+			}
+
+			emit(as, 0x90);
+
+			return 0;
+		}
+		else
+		{		
+			/* ,W */
+			if (as->line.force_word || (result != 0) && as->o_h6309 == BP_TRUE)
+			{
+				emit(as, 0xaf);
+				eword(as, result);
+				as->cumulative_cycles += 3;
+
+				return 0;
+			}
+
+			emit(as, 0x8f);
+
+			return 0;
+		}
 	}
 }
 
 
 
-/*
- *      abd_index --- a,b or d indexed
+/*!
+	@function abd_index
+	@discussion A, B or D indexed
+	@param as The assembler state structure
+	@param pbyte Post byte
  */
+
 static int abd_index(assembler *as, int pbyte)
 {
 	int     k;
@@ -1396,13 +1813,18 @@ static int abd_index(assembler *as, int pbyte)
 	as->line.optr += 2;
 	k = regnum(as);
 	k = reg_type(as, k);
+
 	if (k == 0x100)
 	{
 		error(as, "Cannot use W for register indirect");
+
 		return 0;
 	}
+
 	pbyte += k;
 	emit(as, pbyte);
+
+	
 	return 0;
 }
 
@@ -1414,7 +1836,7 @@ static int abd_index(assembler *as, int pbyte)
 
 static int reg_type(assembler *as, int r)
 {
-	switch(r)
+	switch (r)
 	{
 		case RX:
 			return(0x00);
@@ -1443,9 +1865,12 @@ static int reg_type(assembler *as, int r)
 
 
 
-/*
- * addressing_mode: determine addressing mode from operand field
+/*!
+	@function addressing_mode
+	@discussion Determine addressing mode from operand field
+	@param as The assembler state structure
  */
+
 static int addressing_mode(assembler *as)
 {
 	BP_char *p;
@@ -1481,144 +1906,104 @@ static int addressing_mode(assembler *as)
 
 
 
-/*
- *      regnum --- return register number of *as->line.optr
+/*!
+	@function regnum
+	@discussion Return register number of *as->line.optr
+	@param as The assembler state structure
  */
+
 static h6309_reg regnum(assembler *as)
 {
-	if (head(as->line.optr, "D"))
+	if (head(as->line.optr, "D") == BP_TRUE)
 	{
 		return(RD);
-	}
-	if (head(as->line.optr, "d"))
-	{
-		return(RD);
-	}
-	if (head(as->line.optr, "X"))
-	{
-		return(RX);
-	}
-	if (head(as->line.optr, "x"))
-	{
-		return(RX);
-	}
-	if (head(as->line.optr, "Y"))
-	{
-		return(RY);
-	}
-	if (head(as->line.optr, "y"))
-	{
-		return(RY);
-	}
-	if (head(as->line.optr, "U"))
-	{
-		return(RU);
-	}
-	if (head(as->line.optr, "u"))
-	{
-		return(RU);
-	}
-	if (head(as->line.optr, "S"))
-	{
-		return(RS);
-	}
-	if (head(as->line.optr, "s"))
-	{
-		return(RS);
-	}
-	if (head(as->line.optr, "PC"))
-	{
-		return(RPC);
-	}
-	if (head(as->line.optr, "pc"))
-	{
-		return(RPC);
-	}
-	if (head(as->line.optr, "W") && as->o_h6309 == BP_TRUE)
-	{
-		return(RW);
-	}
-	if (head(as->line.optr, "w") && as->o_h6309 == BP_TRUE)
-	{
-		return(RW);
-	}
-	if (head(as->line.optr, "V") && as->o_h6309 == BP_TRUE)
-	{
-		return(RV);
-	}
-	if (head(as->line.optr, "v") && as->o_h6309 == BP_TRUE)
-	{
-		return(RV);
 	}
 
-	if (head(as->line.optr, "PCR"))
+	if (head(as->line.optr, "X") == BP_TRUE)
+	{
+		return(RX);
+	}
+
+	if (head(as->line.optr, "Y") == BP_TRUE)
+	{
+		return(RY);
+	}
+
+	if (head(as->line.optr, "U") == BP_TRUE)
+	{
+		return(RU);
+	}
+
+	if (head(as->line.optr, "S") == BP_TRUE)
+	{
+		return(RS);
+	}
+
+	if (head(as->line.optr, "PC") == BP_TRUE)
+	{
+		return(RPC);
+	}
+
+	if (head(as->line.optr, "PCR") == BP_TRUE)
 	{
 		return(RPCR);
 	}
-	if (head(as->line.optr, "pcr"))
-	{
-		return(RPCR);
-	}
-	if (head(as->line.optr, "A"))
+
+	if (head(as->line.optr, "A") == BP_TRUE)
 	{
 		return(RA);
 	}
-	if (head(as->line.optr, "a"))
-	{
-		return(RA);
-	}
-	if (head(as->line.optr, "B"))
+
+	if (head(as->line.optr, "B") == BP_TRUE)
 	{
 		return(RB);
 	}
-	if (head(as->line.optr, "b"))
-	{
-		return(RB);
-	}
-	if (head(as->line.optr, "CC"))
+
+	if (head(as->line.optr, "CC") == BP_TRUE)
 	{
 		return(RCC);
 	}
-	if (head(as->line.optr, "cc"))
-	{
-		return(RCC);
-	}
-	if (head(as->line.optr, "DP"))
+
+	if (head(as->line.optr, "DP") == BP_TRUE)
 	{
 		return(RDP);
 	}
-	if (head(as->line.optr, "dp"))
+
+	if (as->o_h6309 == BP_TRUE)
 	{
-		return(RDP);
+		if (head(as->line.optr, "E") == BP_TRUE)
+		{
+			return(RE);
+		}
+		
+		if (head(as->line.optr, "F") == BP_TRUE)
+		{
+			return(RF);
+		}
+		
+		if (head(as->line.optr, "W") == BP_TRUE)
+		{
+			return(RW);
+		}
+		
+		if (head(as->line.optr, "V") == BP_TRUE)
+		{
+			return(RV);
+		}
+		
+		if (head(as->line.optr, "0") == BP_TRUE ||
+			head(as->line.optr, "Z") == BP_TRUE)
+		{
+			return(RZERO);
+		}
+		
+		if (head(as->line.optr, "Z") == BP_TRUE)
+		{
+			return(RZERO);
+		}		
 	}
-	if (head(as->line.optr, "0") && as->o_h6309 == BP_TRUE)
-	{
-		return(RZERO);
-	}
-	if (head(as->line.optr, "Z") && as->o_h6309 == BP_TRUE)
-	{
-		return(RZERO);
-	}
-	if (head(as->line.optr, "z") && as->o_h6309 == BP_TRUE)
-	{
-		return(RZERO);
-	}
-	if (head(as->line.optr, "E") && as->o_h6309 == BP_TRUE)
-	{
-		return(RE);
-	}
-	if (head(as->line.optr, "e") && as->o_h6309 == BP_TRUE)
-	{
-		return(RE);
-	}
-	if (head(as->line.optr, "F") && as->o_h6309 == BP_TRUE)
-	{
-		return(RF);
-	}
-	if (head(as->line.optr, "f") && as->o_h6309 == BP_TRUE)
-	{
-		return(RF);
-	}
+		
+	
 	return(ERR);
 }
 
