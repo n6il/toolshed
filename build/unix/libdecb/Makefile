@@ -2,7 +2,7 @@
 
 vpath %.c ../../../libdecb
 
-CFLAGS	+= -I../../../include
+CFLAGS	+= -g -I../../../include
 
 %.a:
 	ar -r $@ $^

@@ -394,12 +394,17 @@ error_code _decb_close(decb_path_id path)
 	_decb_ss_sector(path, 17, 2, path->FAT);
 	
 	
-	/* 2. Terminate path descriptor */
+	/* 2. Close path. */
+
+	fclose(path->fd);
+
+
+	/* 3. Terminate path descriptor */
 	
 	ec = term_pd(path);
 	
 	
-	/* 3. Return status. */
+	/* 4. Return status. */
 	
 	return(ec);
 }
