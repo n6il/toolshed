@@ -98,6 +98,7 @@ int _rmb(assembler *as)
 {
 	BP_int32	result;
 
+	
 	as->P_force = 1;
 
 	/* 1. If we are currently in a FALSE conditional, just return. */
@@ -110,13 +111,28 @@ int _rmb(assembler *as)
 
 	if (evaluate(as, &result, &as->line->optr, 0))
 	{
-		if (*as->line->label != EOS)
-		{
-			symbol_add(as, as->line->label, as->data_counter, 0);
-		}
 		f_record(as);     /* flush out bytes */
-		print_line(as, 0, 'D', as->data_counter);
-		as->data_counter +=  result;
+
+		if (as->o_asm_mode == ASM_OS9)
+		{
+			if (*as->line->label != EOS)
+			{
+				symbol_add(as, as->line->label, as->data_counter, 0);
+			}
+			
+			print_line(as, 0, 'D', as->data_counter);
+			as->data_counter +=  result;
+		}
+		else
+		{
+			if (*as->line->label != EOS)
+			{
+				symbol_add(as, as->line->label, as->program_counter, 0);
+			}
+			
+			print_line(as, 0, ' ', as->program_counter);
+			as->program_counter +=  result;
+		}
 	}
 	else
 	{
@@ -154,6 +170,14 @@ int _zmb(assembler *as)
 		while (result--)
 		{
 			emit(as, 0);
+
+			/* In order to not overflow our emit buffer, we flush
+			* every MAXBUF bytes.
+			*/
+			if (result % MAXBUF == 0)
+			{
+				f_record(as);     /* flush out bytes so far */
+			}
 		}
 		print_line(as, 0, ' ', as->old_program_counter);
 	}
@@ -488,14 +512,16 @@ int _fcs(assembler *as)
 }
 
 
+
 /*
- * org: set origin for PC (motorola mode) or DATA (OS-9 mode)
+ * org: set origin for PC (Disk BASIC mode) or DATA (OS-9 mode)
  */
 
 int _org(assembler *as)
 {
 	BP_int32	result;
-
+	BP_char		emit_char = ' ' ;
+	
 
 	as->P_force = 1;
 
@@ -516,16 +542,16 @@ int _org(assembler *as)
 			as->program_counter = result;
 			
 
-			/* 2. In pass 1, we count up the orgs for Disk BASIC. */
+			/* 2. In pass 1, we count up the psect for Disk BASIC. */
 			
 			if (as->pass == 1)
 			{
 				/* Set up new org. */
 				
-				as->current_org++;
+				as->current_psect++;
 
-				as->orgs[as->current_org].org = as->program_counter;
-				as->orgs[as->current_org].size = 0;
+				as->psect[as->current_psect].org = as->program_counter;
+				as->psect[as->current_psect].size = 0;
 
 			}
 
@@ -536,8 +562,8 @@ int _org(assembler *as)
 			{
 				/* Emit Disk BASIC 5 byte preamble if size of org is > 0. */
 
-				BP_uint32   org = as->orgs[as->current_org].org;
-				BP_uint32   size = as->orgs[as->current_org].size;
+				BP_uint32   org = as->psect[as->current_psect].org;
+				BP_uint32   size = as->psect[as->current_psect].size;
 					
 				if (size > 0)
 				{
@@ -547,8 +573,14 @@ int _org(assembler *as)
 				}
 
 				
-				as->current_org++;
+				as->current_psect++;
 			}
+		}
+		else
+		{
+			/* 1. OS-9 mode... our emit character is 'D'. */
+			
+			emit_char = 'D';
 		}
 
 		as->data_counter = result;
@@ -561,7 +593,7 @@ int _org(assembler *as)
 		return 0;
 	}
 
-	print_line(as, 0, 'D', as->data_counter);
+	print_line(as, 0, emit_char, as->data_counter);
 	
 	
 	return 0;

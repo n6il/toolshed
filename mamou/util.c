@@ -142,7 +142,7 @@ void emit(assembler *as, int byte)
 		printf("Emit       %04X[%02X]\n", (unsigned int)as->program_counter, byte);
 	}	
 
-
+	
 	/* 2. Increment program counter. */
 	
 	as->program_counter++;
@@ -152,7 +152,7 @@ void emit(assembler *as, int byte)
 	
 	if (as->pass == 1)
 	{
-		as->orgs[as->current_org].size++;
+		as->psect[as->current_psect].size++;
 	}
 	else
 	{
@@ -247,11 +247,11 @@ void decb_trailer_emit(assembler *as, BP_uint32 exec)
 			BP_uint32   exec = 0;
 			
 			
-			if (as->current_org > 0)
+			if (as->current_psect > 0)
 			{
 				/* 1. Use the first org we encountered. */
 
-				exec = as->orgs[1].org;
+				exec = as->psect[1].org;
 			}
 
 			as->E_bytes[as->E_total++] = (exec & 0xFF00) >> 8;
