@@ -1000,6 +1000,7 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 			return 0;
 		}
 #else
+#if 0
 		evaluate(as, &result, &as->line.optr, 0);
 		
 		if (as->line.force_byte == BP_TRUE)
@@ -1032,6 +1033,54 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 
 			return 0;
 		}
+#else
+		/* Evaluate result */
+		
+		evaluate(as, &result, &as->line.optr, 0);
+
+		
+		/* Check for inconsistency in force mode and DP */
+		
+		if (as->line.force_byte == BP_TRUE && hibyte(result) != as->DP)
+		{
+			error(as, "DP out of range");
+
+			return 0;
+		}
+		
+		
+
+		if (as->line.force_word == BP_TRUE || hibyte(result) != as->DP)
+		{
+			if ((hibyte(result) == as->DP))
+			{
+				as->line.has_warning = BP_TRUE;
+			}
+			
+			emit(as, op + 0x30);
+			eword(as, result);
+			as->cumulative_cycles += 3;
+			
+			return 0;
+		}
+		else
+		{
+			emit(as, op + 0x10);
+			
+			if (hibyte(result) != as->DP)
+			{
+				error(as, "DP out of range");
+				return 0;
+			}
+			
+			emit(as, lobyte(result));
+			
+			as->cumulative_cycles += 2;
+			
+			
+			return 0;
+		}
+#endif
 #endif
 	}
 	else
