@@ -929,7 +929,7 @@ void process(assembler *as)
                 as->cumulative_cycles--;
             }
         }
-        as->line.mnemonic.opcode.h6309->func(as, as->line.mnemonic.opcode);
+        as->line.mnemonic.opcode.h6309->func(as, as->line.mnemonic.opcode.h6309->opcode);
 		
         if (as->E_total >= E_LIMIT)
         {
