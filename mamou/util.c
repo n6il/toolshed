@@ -49,7 +49,7 @@ void fatal(char *str)
  */
 void error(assembler *as, char *str)
 {
-	if (as->SuppressFlag == 1)
+	if (as->SuppressFlag == BP_TRUE)
 	{
 		return;
 	}

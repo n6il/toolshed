@@ -15,9 +15,17 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	Line_buff[0] = EOS;
 
 
-	if (as->pass == 1 || as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
+	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
 	{
-		/* We do nothing on pass 1 here. */
+		/* We are currently in a false condition -- return. */
+		
+		return;
+	}
+	
+	
+	if (as->pass == 1 && override == 0)
+	{
+		/* We do nothing on pass 1 here unless overridden. */
 		
 		return;
 	}
