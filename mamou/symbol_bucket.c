@@ -264,22 +264,32 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 }
 
 
-#define NMNE (sizeof(table) / sizeof(struct oper))
-#define NPSE (sizeof(pseudo) / sizeof(struct oper))
+#define NMNE (sizeof(table) / sizeof(struct h6309_opcode))
+#define NPSE (sizeof(pseudo) / sizeof(struct pseudo_opcode))
+
 /*
  *      mne_look --- mnemonic lookup
  *
  *      Return pointer to an oper structure if found.
  *      Searches both the machine mnemonic table and the pseudo table.
  */
-struct oper *mne_look(assembler *as, char *str)
-{
-	struct oper *low, *high, *mid;
-	int     cond;
 
-	/* Search machine mnemonics first */
+int mne_look(assembler *as, char *str, mnemonic *m)
+{
+	struct h6309_opcode		*low, *high, *mid;
+	struct pseudo_opcode	*plow, *phigh, *pmid;
+	int						cond;
+	
+	
+	/* Assume opcode is unknown. */
+	
+	m->type = OPCODE_UNKNOWN;
+
+	
+	/* Search machine mnemonics first. */
+
 	low =  &table[0];
-	high = &table[ NMNE-1 ];
+	high = &table[NMNE - 1];
 	while (low <= high)
 	{
 		mid = low + (high - low) / 2;
@@ -295,34 +305,46 @@ struct oper *mne_look(assembler *as, char *str)
 		{
 			if (as->o_h6309 == BP_FALSE && mid->h6309 == BP_TRUE)
 			{
-				return(NULL);
+				return 1;
 			}
 
-			return(mid);
+			m->type = OPCODE_H6309;
+			m->opcode.h6309 = mid;
+			
+			
+			return 0;
 		}
 	}
 
-	/* Check for pseudo ops */
-	low =  &pseudo[0];
-	high = &pseudo[NPSE - 1];
-	while (low <= high)
+
+	/* Check for pseudo ops. */
+	
+	plow =  &pseudo[0];
+	phigh = &pseudo[NPSE - 1];
+	
+	while (plow <= phigh)
 	{
-		mid = low + (high - low) / 2;
-		if ((cond = strcasecmp(str, mid->mnemonic)) < 0)
+		pmid = plow + (phigh - plow) / 2;
+
+		if ((cond = strcasecmp(str, pmid->pseudo)) < 0)
 		{
-			high = mid - 1;
+			phigh = pmid - 1;
 		}
 		else if (cond > 0)
 		{
-			low = mid + 1;
+			plow = pmid + 1;
 		}
 		else
 		{
-			return(mid);
+			m->type = OPCODE_PSEUDO;
+			m->opcode.pseudo = pmid;
+			
+			
+			return 0;
 		}
 	}
 
-	return(NULL);
+	return 1;
 }
 
 

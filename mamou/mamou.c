@@ -462,6 +462,7 @@ static void mamou_initialize(assembler *as)
 	{
 		/* Pass 1 initialization. */
 
+		as->process_func			= process;
 		as->current_psect			= -1;
 		as->code_segment_start			= BP_TRUE;
 		as->num_errors				= 0;
@@ -596,7 +597,6 @@ void mamou_pass(assembler *as)
 		as->P_force = 0;	/* No force unless bytes emitted */
 		as->f_new_page = BP_FALSE;
 	
-//		line_type = mamou_parse_line(as, input_line);
 		mamou_parse_line(as, input_line);
 		
 		if (as->line->type == LINETYPE_SOURCE && as->o_do_parsing == BP_TRUE)
@@ -637,16 +637,13 @@ void mamou_pass(assembler *as)
  *
  * Returns: 0 if a blank line, 1 if a comment, 2 if an actual line
  */
- 
+
 void mamou_parse_line(assembler *as, BP_char *input_line)
 {
-    register char *ptrfrm = input_line;
+    char *ptrfrm = input_line;
     char *ptrto = as->line->label;
-    static char hold_lbl[80];
-    static int cont_prev = 0;
-    register struct oper *i;
 
-
+	
 	/* 1. Initialize line structure. */
 	
 	as->line->has_warning = BP_FALSE;
@@ -657,11 +654,11 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
     *as->line->Op = EOS;
     *as->line->operand = EOS;
     *as->line->comment = EOS;
-
-
+	
+	
 	/* 2. First, check to see if this line has the 5 byte numerical field that
-	 * is associated with EDTASM source files.
-	 */
+		* is associated with EDTASM source files.
+		*/
 	
 	if (
 		numeric(*(ptrfrm + 0)) == BP_TRUE &&
@@ -670,7 +667,7 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 		numeric(*(ptrfrm + 3)) == BP_TRUE &&
 		numeric(*(ptrfrm + 4)) == BP_TRUE &&
 		*(ptrfrm + 5) == ' '
-	)
+		)
 	{
 		ptrfrm += 6;
 		input_line += 6;
@@ -684,9 +681,9 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 	if (*ptrfrm == '\n' || *ptrfrm == EOS)
 	{
 		*ptrto = EOS;
-
+		
 		as->line->type = LINETYPE_BLANK;
-
+		
 		return;
 	}
 	
@@ -695,61 +692,72 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 	
 	ptrfrm = input_line;
 	
-    if (*ptrfrm == '*' || *ptrfrm == '\n' ||
-        *ptrfrm == ';' || *ptrfrm == '#')
+
+    /* 5. Check for comment characters. */
+	
+	if (*ptrfrm == '*' || *ptrfrm == ';' || *ptrfrm == '#')
     {
         strcpy(as->line->comment, input_line);
-        ptrto = as->line->comment;
 
+        ptrto = as->line->comment;
+		
         while (!eol(*ptrto))
         {
             ptrto++;
         }
-
+		
         *ptrto = EOS;
-
+		
 		as->line->type = LINETYPE_COMMENT;
-
+		
         return;
     }
-
+	
     while (delim(*ptrfrm) == BP_FALSE)
     {
         *ptrto++ = *ptrfrm++;
     }
-
+	
     if (ptrto > as->line->label && *--ptrto != ':')
     {
         ptrto++;     /* allow trailing : */
     }
-
+	
     *ptrto = EOS;
-
+	
+	
+	/* Skip over whitespace. */
+	
     ptrfrm = skip_white(ptrfrm);
-
+	
     ptrto = as->line->Op;
-
+	
     while (delim(*ptrfrm) == BP_FALSE)
     {
         *ptrto++ = mapdn(*ptrfrm++);
     }
-
+	
     *ptrto = EOS;
-
+	
     ptrfrm = skip_white(ptrfrm);
-
-    /* determine whether this op code has a parameter */
-    i = mne_look(as, as->line->Op);
-    if (i != NULL)
+	
+	
+    /* Determine whether this op code has a parameter */
+	
+    if (mne_look(as, as->line->Op, &as->line->mnemonic) == 0)
     {
-        if ((i->class == PSEUDO && i->cycles & 1 == 1) ||
-            (i->class != INH && i->class != P2INH && i->class != P3INH) )
+        if ((as->line->mnemonic.type == OPCODE_PSEUDO  && as->line->mnemonic.opcode.pseudo->info != HAS_NO_OPERAND) ||
+			(as->line->mnemonic.type == OPCODE_H6309 && 
+            (as->line->mnemonic.opcode.h6309->class != INH && as->line->mnemonic.opcode.h6309->class != P2INH && as->line->mnemonic.opcode.h6309->class != P3INH))
+		)
         {
             ptrto = as->line->operand;
-            if (i->class == PSEUDO && i->cycles == 0x2)
+
+            if (as->line->mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_DELIMITERS)
             {
                 char fccdelim;
 
+				
                 /* delimiter pseudo op (fcs/fcc) */
 				
                 fccdelim = *ptrfrm;
@@ -760,7 +768,7 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 				
                 *ptrto++ = *ptrfrm++;
             }
-            else if (i->class == PSEUDO && i->cycles == 0x4)
+            else if (as->line->mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_SPACES)
             {
                 /* pseudo op has spaces in operand */
                 do
@@ -775,49 +783,25 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
                     *ptrto++ = *ptrfrm++;
                 }
             }
-
+			
             *ptrto = EOS;
-
+			
             ptrfrm = skip_white(ptrfrm);
         }
     }
-
+	
+	
     ptrto = as->line->comment;
+	
     while (!eol(*ptrfrm))
     {
         *ptrto++ = *ptrfrm++;
     }
-
+	
     *ptrto = EOS;
+	
 
-/* Below added by GFC 8/30/94 */
-
-    if (cont_prev)
-    {
-		cont_prev = 0;
-		strcpy(as->line->label, hold_lbl);
-    }
-
-    if (as->line->Op[0] == ';')
-    {
-        if (as->line->label[0] == '\0')
-        {
-			as->line->type = LINETYPE_COMMENT;
-
-            return;
-        }
-        else	/* save this label for the next mamou_parse_line() */
-        {
-            strcpy(hold_lbl, as->line->label);
-            cont_prev = 1;
-
-			as->line->type = LINETYPE_COMMENT;
-			
-            return;
-        }
-    }
-
-
+    
     if (as->o_debug)
     {
         printf("\n");
@@ -825,12 +809,14 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
         printf("Op         %s\n", as->line->Op);
         printf("Operand    %s\n", as->line->operand);
     }
-
-
+	
+	
 	as->line->type = LINETYPE_SOURCE;
+	
 	
 	return;
 }
+
 
 
 /*
@@ -838,19 +824,28 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
  */
 void process(assembler *as)
 {
-    register struct oper *i;
+	
+	/* Setup `old' program counter. */
+	
+    as->old_program_counter = as->program_counter;
 
-    as->old_program_counter = as->program_counter;		/* setup `old' program counter */
-    as->line->optr = as->line->operand; 	/* point to beginning of operand field */
+ 	
+	/* Point to beginning of operand field. */
+
+    as->line->optr = as->line->operand;
+	
 
     if (as->conditional_stack[as->conditional_stack_index] == 0)
     {
-        /* we should ignore this line unless it's an endc */
-        i = mne_look(as, as->line->Op);
-        if (i != NULL && i->class == PSEUDO)
+        /* We should ignore this line unless it's an if, else or endc */
+		
+        if (as->line->mnemonic.type == OPCODE_PSEUDO)			
+//			(as->line->mnemonic.opcode.pseudo->class == IF || as->line->mnemonic.opcode.pseudo->class == ELSE || as->line->mnemonic.opcode.pseudo->class == ENDC)
+//		)
         {
-            i->func(as);
+            as->line->mnemonic.opcode.pseudo->func(as);
         }
+		
         return;
     }
 
@@ -861,16 +856,18 @@ void process(assembler *as)
         if (*as->line->label != EOS)
         {
             symbol_add(as, as->line->label, as->program_counter, 0);
+
             print_line(as, 0, ' ', 0);
         }
     }
-    else if ((i = mne_look(as, as->line->Op)) == NULL)
+    else if (as->line->mnemonic.type == OPCODE_UNKNOWN)
+	{
+		error(as, "Unrecognized mnemonic");
+	}
+    else if (as->line->mnemonic.type == OPCODE_PSEUDO)
     {
-        error(as, "Unrecognized Mnemonic");
-    }
-    else if (i->class == PSEUDO)
-    {
-        i->func(as);
+        as->line->mnemonic.opcode.pseudo->func(as);
+		
         if (as->E_total >= E_LIMIT)
         {
             f_record(as);
@@ -885,13 +882,14 @@ void process(assembler *as)
         }
         if (as->f_count_cycles)
         {
-            as->cumulative_cycles = i->cycles;
+            as->cumulative_cycles = as->line->mnemonic.opcode.h6309->cycles;
             if (as->o_h6309 == BP_TRUE)
             {
                 as->cumulative_cycles--;
             }
         }
-        i->func(as, i->opcode);
+        as->line->mnemonic.opcode.h6309->func(as, as->line->mnemonic.opcode);
+		
         if (as->E_total >= E_LIMIT)
         {
             f_record(as);

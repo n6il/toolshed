@@ -1,6 +1,6 @@
 
 
-struct oper table[] = {
+struct h6309_opcode table[] = {
 /*
 	MNE     CLASS   BASE    CYCLES  6309
  */

@@ -212,7 +212,7 @@ static int _generic_if(assembler *as, conditional whichone)
 
 	/* 2. Next, check the state of the previous conditional. */
 	
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	if (as->conditional_stack[as->conditional_stack_index - 1] == 0)
 	{
 		/* Previous conditional false, ignore this one */
 		

@@ -97,10 +97,19 @@ typedef enum _opcode_class
 
 typedef enum _pseudo_class
 {
-     RMB,             /* Reserve Memory Bytes         */
-     FCB,             /* Form Constant Bytes          */
+	RM,              /* Reserve Memory               */
+	FC,              /* Form Constant                */
+	ORG,             /* Origin                       */
+	EQU,             /* Equate                       */
+	IF,				 /* Start of conditional		 */
+	ENDC,            /* End of condtional			 */
+	ELSE,			 /* else from conditional		 */
+	OTHER			 /* all other pseudo-ops		 */
+#if 0
+	RMB,             /* Reserve Memory               */
+     FCB,             /* Form Constant                */
      FDB,             /* Form Double Bytes (words)    */
-	FCZ,             /* Form Constant Characters     */
+	 FCZ,             /* Form Constant Characters     */
      FCC,             /* Form Constant Characters     */
      ORG,             /* Origin                       */
      EQU,             /* Equate                       */
@@ -123,6 +132,7 @@ typedef enum _pseudo_class
      EMOD,            /* End OS-9 module (CRC)        */
      USE,             /* include another source file  */
      ELSE             /* else from if                 */
+#endif
 } pseudo_class;
 
 
@@ -167,9 +177,18 @@ struct psect
 
 
 
+
+typedef enum
+{
+	OPCODE_H6309,
+	OPCODE_PSEUDO,
+	OPCODE_UNKNOWN
+} opcode_type;
+
+
 /* mnemonic table entry */
 
-struct oper
+struct h6309_opcode
 {
 	char    *mnemonic;      /* its name */
 	char    class;          /* its class */
@@ -179,6 +198,35 @@ struct oper
 	int	(*func)();	/* function */
 };
 
+
+typedef enum
+{
+	HAS_NO_OPERAND = 0,
+	HAS_OPERAND,
+	HAS_OPERAND_WITH_SPACES,
+	HAS_OPERAND_WITH_DELIMITERS
+} pseudo_info;
+
+
+struct pseudo_opcode
+{
+	char			*pseudo;        /* its name */
+	pseudo_class	class;
+	pseudo_info		info;
+	int				(*func)();		/* function */
+};
+
+
+
+typedef struct
+{
+	opcode_type	type;
+	union
+	{
+		struct h6309_opcode		*h6309;
+		struct pseudo_opcode	*pseudo;
+	} opcode;
+} mnemonic;
 
 
 typedef enum
@@ -197,6 +245,7 @@ struct source_line
 	BP_char				Op[MAXOP];					/* opcode mnemonic on current line */
 	BP_char				operand[MAXBUF];			/* remainder of line after op */
 	BP_char				comment[MAXBUF];			/* comment after operand, or entire line */
+	mnemonic			mnemonic;
 	BP_char				*optr;						/* pointer into current operand field */
 	BP_Bool				force_word;					/* Result should be a word when set */
 	BP_Bool				force_byte;					/* result should be a byte when set */
@@ -229,6 +278,7 @@ typedef enum
 
 typedef struct _assembler
 {
+	void				(*process_func)(struct _assembler *as);
 	time_t				start_time;
 	struct source_line  *line;						/* current source line */
 	object_file_type	output_type;				/* type of output file */
@@ -345,7 +395,7 @@ void print_footer(assembler *as);
 /* symbol_bucket.c */
 int symbol_add(assembler *as, char *str, int val, int override);
 struct nlist *symbol_find(assembler *as, char *name, int);
-struct oper *mne_look(assembler *as, char *str);
+int mne_look(assembler *as, char *str, mnemonic *m);
 void symbol_dump_bucket(struct nlist *ptr);
 void symbol_cross_reference(struct nlist *ptr);
 
