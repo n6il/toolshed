@@ -31,7 +31,7 @@ struct pseudo_opcode pseudo[] = {
 	{"dw",		RM,		HAS_OPERAND,					_fdb},
 	{"else",	ELSE,   HAS_NO_OPERAND,					_else},
 	{"emod",	OTHER,  HAS_NO_OPERAND,					_emod},
-	{"end",		OTHER,  HAS_NO_OPERAND,					__end},
+	{"end",		OTHER,  HAS_OPERAND,					__end},
 	{"endc",	ENDC,   HAS_NO_OPERAND,					_endc},
 	{"endif",	ENDC,   HAS_NO_OPERAND,					_endc},
 	{"equ",		EQU,    HAS_OPERAND,					_equ},
