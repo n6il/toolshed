@@ -47,8 +47,16 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		strcat(Line_buff, Tmp_buff);
 	
 		/* TODO! warnings, errors will go here later */
-		if ((infochar == ' ') && as->line->has_warning) infochar = 'W';
-		if (as->line->has_warning) as->num_warnings++;
+
+		if (as->line->has_warning)
+		{
+			as->num_warnings++;
+			
+			if (infochar == ' ')
+			{
+				infochar = 'W';
+			}
+		}
 		
 		sprintf(Tmp_buff, " %c ", infochar);
 
@@ -93,8 +101,6 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	}
 
 	as->current_line++;
-
-//	mamou_parse_line(as);
 	
 	if (*as->line->label == EOS && *as->line->Op == EOS && *as->line->operand == EOS)
 	{
@@ -172,7 +178,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 }
 
 
-void report_summary(assembler *as)
+void print_summary(assembler *as)
 {
 	printf("\n");
 	printf("Assembler Summary:\n");
@@ -230,8 +236,18 @@ void print_header(assembler *as)
 	       tm->tm_mon + 1, tm->tm_mday, tm->tm_year + 1900,
 	       tm->tm_hour, tm->tm_min, tm->tm_sec,
 	       (unsigned int)as->current_page);
-	printf("%s - %s\n", as->name_header, as->title_header);
+
+	if (as->name_header[0] != EOS || as->title_header != EOS)
+	{
+		printf("%s - %s\n", as->name_header, as->title_header);
+	}
+	else
+	{
+		printf("\n");
+	}
+
 	printf("\n");
+	
 	as->current_line += as->header_depth;
 
 	return;

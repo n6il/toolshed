@@ -414,7 +414,7 @@ void mamou_assemble(assembler *as)
 
     if ((as->o_quiet_mode == BP_FALSE) && (as->o_format_only == BP_FALSE))
     {
-        report_summary(as);
+        print_summary(as);
     }
 
 
@@ -911,14 +911,12 @@ void init_globals(assembler *as)
     as->o_show_symbol_table = BP_FALSE;		/* symbol table flag, 0=no symbol */
     as->o_pagewidth = 80;
     as->o_debug = 0;		/* debug flag */
-//    as->fd_object = NULL;		/* object file's file descriptor*/
     as->object_name[0] = EOS;
     as->bucket = NULL;
     as->do_module_crc = BP_FALSE;
     as->_crc[0] = 0xFF;
     as->_crc[1] = 0xFF;
     as->_crc[2] = 0xFF;
-    as->accum = 0x00ffffff;
     as->o_do_parsing = BP_TRUE;
     as->include_index = 0;
     as->file_index = 0;

@@ -28,20 +28,25 @@
 #define ERR     (-1)
 
 
-#define FNAMESIZE	512
-#define MAXBUF  1024
-#define MAXOP   10      /* longest mnemonic */
-#define MAXLAB  32
-#define E_LIMIT 16
-#define P_LIMIT 64
+/* Variable limits */
 
-/*      Character Constants     */
+#define FNAMESIZE	512
+#define MAXBUF		1024
+#define MAXOP		10      /* longest mnemonic */
+#define MAXLAB		32
+#define E_LIMIT		16
+#define P_LIMIT		64
+
+
+/* Character Constants */
+
 #define TAB     '\t'
 #define BLANK   ' '
 #define EOS     '\0'
 
 
-/*      Opcode Classes          */
+/* Opcode Classes */
+
 typedef enum _opcode_class
 {
      INH,			/* Inherent                     */
@@ -87,9 +92,9 @@ typedef enum _opcode_class
 } opcode_class;
 
 
-/*
- *      pseudo --- pseudo op processing
- */
+
+/* Pseudo-op classes. */
+
 typedef enum _pseudo_class
 {
      RMB,             /* Reserve Memory Bytes         */
@@ -130,8 +135,12 @@ struct filestack
 	BP_Bool			end_encountered;
 };
 
+
+
+/* linked list to hold line numbers */
+
 struct link
-{	/* linked list to hold line numbers */
+{
 	BP_int32		L_num; /* line number */
 	struct link		*next; /* pointer to next node */
 };
@@ -146,14 +155,20 @@ struct nlist
 	struct link		*L_list; /* pointer to linked list of line numbers */
 };
 
+
+
 struct orglist
 {
 	BP_int32		org;
 	BP_int32		size;
 };
 
+
+
+/* mnemonic table entry */
+
 struct oper
-{	/* an entry in the mnemonic table */
+{
 	char    *mnemonic;      /* its name */
 	char    class;          /* its class */
 	int     opcode;         /* its base opcode */
@@ -161,6 +176,8 @@ struct oper
 	char    h6309;          /* its processor class (0 = 6809, 1 = 6309) */
 	int	(*func)();	/* function */
 };
+
+
 
 struct source_line
 {
@@ -259,7 +276,6 @@ typedef struct _assembler
 	coco_path_id		fd_object;					/* object file's file descriptor*/
 	BP_Bool				object_output;
 	BP_char				object_name[FNAMESIZE];
-	BP_uint32			accum;
 	BP_char				_crc[3];
 	BP_uint32			do_module_crc;
 	BP_Bool				SuppressFlag;
@@ -294,7 +310,7 @@ void local_init(void);
 /* env.c */
 void env_init(assembler *as);
 
-/* eval.c */
+/* evaluator.c */
 BP_Bool evaluate(assembler *as, BP_int32 *result, BP_char **eptr, BP_Bool);
 
 /* ffwd.c */
@@ -307,7 +323,7 @@ void fwd_reinit(assembler *as);
 
 /* print.c */
 void print_line(assembler *as, int override, char infochar, int counter);
-void report_summary(assembler *as);
+void print_summary(assembler *as);
 void print_header(assembler *as);
 void print_footer(assembler *as);
 
@@ -376,7 +392,7 @@ int	_else(assembler *as),
 	_use(assembler *as),
 	_zmb(assembler *as);
 
-/* do9.c */
+/* h6309.c */
 int	_gen(assembler *as, int opcode),
 	_grp2(assembler *as, int opcode),
 	_indexed(assembler *as, int opcode),
