@@ -24,9 +24,12 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
- * Revision 1.1  1996/07/20 17:10:36  cc
- * Initial revision
+ * Revision 1.2  1996/07/20 22:23:02  cc
+ * Merged in pwz's unixification (Sunos).
  *
+ * Revision 1.1  96/07/20  17:10:36  cc
+ * Initial revision
+ * 
  *------------------------------------------------------------------
  */
 
@@ -39,7 +42,7 @@ static char *id = "$Id$";
 
 #ifdef SYSV
 # include "o2u.h"
-# include <time.h>
+# include <sys/time.h>
 # include <pwd.h>
 #else ~SYSV
 # ifndef  OSK
@@ -50,6 +53,39 @@ static char *id = "$Id$";
 #include <stdio.h>
 #include <ctype.h>
 #include "ar.h"
+
+
+/*
+ * If your canned tolower & toupper don't test first 
+ * You can use these or can your own
+ *  Cut me a break it was late and I'm still writing C'tran
+ *  (That's Fortran appended with semicolons)
+ */
+
+#ifdef BRAINDEAD
+ck_tolower(ch)
+char	ch;
+	{
+	if (isupper(ch))
+		tolower(ch);
+
+	return (ch);
+	}
+
+
+ck_toupper(ch)
+char	ch;
+	{
+	if (islower(ch))
+		toupper(ch);
+
+	return (ch);
+	}
+
+#undef toupper
+# define toupper ck_toupper
+#endif
+
 
 /*
  *  convert a long read from disk as an array of char
@@ -68,6 +104,24 @@ char	*s;
 	return (x);
 	}
 /*page*/
+#ifdef SYSV
+/* Test file for DIR status */
+ 
+is_dir(pn)
+int pn;
+	{
+	struct stat	stbuf;
+
+	fstat(pn, &stbuf);
+
+	if (S_IFDIR == (stbuf.st_mode & S_IFMT))
+		return (1);
+	else
+		return 0;
+	}
+#endif
+
+
 /*
  * get file stats using _os9 for portability
  */
@@ -84,7 +138,7 @@ FILDES	*fs;
 	struct stat		stbuf;
 
 	fstat(pn, &stbuf);
-	fs->fd_att = u2oFmode(stbuf.st_mode);
+	fs->fd_attr = u2oFmode(stbuf.st_mode);
 	for (s = stbuf.st_uid, p = &fs->fd_own[1], i = 0; i < 2; i++, p--, s >>= 8)
 		*p = (s & 0xff);
 
@@ -121,7 +175,7 @@ FILDES	*fs;
 #ifdef SYSV
 	char			*p = fs->fd_own;
 	short			s;
-	short			mode = o2uFmode(fs->fd_att);
+	short			mode = o2uFmode(fs->fd_attr);
 	struct passwd	*pwdbuf;
 	struct passwd	*getpwuid();
 	struct  {
@@ -184,7 +238,9 @@ set_fsize(pn, size)
 int		pn;
 long	size;
    {
-#ifndef SYSV /* you simply DO NOT change the file size in UNIX	*/
+#ifdef SYSV
+	ftruncate(pn, size);  /* If you don't have this or something akin, deletes don't work well */
+#else
 # ifdef   OSK
 	_ss_size(pn, size);
 # else
@@ -226,7 +282,17 @@ char	*path;
 	return (0);
 	}
 /*page*/
-#include <filehdr.h>
+/*
+ * If you have the proper header then use <filehdr.h>
+ * You will want to mung isobject() below also
+ */
+
+#ifdef HAVE_FILEHDR
+# include <filehdr.h>
+#else
+# include "filehdr.h"
+#endif
+
 
 isobject(input)
 FILE	*input;
@@ -235,24 +301,7 @@ FILE	*input;
 
 	read(fileno(input), &x, 2);
 #ifdef SYSV
-	if (x == B16MAGIC
-		|| x == BTVMAGIC
-		|| x == X86MAGIC
-		|| x == XTVMAGIC
-		|| x == N3BMAGIC
-		|| x == NTVMAGIC
-		|| x == XLMAGIC
-		|| x == FBOMAGIC
-		|| x == RBOMAGIC
-		|| x == MTVMAGIC
-		|| x == VAXWRMAGIC
-		|| x == VAXROMAGIC
-		|| x == MC68MAGIC
-		|| x == MC68TVMAGIC
-		|| x == M68MAGIC
-		|| x == M68TVMAGIC
-		|| x == U370WRMAGIC
-		|| x == U370ROMAGIC)
+  	if (x == SUN4MAGIC || x == DOSMAGIC)
 #else
 	if (x == OS9MAGIC || x == OSKMAGIC)
 #endif
@@ -467,7 +516,8 @@ register char	*s2;
 # include <sys/types.h>
 # include <sys/param.h>
 # include <sys/dir.h>
-# include "dir.h"
+
+#define DIRECT  struct direct
 
 DIR		*opendir(name)
 char	*name;
@@ -628,4 +678,3 @@ DIR		*dirp;
 #  endif
 # endif
 #endif
-@
