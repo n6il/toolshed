@@ -202,6 +202,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 	char			*tmp;
 	BP_int32		val = 0;				/* local value being built */
 	BP_Bool			minus = BP_FALSE;		/* unary minus flag */
+	BP_Bool			complement = BP_FALSE;		/* complement flag */
 	struct nlist	*pointer;
 	struct link		*pnt, *bpnt;
 
@@ -225,6 +226,16 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 		(*eptr)++;
 
 		minus = BP_TRUE;
+	}
+
+
+	/* 3. A leading tilde is a complement. */
+	
+	else if (**eptr == '~')
+	{
+		(*eptr)++;
+
+		complement = BP_TRUE;
 	}
 
 
@@ -470,6 +481,13 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 		*term = val;
 	}
 
+
+	/* Complement if needed. */
+	
+	if (complement)
+	{
+		*term = ~val;
+	}
 
 	
 	return BP_TRUE;
