@@ -12,7 +12,7 @@
 
 #define MAX_BPS 256
 
-static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int hdbdrives, int bps);
+static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int hdbdrives, int bps, int skitzo);
 
 /* Help message */
 static char *helpMessage[] =
@@ -25,6 +25,7 @@ static char *helpMessage[] =
 	"     -8       = 80 track disk\n",
 	"     -h<num>  = create <num> HDB-DOS drives\n",
 	"     -n<name> = HDB-DOS disk name\n",
+	"     -s       = create a \"skitzo\" disk\n",
 	NULL
 };
 
@@ -38,7 +39,7 @@ int decbdskini(int argc, char **argv)
 	char *diskName = NULL;
 	int bps = MAX_BPS;
 	int hdbdrives = 1;
-
+	int skitzo = 0;
 
 	/* 1. If no arguments, show help and return. */
 	
@@ -83,6 +84,10 @@ int decbdskini(int argc, char **argv)
 						while (*(p + 1) != '\0') p++;
 						break;
 
+					case 's':	/* skitzo disk */
+						skitzo = 1;
+						break;
+						
 					case '?':
 						show_help(helpMessage);
 						return(0);
@@ -106,7 +111,7 @@ int decbdskini(int argc, char **argv)
 		}
 		else
 		{
-			do_dskini(argv, argv[i], tracks, diskName, hdbdrives, bps);
+			do_dskini(argv, argv[i], tracks, diskName, hdbdrives, bps, skitzo);
 		}
 	}
 
@@ -115,7 +120,7 @@ int decbdskini(int argc, char **argv)
 
 
 
-static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int hdbdrives, int bps)
+static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int hdbdrives, int bps, int skitzo)
 {
 	error_code	ec = 0;
 	native_path_id nativepath;
@@ -169,7 +174,7 @@ static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int h
 
 		{
 			int s;
-			int size;
+			int size, min_s = 0;
 		
 		
 			/* 1. Write sector of track 17 (all 0s..). */
@@ -197,11 +202,20 @@ static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int h
 					break;
 			}
 
-			for (s = 0; s < max_s; s++)
+			/* Process skitzo here -- we set the first 34 granules as allocated. */
+			
+			if (skitzo == 1)
+			{
+				min_s = 34; 
+			}
+					
+
+			for (s = min_s; s < max_s; s++)
 			{
 				sector[s] = 0xFF;
 			}
-
+			
+			
 			size = bps;
 				
 			_native_write(nativepath, sector, &size);
