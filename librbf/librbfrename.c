@@ -52,14 +52,14 @@ error_code _os9_rename( char *pathlist, char *new_name )
 
     /* Start reading directory file and search for match */
 
-    while (_os9_gs_eof(parent_path) == 0)
+    while ((ec = _os9_gs_eof(parent_path)) == 0)
     {
         int size;
         os9_dir_entry dentry;
         char fname[32];
 
         size = sizeof(dentry);
-        ec = _os9_read(parent_path, &dentry, &size);
+        ec = _os9_readdir(parent_path, &dentry);
 
         if( ec != 0 || size != sizeof(dentry) )
         {
@@ -89,7 +89,7 @@ error_code _os9_rename( char *pathlist, char *new_name )
 	
     _os9_close(parent_path);
 
-    return(0);
+    return(ec);
 }
 
 
