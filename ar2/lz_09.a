@@ -1,0 +1,1361 @@
+*
+*------------------------------------------------------------------
+*
+* $Source$
+* $RCSfile$
+* $Revision$
+* $Date$
+* $State$
+* $Author$
+* $Locker$
+*
+*------------------------------------------------------------------
+*
+* Carl Kreider
+* 22305 CR 28
+* Goshen, IN  46526
+* (219) 875-7019
+* (71076.76@compuserve.com, ckreider@skyenet.net, carlk@syscon-intl.com)
+*
+*------------------------------------------------------------------
+* $Log$
+* Revision 1.1  1996/07/20 17:19:37  cc
+* Initial revision
+*
+*------------------------------------------------------------------
+*
+
+        psect   lz_09,0,0,0,0,0
+        nam     lz_09
+
+        fcc     "$Id$"
+
+ 
+dasl    macro
+        aslb
+        rola
+        endm
+
+crakofs macro
+        dasl
+        dasl
+        endm
+
+compofs macro
+        pshs    d
+        dasl
+        dasl
+        addd    ,s++
+        endm
+
+* 
+         vsect dp
+maxbits  rmb   2      maxbits = BITS	/* user settable max # bits/code	*/
+n_bits   rmb   2      n_bits = INIT_BITS/* initial number of bits/code		*/
+maxmaxco rmb   2      maxmaxcode		/* max permissible maxcode value	*/
+maxcode  rmb   2      maxcode			/* 2 ** n_bits - 1					*/
+free_ent rmb   2      free_ent			/* first unused entry				*/
+offset   rmb   2      offset			/* cursor into buf (units of bits)	*/
+* 
+CompTbl  rmb   2      COMPTBL *CompTbl;
+CrakTbl  rmb   2      DCOMPTBL *CrakTbl;
+         ends
+
+         vsect
+lz_bytes rmb   4      ULONG lz_bytes;
+buf      rmb   7      UWORD buf[BITS];
+         ends
+
+__xx    fdb    511,1023,2047,4095,8191,16383  max code for 9..14 bits
+        ttl    LZ_1
+        pag
+* LZ_1(infile, outfile, bytes)
+* FILE	*infile, *outfile;
+* long	*bytes;
+* 	{
+* 	VOID				output();
+* 	WORD				c, ent, reslt, tag = TAG;
+* 	WORD				n_ent;
+* 	register COMPTBL	*ctp;
+* 
+        csect 0
+n_ent   set   *
+        rmb   2
+ent     set   *
+        rmb   2
+c       set   *
+        rmb   2
+locals  set   *  size of local
+        rmb   4  return and u
+infile  set   *  FILE *infile
+        rmb   2
+outfile set   *  FILE *outfile
+        rmb   2
+bytes   set   *  long *bytes
+        ends
+
+LZ_1:
+        pshs   u
+        leas   -locals,s
+
+* 	lz1_init(COMP);
+        clra
+        clrb
+        lbsr   lz1_init
+
+* 	lz_bytes = sizeof(tag);
+        clra
+        clrb
+        std    lz_bytes,y
+        ldb    #2
+        std    lz_bytes+2,y
+
+* 	writeshort(tag, outfile);								/* mark as LZ	*/
+        ldx    outfile,s
+        clra
+        ldb    #$0b
+        pshs   d,x
+        lbsr   putc
+        ldb    #$b3
+        stb    1,s
+        lbsr   putc
+        leas   4,s
+* 
+* 	ent = getc(infile);
+        ldd    infile,s
+        pshs   d
+        lbsr   getc
+        leas   2,s
+        std    ent,s
+
+* 	while (!feof(infile) && (c = getc(infile)) != EOF)
+* 		{
+        bra    lz_1f
+
+* 		n_ent = CompTbl[ent].chain;
+lz_1a
+        ldd    ent,s
+        compofs
+        ldx    <CompTbl
+        leax   d,x
+        ldd    2,x
+        std    n_ent,s
+* 		for (; ; )
+* 			{
+lz_1b
+* 			ctp = &CompTbl[n_ent];
+        compofs
+        addd   <CompTbl
+        tfr    d,u
+* 			if ((n_ent == 0) || (ctp->suffix > c))
+* 				{
+        ldd    n_ent,s
+        beq    lz_1c
+
+        ldb    4,u
+        cmpb   c+1,s
+        bls    lz_1d
+
+* 				output(ent, outfile);
+lz_1c
+        ldx    outfile,s
+        ldd    ent,s
+        pshs   d,x
+        lbsr   output
+* 				addentry(c, ent);			/* try to grow the dictionary	*/
+        ldx    ent+4,s
+        ldd    c+4,s
+* 				ent = c;
+        std    ent+4,s
+        pshs   d,x
+        bsr   addentry
+        leas   8,s
+* 				break;
+        bra    lz_1f
+* 				}
+* 			else
+* 				if (ctp->suffix != c)
+* 					{
+lz_1d
+        beq    lz_1e
+
+* 					n_ent = ctp->next;
+        ldd    0,u
+        std    n_ent,s
+        bra    lz_1b
+
+* 					}
+* 				else
+*					{
+* 					ent = n_ent;
+lz_1e
+        ldd    n_ent,s
+        std    ent,s
+* 					break;
+* bra lz_1f
+* 					}
+* 			}
+* 		}
+
+* body of while here
+lz_1f
+*           !feof(infile)
+        ldx    infile,s
+        ldb    7,x
+        andb   #16
+        bne    lz_1g
+
+*           (c = getc(infile)) != EOF
+        pshs   x
+        lbsr   getc
+        leas   2,s
+        std    c,s
+        cmpd   #-1
+        bne    lz_1a
+
+* 	output(ent, outfile);							/* put out final code	*/
+lz_1g
+        ldx    outfile,s
+        ldd    ent,s
+        pshs   d,x
+        lbsr   output
+
+* 	output(-1, outfile);					/* and -1 to flush and finish	*/
+        ldd    #-1
+        std    0,s
+        lbsr   output
+        leas   4,s
+
+* 	*bytes = lz_bytes;
+        ldx    bytes,s
+        ldd    lz_bytes,y
+        std    0,x
+        ldd    lz_bytes+2,y
+        std    2,x
+
+* 	return (0);
+        clra
+        clrb
+        leas   locals,s
+        puls   u,pc
+
+* 	}
+
+        ttl    addentry
+        pag
+* addentry(c, ent)
+* WORD	c, ent;
+* 	{
+* 	register COMPTBL	*ctp = CompTbl;
+* 	COMPTBL				*fep, *cep;
+* 	WORD				p_ent;
+* 
+        csect  0
+p_ent   set    *  WORD p_ent
+        rmb    2
+cep     set    *  COMPTBL *cep
+        rmb    2
+fep     set    *  COMPTBL *fep
+        rmb    2
+locals  set    *  size of local
+        rmb    4  u + ret
+c       set    *  WORD c
+        rmb    2
+ent     set    *  WORD ent
+        ends
+
+addentry:
+        pshs   u
+        leas   -locals,s
+        ldu    <CompTbl
+
+* 	/* if the table is full, there's nothing we can do.	*/
+* 	if (free_ent < maxmaxcode)
+* 		{
+        ldd    <free_ent
+        cmpd   <maxmaxco
+        lbge   addent90
+
+* 		fep = &ctp[free_ent];
+        ldd    <free_ent
+        compofs
+        leax   d,u
+        stx    fep,s
+
+* 		fep->chain = NULL;
+        clra
+        clrb
+        std    2,x
+
+* 		fep->suffix = c;
+        ldb    c+1,s
+        stb    4,x
+
+* 		cep = &ctp[ent];
+        ldd    ent,s
+        compofs
+        leax   d,u
+        stx    cep,s
+
+* 
+* 		if (((p_ent = cep->chain) == 0) || (c < ctp[p_ent].suffix))
+* 			{
+        ldd    2,x
+        std    p_ent,s
+        beq    addent10
+
+        compofs
+        leax   d,u
+        ldb    4,x
+        cmpb   c+1,s
+        bls    addent40  was to 20
+
+* 			fep->next = p_ent;
+addent10
+        ldd    p_ent,s
+        ldx    fep,s
+        std    0,x
+
+* 			cep->chain = free_ent;
+        ldd    <free_ent
+        ldx    cep,s
+        std    2,x
+        bra    addent60
+
+* 			}
+* 		else
+* 			{
+* 			while (((ent = ctp[p_ent].next) !=0) && (c >= ctp[ent].suffix))
+* 				p_ent = ent;
+*addent20
+* bra addent40
+
+addent30
+        ldd    ent,s
+        std    p_ent,s
+
+*  body of while here
+* 			((ent = ctp[p_ent].next) !=0)
+addent40
+        ldd    p_ent,s
+        compofs
+        leax   d,u
+        ldd    0,x
+        std    ent,s
+        beq    addent50
+
+* 			(c >= ctp[ent].suffix)
+        compofs
+        leax   d,u
+        ldb    4,x
+        cmpb   c+1,s
+        bls    addent30
+
+* 
+* 			fep->next = ent;
+addent50
+        ldd    ent,s
+        ldx    fep,s
+        std    0,x
+
+* 			ctp[p_ent].next = free_ent;
+* 			}
+        ldd    p_ent,s
+        compofs
+        leax   d,u
+        ldd    <free_ent
+        std    0,x
+
+* 
+* 		free_ent++;
+addent60
+        ldd    <free_ent
+        addd   #1
+        std    <free_ent
+
+* 		}
+* 	}
+addent90
+        leas   locals,s
+        puls   u,pc
+
+        ttl    output
+        pag
+* VOID	output(code, ofp)
+* WORD	code;
+* FILE	*ofp;
+* 	{
+* 	WORD	n;
+        csect  0
+locals  set    *  size of local
+        rmb    4  return and u
+code    set    *
+        rmb    2  WORD code
+ofp     set    *
+        rmb    2  FILE *ofp
+        ends
+
+output:
+        pshs   u
+* 
+* 	if (code < 0)
+* 		{
+        ldd    code,s
+        bge    out20
+
+* 		/* at EOF--flush buffers and pack up	*/
+* 		if (offset > 0)
+        ldd    <offset
+        ble    out10
+
+* 			writebuf(n = (offset + 7) / 8, ofp);
+        ldb    <offset+1
+        addb   #7
+        lsrb
+        lsrb
+        lsrb
+        clra
+        ldx    ofp,s
+        bsr    writebuf
+* 
+* 		fflush(ofp);
+out10
+        ldd    ofp,s
+        pshs   d
+        lbsr   fflush
+        leas   2,s
+        bra    out70
+* 		}
+* 	else
+* 		{
+* 		insert_bit(code);
+out20
+        lbsr   insert_b
+* 
+* 		if ((offset += n_bits) == BytesToBits(n_bits))
+        ldb    <offset+1
+        addb   <n_bits+1
+        stb    <offset+1
+        pshs   b
+        ldb    <n_bits+1
+        aslb
+        aslb
+        aslb
+        cmpb   ,s+
+        bne    out30
+
+* 			writebuf(n_bits, ofp);
+        ldx    ofp,s
+        ldd    <n_bits
+        bsr    writebuf
+* 
+* 		if (free_ent > maxcode)
+* 			{
+out30
+        ldd    <free_ent
+        cmpd   <maxcode
+        ble    out70
+
+* 			if (offset > 0)
+* 				{
+
+        ldb    <offset+1
+        ble    out40
+
+* 				writebuf(n_bits, ofp);
+        ldx    ofp,s
+        ldd    <n_bits
+        bsr    writebuf
+* 				}
+* 
+* 			n_bits++;
+out40
+        inc    <n_bits+1
+* 			maxcode = (n_bits == maxbits) ? maxmaxcode : (1 << n_bits) - 1;
+        ldb    <n_bits+1
+        cmpb   <maxbits+1
+        bne    out50
+
+        ldd    <maxmaxco
+        bra    out60
+
+out50
+        leax   __xx,pcr
+        ldb    <n_bits+1
+        subb   #9
+        aslb
+        ldd    b,x
+out60
+        std    <maxcode
+* 			}
+* 		}
+* 	}
+out70
+        puls   u,pc
+
+        ttl    writebuf
+        pag
+* writebuf(cnt, fp)
+* int		cnt;
+* FILE	*fp;
+* 	{
+* 	register char	*bp;
+* 	int				lim;
+        csect  0
+cnt     set    *
+        rmb    2  int cnt
+fp      set    *
+        rmb    2  FILE *fp
+lim     set    *
+        rmb    2
+locals  set    *  size of local
+        rmb    4  return and u
+        ends
+
+writebuf:
+        pshs   d,u         save u and cnt
+        pshs   d,x         create local storage (inized)
+
+*   bp = (char *) buf;
+        leau   buf,y
+ 
+* 	for (lim = cnt; lim; --lim)
+* 		putc(*bp++, fp);
+        stb    lim,s
+wb10
+        ldb    ,u+
+        stb    1,s
+        lbsr   putc
+        dec    lim,s
+        bne    wb10   lim != 0?
+
+* 				lz_bytes += cnt;
+        leax   lz_bytes,y
+        clra
+        ldb    lim+1,s
+        addd   2,x
+        std    2,x
+        ldd    0,x
+        adcb   #0
+        adca   #0
+        std    0,x
+
+* 				offset = 0;
+        clra
+        clrb
+        std    <offset
+
+        leas   locals,s
+        puls   u,pc
+
+        ttl    insert_b
+        pag
+
+* 
+* WORD mask1[] = {
+mask1:
+* 	0x0000, 0x8000, 0xc000, 0xe000,
+        fdb    0,-32768,-16384,-8192
+* 	0xf000, 0xf800, 0xfc00, 0xfe00,
+        fdb    -4096,-2048,-1024,-512
+* 	0xff00, 0xff80, 0xffc0, 0xffe0,
+        fdb    -256,-128,-64,-32
+* 	0xfff0, 0xfff8, 0xfffc, 0xfffe};
+        fdb    -16,-8,-4,-2
+* 
+* WORD mask2[] = {
+mask2:
+* 	0x0000, 0x0001, 0x0003, 0x0007,
+        fdb    0,1,3,7
+* 	0x000f, 0x001f, 0x003f, 0x007f,
+        fdb    15,31,63,127
+* 	0x00ff, 0x01ff, 0x03ff, 0x07ff,
+        fdb    255,511,1023,2047
+* 	0x0fff, 0x1fff, 0x3fff, 0x7fff};
+        fdb    4095,8191,16383,32767
+* 
+* /*
+* 
+* insert_bit(value)
+* short	value;
+* 	{
+        ttl    insert_b
+insert_b:
+* 	short			w_offset, shift, size2;
+* 	register WORD	*bufp;
+* 
+        csect  0
+size2   set    *
+        rmb    1
+shift   set    *
+        rmb    1
+w_offset set   *
+        rmb    1
+locals  set    *
+value   set    * short value
+        ends
+
+        pshs d,u
+        leas   -locals,s
+
+* 	bufp = &buf[offset >> 4];
+        ldb    <offset+1
+        lsrb
+        lsrb
+        lsrb
+        andb   #$0e               7<<1
+        leax   buf,y
+        leau   b,x
+
+* 	w_offset = offset & 0x0f;
+        ldb    <offset+1
+        andb   #15
+        stb    w_offset,s
+* 
+* 	if (w_offset + n_bits <= WSIZE)
+* 		{
+        addb   <n_bits+1
+        cmpb   #16
+        bgt    ib3
+
+* 		shift = WSIZE - (n_bits + w_offset);
+*        negb              this would get undone later
+*        addb   #16
+        stb    shift,s
+* 		size2 = n_bits;
+        ldb    <n_bits+1
+        bra    ib4
+* 		}
+* 	else
+* 		{
+ib3
+* 		size2 = (n_bits + w_offset) - WSIZE;
+        subb   #16
+        stb    size2,s
+* 		shift = WSIZE - size2;
+*        negb              this would get undone later
+*        addb   #16
+        stb    shift,s
+* 		*bufp = (*bufp & mask1[w_offset]) | ((unsigned) value >> size2);
+        ldb    w_offset,s
+        aslb
+        leax   mask1,pc
+        ldd    b,x
+        anda   0,u
+        andb   1,u
+        std    ,u
+        leax   rshe,pcr
+        ldb    size2,s
+        aslb
+        negb
+        leax   b,x          backwards index from end
+        ldd    value,s
+        jsr    ,x
+        ora    0,u
+        orb    1,u
+        std    ,u++
+* 		++bufp;
+* 		}
+* 
+* 	*bufp = (*bufp & ~(mask2[size2] << shift)) | (value << shift);
+        ldb    size2,s
+ib4
+        aslb
+        leax   mask2,pc
+        ldd    b,x
+        stb    size2,s         size2 is free for use now
+        leax   lshb,pcr
+        ldb    shift,s
+        aslb
+        abx
+        ldb    size2,s        recover mask
+        jsr    ,x
+        coma
+        comb
+        anda   0,u
+        andb   1,u
+        std    ,u
+        ldd    value,s
+        jsr    ,x              x is still valid from last shift
+        ora    0,u
+        orb    1,u
+        std    ,u
+* 	}
+        leas   locals,s
+        puls   d,u,pc
+
+rshb    rept   16
+        lsra
+        rorb
+        endr
+rshe    rts
+
+lshb    rept   16
+        lslb
+        rola
+        endr
+lshe    rts
+
+        ttl    de_LZ_1
+        pag
+* WORD	de_LZ_1(infile, outfile, bytes)
+* FILE	*infile, *outfile;
+* long	bytes;
+* 	{
+de_LZ_1:
+* 	register DCOMPTBL	*dtp;
+* 	char				stack[MAXSTACK];
+* 	WORD				tag, finchar, code, oldcode, incode;
+* 	register char		*stackp = stack;
+* 	WORD				getcode();
+        csect  0
+stackp  set    *
+        rmb    2
+incode  set    *
+        rmb    2
+oldcode set    *
+        rmb    2
+code    set    *
+        rmb    2
+finchar set    *
+        rmb    2
+tag     set    *
+        rmb    2
+stack   set    *
+        rmb    2000
+locals  set    *
+        rmb    4    return and u
+infile  set    *
+        rmb    2
+outfile set    *
+        rmb    2
+bytes   set    *
+        rmb    4
+        ends
+
+needed  set    locals+74
+        pshs   u
+        ldd    #-needed
+        lbsr   _stkcheck
+        leas -locals,s
+* 	register char		*stackp = stack;
+        leax stack,s
+        stx stackp,s
+* 
+* 	if (readshort(&tag, infile) == EOF || tag != TAG)
+* 		return (NOT_AR);
+        ldd infile,s
+        leax tag,s
+        pshs d,x
+        lbsr readshor
+        leas 4,s
+        cmpd #-1
+        lbeq de_lz_1v
+
+        ldd tag,s
+        cmpd #2995
+        lbne de_lz_1v
+
+* 
+* 	lz1_init(DECOMP);
+        ldd #1
+        lbsr lz1_init
+
+* 	dtp = CrakTbl;
+        ldu CrakTbl,y
+
+* 	lz_bytes = bytes - sizeof(tag);
+        leax >lz_bytes,y
+        ldd bytes+2,s
+        subd #2
+        std 2,x
+        ldd bytes,s
+        sbcb #0
+        sbca #0
+        std 0,x
+* 
+* 	if ((finchar = oldcode = getcode(infile)) == EOF)
+* 		return (EOF);
+        ldd infile,s
+        pshs d
+        lbsr getcode
+        leas 2,s
+        std oldcode,s
+        std finchar,s
+        cmpd #-1
+        lbeq de_lz_1x
+
+
+* 
+* 	if (putc((char) finchar, outfile) == EOF)		/* first code is 8 bits	*/
+* 		return (WERR);
+        ldx outfile,s
+        ldd finchar,s
+        pshs d,x
+        lbsr putc
+        leas 4,s
+        cmpd #-1
+        lbeq de_lz_1w
+        lbra de_lz_1f
+
+* 
+* 	while ((incode = code = getcode(infile)) >= 0)
+* 		{
+* 		if (code >= free_ent)			/* Special case for KwKwK string.	*/
+* 			{
+de_lz_1a
+        cmpd <free_ent
+        blt de_lz_1c
+
+* 			*stackp++ = finchar;
+        ldd finchar,s
+        ldx stackp,s
+        stb ,x+
+        stx stackp,s
+
+* 			code = oldcode;
+        ldd oldcode,s
+        std code,s
+        bra de_lz_1c
+* 			}
+* 
+* 		while (code >= 256)			/* Generate characters in reverse order	*/
+* 			{
+de_lz_1b
+* 			*stackp++ = dtp[code].lastch;
+        aslb
+        rola
+        aslb
+        rola
+        leax d,u
+        ldd 2,x
+        pshs x           we need again in a sec
+        ldx stackp+2,s
+        stb ,x+
+        stx stackp+2,s
+        puls x
+
+* 			code = dtp[code].prefix;
+        ldd 0,x
+        std code,s
+de_lz_1c
+        cmpd #256
+        bge de_lz_1b
+
+* 			}
+* 		*stackp++ = finchar = dtp[code].lastch;
+        aslb
+        rola
+        aslb
+        rola
+        leax d,u
+        ldd 2,x
+        std finchar,s
+        ldx stackp,s
+        stb ,x+
+        stx stackp,s
+* 
+* 		/* And put them out in forward order	*/
+* 		do	{
+* 			if (putc(*--stackp, outfile) == EOF)
+* 				return (WERR);
+de_lz_1d
+        ldd outfile,s
+        pshs d
+        ldx stackp+2,s
+        ldb ,-x
+        stx stackp+2,s
+        clra
+        pshs d
+        lbsr putc
+        leas 4,s
+        cmpd #-1
+        beq de_lz_1w
+
+
+* 			} while (stackp > stack);
+        leax stack,s
+        cmpx stackp,s
+        blo de_lz_1d
+
+* 
+* 		if ((code = free_ent) < maxmaxcode)			/* Generate new entry	*/
+* 			{
+        ldd <free_ent
+        std code,s
+        cmpd <maxmaxco
+        bge de_lz_1e
+
+* 			dtp[code].prefix = oldcode;
+        aslb
+        rola
+        aslb
+        rola
+        leax d,u
+        ldd oldcode,s
+        std 0,x
+* 			dtp[code].lastch = finchar;
+        ldd finchar,s
+        std 2,x
+* 			free_ent++;
+        ldd <free_ent
+        addd #1
+        std <free_ent
+* 			}
+* 
+* 		oldcode = incode;						/* Remember previous code.	*/
+de_lz_1e
+        ldd incode,s
+        std oldcode,s
+
+*    bottom of while(incode = code = getcode(infile) >= 0)
+de_lz_1f
+        ldd infile,s
+        pshs d
+        bsr getcode
+        leas 2,s
+        std code,s
+        std incode,s
+        lbge de_lz_1a
+
+* 		}
+* 
+* 	return (code);
+        ldd code,s
+        bra de_lz_1x
+
+de_lz_1v
+        ldd #-2
+        bra de_lz_1x
+
+de_lz_1w
+        ldd #-5
+
+de_lz_1x
+        leas locals,s
+        puls u,pc
+
+* 	}
+        ttl    getcode
+        pag
+* 
+* WORD	getcode(infile)
+* FILE	*infile;
+* 	{
+getcode:
+* 	WORD		code, reslt;
+* 	static WORD	size = 0;
+        vsect  dp
+gsize   fcb    0
+        endsect
+
+        csect  0
+code    set    *
+        rmb    2
+infile  set    *
+        rmb    2
+locals  set    *  size of local
+        rmb    4  return and u
+        ends
+
+        pshs   d,u          save infile too
+        pshs   d            space for code
+* 
+* 	if ((offset >= size) || (free_ent > maxcode))
+* 		{
+        ldb    <offset+1
+        cmpb   <gsize
+        bge    getcod10
+
+        ldd    <free_ent
+        cmpd   <maxcode
+        ble    getcod50
+
+getcod10
+* 		if (free_ent > maxcode)
+* 			{
+        ldd    <free_ent
+        cmpd   <maxcode
+        ble    getcod30
+
+* 			n_bits++;					/* new entry too big, increase size	*/
+        inc    <n_bits+1
+
+* 			maxcode = (n_bits == maxbits) ? maxmaxcode : (1 << n_bits) - 1;
+        ldx    <maxmaxco      assume it is maxmaxcode
+        ldb    <n_bits+1
+        cmpb   <maxbits+1
+        beq    getcod20            guessed right
+
+        leax   __xx,pc
+        ldb    <n_bits+1
+        subb   #9
+        aslb
+        ldx    b,x
+
+getcod20
+        stx <maxcode
+* 			}
+* 
+* 		if (lz_bytes <= 0)
+* 			return (EOF);				/* "eof"						*/
+getcod30
+        leax   lz_bytes,y
+        ldd    0,x
+        bmi    getcod80     oops - rolled under
+        bne    getcod32     lots to do yet
+        ldd    2,x
+        beq    getcod80     all done - return EOF
+
+* 
+* 		size = (lz_bytes > (long) n_bits) ? n_bits : (int) lz_bytes;
+        cmpd   <n_bits
+        blo    getcod34
+
+getcod32
+        ldb    <n_bits+1
+getcod34
+        stb    <gsize
+
+* 		reslt = readbuf(size, infile);	/* read new buffer too			*/
+        ldx    infile,s
+        lbsr   readbuf
+
+* 		if (reslt == EOF)
+* 			return (EOF);
+        cmpd   #-1
+        beq    getcod80    return EOF
+
+* 
+* 		lz_bytes -= size;
+        leax   lz_bytes,y
+        ldd    2,x
+        subb   <gsize
+        sbca   #0
+        std    2,x
+        ldd    0,x
+        sbcb   #0
+        sbca   #0
+        std    0,x
+
+* 		offset = 0;
+        clr    <offset+1
+
+* 		/*
+* 		size = BytesToBits(size) - (n_bits - 1);
+        ldb    <gsize
+        aslb
+        aslb
+        aslb
+        subb   <n_bits+1
+        addb   #1
+        stb    <gsize
+* 		}
+* 
+* 	code = fetch();
+getcod50
+        bsr   fetch
+        std    code,s
+
+* 	offset += n_bits;
+        ldb    <offset+1
+        addb   <n_bits+1
+        stb    <offset+1
+
+* 	return (code);
+        ldd    code,s
+        bra    getcod90
+
+getcod80
+        ldd    #-1
+getcod90
+        leas   locals,s
+        puls   u,pc
+
+* 	}
+        ttl    fetch
+        pag
+* fetch()
+* 	{
+fetch:
+* 	register UWORD	*bp;
+* 	register WORD	t1, t2;
+        csect  0
+t2      set    *
+        rmb    2
+t1      set    *
+        rmb    1
+locals  set    *  size of local
+        rmb    4  return and u
+        ends
+
+        pshs   u
+        leas   -locals,s
+* 
+* 	bp = &buf[offset >> LOG2WSIZE];
+        ldb    <offset+1
+        lsrb
+        lsrb
+        lsrb
+        andb   #$0e               7<<1
+        leax   buf,y
+        leau   b,x
+
+* 	w_offset = offset & LowOrder(LOG2WSIZE);
+        ldb    <offset+1
+        andb   #15
+* 
+* 	if ((t1 = w_offset + n_bits) <= WSIZE)
+* 		t2 = (*bp >> (WSIZE - t1));
+        addb   <n_bits+1
+        stb    t1,s
+        cmpb   #16
+        bgt    fetch10
+
+        leax   rshb,pc
+        aslb
+        abx
+        ldd    ,u
+        jsr    ,x
+        std    t2,s
+        bra    fetch20
+
+* 	else
+* 		{
+fetch10
+* 		t2 = (*bp++ << (t1 - WSIZE));
+        leax   lshe,pc
+        subb   #16
+        aslb
+        negb
+        leax   b,x
+        ldd    ,u++
+        jsr    ,x
+        std    t2,s
+
+* 		t2 |= (*bp >> (32 - t1));
+        leax   rshb,pc
+        ldb    t1,s
+        subb   #16          16 - (32 - t1)
+        aslb
+        abx
+        ldd    ,u
+        jsr    ,x
+        ora    t2,s
+        orb    t2+1,s
+        std    t2,s
+
+* 		}
+* 
+* 	return (t2 & LowOrder(n_bits));
+fetch20
+        leax   mask2,pc
+        ldb    <n_bits+1
+        aslb
+        ldd    b,x
+        anda   t2,s
+        andb   t2+1,s
+        leas   locals,s
+        puls   u,pc
+
+* 	}
+        ttl    readbuf 
+        pag
+* readbuf(cnt, fp)
+* int		cnt;
+* FILE	*fp;
+* 	{
+readbuf:
+* 	register char	*bp = (char *) buf;
+* 	int	c;
+* 
+        csect  0
+fp      set    *
+        rmb    2  fp for read
+cnt     set    *
+        rmb    1  cnt
+locals  set    *  size of local
+        rmb    4  return and u
+        ends
+
+        pshs   b,u
+        pshs   x
+        leau   buf,y
+* 	while (cnt--)
+* 		if (EOF != (c = getc(fp)))
+* 			*bp++ = c;
+* 		else
+* 			return (c);
+* 
+* 	return (0);
+* 	}
+
+rb10
+        lbsr   getc
+        cmpd   #-1
+        beq    rb90
+
+        stb    ,u+
+        dec    cnt,s
+        bne    rb10
+
+        clra
+        clrb
+rb90
+        leas   locals,s
+        puls   u,pc
+        ttl    lz1_init
+        pag
+* lz1_init(direction)
+* int		direction;									/* COMP or DECOMP	*/
+* 	{
+lz1_init:
+        csect  0
+locals  set    *  size of local
+        rmb    4  return and u
+        ends
+
+        pshs   d,x,u        save direction and make room for buckets needed
+* 	n_bits = INIT_BITS;
+* 	maxcode = (1 << n_bits) - 1;
+        ldd    #9
+        std    <n_bits
+        ldd    #511
+        std    <maxcode
+* 	maxmaxcode = (1 << maxbits) - 1;
+        ldb    <maxbits+1
+        subb   #9
+        aslb
+        leax   __xx,pcr
+        ldd    b,x
+        std    <maxmaxco
+        addd   #1
+        std    2,s          save bucket cnt for array size computation
+* 	if (direction == COMP)
+* 		{
+        ldd    ,s++         recover direction
+        bne    lzi30
+
+* 		register COMPTBL	*ctp;
+* 
+* 		ctp = CompTbl = (COMPTBL *)emalloc((1 << maxbits) * sizeof(COMPTBL));
+        puls   d         recover buckets needed
+        ldu    <CompTbl
+        bne    lzi10
+        compofs          compute bytes
+        pshs   d
+        lbsr   emalloc
+        leas   2,s
+        std    <CompTbl
+        tfr    d,u
+* 		for (free_ent = 0; free_ent < 256; free_ent++)
+lzi10
+        clra
+        clrb
+        tfr    d,x
+* 			{
+* 			ctp[free_ent].next = ctp[free_ent].chain = NULL;
+lzi20
+        stx    ,u++
+        stx    ,u++
+* 			ctp[free_ent].suffix = free_ent;
+        stb    ,u+
+* 			}
+* 		}
+        addd   #1
+        cmpd   #256
+        blt    lzi20
+        bra    lzi60
+
+* 	else
+* 		{
+
+* 		register DCOMPTBL	*dtp;
+* 
+* 		dtp = CrakTbl = (DCOMPTBL *)emalloc((1 << maxbits) * sizeof(DCOMPTBL));
+lzi30
+        puls   d            recover buckets needed
+        ldu    <CrakTbl
+        bne    lzi40
+        crakofs             compute bytes
+        pshs   d
+        lbsr   emalloc
+        leas   2,s
+        std    <CrakTbl
+        tfr    d,u
+* 		for (free_ent = 0; free_ent < 256; free_ent++)
+lzi40
+        clra
+        clrb
+        tfr    d,x
+        
+* 			{
+* 			dtp[free_ent].prefix = NULL;
+lzi50
+        stx    ,u++
+* 			dtp[free_ent].lastch = free_ent;
+        std    ,u++
+* 			}
+        addd   #1
+        cmpd   #256
+        blt    lzi50
+
+* 		}
+* 	}
+lzi60
+        std    <free_ent
+        puls   u,pc
+
+
+        ttl    lz1_conf
+        pag
+* lz1_config(bits)
+* int		bits;
+* 	{
+lz1_conf:
+        csect  0
+locals  set    *  size of local
+        rmb    2  return and u
+parm    set    *  bits
+        ends
+
+        ldd    parm,s
+        beq    lzc30
+* 	if ((bits < INIT_BITS) || (bits > BITS))
+* 		{
+        tsta
+        bne    lzc10   way too big
+
+        cmpb   #9
+        blt    lzc10
+
+        cmpb   #13
+        ble    lzc20
+
+* 		fprintf(stderr, " bits must be in 9..%d\n", BITS);
+lzc10
+        ldd    #13
+        pshs   d
+        leax   lzc40,pcr
+        pshs   x
+        leax   _iob+26,y
+        pshs   x
+        lbsr   fprintf
+* 		exit (1);
+        ldd   #1
+        pshs   d
+        lbsr   exit                     this is fatal
+* 		}
+* 
+* 	maxbits = bits;
+lzc20   std    <maxbits
+* 	}
+lzc30   ldd    <maxbits
+        rts
+
+
+lzc40   fcc    " bits must be in 9..%d"
+        fcb    $d
+        fcb    $0
+
+        endsect

@@ -1,0 +1,414 @@
+*
+*------------------------------------------------------------------
+*
+* $Source$
+* $RCSfile$
+* $Revision$
+* $Date$
+* $State$
+* $Author$
+* $Locker$
+*
+*------------------------------------------------------------------
+*
+* Carl Kreider
+* 22305 CR 28
+* Goshen, IN  46526
+* (219) 875-7019
+* (71076.76@compuserve.com, ckreider@skyenet.net, carlk@syscon-intl.com)
+*
+*------------------------------------------------------------------
+* $Log$
+* Revision 1.1  1996/07/20 17:19:36  cc
+* Initial revision
+*
+*------------------------------------------------------------------
+*
+
+        psect arsup_c,0,0,0,0,0
+        ttl c4tol
+
+        fcc    "$Id$"
+
+* long	c4tol(bytes)
+* char	*bytes;
+* 	{
+* 	long	x = 0;
+* 
+c4tol:
+        csect  0
+locals  set    *            size of local
+bytes   set    locals+4     return and u
+        ends
+
+        pshs   u
+        ldu    bytes,s
+        leax   _flacc,y
+
+* 	x = (x + (*s++ & 0xff)) << 8;
+* 	x = (x + (*s++ & 0xff)) << 8;
+        ldd    ,u++
+        std    ,x
+
+* 	x = (x + (*s++ & 0xff)) << 8;
+* 	x = (x + (*s & 0xff));
+        ldd    ,u++
+        std    2,x
+
+* 	return (x);
+        puls   u,pc
+
+* 	}
+
+* 
+* get_fstat(pn, fs)
+* int		pn;
+* FILDES	*fs;
+* 	{
+get_fsta:
+        csect  0
+locals  set    *            size of local
+pn      set    locals+2     return only
+fs      set    pn+2
+        ends
+
+* 	_gs_gfd(pn, fs, sizeof(FILDES));
+        ldx    #16      sizeof(FILEDES)
+        ldd    fs,s
+        pshs   d,x
+        ldd    pn+4,s
+        pshs   d
+        lbsr   _gs_gfd
+        leas   6,s
+        rts
+
+* 
+* set_fstat(pn, fs)
+* int		pn;
+* FILDES	*fs;
+* 	{
+        ttl set_fsta
+set_fsta:
+
+* 	_ss_pfd(pn, fs, sizeof(FILDES));
+        ldx    #16      sizeof(FILEDES)
+        ldd    fs,s
+        pshs   d,x
+        ldd    pn+4,s
+        pshs   d
+        lbsr   _ss_pfd
+* 	_ss_attr(pn, fs->fd_attr);
+*        ldx    fs+6,s
+*        ldb    ,x
+*        clra
+*        std    2,s
+*        lbsr   _ss_attr
+        leas   6,s
+        rts
+
+
+* 
+* long      get_fsize(pn)
+* int		pn;
+*    {
+        ttl set_fsiz
+get_fsiz:
+        csect  0
+locals  set    *            size of local
+pn      set    locals+2     return only
+size    set    pn+2
+        ends
+
+* 	size = _gs_size(pn);
+* 	return (size);
+        ldd    pn,s
+        pshs   d
+        lbsr   _gs_size     x points to ret val
+        puls   d,pc
+*    }
+
+
+
+
+* 
+* set_fsize(pn, size)
+* int		pn;
+* long	size;
+*    {
+        ttl set_fsiz
+set_fsiz:
+        csect  0
+locals  set    *            size of local
+pn      set    locals+2     return only
+size    set    pn+2
+        ends
+
+* 	_ss_size(pn, size);
+        ldx    size+2,s
+        ldd    size,s
+        pshs   d,x
+        ldd    pn+4,s
+        pshs   d
+        lbsr   _ss_size
+        leas   6,s
+        rts
+*    }
+
+
+* 
+* assureDir(path)
+* char	*path;
+* 	{
+assureDi:
+        csect  0
+locals  set    *            size of local
+path    set    locals+2     return only
+        ends
+
+* 	if (access(path, 0x81) == -1)
+* 		if (mknod(path, 0xbf) == -1)  			        /* try to make it	*/
+        ldx    #129
+        ldd    path,s
+        pshs   d,x
+        lbsr   access
+        leas   4,s
+        cmpd   #-1
+        bne    assd80
+
+* 			return (-1);
+        ldx    #191
+        ldd    path,s
+        pshs   d,x
+        lbsr   mknod
+        leas   4,s
+        cmpd   #-1
+        beq    assd90
+
+* 	return (0);
+assd80
+        clra
+        clrb
+assd90
+        rts
+
+* 	}
+
+* /*page*/
+* 
+* #define  OS9MAGIC    0x87CD
+* #define  OSKMAGIC    0x4AFC
+* 
+* isobject(input)
+* FILE	*input;
+* 	{
+isobject:
+        csect  0
+xx      set    *
+locals  set    xx+2         size of local
+input   set    locals+2     return only
+        ends
+
+* 	short	xx;
+* 
+* 	read(fileno(input), &xx, 2);
+        ldd    #2
+        pshs   d,x         2 and make room for xx
+        ldx    input,s
+        ldd    8,x          fileno(input)
+        leax   xx+2,s      &xx
+        pshs   d,x
+        lbsr   read
+        leas   6,s
+* 	if (x == OS9MAGIC || x == OSKMAGIC)
+* 		return (1);
+* 
+* 	return (0);
+* 	}
+        puls   d
+        cmpd   #-30771
+        beq    isobj90
+
+        cmpd   #19196
+        bne    assd80
+isobj90
+        ldd    #1
+        rts
+
+
+* 
+* writelong(fp, val)
+* FILE	*fp;
+* long	val;
+* 	{
+writelon:
+        csect  0
+fp      set    *+2          return
+val     set    fp+2
+        ends
+
+        ldx    fp,s
+        clra
+        pshs   d,x,u        save u, stack fp, make space for char
+* 	if (putc((int)((val >> 24) & 0xff), fp) != EOF)
+        leau   val+6,s
+        ldb    ,u+
+        stb    1,s
+        lbsr   putc
+        cmpd   #-1
+        beq    wrtshr80
+
+* 		if (putc((int)((val >> 16) & 0xff), fp) != EOF)
+        ldb    ,u+
+        stb    1,s
+        lbsr   putc
+        cmpd   #-1
+        beq    wrtshr80
+
+* 			if (putc((int)((val >> 8) & 0xff), fp) != EOF)
+* 				if (putc((int)(val & 0xff), fp) != EOF)
+* 					return (0);
+* 	return (EOF);
+* 	}
+       bra     wrtshr10     go finish up
+
+* 
+* writeshort(fp, val)
+* FILE	*fp;
+* short	val;
+* 	{
+writesho:
+        csect  0
+fp      set    *+2          return
+val     set    val+2
+        ends
+
+        ldx    fp,s
+        clra
+        pshs   d,x,u        save u, stack fp, make space for char
+* 	if (putc((val >> 8) & 0xff, fp) != EOF)
+        leau   val+6,s
+wrtshr10
+        ldb    ,u+
+        std    1,x
+        lbsr   putc
+        cmpd   #-1
+        beq    wrtshr80
+
+* 		if (putc(val & 0xff, fp) != EOF)
+        ldb    ,u+
+        stb    1,s
+        lbsr   putc
+        cmpd   #-1
+        beq    wrtshr80
+
+* 			return (0);
+* 
+* 	return (EOF);
+* 	}
+        clra
+        clrb
+        bra    wrtshr90
+
+wrtshr80
+        ldd    #-1
+wrtshr90
+        leas   4,s          clean off c and fp
+        puls   u,pc
+
+* /*page*/
+* /*
+* 
+* readlong(fp, lp)
+* FILE	*fp;
+* long	*lp;
+* 	{
+readlong:
+        csect  0
+locals  set    *            size of local
+fp      set    locals+4     return and u
+lp      set    fp+2
+        ends
+
+        pshs u
+* 	int		i;
+* 	long	l = 0;
+* 
+* 	if ((i = getc(fp)) != EOF)
+* 		{
+* 		l = (l << 8) | i;
+        ldu    lp,s
+        ldd    fp,s
+        pshs   d
+        lbsr   getc
+        leas   2,s
+        cmpd   #-1
+        beq    rdsh80
+        stb    ,u+
+
+* 		if ((i = getc(fp)) != EOF)
+* 			{
+* 			l = (l << 8) | i;
+        ldd    fp,s
+        pshs   d
+        lbsr   getc
+        leas   2,s
+        cmpd   #-1
+        beq    rdsh80
+        stb    ,u+
+        bra    rdsh10       go finish up
+
+* 
+* readshort(fp, sp)
+* FILE	*fp;
+* short	*sp;
+* 	{
+readshor:
+        csect  0
+locals  set    *            size of local
+fp      set    locals+4     return and u
+sp      set    fp+2
+        ends
+
+        pshs u
+* 	int		i;
+* 	short	s = 0;
+* 
+* 	if ((i = getc(fp)) != EOF)
+* 		{
+* 		s = i;
+        ldu    sp,s
+rdsh10
+        ldd    fp,s
+        pshs   d
+        lbsr   getc
+        leas   2,s
+        cmpd   #-1
+        beq    rdsh80
+        stb    ,u+
+
+* 		if ((i = getc(fp)) != EOF)
+* 			{
+* 			s = (s << 8) | i;
+* 			*sp = s;
+        ldd    fp,s
+        pshs   d
+        lbsr   getc
+        leas   2,s
+        cmpd   #-1
+        beq    rdsh80
+        stb    ,u+
+
+* 			return (0);
+        clra
+        clrb
+
+* 			}
+* 		}
+* 
+* 	return (EOF);
+rdsh80
+        puls   u,pc
+
+* 	}
+
+        endsect
