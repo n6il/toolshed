@@ -3,9 +3,11 @@
 # $Id$
 #
 # $Log$
-# Revision 1.1  1996/07/20 17:10:49  cc
-# Initial revision
+# Revision 1.2  1996/07/20 22:33:00  cc
+# Merged in pwz's unixification (Sunos).
 #
+# Revision 1.1  96/07/20  17:10:49  cc
+# Initial revision
 #
 #
 # makefile for SysV running on a 680X0

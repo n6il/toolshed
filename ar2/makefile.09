@@ -3,18 +3,21 @@
 # $Id$
 #
 # $Log$
-# Revision 1.1  1996/07/20 17:10:48  cc
+# Revision 1.2  1996/07/20 22:32:24  cc
+# Merged in pwz's unixification (Sunos).
+#
+# Revision 1.1  96/07/20  17:10:48  cc
 # Initial revision
 #
-#
 
+EDIT	= 21
 CC		= m6809 cc
 RC		= m6809 rma
 RDIR	= rels09
 CFLAGS	= -q -dCKLIB
 
 /dd/cmds/ar2: ar.r arsup_09.r lz_09.r
-  chd $(RDIR); $(CC) -q -m=8 -f=ar2 -n=ar2 ar.r arsup_09.r lz_09.r
+	chd $(RDIR); $(CC) -q -e=$(EDIT) -m=8 -f=ar2 -n=ar2 ar.r arsup_09.r lz_09.r
 
 lz_09.r: arerrs.h
 
