@@ -121,12 +121,12 @@ int os9padrom(int argc, char **argv)
 static int do_padrom(char **argv, char *file, int padSize, char padChar)
 {
     error_code	ec = 0;
-    os9_path_id path;
+    coco_path_id path;
     int j;
     int fileSize;
 
 
-    ec = _os9_open(&path, file, FAM_WRITE);
+    ec = _coco_open(&path, file, FAM_WRITE);
 
     if (ec != 0)
     {
@@ -136,12 +136,12 @@ static int do_padrom(char **argv, char *file, int padSize, char padChar)
     }
 
 
-    ec = _os9_gs_size(path, &fileSize);
+    ec = _coco_gs_size(path, &fileSize);
 
     if (ec != 0)
     {
         fprintf(stderr, "%s: cannot get file size of '%s'\n", argv[0], file);
-        _os9_close(path);
+        _coco_close(path);
 
         return ec;
     }
@@ -149,21 +149,21 @@ static int do_padrom(char **argv, char *file, int padSize, char padChar)
     if (padSize <= fileSize)
     {
         fprintf(stderr, "%s: padrom size insufficient\n", argv[0]);
-        _os9_close(path);
+        _coco_close(path);
 
         return 1;
     }
 
-    _os9_seek(path, fileSize, SEEK_SET);
+    _coco_seek(path, fileSize, SEEK_SET);
 
     for (j = 0; j < padSize - fileSize; j++)
     {
         int size = 1;
 
-        _os9_write(path, &padChar, &size);
+        _coco_write(path, &padChar, &size);
     }
 
-    _os9_close(path);
+    _coco_close(path);
 
 
     return 0;
