@@ -363,10 +363,13 @@ void decb_trailer_emit(assembler *as, BP_uint32 exec);
 void emit(assembler *as, int byte);
 void error(assembler *as, char *str);
 void eword(assembler *as, int wd);
+void equad(assembler *as, BP_int32 qwd);
 void f_record(assembler *as);
 void fatal(char *str);
 void finish_outfile(assembler *as);
 int head(char *str1, char *str2);
+int hiword(BP_int32 i);
+int loword(BP_int32 i);
 int hibyte(int i);
 int lobyte(int i);
 char mapdn(char c);
@@ -379,12 +382,15 @@ int	_else(assembler *as),
 	__end(assembler *as),
 	_endc(assembler *as),
 	_equ(assembler *as),
+	_even(assembler *as),
 	_fdb(assembler *as),
 	_fcb(assembler *as),
 	_fcc(assembler *as),
+	_fcr(assembler *as),
 	_fcs(assembler *as),
 	_fcn(assembler *as),
 	_fcz(assembler *as),
+	_fqb(assembler *as),
 	_fill(assembler *as),
 	_ifeq(assembler *as),
 	_ifge(assembler *as),
@@ -397,10 +403,13 @@ int	_else(assembler *as),
 	_mod(assembler *as),
 	_nam(assembler *as),
 	_null_op(assembler *as),
+	_odd(assembler *as),
 	_opt(assembler *as),
 	_org(assembler *as),
 	_page(assembler *as),
 	_rmb(assembler *as),
+	_rmd(assembler *as),
+	_rmq(assembler *as),
 	_set(assembler *as),
 	_setdp(assembler *as),
 	_spc(assembler *as),

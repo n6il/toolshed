@@ -119,6 +119,19 @@ BP_char *skip_white(BP_char *ptr)
 
 
 /*
+ *      eqword --- emit a quad word to code file
+ */
+void equad(assembler *as, BP_int32 qwd)
+{
+	eword(as, hiword(qwd));
+	eword(as, loword(qwd));
+	
+	return;
+}
+
+
+
+/*
  *      eword --- emit a word to code file
  */
 void eword(assembler *as, int wd)
@@ -522,6 +535,26 @@ int lobyte(int i)
 int hibyte(int i)
 {
 	return((i >> 8) & 0xFF);
+}
+
+
+
+/*
+ *      loword --- return loword of a BP_int32
+ */
+int loword(BP_int32 i)
+{
+	return i & 0xFFFF;
+}
+
+
+
+/*
+ *      hiword --- return hiword of a BP_int32
+ */
+int hiword(BP_int32 i)
+{
+	return (i >> 16) & 0xFFFF;
 }
 
 

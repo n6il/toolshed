@@ -5,6 +5,84 @@
 
 
 /*
+ * even - align PC on even boundary
+ */
+
+int _even(assembler *as)
+{
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		return 0;
+	}
+	
+
+	/* 2. Test for presence of a label and error if found. */
+	
+	if (*as->line->label != EOS)
+	{
+		error(as, "label not allowed");
+		
+		return 0;
+	}
+	
+
+	/* 3. Advance program counter if necessary. */
+	
+	if (as->program_counter % 2)
+	{
+		as->program_counter++;
+	}
+	
+	print_line(as, 0, ' ', as->old_program_counter);
+	
+	
+	return 0;
+}
+
+
+
+/*
+ * odd - align PC on odd boundary
+ */
+
+int _odd(assembler *as)
+{
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		return 0;
+	}
+	
+	
+	/* 2. Test for presence of a label and error if found. */
+	
+	if (*as->line->label != EOS)
+	{
+		error(as, "label not allowed");
+		
+		return 0;
+	}
+	
+	
+	/* 3. Advance program counter if necessary. */
+	
+	if (as->program_counter % 2 == 0)
+	{
+		as->program_counter++;
+	}
+	
+	print_line(as, 0, ' ', as->old_program_counter);
+	
+	
+	return 0;
+}
+
+
+
+/*
  * nam - specify a name for header printing
  */
  
@@ -90,59 +168,6 @@ int _ttl(assembler *as)
 	return 0;
 }
 
-
-/*
- * rmb - reserve memory bytes
- */
-int _rmb(assembler *as)
-{
-	BP_int32	result;
-
-	
-	as->P_force = 1;
-	
-	as->code_segment_start = BP_TRUE;
-
-
-	/* 1. If we are currently in a FALSE conditional, just return. */
-	
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		return 0;
-	}
-
-
-	if (evaluate(as, &result, &as->line->optr, 0))
-	{
-		f_record(as);     /* flush out bytes */
-
-		if (as->o_asm_mode == ASM_OS9)
-		{
-			if (*as->line->label != EOS)
-			{
-				symbol_add(as, as->line->label, as->data_counter, 0);
-			}
-			
-			print_line(as, 0, 'D', as->data_counter);
-			as->data_counter +=  result;
-		}
-		else
-		{
-			if (*as->line->label != EOS)
-			{
-				symbol_add(as, as->line->label, as->program_counter, 0);
-			}
-			
-			print_line(as, 0, ' ', as->program_counter);
-			as->program_counter +=  result;
-		}
-	}
-	else
-	{
-		error(as, "Undefined as->line->operand during Pass One");
-	}
-	return 0;
-}
 
 
 /*
@@ -260,93 +285,6 @@ int _fill(assembler *as)
 
 	
 	return 0;;
-}
-
-
-
-/*
- * fcb - form constant bytes
- */
-
-int _fcb(assembler *as)
-{
-	BP_int32	result;
-
-
-	/* 1. If we are currently in a FALSE conditional, just return. */
-	
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		return 0;
-	}
-
-
-	do
-	{
-		as->line->optr = skip_white(as->line->optr);
-
-		evaluate(as, &result, &as->line->optr, 0);
-
-		if (result > 0xFF)
-		{
-			if (as->line->force_byte == BP_FALSE)
-			{
-				error(as, "Value truncated");
-			}
-
-			result = lobyte(result);
-		}
-
-		emit(as, result);
-	}
-
-	while (*as->line->optr++ == ',');
-
-	if (*as->line->label != EOS)
-	{
-		symbol_add(as, as->line->label, as->old_program_counter, BP_FALSE);
-	}		
-
-	print_line(as, 0, ' ', as->old_program_counter);
-
-	
-	return 0;
-}
-
-
-
-/*
- * fdb - form double bytes
- */
-int _fdb(assembler *as)
-{
-	BP_int32	result;
-
-
-	/* 1. If we are currently in a FALSE conditional, just return. */
-	
-	if (as->conditional_stack[as->conditional_stack_index] == 0)
-	{
-		return 0;
-	}
-
-
-	do
-	{
-		as->line->optr = skip_white(as->line->optr);
-		evaluate(as, &result, &as->line->optr,0 );
-		eword(as, result);
-	} while (*as->line->optr++ == ',');
-
-	if (*as->line->label != EOS)
-	{
-		symbol_add(as, as->line->label, as->old_program_counter, 0);
-	}		
-
-	print_line(as, 0, ' ', as->old_program_counter);
-
-	
-	return 0;
 }
 
 
@@ -511,6 +449,65 @@ int _fcs(assembler *as)
 		symbol_add(as, as->line->label, as->old_program_counter, 0);
 	}		
 	print_line(as, 0, ' ', as->old_program_counter);
+	return 0;
+}
+
+
+
+/*
+ * fcr - form constant string with CR and nul at end
+ */
+
+int _fcr(assembler *as)
+{
+	char fccdelim;
+	
+	
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == BP_FALSE)
+	{
+		return 0;
+	}
+	
+	
+	if (*as->line->operand == EOS)
+	{
+		return 0;
+	}
+	
+	
+	/* Get delimiter character. */
+	
+	fccdelim = *as->line->optr++;
+	
+	while (*as->line->optr != EOS && *as->line->optr != fccdelim)
+	{
+		emit(as, *as->line->optr++);
+	}
+	
+	if (*as->line->optr == fccdelim)
+	{
+		emit(as, 0x0D);
+		emit(as, 0x00);
+
+		as->line->optr++;
+	}
+	else
+	{
+		error(as, "Missing Delimiter");
+		
+		return 0;
+	}
+	
+	if (*as->line->label != EOS)
+	{
+		symbol_add(as, as->line->label, as->old_program_counter, 0);
+	}		
+	
+	print_line(as, 0, ' ', as->old_program_counter);
+	
+	
 	return 0;
 }
 
@@ -1469,7 +1466,7 @@ int __end(assembler *as)
 		 * if any, for the EXEC address.
 		 */
 
-		if (as->pass == 2 && as->o_asm_mode == ASM_DECB)
+		if (as->pass == 2 && as->o_asm_mode == ASM_DECB && *as->line->optr != EOS)
 		{
 			evaluate(as, &as->decb_exec_address, &as->line->optr, 0);
 		}
@@ -1480,4 +1477,199 @@ int __end(assembler *as)
 	}
 
 	return 0;
+}
+
+
+
+/***** RESERVE MEMORY STORAGE *****/
+
+static int _reserve_memory(assembler *as, BP_int32 size);
+
+
+/*
+ * reserve_memory
+ */
+
+static int _reserve_memory(assembler *as, BP_int32 size)
+{
+	BP_int32	result;
+	
+	
+	as->P_force = 1;
+	
+	as->code_segment_start = BP_TRUE;
+	
+	
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		return 0;
+	}
+	
+	
+	if (evaluate(as, &result, &as->line->optr, 0))
+	{
+		f_record(as);     /* flush out bytes */
+		
+		if (as->o_asm_mode == ASM_OS9)
+		{
+			if (*as->line->label != EOS)
+			{
+				symbol_add(as, as->line->label, as->data_counter, 0);
+			}
+			
+			print_line(as, 0, 'D', as->data_counter);
+
+			as->data_counter +=  result * size;
+		}
+		else
+		{
+			if (*as->line->label != EOS)
+			{
+				symbol_add(as, as->line->label, as->program_counter, 0);
+			}
+			
+			print_line(as, 0, ' ', as->program_counter);
+
+			as->program_counter +=  result * size;
+		}
+	}
+	else
+	{
+		error(as, "Undefined operand during pass one");
+	}
+
+	
+	return 0;
+}
+
+
+
+/*
+ * rmb - reserve memory bytes
+ */
+
+int _rmb(assembler *as)
+{
+	return _reserve_memory(as, 1);
+}
+
+
+
+/*
+ * rmd - reserve memory words
+ */
+
+int _rmd(assembler *as)
+{
+	return _reserve_memory(as, 2);
+}
+
+
+
+/*
+ * rmq - reserve memory quad words
+ */
+
+int _rmq(assembler *as)
+{
+	return _reserve_memory(as, 4);
+}
+
+
+/***** FORM CONSTANT *****/
+
+static int _form_constant(assembler *as, BP_int32 size);
+
+
+/*
+ * form_constant - form constant data
+ */
+
+int _form_constant(assembler *as, BP_int32 size)
+{
+	BP_int32	result;
+	
+	
+	/* 1. If we are currently in a FALSE conditional, just return. */
+	
+	if (as->conditional_stack[as->conditional_stack_index] == 0)
+	{
+		return 0;
+	}
+	
+
+	as->line->optr = skip_white(as->line->optr);
+	
+	do
+	{
+		evaluate(as, &result, &as->line->optr, 0);
+		
+		switch (size)
+		{
+			case 1:
+				if (result > 0xFF && as->line->force_byte == BP_FALSE)
+				{
+					error(as, "Value truncated");
+				}
+				result = lobyte(result);
+				emit(as, result);
+				break;
+				
+			case 2:
+				if (result > 0xFFFF && as->line->force_byte == BP_FALSE)
+				{
+					error(as, "Value truncated");
+				}
+				eword(as, result);
+				break;
+				
+			case 4:
+				equad(as, result);
+				break;
+		}
+	}
+	while (*as->line->optr++ == ',');
+		
+	if (*as->line->label != EOS)
+	{
+		symbol_add(as, as->line->label, as->old_program_counter, BP_FALSE);
+	}		
+		
+	print_line(as, 0, ' ', as->old_program_counter);
+		
+		
+	return 0;
+}
+
+
+
+/*
+ * fcb - form constant bytes
+ */
+
+int _fcb(assembler *as)
+{
+	return _form_constant(as, 1);
+}
+
+
+
+/*
+ * fdb - form double bytes
+ */
+int _fdb(assembler *as)
+{
+	return _form_constant(as, 2);
+}
+
+
+
+/*
+ * fqb - form quad bytes
+ */
+int _fqb(assembler *as)
+{
+	return _form_constant(as, 4);
 }
