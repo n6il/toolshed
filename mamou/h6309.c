@@ -802,28 +802,23 @@ int _grp2(assembler *as, int opcode)
 		return 0;
 	}
 
+	
+	/* Evaluate result */
+	
 	evaluate(as, &result, &as->line.optr, 0);
+	
+	
+	/* Check for inconsistency in force mode and DP */
+	
+	if (as->line.force_byte == BP_TRUE && hibyte(result) != as->DP)
+	{
+		error(as, "DP out of range");
+		
+		return 0;
+	}
 
-	if (as->line.force_byte)
-	{
-		if (hibyte(result) != as->DP)
-		{
-			error(as, "as->DP out of range");
-			return 0;
-		}
-		emit(as, opcode);
-		emit(as, lobyte(result));
-		as->cumulative_cycles += 2;
-	}
-	else
-#if 0
-	else if (hibyte(result) == as->DP)
-	{
-		emit(as, opcode);
-		emit(as, lobyte(result));
-		as->cumulative_cycles += 2;
-	}
-#endif
+
+	if (as->line.force_word == BP_TRUE || hibyte(result) != as->DP)
 	{
 		if ((hibyte(result) == as->DP))
 		{
@@ -834,7 +829,19 @@ int _grp2(assembler *as, int opcode)
 		eword(as, result);
 		as->cumulative_cycles += 3;
 	}
-
+	else
+	{
+		if (hibyte(result) != as->DP)
+		{
+			error(as, "DP out of range");
+			return 0;
+		}
+		
+		emit(as, opcode);		
+		emit(as, lobyte(result));
+		
+		as->cumulative_cycles += 2;
+	}
 	
 	print_line(as, 0, ' ', as->old_program_counter);
 
