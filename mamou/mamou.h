@@ -290,7 +290,7 @@ typedef struct _assembler
 	BP_char				object_name[FNAMESIZE];
 	BP_char				_crc[3];
 	BP_uint32			do_module_crc;
-	BP_Bool				SuppressFlag;
+	BP_Bool				ignore_errors;
 	BP_Bool				tabbed;
 #define	CONDSTACKLEN	256
 	BP_uint32			conditional_stack_index;
@@ -305,7 +305,7 @@ typedef struct _assembler
 	struct nlist		*bucket;            /* root node of the tree */
 	struct psect		psect[256];
 	BP_int32			current_psect;
-	BP_Bool				rm_encountered;
+	BP_Bool				code_segment_start;
 	BP_uint32			decb_exec_address;
 } assembler;
 
@@ -383,6 +383,7 @@ int	_else(assembler *as),
 	_fcb(assembler *as),
 	_fcc(assembler *as),
 	_fcs(assembler *as),
+	_fcn(assembler *as),
 	_fcz(assembler *as),
 	_fill(assembler *as),
 	_ifeq(assembler *as),

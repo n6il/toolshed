@@ -9,6 +9,7 @@
  *
  * (e.g.  /home/darthvader/file.c returns file.c)
  */
+
 char *extractfilename(char *pathlist)
 {
 	char *f;
@@ -25,6 +26,7 @@ char *extractfilename(char *pathlist)
 
 	return(f);
 }
+
 
 
 void hexout(assembler *as, int byte);
@@ -49,7 +51,7 @@ void fatal(char *str)
  */
 void error(assembler *as, char *str)
 {
-	if (as->SuppressFlag == BP_TRUE)
+	if (as->ignore_errors == BP_TRUE)
 	{
 		return;
 	}
@@ -147,16 +149,21 @@ void emit(assembler *as, int byte)
 	
 	if (as->pass == 1)
 	{
-		if (as->rm_encountered == BP_TRUE)
+		/* Is this the start of a code segment? */
+		
+		if (as->code_segment_start == BP_TRUE)
 		{
-			as->rm_encountered = BP_FALSE;
+			/* Yes.  Reset the flag. */
+			
+			as->code_segment_start = BP_FALSE;
 
+			/* If this is DECB mode, then set the origination and reset size. */
+			
 			if (as->o_asm_mode == ASM_DECB)
 			{
 				as->current_psect++;
 				as->psect[as->current_psect].org = as->program_counter;
 				as->psect[as->current_psect].size = 0;
-				printf("Emit header!\n");
 			}
 		}
 
@@ -164,13 +171,13 @@ void emit(assembler *as, int byte)
 	}
 	else
 	{
-		if (as->rm_encountered == BP_TRUE)
+		if (as->code_segment_start == BP_TRUE)
 		{
 			as->current_psect++;
 			
 			decb_header_emit(as, as->psect[as->current_psect].org, as->psect[as->current_psect].size);
 			
-			as->rm_encountered = BP_FALSE;
+			as->code_segment_start = BP_FALSE;
 		}
 		
 		

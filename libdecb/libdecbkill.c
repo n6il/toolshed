@@ -24,7 +24,7 @@ error_code _decb_kill(char *pathlist)
 
     /* 1. Open a path. */
 	
-    ec = _decb_open(&path, pathlist, FAM_DIR | FAM_READ | FAM_WRITE);
+    ec = _decb_open(&path, pathlist, FAM_READ | FAM_WRITE);
 
     if (ec != 0)
     {
@@ -32,6 +32,7 @@ error_code _decb_kill(char *pathlist)
     }
 
 	
+#if 0
     /* 3. Read directory sector that contains our directory entry. */
 
 	sector_number = (path->directory_entry_index * sizeof(decb_dir_entry)) / 256;
@@ -45,7 +46,15 @@ error_code _decb_kill(char *pathlist)
 	sector[entry_offset] = '\0';
 	
 	_decb_ss_sector(path, 17, 3 + sector_number, sector);
+#else	
+	/* Erase the entry by writing a nul as the first byte and write out sector. */
 	
+	path->dir_entry.filename[0] = '\0';
+
+	_decb_seekdir(path, path->this_directory_entry_index);
+	
+	_decb_writedir(path, &path->dir_entry);
+#endif
 	
 	/* 5. Clear the granules in the FAT used by this entry. */
 	

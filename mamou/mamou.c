@@ -100,8 +100,7 @@ int main(int argc, char **argv)
                     break;
 										
                 case 'a':
-                    /* 1. Assembly define specification */
-					
+                    /* Symbol define */
                     p = &argv[j][2];
 
                     if (*p != EOS)
@@ -113,8 +112,7 @@ int main(int argc, char **argv)
 							i++;
 						}
 
-						/* now i points to '=' or \0 */
-
+						/* Now i points to '=' or \0 */
 						if (*i == '=')
 						{
 							*i = '\0';
@@ -126,7 +124,7 @@ int main(int argc, char **argv)
 							v = 1;
 						}
 						
-						/* add value */
+						/* Add value */
 						symbol_add(&as, p, v, 0);
 					}
                     break;
@@ -136,12 +134,12 @@ int main(int argc, char **argv)
                     break;
 					
                 case 'c':
-                    /* cross reference output */
+                    /* Cross reference output */
                     as.o_show_cross_reference = BP_TRUE;
                     break;
 					
                 case 'd':
-                    /* debug mode */
+                    /* Debug mode */
                     as.o_debug = BP_TRUE;
                     break;
 					
@@ -151,10 +149,10 @@ int main(int argc, char **argv)
                     break;	
 					
                 case 'i':
-                    /* include directive */
+                    /* Include directive */
                     if (as.include_index + 1 == INCSIZE)
                     {
-                        /* reached our capacity */
+                        /* Reached our capacity */
                         break;
                     }
                     p = &argv[j][2];
@@ -166,7 +164,7 @@ int main(int argc, char **argv)
                     break;
 					
                 case 'l':
-                    /* list file */
+                    /* List file */
                     if (tolower(argv[j][2]) == 's')
                     {
                         as.o_format_only = BP_TRUE;
@@ -180,7 +178,7 @@ int main(int argc, char **argv)
                     break;
 					
                 case 'o':
-                    /* output file */
+                    /* Output file */
                     p = &argv[j][2];
 					if (*p == EOS)
 					{
@@ -194,22 +192,22 @@ int main(int argc, char **argv)
                     break;
 					
                 case 'p':
-                    /* parse only output */
+                    /* Parse only output */
                     as.o_do_parsing = BP_FALSE;
                     break;
 					
                 case 'q':
-                    /* quiet mode */
+                    /* Quiet mode */
                     as.o_quiet_mode = BP_TRUE;
                     break;
 					
                 case 's':
-                    /* symbol table dump */
+                    /* Symbol table dump */
                     as.o_show_symbol_table = BP_TRUE;
                     break;
 					
                 case 't':
-                    /* object type */
+                    /* Object type */
                     if (tolower(argv[j][2]) == 'b')
                     {
                         as.output_type = OUTPUT_BINARY;
@@ -229,12 +227,12 @@ int main(int argc, char **argv)
                     break;
 					
                 case 'x':
-                    /* suppress errors and warnings */
-                    as.SuppressFlag = BP_TRUE;
+                    /* Suppress errors and warnings */
+                    as.ignore_errors = BP_TRUE;
                     break;
 					
                 case 'y':
-                    /* cycle count (sort of works) */
+                    /* Cycle count (sort of works) */
                     as.f_count_cycles = BP_TRUE;
                     break;
 					
@@ -282,21 +280,21 @@ void mamou_assemble(assembler *as)
 	as->start_time = time(NULL);
 	
 	
-	/* 1. Initialize the assembler for the first pass. */
+	/* Initialize the assembler for the first pass. */
 		
 	as->pass = 1;
 	
     mamou_initialize(as);
 
 
-	/* 2. For each file we have to assemble... */
+	/* For each file we have to assemble... */
 	
     for (as->current_filename_index = 0; as->current_filename_index < as->file_index; as->current_filename_index++)
     {
 		struct filestack root_file;
 		
 		
-		/* 1. Set up the structure. */
+		/* Set up the structure. */
 		
 		as->current_file = &root_file;
 		
@@ -307,7 +305,7 @@ void mamou_assemble(assembler *as)
 		root_file.end_encountered = BP_FALSE;
 		
 		
-		/* 2. Open a path to the file. */
+		/* Open a path to the file. */
 		
         if (_coco_open(&(root_file.fd), root_file.file, FAM_READ) != 0)
         {
@@ -317,42 +315,42 @@ void mamou_assemble(assembler *as)
         }
 
 
-		/* 3. Make the first pass. */
+		/* Make the first pass. */
 		
 		mamou_pass(as);
 
 		
-		/* 4. Close the file. */
+		/* Close the file. */
 		
 		_coco_close(root_file.fd);
     }
 
 
-	/* 3. If the assembly pass above yielded no errors... */
+	/* If the assembly pass above yielded no errors... */
 	
     if (as->num_errors == 0)
     {
 		/********** SECOND PASS **********/
 		
 		
-		/* 1. Increment the pass. */
+		/* Increment the pass. */
 		
         as->pass++;
 		
 		
-		/* 2. Re-initialize the assembler. */
+		/* Re-initialize the assembler. */
 		
         mamou_initialize(as);
 		
 		
-		/* 4. Walk the file list again... */
+		/* Walk the file list again... */
 		
         for (as->current_filename_index = 0; as->current_filename_index < as->file_index; as->current_filename_index++)
         {
 			struct filestack root_file;
 			
 			
-			/* 1. Set up the structure. */
+			/* Set up the structure. */
 			
 			as->current_file = &root_file;
 			
@@ -363,7 +361,7 @@ void mamou_assemble(assembler *as)
 			root_file.end_encountered = BP_FALSE;
 			
 			
-			/* 2. Open a path to the file. */
+			/* Open a path to the file. */
 			
 			if (_coco_open(&(root_file.fd), root_file.file, FAM_READ) != 0)
 			{
@@ -373,18 +371,18 @@ void mamou_assemble(assembler *as)
 			}
 			
 			
-			/* 3. Make the first pass. */
+			/* Make the first pass. */
 			
 			mamou_pass(as);
 			
 			
-			/* 4. Close the file. */
+			/* Close the file. */
 			
 			_coco_close(root_file.fd);
         }
 		
 
-		/* 5. Emit Disk BASIC trailer. */
+		/* Emit Disk BASIC trailer. */
 		
 		if (as->o_asm_mode == ASM_DECB)
 		{
@@ -392,7 +390,7 @@ void mamou_assemble(assembler *as)
 		}
 
 		
-		/* 6. Do we show the symbol table? */
+		/* Do we show the symbol table? */
 		
         if (as->o_show_symbol_table == BP_TRUE)
         {
@@ -433,7 +431,7 @@ void mamou_assemble(assembler *as)
     }
 
 
-	/* 1. Deinitialize the assembler. */
+	/* Deinitialize the assembler. */
 	
     mamou_deinitialize(as);
 
@@ -457,7 +455,7 @@ static void mamou_initialize(assembler *as)
 		/* Pass 1 initialization. */
 
 		as->current_psect			= -1;
-		as->rm_encountered			= BP_TRUE;
+		as->code_segment_start			= BP_TRUE;
 		as->num_errors				= 0;
 		as->cumulative_blank_lines  = 0;
 		as->cumulative_comment_lines  = 0;
@@ -485,7 +483,22 @@ static void mamou_initialize(assembler *as)
 
 		fwd_init(as);		/* forward ref init */
 		local_init();		/* target machine specific init. */
-		env_init(as);		/* environment variables init. */
+
+		
+		/* Get 'include' environment variable. */
+
+		{
+			char *include;
+			
+			/* 1. Get defs directory environment variable. */
+			
+			include = getenv("MAMOU_INCLUDE");
+			
+			if (include != NULL)
+			{
+				as->includes[as->include_index++] = include;
+			}
+		}
 	}
 	else
 	{
@@ -729,11 +742,13 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
                 char fccdelim;
 
                 /* delimiter pseudo op (fcs/fcc) */
+				
                 fccdelim = *ptrfrm;
                 do
                 {
                     *ptrto++ = *ptrfrm++;
                 } while (*ptrfrm != EOS && *ptrfrm != fccdelim);
+				
                 *ptrto++ = *ptrfrm++;
             }
             else if (i->class == PSEUDO && i->cycles == 0x4)
@@ -751,6 +766,7 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
                     *ptrto++ = *ptrfrm++;
                 }
             }
+
             *ptrto = EOS;
 
             ptrfrm = skip_white(ptrfrm);
@@ -762,14 +778,15 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
     {
         *ptrto++ = *ptrfrm++;
     }
+
     *ptrto = EOS;
 
 /* Below added by GFC 8/30/94 */
 
     if (cont_prev)
     {
-            cont_prev = 0;
-            strcpy(as->line->label, hold_lbl);
+		cont_prev = 0;
+		strcpy(as->line->label, hold_lbl);
     }
 
     if (as->line->Op[0] == ';')
@@ -831,6 +848,7 @@ void process(assembler *as)
     if (*as->line->Op == EOS)
     {
         /* no mnemonic */
+
         if (*as->line->label != EOS)
         {
             symbol_add(as, as->line->label, as->program_counter, 0);
@@ -876,6 +894,7 @@ void process(assembler *as)
         }
     }
 }
+
 
 
 void init_globals(assembler *as)

@@ -934,7 +934,7 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 	{
 #if 0
 		evaluate(as, &result, &as->line->optr, 0);
-		
+
 		if (as->line->force_byte == BP_TRUE)
 		{
 			/* Case #1: < has been prepeneded to expression */
@@ -974,16 +974,19 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 		{
 			/* Case #3: Ambiguous... look to as->DP for guidance. */
 			
-			emit(as, op + 0x30);
 
 			if ((hibyte(result) == as->DP))
 			{
+				emit(as, op + 0x10);
+
 				emit(as, lobyte(result));
 				
 				as->cumulative_cycles += 2;
 			}
 			else
 			{
+				emit(as, op + 0x30);
+
 				eword(as, result);
 				
 				as->cumulative_cycles += 3;
@@ -993,18 +996,22 @@ static int do_gen(assembler *as, int op, int mode, BP_Bool always_word)
 		}
 #else
 		evaluate(as, &result, &as->line->optr, 0);
+		
 		if (as->line->force_byte == BP_TRUE)
 		{
 			emit(as, op + 0x10);
-#if 0			
+
 			if (hibyte(result) != as->DP)
 			{
-				error(as, "as->DP out of range");
+				error(as, "DP out of range");
 				return 0;
 			}
-#endif
+
 			emit(as, lobyte(result));
+			
 			as->cumulative_cycles += 2;
+			
+			
 			return 0;
 		}
 		else

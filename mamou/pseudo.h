@@ -34,6 +34,7 @@ struct oper pseudo[] = {
 	{"equ",		PSEUDO, EQU,    1,	1,	_equ},
 	{"fcb",		PSEUDO, FCB,    1,	1,	_fcb},
 	{"fcc",		PSEUDO, FCC,    2,	1,	_fcc},
+	{"fcn",		PSEUDO, FCZ,    2,	1,	_fcz},
 	{"fcs",		PSEUDO, FCS,    2,	1,	_fcs},
 	{"fcz",		PSEUDO, FCZ,    2,	1,	_fcz},
 	{"fdb",		PSEUDO, FDB,    1,	1,	_fdb},

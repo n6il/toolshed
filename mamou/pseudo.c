@@ -101,7 +101,7 @@ int _rmb(assembler *as)
 	
 	as->P_force = 1;
 	
-	as->rm_encountered = BP_TRUE;
+	as->code_segment_start = BP_TRUE;
 
 
 	/* 1. If we are currently in a FALSE conditional, just return. */
@@ -528,7 +528,7 @@ int _org(assembler *as)
 
 	as->P_force = 1;
 
-	as->rm_encountered = BP_TRUE;
+	as->code_segment_start = BP_TRUE;
 	
 		
 	/* 1. If we are currently in a FALSE conditional, just return. */
@@ -561,6 +561,7 @@ int _org(assembler *as)
 	else
 	{
 		error(as, "Undefined operand during Pass One");
+
 		return 0;
 	}
 
