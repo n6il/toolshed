@@ -44,7 +44,7 @@ error_code _coco_ss_fd(coco_path_id path, coco_file_stat *statbuf)
 {
 	error_code		ec = 0;
 	fd_stats		os9_stat;
-	decb_file_stat  decb_stat;
+//	decb_file_stat  decb_stat;
 	struct stat		native_stat;
 	struct tm		*timepak;	
 

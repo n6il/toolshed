@@ -36,4 +36,4 @@ int decbmakdir(int, char **);
 int decbmodbust(int, char **);
 int decbpadrom(int, char **);
 int decbrename(int, char **);
-
+int decbdump(int, char**);

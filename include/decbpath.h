@@ -83,7 +83,8 @@ typedef struct _decb_path_id
 
 typedef struct
 {
-	u_char	file_type;		/* 0, 1, 2 or 3 */
+	u_char	file_type;		/* 0 = BASIC program, 1 = BASIC data file,
+	                           2 = M/L program, 3 = Text editor source file */
 	u_char	data_type;		/* 0 = Binary, 1 = ASCII */
 	int		file_size;		/* file size */
 } decb_file_stat, *Decb_file_stat;
@@ -115,6 +116,13 @@ error_code _decb_gs_sector(decb_path_id path, int track, int sector, char *buffe
 error_code _decb_ss_sector(decb_path_id path, int track, int sector, char *buffer);
 error_code _decb_gs_granule(decb_path_id path, int granule, char *buffer);
 error_code _decb_ss_granule(decb_path_id path, int granule, char *buffer);
+error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffer, int *out_size);
+error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size);
+error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size );
+
+/* ERROR CODES */
+#define EOS_OM		256		/* Out of memory error */
+#define EOS_SN		257		/* Syntax error */
 
 #include <cocopath.h>
 
