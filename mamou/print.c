@@ -85,7 +85,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 
 	as->current_line++;
 
-	mamou_parse_line(as);
+//	mamou_parse_line(as);
 	
 	if (*as->line->label == EOS && *as->line->Op == EOS && *as->line->operand == EOS)
 	{

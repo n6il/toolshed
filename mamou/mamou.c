@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 					
                 case 'h':
                     /* Hex file output */
-                    as.Hexfil = 1;
+                    as.Hexfil = BP_TRUE;
                     break;
 					
                 case 'i':
@@ -150,7 +150,8 @@ int main(int argc, char **argv)
                     break;
 					
                 case 'l':
-                    /* Listing file */
+                    /* list file */
+					
                     if (tolower(argv[j][2]) == 's')
                     {
                         as.o_format_only = BP_TRUE;
@@ -158,58 +159,68 @@ int main(int argc, char **argv)
                     }
                     if (tolower(argv[j][2]) == 't')
                     {
-                        as.tabbed = 1;
+                        as.tabbed = BP_TRUE;
                     }
-                    as.o_show_listing = 1;
+                    as.o_show_listing = BP_TRUE;
                     break;
 					
                 case 'm':
-                    as.o_decb = 1;
+                    as.o_decb = BP_TRUE;
                     break;
 					
                 case 'o':
-                    /* Output file */
+                    /* output file */
+					
                     p = &argv[j][2];
+					
                     if (*p == '=')
                     {
                         p++;
                     }
-                    strncpy(as.object_name, p, FNAMESIZE - 1);
+
+					strncpy(as.object_name, p, FNAMESIZE - 1);
                     break;
 					
                 case 'p':
-                    /* Parse only output */
+                    /* parse only output */
+					
                     as.Preprocess = BP_FALSE;
                     break;
 					
                 case 'q':
                     /* quiet mode */
+					
                     as.o_quiet_mode = BP_TRUE;
                     break;
 					
                 case 's':
-                    /* Symbol table dump */
+                    /* symbol table dump */
+					
                     as.o_show_symbol_table = BP_TRUE;
                     break;
 					
                 case 'd':
                     /* o_debug mode */
-                    as.o_debug = 1;
+					
+                    as.o_debug = BP_TRUE;
                     break;
 					
                 case 'c':
-                    /* Cross ref output */
-                    as.o_show_cross_reference = 1;
+                    /* cross reference output */
+					
+                    as.o_show_cross_reference = BP_TRUE;
                     break;
 					
                 case 'x':
-                    /* Suppress errors and warnings */
-                    as.SuppressFlag = 1;
+                    /* suppress errors and warnings */
+					
+                    as.SuppressFlag = BP_TRUE;
                     break;
 					
                 case 'y':
-                    /* Cycle count (sort of works) */
-                    as.Cflag = 1;
+                    /* cycle count (sort of works) */
+					
+                    as.Cflag = BP_TRUE;
                     break;
 					
                 case 'z':
@@ -218,12 +229,15 @@ int main(int argc, char **argv)
                     
                 default:
                     /* Bad option */
+					
                     fprintf(stderr, "Unknown option\n");
                     exit(0);
             }
         }
         else if (as.file_index + 1 < MAXAFILE)
         {
+			/* 1. Add the filename to the file list array. */
+			
             as.file_name[as.file_index++] = argv[j];
         }
     }
@@ -312,7 +326,7 @@ void mamou_assemble(assembler *as)
         mamou_initialize(as);
 
 
-		/* 4. If this is a DECB .BIN file, emit the initial header. */
+		/* 3. If this is a DECB .BIN file, emit the initial header. */
 		
 		if (as->o_decb == BP_TRUE && as->orgs[as->current_org].size > 0)
 		{
@@ -322,7 +336,7 @@ void mamou_assemble(assembler *as)
 		as->current_org++;
 		
 		
-		/* 5. Walk the file list again... */
+		/* 4. Walk the file list again... */
 		
         for (as->current_filename_index = 0; as->current_filename_index < as->file_index; as->current_filename_index++)
         {
@@ -330,6 +344,7 @@ void mamou_assemble(assembler *as)
 			
 			
 			/* 1. Set up the structure. */
+			
 			as->current_file = &root_file;
 			
 			strncpy(root_file.file, as->file_name[as->current_filename_index], FNAMESIZE);
@@ -360,7 +375,7 @@ void mamou_assemble(assembler *as)
         }
 		
 
-		/* Emit Disk BASIC trailer. */
+		/* 5. Emit Disk BASIC trailer. */
 		
 		if (as->o_decb == BP_TRUE)
 		{
@@ -368,12 +383,14 @@ void mamou_assemble(assembler *as)
 		}
 
 		
-		/* 1. Do we show the symbol table? */
+		/* 6. Do we show the symbol table? */
 		
         if (as->o_show_symbol_table == BP_TRUE)
         {
             printf("\f");
+
             symbol_dump_bucket(as->bucket);
+
             printf("\n");
         }
         
@@ -388,7 +405,7 @@ void mamou_assemble(assembler *as)
     }
 
 
-    if ((as->o_quiet_mode == BP_FALSE) && (as->o_format_only == 0))
+    if ((as->o_quiet_mode == BP_FALSE) && (as->o_format_only == BP_FALSE))
     {
         report_summary(as);
     }
@@ -439,7 +456,7 @@ static void mamou_initialize(assembler *as)
 		as->pass					= 1;
 		as->Ctotal					= 0;
 		as->N_page					= 0;
-		as->input_line[MAXBUF-1]	= '\n';
+//		as->input_line[MAXBUF-1]	= '\n';
 		as->use_depth				= 0;
 		
 		as->conditional_stack_index = 0;
@@ -515,6 +532,7 @@ static void mamou_deinitialize(assembler *as)
 void mamou_pass(assembler *as)
 {
 	int size = MAXBUF - 1;
+	BP_char		input_line[1024];
 	
 	
 	/* 1. Show debug output. */
@@ -529,9 +547,9 @@ void mamou_pass(assembler *as)
 	
 	/* 2. While we haven't encountered 'end' and there are more lines to read... */
 	
-	while (as->current_file->end_encountered == BP_FALSE && _coco_readln(as->current_file->fd, as->input_line, &size) == 0)
+	while (as->current_file->end_encountered == BP_FALSE && _coco_readln(as->current_file->fd, input_line, &size) == 0)
 	{
-		char *p = strchr(as->input_line, 0x0D);
+		char *p = strchr(input_line, 0x0D);
 		BP_int32		line_type;
 		struct source_line		line;
 		
@@ -541,7 +559,7 @@ void mamou_pass(assembler *as)
 			
 		size = MAXBUF - 1;
 		if (p != NULL)
-            {
+		{
 #ifdef _WIN32
 			p++;
 			*p = 0x0A;
@@ -556,7 +574,7 @@ void mamou_pass(assembler *as)
 		as->P_force = 0;	/* No force unless bytes emitted */
 		as->N_page = 0;
 	
-		line_type = mamou_parse_line(as);
+		line_type = mamou_parse_line(as, input_line);
 		
 		if (line_type == 2 && as->Preprocess == BP_TRUE)
 		{
@@ -597,15 +615,17 @@ void mamou_pass(assembler *as)
  * Returns: 0 if a blank line, 1 if a comment, 2 if an actual line
  */
  
-int mamou_parse_line(assembler *as)
+int mamou_parse_line(assembler *as, BP_char *input_line)
 {
-    register char *ptrfrm = as->input_line;
+    register char *ptrfrm = input_line;
     char *ptrto = as->line->label;
     static char hold_lbl[80];
     static int cont_prev = 0;
     register struct oper *i;
 
 
+	/* 1. Initialize line structure. */
+	
 	as->line->has_warning = BP_FALSE;
 	as->line->optr = as->line->Op;
 	as->line->force_word = BP_FALSE;
@@ -616,7 +636,25 @@ int mamou_parse_line(assembler *as)
     *as->line->comment = EOS;
 
 
-	/* 1. First, check to see if this is a blank line. */
+	/* 2. First, check to see if this line has the 5 byte numerical field that
+	 * is associated with EDTASM source files.
+	 */
+	
+	if (
+		numeric(*(ptrfrm + 0)) == BP_TRUE &&
+		numeric(*(ptrfrm + 1)) == BP_TRUE &&
+		numeric(*(ptrfrm + 2)) == BP_TRUE &&
+		numeric(*(ptrfrm + 3)) == BP_TRUE &&
+		numeric(*(ptrfrm + 4)) == BP_TRUE &&
+		*(ptrfrm + 5) == ' '
+	)
+	{
+		ptrfrm += 6;
+		input_line += 6;
+	}
+	
+	
+	/* 3. Check to see if this is a blank line. */
 	
 	while (isspace(*ptrfrm)) ptrfrm++;
 	
@@ -628,14 +666,14 @@ int mamou_parse_line(assembler *as)
 	}
 	
 	
-	/* 2. Reanchor pointer to start of line. */
+	/* 4. Reanchor pointer to start of line. */
 	
-	ptrfrm = as->input_line;
+	ptrfrm = input_line;
 	
     if (*ptrfrm == '*' || *ptrfrm == '\n' ||
         *ptrfrm == ';' || *ptrfrm == '#')
     {
-        strcpy(as->line->comment, as->input_line);
+        strcpy(as->line->comment, input_line);
         ptrto = as->line->comment;
 
         while (!eol(*ptrto))
@@ -833,7 +871,7 @@ void init_globals(assembler *as)
 {
 	as->current_file = NULL;
     as->num_errors = 0;		/* total number of errors       */
-    as->input_line[0] = 0;		/* input line buffer            */
+//    as->input_line[0] = 0;		/* input line buffer            */
     as->program_counter = 0;			/* Program Counter              */
     as->DP = 0;			/* Direct Page                  */
     as->num_warnings = 0;		/* total warnings               */

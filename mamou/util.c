@@ -68,19 +68,6 @@ void error(assembler *as, char *str)
 
 
 /*
- *      warn --- trivial error in a line
- *                      print line number and error
- */
-void warn(assembler *as, char *str)
-{
-	fprintf(stderr, "\nallow_warnings: line: %-5d in %-20s    %s\n",
-		(int)as->current_file->current_line, as->current_file->file, str);
-	fprintf(stderr, "%s\n", as->input_line);
-}
-
-
-
-/*
  *      delim --- check if character is a delimiter
  */
 
@@ -540,6 +527,7 @@ BP_Bool alpha(BP_char c)
 /*
  *      alphan --- is character a legal letter or digit
  */
+
 BP_Bool alphan(BP_char c)
 {
 	if (alpha(c))
@@ -547,7 +535,7 @@ BP_Bool alphan(BP_char c)
 		return BP_TRUE;
 	}
 
-	if (c <= '9' && c >= '0')
+	if (numeric(c))
 	{
 		return BP_TRUE;
 	}
@@ -557,6 +545,23 @@ BP_Bool alphan(BP_char c)
 		return BP_TRUE;      /* allow imbedded $ */
 	}
 	
+	
+	return BP_FALSE;
+}
+
+
+
+/*
+ * numeric: is character a legal digit?
+ */
+
+BP_Bool numeric(BP_char c)
+{
+	if (c <= '9' && c >= '0')
+	{
+		return BP_TRUE;
+	}
+
 	
 	return BP_FALSE;
 }

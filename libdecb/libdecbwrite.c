@@ -10,18 +10,20 @@
 
 
 static error_code _raw_write(decb_path_id path, void *buffer, int *size);
+static error_code extend_fat_chain(decb_path_id path, int *delta);
 
 
 error_code _decb_write(decb_path_id path, void *buffer, int *size)
 {
     error_code	ec = EOS_WRITE;
-	
+	int current_size = 0, accum_size = 0, curr_granule;
+		
 
 	/* 1. Check the mode. */
 	
-	if (path->mode & FAM_DIR || path->mode & FAM_WRITE == 0)
+	if (path->mode & FAM_WRITE == 0)
     {
-        /* 1. Must be a directory. */
+        /* 1. Must be writable. */
 
         return EOS_BMODE;
     }
@@ -33,6 +35,89 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
     {
         ec = _raw_write(path, buffer, size);
     }
+
+
+	/* 3. Determine if current position plus write size is greater than 
+	 *    current size.
+	 */
+	
+	_decb_gs_size(path, &current_size);
+	
+	
+	/* 4. If our file position is greater than the file size, return error. */
+	
+	if (path->filepos > current_size)
+	{
+		/* 1. End of file. */
+		
+		return(EOS_EOF);
+	}
+	
+	
+	/* 5. If there is not enough room, we need to extend the FAT chain. */
+
+	while (accum_size < path->filepos + *size)
+	{
+		int delta;
+		
+		
+		/* 1. We need to enlarge the file.
+		 *    Delta will contain the number of bytes added.
+		 */
+		
+		ec = extend_fat_chain(path, &delta);
+		
+		
+		/* 2. If there is an error, time to abort */
+
+		if (ec != 0)
+		{
+			return ec;
+		}
+		
+		accum_size += delta;
+	}
+	
+
+	/* 6. Determine which granule the offset is in. */
+
+	accum_size = 0;
+	
+	curr_granule = path->first_granule;
+		
+	while (path->FAT[curr_granule] < 0xC0)
+	{
+		accum_size += 2304;
+		
+		if (accum_size > path->filepos)
+		{
+			/* 1. This is the granule we begin at. */
+
+			accum_size -= 2304;
+			
+			break;
+		}
+
+		curr_granule = path->FAT[curr_granule];
+	}
+	
+	
+	/* 7. Make out-of-loop check to insure we exited from the for()
+	 *    loop due to finding the proper granule, and not because we
+	 *    ran out of granules in the FAT chain list to search.
+	 */
+
+
+	/* 8. Copy user supplied data into the file for 'bytes_left' bytes. */
+	
+	
+	/* 9. Write updated file descriptor back to image file. */
+
+	_decb_seekdir(path, path->this_directory_entry_index);
+
+	_decb_writedir(path, &path->dir_entry);
+	
+	
 #if 0
     else
     {
@@ -220,3 +305,11 @@ error_code _decb_writedir(decb_path_id path, decb_dir_entry *dirent)
 
     return ec;
 }
+
+
+
+static error_code extend_fat_chain(decb_path_id path, int *delta)
+{
+	return 0;
+}
+

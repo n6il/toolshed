@@ -231,7 +231,7 @@ typedef struct _assembler
 	BP_Bool				o_debug;					/* debug flag */
 	BP_Bool				o_binaryfile;						/* binary image file output flag */
 	BP_Bool				Hexfil;						/* Intel Hex file output flag */
-	BP_uchar			Memmap[65536];				/* Memory image of output data */
+//	BP_uchar			Memmap[65536];				/* Memory image of output data */
 	FILE				*fd_object;					/* object file's file descriptor*/
 	BP_char				object_name[FNAMESIZE];
 	BP_uint32			accum;
@@ -258,7 +258,7 @@ typedef struct _assembler
 /* mamou.c */
 int main(int argc, char **argv);
 void mamou_pass(assembler *as);
-int mamou_parse_line(assembler *as);
+int mamou_parse_line(assembler *as, BP_char *input_line);
 void process(assembler *as);
 void init_globals(assembler *as);
 
@@ -297,6 +297,7 @@ void symbol_cross_reference(struct nlist *ptr);
 /* util.c */
 char *extractfilename(char *pathlist);
 BP_Bool alpha(BP_char c);
+BP_Bool numeric(BP_char c);
 BP_Bool alphan(BP_char c);
 BP_Bool any(BP_char c, BP_char *str);
 BP_Bool delim(BP_char c);
