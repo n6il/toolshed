@@ -24,9 +24,12 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
- * Revision 1.1  1996/07/20 17:10:34  cc
- * Initial revision
+ * Revision 1.2  1996/07/20 22:15:35  cc
+ * Merged in pwz's unixification (Sunos).
  *
+ * Revision 1.1  96/07/20  17:10:34  cc
+ * Initial revision
+ * 
  *------------------------------------------------------------------
  */
 
@@ -64,34 +67,41 @@ static char *id = "$Id$";
  * 95-09-04 CRK
  *		small bug in lz1 found by Steve Bliss
  *		(in de_LZ_1, (char) finchar => (u_char) finchar)
+ *
+ * 96-07-20 Paul W. Zibaila <pwz@ittc.pgh.wec.com>
+ *		changes to run on Sun Sparc and i386
  */
 
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <memory.h>
-#include <dir.h>
-#include "ar.h"
-
 #ifdef SYSV
 # include <sys/types.h>
 # include <sys/dir.h>
-# include "dir.h"
+#else
+# include <dir.h>
+#endif
+#include "ar.h"
+
+#ifdef BRAINDEAD
+# undef tolower
+# define tolower ck_tolower
 #endif
 
 
 FN		*fnhead = (FN *)NULL;
-char	*hid = HID,
-		*suf = SUF;
-char	*mod,							/* pointer to module name			*/
-		*archfile;						/* name of archive file				*/
-int		all = FALSE,					/* true to access old versions		*/
-		oldmode = FALSE,				/* true forces old compression		*/
-		supflag = 0,					/* 1=no binary 2=none at all		*/
-		debug = FALSE,					/* sets debug level					*/
-		compt,							/* default to new compression		*/
-		rmflag = 0;						/* don't rm file after save			*/
-		zflag = FALSE;					/* true if names come from stdin	*/
+char	*hid = HID;
+char	*suf = SUF;
+char	*mod;					/* pointer to module name			*/
+char	*archfile;				/* name of archive file				*/
+int		all = FALSE;			/* true to access old versions		*/
+int		oldmode = FALSE;		/* true forces old compression		*/
+int		supflag = 0;			/* 1=no binary 2=none at all		*/
+int		debug = FALSE;			/* sets debug level					*/
+int		compt;					/* default to new compression		*/
+int		rmflag = 0;				/* don't rm file after save			*/
+int		zflag = FALSE;			/* true if names come from stdin	*/
 /*page*/
 
 main(argc, argv)
@@ -105,7 +115,9 @@ char	**argv;
 #ifdef SYSV
 	setuid(0);
 #else
+# ifndef OSK
 	pflinit();
+# endif
 #endif
 	setbuf(stdout, 0);
 	mod = *argv++;						/* save program name			*/
@@ -268,13 +280,13 @@ FILE	*afp;
 				printf("deleting <%s>\n", header.a_name);
 
 				/* Where in archive to move data */
-				saved_pos = to_pos = ftell(afp) - (long) sizeof(HEADER);
+				saved_pos = to_pos = ftell(afp) - SIZEOF_HEADER;
 
 				/* This is the next file in the archive */
 				from_pos = ftell(afp) + header.a_size;
 
 				/* Decrease archive size */
-				archive_size -= ((long) sizeof(HEADER) + header.a_size);
+				archive_size -= (SIZEOF_HEADER + header.a_size);
 
 				do	{
 					static char buf[BUFSIZ];
@@ -407,7 +419,7 @@ FILE	*afp;
 			if (patmatch(fnp->fn_name, header.a_name, TRUE) == TRUE)
 				{
 				++header.a_stat;		/* mark it older				*/
-				fseek(afp, (long) -sizeof(HEADER), 1);
+				fseek(afp, -SIZEOF_HEADER, 1);
 				if ((puthdr(afp, &header)) == EOF)
 					fatal(errno, "write failure on delete\n");
 				}
@@ -423,6 +435,13 @@ FILE	*afp;
 			else
 				fatal(errno, "can't find %s\n", fnp->fn_name);
 
+#ifdef SYSV
+		if (is_dir(fileno(ifp)))	/*It saves the header block otherwise*/
+			{ 
+			printf("\t<%s> is a directory and IS NOT being archived\n", fnp->fn_name);
+			continue;
+			}
+#endif
 		printf("archiving <%s>\n", fnp->fn_name);
 		++saved;						/* count the files added		*/
 		if ((supflag == 2) || ((supflag == 1) && isobject(ifp)))
@@ -440,13 +459,14 @@ FILE	*afp;
 		if (puthdr(afp, &header) == EOF)	/* skip ahead				*/
 			fatal(errno, "write error on header for %s\n", fnp->fn_name);
 
-		bytes = head_pos + c4tol(header.a_attr.fd_fsize) + sizeof(HEADER);
+		bytes = head_pos + c4tol(header.a_attr.fd_fsize) + SIZEOF_HEADER;
 		set_fsize(fileno(afp), bytes);	/* make it big enough for all	*/
 		header.a_size = copy_to(afp, ifp, &header);	/* now copy it		*/
 		fclose(ifp);
 		tail_pos = ftell(afp);			/* save our final position		*/
 		fseek(afp, head_pos, 0);		/* back up to header pos		*/
-		if ((fwrite(&header, sizeof(HEADER), 1, afp)) == NULL)
+/*		if ((fwrite(&header, SIZEOF_HEADER, 1, afp)) == NULL) */
+		if (puthdr(afp, &header) == EOF)
 			fatal(errno, "write error on header for %s\n", fnp->fn_name);
 
 		fseek(afp, tail_pos, 0);		/* go to end of file			*/
@@ -598,7 +618,7 @@ HEADER	*hp;
 
 	if (strncmp(hp->a_hid, hid, HIDSIZ) != 0)
 		{
-		if (0 == (pos = ftell(fp) - sizeof(HEADER)))
+		if (0 == (pos = (ftell(fp) - SIZEOF_HEADER)))
 			fatal(1, "file not archive\n");
 
 		if ((hp->a_hid[0] == 0) || (hp->a_hid[0] == 0x1a))
@@ -620,11 +640,11 @@ FILE	*fp;
 HEADER	*hp;
 	{
 	if ((fwrite(hp->a_hid, HIDSIZ + 1, 1, fp) == NULL)
-		|| (fwrite(hp->a_name, FNSIZ + 1, 1, fp) == NULL)
-		|| (writelong(fp, hp->a_size) == EOF)
-		|| (putc(hp->a_type, fp) == EOF)
-		|| (putc(hp->a_stat, fp) == EOF)
-		|| (fwrite(&hp->a_attr, sizeof(FILDES), 1, fp) == NULL))
+			|| (fwrite(hp->a_name, FNSIZ + 1, 1, fp) == NULL)
+			|| (writelong(fp, hp->a_size) == EOF)
+			|| (putc(hp->a_type, fp) == EOF)
+			|| (putc(hp->a_stat, fp) == EOF)
+			|| (fwrite(&hp->a_attr, sizeof(FILDES), 1, fp) == NULL))
 		return (EOF);
 
 	return (0);
@@ -802,7 +822,7 @@ int		arg1, arg2;
  */
 
 static char	*hlpmsg[] = {
-	"Ar V2.01 - archive file manager\n",
+	"Ar V2.02 - archive file manager\n",
 	"Usage:  Ar -<cmd>[<modifier>] archive [file .. ]\n",
 	"      <cmd> is one of the following:\n",
 	"         d   delete file(s) from the archive\n",

@@ -24,9 +24,12 @@ static char *id1 = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
- * Revision 1.1  1996/07/20 17:10:39  cc
- * Initial revision
+ * Revision 1.2  1996/07/20 22:15:58  cc
+ * Merged in pwz's unixification (Sunos).
  *
+ * Revision 1.1  96/07/20  17:10:39  cc
+ * Initial revision
+ * 
  *------------------------------------------------------------------
  */
 
@@ -72,14 +75,14 @@ extern int   errno;
 #define FNSIZ	65
 #define MAXLINE	256
  
-#define PLAIN	0						/* plain text or object			*/
-#define SQ		1						/* old fashion CPM squeeze		*/
-#define COMP1	2						/* LZ compression 9..11 bits	*/
-#define COMP2	3						/* obsolete, not used			*/
-#define COMP3	4						/* LZ comperssion 9..13 bits	*/
+#define PLAIN	0					/* plain text or object			*/
+#define SQ		1					/* old fashion CPM squeeze		*/
+#define COMP1	2					/* LZ compression 9..11 bits	*/
+#define COMP2	3					/* obsolete, not used			*/
+#define COMP3	4					/* LZ comperssion 9..13 bits	*/
 
 
-typedef struct {								/* obvious definitions		*/
+typedef struct {						/* obvious definitions		*/
 	char	fd_attr;
 	char	fd_own[2];
 	char	fd_date[5];
@@ -91,16 +94,18 @@ typedef struct {								/* obvious definitions		*/
 
 /* NOTE that a_size is on an even byte boundary */
 typedef struct {
-	char	a_hid[HIDSIZ+1];				/* header id string				*/
-	char	a_name[FNSIZ+1];				/* name of the archived file	*/
-	long	a_size;					/* size of archive (not virgin) file	*/
-	char	a_type;					/* archive type - virg, packed, etc		*/
-	char	a_stat;					/* status of file - good, deleted, ..	*/
-	FILDES	a_attr;					/* attributes of the archived file		*/
+	char	a_hid[HIDSIZ+1];		/* header id string				*/
+	char	a_name[FNSIZ+1];		/* name of the archived file	*/
+	long	a_size;			/* size of archive (not virgin) file	*/
+	char	a_type;			/* archive type - virg, packed, etc		*/
+	char	a_stat;			/* status of file - good, deleted, ..	*/
+	FILDES	a_attr;			/* attributes of the archived file		*/
 	} HEADER;
 
+/* since comilers for big machines want to pad HEADER, we hack	*/
+#define SIZEOF_HEADER	96L
 
 typedef struct fn {
-	struct fn	*fn_link;						/* link to next file name	*/
-	char		fn_name[1];						/* the name itself			*/
+	struct fn	*fn_link;				/* link to next file name	*/
+	char		fn_name[1];				/* the name itself			*/
 	} FN;
