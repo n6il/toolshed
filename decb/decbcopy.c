@@ -14,10 +14,10 @@
 #define NO 0
 
 /* globals */
-static u_int buffer_size = 32768;
-static char *buffer;
+//static u_int buffer_size = 32768;
+//static char *buffer;
 
-static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int rewrite, int file_type, int data_type);
+static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type);
 static char *GetFilename(char *path);
 static EOL_Type DetermineEOLType(char *buffer, int size);
 static void NativeToDECB(char *buffer, int size, char **newBuffer, int *newSize);
@@ -34,6 +34,7 @@ static char *helpMessage[] =
 	"     -[a|b]     data type (a = ASCII, b = binary)\n",
     "     -l         perform end of line translation\n",
     "     -r         rewrite if file exists\n",
+	"     -t         perform BASIC token translation\n",
     NULL
 };
 
@@ -46,7 +47,7 @@ int decbcopy(int argc, char *argv[])
     int i, j;
     int targetDirectory = NO;
     int	count = 0;
-    int	eolTranslate = 0;
+    int	eolTranslate = 0, tokTranslate = 0;
     int	rewrite = 0;
 	int file_type = 0, data_type = 0;
     char	df[256];
@@ -94,6 +95,10 @@ int decbcopy(int argc, char *argv[])
                         rewrite = 1;
                         break;
 
+					case 't':
+						tokTranslate = 1;
+						break;
+						
                     case 'h':
                     case '?':
                         show_help(helpMessage);
@@ -107,20 +112,7 @@ int decbcopy(int argc, char *argv[])
         }
     }
 
-
-    /* 2. Allocate memory for the copy buffer. */
-	
-    buffer = (char *)malloc(buffer_size);
-
-    if (buffer == NULL)
-    {
-        fprintf(stderr, "%s: cannot allocate %d byte of buffer memory\n", argv[0], buffer_size);
-
-        return 1;
-    }
-
-
-    /* 3. Count non option arguments. */
+    /* 2. Count non option arguments. */
 	
     for (i = 1, count = 0; i < argc; i++)
     {
@@ -145,7 +137,7 @@ int decbcopy(int argc, char *argv[])
     }
 
 
-    /* 4. Walk backwards and get the destination first. */
+    /* 3. Walk backwards and get the destination first. */
 	
     for (i = argc - 1; i > 0; i--)
     {
@@ -226,7 +218,7 @@ int decbcopy(int argc, char *argv[])
 		}
 		
 		
-        ec = CopyFile(argv[j], df, eolTranslate, rewrite, file_type, data_type);
+        ec = CopyFile(argv[j], df, eolTranslate, tokTranslate, rewrite, file_type, data_type);
 
         if (ec != 0)
         {
@@ -272,12 +264,16 @@ static char *GetFilename(char *path)
 
 
 
-static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int rewrite, int file_type, int data_type)
+static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type)
 {
     error_code	ec = 0;
     coco_path_id path;
     coco_path_id destpath;
     int		mode = FAM_NOCREATE | FAM_WRITE;
+	unsigned char *buffer;
+	char *translation_buffer;
+	int new_translation_size;
+	int buffer_size;
 	
 
     /* 1. Set mode based on rewrite. */
@@ -310,54 +306,98 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int r
     }
 
 
-    while (_coco_gs_eof(path) == 0)
-    {
-        char *newBuffer;
-        int newSize;
-        int size = buffer_size;
+	ec = _coco_gs_size( path, &buffer_size);
+	buffer = malloc( buffer_size );
+	
+	if( buffer == NULL )
+	{
+		return -1;
+	};
+	
+	ec = _coco_read(path, buffer, &buffer_size);
 
-        ec = _coco_read(path, buffer, &size);
+	if (ec != 0)
+	{
+		return -1;
+	}
 
-        if (ec != 0)
-        {
-            break;
-        }
+	if( tokTranslate == 1 )
+	{
+		if( buffer[0] == 0xff )
+		{
+			char *detokenize_buffer;
+			int detokenize_size;
+			
+			/* File is already a tokenized BASIC file, de-tokenize it */
+			ec = _decb_detoken( buffer, buffer_size, (char **)&detokenize_buffer, &detokenize_size);
 
+			if( ec == 0 )
+			{
+				free( buffer );
+				buffer = detokenize_buffer;
+				buffer_size = detokenize_size;
+				
+				file_type = 0;
+				data_type = 0xff;
+			}
+			else
+				return -1;
+		}
+		else
+		{
+			unsigned char *entokenize_buffer;
+			int entokenize_size;
 
-        if (eolTranslate == 1)
-        {
-            if (path->type == NATIVE && destpath->type != NATIVE)
-            {
-                /* source is native, destination is coco */
+			/* Tokenized file */
+			ec = _decb_entoken( buffer, buffer_size, &entokenize_buffer, &entokenize_size);
 
-                NativeToDECB(buffer, size, &newBuffer, &newSize);
+			if( ec == 0 )
+			{
+				free( buffer );
+				buffer = entokenize_buffer;
+				buffer_size = entokenize_size;
 
-                ec = _coco_write(destpath, newBuffer, &newSize);
+				file_type = 0;
+				data_type = 0;
+			}
+			else
+				return -1;
+		}
+	}
+	
+	if (eolTranslate == 1)
+	{
+		if (path->type == NATIVE && destpath->type != NATIVE)
+		{
+			/* source is native, destination is coco */
 
-                free(newBuffer);
-            }
-            else if (path->type != NATIVE && destpath->type == NATIVE)
-            {
-                /* source is coco, destination is native */
-                
-                DECBToNative(buffer, size, &newBuffer, &newSize);
-                ec = _coco_write(destpath, newBuffer, &newSize);
+			NativeToDECB(buffer, buffer_size, &translation_buffer, &new_translation_size);
 
-                free(newBuffer);
-            }
-        }
-        else
-        {
-            /* One-to-one writing of the data -- no translation needed. */
-            
-            ec = _coco_write(destpath, buffer, &size);
-        }
+			ec = _coco_write(destpath, translation_buffer, &new_translation_size);
 
-        if (ec != 0)
-        {
-            break;
-        }
-    }
+			free(translation_buffer);
+		}
+		else if (path->type != NATIVE && destpath->type == NATIVE)
+		{
+			/* source is coco, destination is native */
+			
+			DECBToNative(buffer, buffer_size, &translation_buffer, &new_translation_size);
+			ec = _coco_write(destpath, translation_buffer, &new_translation_size);
+
+			free(translation_buffer);
+		}
+	}
+	else
+	{
+		/* One-to-one writing of the data -- no translation needed. */
+		
+		ec = _coco_write(destpath, buffer, &buffer_size);
+	}
+
+	if (ec != 0)
+	{
+		return -1;
+	}
 	
 
     /* Copy meta data from file descriptor of source to destination */

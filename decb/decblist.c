@@ -10,14 +10,15 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cocotypes.h>
-#include <decbpath.h>
+#include <cocopath.h>
 
 
 /* Help message */
 static char *helpMessage[] =
 {
 	"Syntax: list {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
-	"Usage:  Display contents of a text file.\n",
+	"Usage:  Display contents of a text file. List will also\n",
+	"        de-tokenize a binary Color BASIC file.\n",
 	"Options:\n",
 	NULL
 };
@@ -27,9 +28,11 @@ int decblist(int argc, char *argv[])
 {
 	error_code	ec = 0;
 	char *p = NULL;
-	decb_path_id path;
+	coco_path_id path;
 	int i;
-
+	unsigned char *buffer;
+	int size;
+	
 
 	/* 1. Walk command line for options */
 	
@@ -77,44 +80,55 @@ int decblist(int argc, char *argv[])
 		return(0);
 	}
 
-
 	/* 3. Open a path to the file. */
 	
-	ec = _decb_open(&path, p, FAM_READ);
+	ec = _coco_open(&path, p, FAM_READ);
 
 	if (ec != 0)
 	{
-		_decb_close(path);
+		_coco_close(path);
 		printf("Error %d opening %s\n", ec, p);
 
 		return(ec);
 	}
 
-	while (_decb_gs_eof(path) == 0)
+	ec = _coco_gs_size( path, &size );
+	
+	buffer = malloc( size );
+	
+	if( buffer == NULL )
 	{
-		int size = 1022;
-		char buffer[1024];
-		char *p;
-
-		ec = _decb_readln(path, buffer, &size);
-		if (ec != 0)
-		{
-			break;
-		}
-		
-		buffer[size] = '\0';
-
-		p = strchr(buffer, 0x0D);
-
-		if (p != NULL)
-		{
-			*p = '\0';
-		}
-
-		printf("%s\n", buffer);
+		/* Memory error */
+		return -1;
+	}
+	
+	ec = _coco_read(path, buffer, &size);
+	if (ec != 0)
+	{
+		return -1;
 	}
 
-	_decb_close(path);
+	if( _decb_detect_tokenized( buffer, size ) == 0 )
+	{
+		char *program;
+		int program_size;
+		
+		ec = _decb_detoken( buffer, size, &program, &program_size);
+		if (ec != 0)
+		{
+			return ec;
+		}
+		
+		free( buffer );
+		buffer = program;
+		size = program_size;
+	}
+
+	printf( "%s", buffer );
+
+	free( buffer );
+	
+	_coco_close(path);
 
 	return(0);
 }

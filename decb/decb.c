@@ -44,6 +44,8 @@ static struct cmdtbl table[] =
 	{decbkill,		"kill"},
 	{decblist,		"list"},
 	{decbrename,	"rename"},
+	{decbhdbconv,	"hdbconv"},
+	//	{os9dump,       "dump"},
 	{NULL,			NULL}
 };
 
