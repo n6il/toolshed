@@ -22,12 +22,13 @@ char product_name[256];
 char product_copyright[256];
 
 
-/*
- * main:
- *
- * The main entry point.
+/*!
+	@function main
+	@discussion main entry point
+	@param argc argument count
+	@param argv argument vector
  */
- 
+
 int main(int argc, char **argv)
 {
 	char			*p;
@@ -267,10 +268,10 @@ int main(int argc, char **argv)
 
 
 
-/*
- * mamou_assemble:
- *
- * This is the heart of the assembly process.
+/*!
+	@function mamou_assemble
+	@discussion Orchestrates the assembly process for all files
+	@param as The assembler state structure
  */
 
 void mamou_assemble(assembler *as)
@@ -451,6 +452,12 @@ void mamou_assemble(assembler *as)
 
 
 
+/*!
+	@function mamou_initialize
+	@discussion Initialize the assembler for each pass
+	@param as The assembler state structure
+ */
+
 static void mamou_initialize(assembler *as)
 {
     if (as->o_debug)
@@ -462,7 +469,6 @@ static void mamou_initialize(assembler *as)
 	{
 		/* Pass 1 initialization. */
 
-		as->process_func			= process;
 		as->current_psect			= -1;
 		as->code_segment_start			= BP_TRUE;
 		as->num_errors				= 0;
@@ -539,6 +545,12 @@ static void mamou_initialize(assembler *as)
 
 
 
+/*!
+	@function mamou_deinitialize
+	@discussion Deinitializes the assembler
+	@param as The assembler state structure
+ */
+
 static void mamou_deinitialize(assembler *as)
 {
     if (as->o_debug)
@@ -552,13 +564,19 @@ static void mamou_deinitialize(assembler *as)
 
 
 
+/*!
+	@function mamou_pass
+	@discussion Makes one pass through the source
+	@param as The assembler state structure
+ */
+
 void mamou_pass(assembler *as)
 {
 	int size = MAXBUF - 1;
 	BP_char		input_line[1024];
 	
 	
-	/* 1. Show debug output. */
+	/* 1. If debug mode is on, show output. */
 
     if (as->o_debug)
     {
@@ -573,14 +591,13 @@ void mamou_pass(assembler *as)
 	while (as->current_file->end_encountered == BP_FALSE && _coco_readln(as->current_file->fd, input_line, &size) == 0)
 	{
 		char *p = strchr(input_line, 0x0D);
-//		BP_int32			line_type;
 		struct source_line		line;
 		
 		
 		as->line = &line;
-		
-			
+					
 		size = MAXBUF - 1;
+
 		if (p != NULL)
 		{
 #ifdef _WIN32
@@ -607,6 +624,9 @@ void mamou_pass(assembler *as)
 		{
 			print_line(as, 0, ' ', 0);
 
+			
+			/* Keep track of the number of blank and comment lines. */
+			
 			if (as->line->type == LINETYPE_BLANK)
 			{
 				as->current_file->num_blank_lines++;
@@ -619,6 +639,9 @@ void mamou_pass(assembler *as)
 			}
 		}
 
+		
+		/* Keep track of the total number of lines so far. */
+		
 		as->cumulative_total_lines++;
 
 	
@@ -628,14 +651,20 @@ void mamou_pass(assembler *as)
 	}
 
     f_record(as);
+
+
+	return;
 }
 
 
 
-/*
- * mamou_parse_line: split input line into label, op and operand
- *
- * Returns: 0 if a blank line, 1 if a comment, 2 if an actual line
+/*!
+	@function mamou_parse_line
+	@discussion Splits the input line into label, opcode, operand and comment.
+	@discussion This function also finds the mnemonic entry (pseudo or real)
+	@discussion from the appropriate mnemonic table.
+	@param as The assembler state structure
+	@param input_line A pointer to the line to parse
  */
 
 void mamou_parse_line(assembler *as, BP_char *input_line)
@@ -742,25 +771,30 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
     ptrfrm = skip_white(ptrfrm);
 	
 	
-    /* Determine whether this op code has a parameter */
+    /* Look up the mnemonic */
 	
     if (mne_look(as, as->line->Op, &as->line->mnemonic) == 0)
     {
+		/* Does this op code has a parameter */
+		
         if ((as->line->mnemonic.type == OPCODE_PSEUDO  && as->line->mnemonic.opcode.pseudo->info != HAS_NO_OPERAND) ||
 			(as->line->mnemonic.type == OPCODE_H6309 && 
             (as->line->mnemonic.opcode.h6309->class != INH && as->line->mnemonic.opcode.h6309->class != P2INH && as->line->mnemonic.opcode.h6309->class != P3INH))
 		)
         {
+			/* Yes, it does not. */
+			
             ptrto = as->line->operand;
 
-            if (as->line->mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_DELIMITERS)
+            if (as->line->mnemonic.type == OPCODE_PSEUDO && as->line->mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_DELIMITERS)
             {
                 char fccdelim;
 
 				
-                /* delimiter pseudo op (fcs/fcc) */
+                /* Pseudo opcode with delimiter bounded data (i.e. fcc, fcs). */
 				
                 fccdelim = *ptrfrm;
+
                 do
                 {
                     *ptrto++ = *ptrfrm++;
@@ -768,9 +802,10 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 				
                 *ptrto++ = *ptrfrm++;
             }
-            else if (as->line->mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_SPACES)
+            else if (as->line->mnemonic.type == OPCODE_PSEUDO && as->line->mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_SPACES)
             {
-                /* pseudo op has spaces in operand */
+                /* Pseudo opcode with spaces in the operand. */
+				
                 do
                 {
                     *ptrto++ = *ptrfrm++;
@@ -778,7 +813,9 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
             }
             else
             {
-                while (delim(*ptrfrm) == BP_FALSE)
+				/* Pseudo or real opcode with regular operand */
+                
+				while (delim(*ptrfrm) == BP_FALSE)
                 {
                     *ptrto++ = *ptrfrm++;
                 }
@@ -791,6 +828,8 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
     }
 	
 	
+	/* Point to the line's comment field and suck up the remainder of the line as a comment. */
+	
     ptrto = as->line->comment;
 	
     while (!eol(*ptrfrm))
@@ -801,7 +840,8 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
     *ptrto = EOS;
 	
 
-    
+    /* If debug mode is on, print the line information. */
+	
     if (as->o_debug)
     {
         printf("\n");
@@ -819,9 +859,13 @@ void mamou_parse_line(assembler *as, BP_char *input_line)
 
 
 
-/*
- *	process --- determine mnemonic class and act on it
+/*!
+	@function process
+	@discussion Process an assembled line
+	@param as The assembler state structure
  */
+
+
 void process(assembler *as)
 {
 	

@@ -84,7 +84,7 @@ typedef enum _opcode_class
      EXT,			/* extended                6804 */
      BIT,			/* bit manipulation        6301 */
      SYS,			/* syscalls (really swi)        */
-     PSEUDO,			/* Pseudo ops                   */
+//     PSEUDO,			/* Pseudo ops                   */
      P2RTOR,			/* Page 2 register to register  */
      P3RTOR,			/* Page 3 register to register  */
      P3IMM,			/* Page 3 immediate only	*/
@@ -105,34 +105,6 @@ typedef enum _pseudo_class
 	ENDC,            /* End of condtional			 */
 	ELSE,			 /* else from conditional		 */
 	OTHER			 /* all other pseudo-ops		 */
-#if 0
-	RMB,             /* Reserve Memory               */
-     FCB,             /* Form Constant                */
-     FDB,             /* Form Double Bytes (words)    */
-	 FCZ,             /* Form Constant Characters     */
-     FCC,             /* Form Constant Characters     */
-     ORG,             /* Origin                       */
-     EQU,             /* Equate                       */
-     ZMB,             /* Zero memory bytes            */
-     FILL,            /* block fill constant bytes    */
-     OPT,             /* assembler option             */
-     NULL_OP,         /* null pseudo op               */
-     PAGE,            /* new page                     */
-     FCS,             /* Form Constant with Hi-Bit    */
-     IFP1,            /* If pass1 conditional         */
-     IFP2,            /* If pass2 conditional         */
-     IFEQ,            /* If zero conditional          */
-     IFNE,            /* if !zero conditional         */
-     IFGE,            /* If zero conditional          */
-     IFGT,            /* if !zero conditional         */
-     IFLE,            /* If zero conditional          */
-     IFLT,            /* if !zero conditional         */
-     ENDC,            /* End condtional               */
-     MOD,             /* Start OS-9 module            */
-     EMOD,            /* End OS-9 module (CRC)        */
-     USE,             /* include another source file  */
-     ELSE             /* else from if                 */
-#endif
 } pseudo_class;
 
 
@@ -278,7 +250,6 @@ typedef enum
 
 typedef struct _assembler
 {
-	void				(*process_func)(struct _assembler *as);
 	time_t				start_time;
 	struct source_line  *line;						/* current source line */
 	object_file_type	output_type;				/* type of output file */
