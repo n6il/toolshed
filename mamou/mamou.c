@@ -17,8 +17,9 @@
 static void mamou_assemble(assembler *as);
 static void mamou_initialize(assembler *as);
 static void mamou_deinitialize(assembler *as);
-static void mamou_pass(assembler *as);
 
+char *product_name = "The Mamou Assembler for the Hitachi 6309";
+char *product_copyright = "Copyright (C) 2004 Boisy G. Pitre";
 
 /*
  * main:
@@ -46,15 +47,15 @@ int main(int argc, char **argv)
 	
 	if (argc < 2)
     {
-		fprintf(stderr, "The Mamou Assembler for the Hitachi 6309\n");
-		fprintf(stderr, "Copyright (C) 2004 Boisy G. Pitre\n");
+		fprintf(stderr, "%s\n", product_name);
+		fprintf(stderr, "%s\n", product_copyright);
 		fprintf(stderr, "\n");
         fprintf(stderr, "Options:\n");
         fprintf(stderr, "    -a<sym>[=<val>] assign val to sym\n");
         fprintf(stderr, "    -b              no binary image file output\n");
         fprintf(stderr, "    -c              cross reference output\n");
         fprintf(stderr, "    -d              debug mode\n");
-        fprintf(stderr, "    -e              extended 6309 instruction mode\n");
+        fprintf(stderr, "    -e              enhanced 6309 assembler mode\n");
         fprintf(stderr, "    -h              Intel hex file output\n");
         fprintf(stderr, "    -i[=]<dir>      additional include directories\n");
         fprintf(stderr, "    -l              list file\n");
@@ -113,7 +114,8 @@ int main(int argc, char **argv)
                     {
                         v = 1;
                     }
-                    /* symbol_add value */
+						
+                    /* add value */
                     symbol_add(&as, p, v, 0);
                     break;
 					
@@ -124,7 +126,7 @@ int main(int argc, char **argv)
 					
                 case 'e':
                     /* 6309 extended instruction mode */
-                    as.h6309 = 1;
+                    as.o_h6309 = BP_TRUE;
                     break;	
 					
                 case 'h':
@@ -197,7 +199,7 @@ int main(int argc, char **argv)
 					
                 case 'c':
                     /* Cross ref output */
-                    as.CREflag = 1;
+                    as.o_show_cross_reference = 1;
                     break;
 					
                 case 'x':
@@ -248,7 +250,7 @@ int main(int argc, char **argv)
 void mamou_assemble(assembler *as)
 {
 	/* 1. Initialize the assembler for the first pass. */
-	
+		
 	as->pass = 1;
 	
     mamou_initialize(as);
@@ -256,35 +258,40 @@ void mamou_assemble(assembler *as)
 
 	/* 2. For each file we have to assemble... */
 	
-    for (as->current_filename_index = 1; as->current_filename_index <= as->file_index; as->current_filename_index++)
+    for (as->current_filename_index = 0; as->current_filename_index < as->file_index; as->current_filename_index++)
     {
-		/* 1. Open a path to the file. */
+		struct filestack root_file;
 		
-        if (_coco_open(&(as->file_stack[as->file_stack_index].fd), as->file_name[as->file_index - 1], FAM_READ) != 0)
+		
+		/* 1. Set up the structure. */
+		
+		as->current_file = &root_file;
+		
+		strncpy(root_file.file, as->file_name[as->current_filename_index], FNAMESIZE);
+		root_file.current_line = 0;
+		root_file.num_blank_lines = 0;
+		root_file.num_comment_lines = 0;
+		root_file.end_encountered = BP_FALSE;
+		
+		
+		/* 2. Open a path to the file. */
+		
+        if (_coco_open(&(root_file.fd), root_file.file, FAM_READ) != 0)
         {
-            printf("mamou: can't open %s\n", as->file_name[as->file_index - 1]);
+            printf("mamou: can't open %s\n", root_file.file);
 
             return;
         }
 
 
-		/* 2. Copy the file name. */
-		
-		strncpy(as->file_stack[as->file_stack_index].file, as->file_name[as->file_index - 1], FNAMESIZE);
-
-
-		/* 3. Reset the line counters. */
-
-		as->file_stack[as->file_stack_index].current_line = 0;
-		as->file_stack[as->file_stack_index].num_blank_lines = 0;
-		as->file_stack[as->file_stack_index].num_comment_lines = 0;
-
-
-		/* 4. Make the first pass. */
+		/* 3. Make the first pass. */
 		
 		mamou_pass(as);
 
-//		_coco_close(as->file_stack[as->file_stack_index].fd);
+		
+		/* 4. Close the file. */
+		
+		_coco_close(root_file.fd);
     }
 
 
@@ -305,11 +312,6 @@ void mamou_assemble(assembler *as)
         mamou_initialize(as);
 
 
-		/* 3. Reset the file stack index. */
-
-        as->file_stack_index = 0;
-		
-
 		/* 4. If this is a DECB .BIN file, emit the initial header. */
 		
 		if (as->o_decb == BP_TRUE && as->orgs[as->current_org].size > 0)
@@ -322,29 +324,39 @@ void mamou_assemble(assembler *as)
 		
 		/* 5. Walk the file list again... */
 		
-        for (as->current_filename_index = 1; as->current_filename_index <= as->file_index; as->current_filename_index++)
+        for (as->current_filename_index = 0; as->current_filename_index < as->file_index; as->current_filename_index++)
         {
-			/* 1. Open the current file. */
+			struct filestack root_file;
 			
-            if (_coco_open(&(as->file_stack[as->file_stack_index].fd), as->file_name[as->file_index - 1], FAM_READ) == 0)
-            {
-				/* 1. Copy the filename. */
+			
+			/* 1. Set up the structure. */
+			as->current_file = &root_file;
+			
+			strncpy(root_file.file, as->file_name[as->current_filename_index], FNAMESIZE);
+			root_file.current_line = 0;
+			root_file.num_blank_lines = 0;
+			root_file.num_comment_lines = 0;
+			root_file.end_encountered = BP_FALSE;
+			
+			
+			/* 2. Open a path to the file. */
+			
+			if (_coco_open(&(root_file.fd), root_file.file, FAM_READ) != 0)
+			{
+				printf("mamou: can't open %s\n", root_file.file);
 				
-                strncpy(as->file_stack[as->file_stack_index].file, as->file_name[as->file_index - 1], FNAMESIZE);
-
-
-				/* 2. Reset the line counters. */
-				
-                as->file_stack[as->file_stack_index].current_line = 0;
-                as->file_stack[as->file_stack_index].num_blank_lines = 0;
-                as->file_stack[as->file_stack_index].num_comment_lines = 0;
-
-
-				/* 3. Make a pass... */
-				
-                mamou_pass(as);
-		//		_coco_close(as->file_stack[as->file_stack_index].fd);
-            }
+				return;
+			}
+			
+			
+			/* 3. Make the first pass. */
+			
+			mamou_pass(as);
+			
+			
+			/* 4. Close the file. */
+			
+			_coco_close(root_file.fd);
         }
 		
 
@@ -361,14 +373,15 @@ void mamou_assemble(assembler *as)
         if (as->o_show_symbol_table == BP_TRUE)
         {
             printf("\f");
-            stable(as->bucket);
+            symbol_dump_bucket(as->bucket);
             printf("\n");
         }
         
-        if (as->CREflag == 1)
+        if (as->o_show_cross_reference == 1)
         {
             printf("\f");
-            cross(as->bucket);
+			
+            symbol_cross_reference(as->bucket);
         }
 
         finish_outfile(as);
@@ -418,16 +431,16 @@ static void mamou_initialize(assembler *as)
 		/* Pass 1 initialization. */
 
 		as->num_errors				= 0;
+		as->cumulative_blank_lines  = 0;
+		as->cumulative_comment_lines  = 0;
+		as->cumulative_total_lines  = 0;
 		as->data_counter			= 0;
 		as->program_counter			= 0;
 		as->pass					= 1;
 		as->Ctotal					= 0;
 		as->N_page					= 0;
 		as->input_line[MAXBUF-1]	= '\n';
-		as->file_stack_index		= 0;
-		as->file_stack[0].current_line  = 0;
-		as->file_stack[0].num_blank_lines = 0;
-		as->file_stack[0].num_comment_lines = 0;
+		as->use_depth				= 0;
 		
 		as->conditional_stack_index = 0;
 		as->conditional_stack[0]	= 1;
@@ -438,11 +451,13 @@ static void mamou_initialize(assembler *as)
 
 		if (as->object_name[0] != EOS)
 		{
+#if 0
 			if (as->o_quiet_mode == BP_FALSE)
 			{
 				printf("output:  %s\n", as->object_name);
 			}
-
+#endif
+			
 			if ((as->fd_object = fopen(as->object_name, "wb")) == NULL)
 			{
 				fatal("Can't create object file");
@@ -458,6 +473,9 @@ static void mamou_initialize(assembler *as)
 	{
 		/* Pass 2 initialization. */
 
+		as->cumulative_blank_lines  = 0;
+		as->cumulative_comment_lines  = 0;
+		as->cumulative_total_lines  = 0;
 		as->data_counter    = 0;
 		as->program_counter	= 0;
 		as->DP				= 0;
@@ -466,10 +484,8 @@ static void mamou_initialize(assembler *as)
 		as->P_total			= 0;
 		as->Ctotal			= 0;
 		as->N_page			= 0;
-		as->file_stack[0].current_line = 0;
-		as->file_stack[0].num_blank_lines = 0;
-		as->file_stack[0].num_comment_lines = 0;
-
+		as->use_depth				= 0;
+		
 		as->current_org		= 0;
 		
 		fwd_reinit(as);
@@ -497,8 +513,13 @@ static void mamou_deinitialize(assembler *as)
 
 
 
-static void mamou_pass(assembler *as)
+void mamou_pass(assembler *as)
 {
+	int size = MAXBUF - 1;
+	
+	
+	/* 1. Show debug output. */
+
     if (as->o_debug)
     {
         printf("\n------");
@@ -506,62 +527,61 @@ static void mamou_pass(assembler *as)
         printf("\n------\n");
     }
 
-    while (as->file_stack_index >= 0)
-    {
-        int size = MAXBUF - 1;
-
-        while (_coco_readln(as->file_stack[as->file_stack_index].fd, as->input_line, &size) == 0)
-        {
-            char *p = strchr(as->input_line, 0x0D);
-			BP_int32		line_type;
+	
+	/* 2. While we haven't encountered 'end' and there are more lines to read... */
+	
+	while (as->current_file->end_encountered == BP_FALSE && _coco_readln(as->current_file->fd, as->input_line, &size) == 0)
+	{
+		char *p = strchr(as->input_line, 0x0D);
+		BP_int32		line_type;
 			
 			
-            size = MAXBUF - 1;
-            if (p != NULL)
+		size = MAXBUF - 1;
+		if (p != NULL)
             {
 #ifdef _WIN32
-                p++;
-                *p = 0x0A;
+			p++;
+			*p = 0x0A;
 #else
-                *p = 0x0A;
+			*p = 0x0A;
 #endif
-                p++;
-                *p = '\0';
-            }
+			p++;
+			*p = '\0';
+		}
 
-            as->file_stack[as->file_stack_index].current_line++;
-            as->P_force = 0;	/* No force unless bytes emitted */
-            as->N_page = 0;
+		as->current_file->current_line++;
+		as->P_force = 0;	/* No force unless bytes emitted */
+		as->N_page = 0;
 	
-			line_type = mamou_parse_line(as);
-			
-			if (line_type == 2 && as->Preprocess == BP_TRUE)
-            {
-                process(as);
-            }
-            else
-            {
-                print_line(as, 0, ' ', 0);
+		line_type = mamou_parse_line(as);
+		
+		if (line_type == 2 && as->Preprocess == BP_TRUE)
+		{
+			process(as);
+		}
+		else
+		{
+			print_line(as, 0, ' ', 0);
 
-				if (line_type == 0)
-				{
-					as->file_stack[as->file_stack_index].num_blank_lines++;
-				}
-				else
-				{
-					as->file_stack[as->file_stack_index].num_comment_lines++;
-				}
-            }
-            as->P_total = 0;	/* reset byte count */
-            as->cumulative_cycles = 0;	/* and per instruction cycle count */
-        }
-        _coco_close(as->file_stack[as->file_stack_index].fd);
-        if ((as->pass == 2) && as->file_stack_index > 0)
-        {
-            as->file_stack[as->file_stack_index-1].current_line = as->file_stack[as->file_stack_index].current_line;
-        }
-        as->file_stack_index--;
-    }
+			if (line_type == 0)
+			{
+				as->current_file->num_blank_lines++;
+				as->cumulative_blank_lines++;
+			}
+			else
+			{
+				as->current_file->num_comment_lines++;
+				as->cumulative_comment_lines++;
+			}
+		}
+
+		as->cumulative_total_lines++;
+
+	
+		as->P_total = 0;	/* reset byte count */
+
+		as->cumulative_cycles = 0;	/* and per instruction cycle count */
+	}
 
     f_record(as);
 }
@@ -783,7 +803,7 @@ void process(assembler *as)
         if (as->Cflag)
         {
             as->cumulative_cycles = i->cycles;
-            if (as->h6309)
+            if (as->o_h6309 == BP_TRUE)
             {
                 as->cumulative_cycles--;
             }
@@ -804,6 +824,7 @@ void process(assembler *as)
 
 void init_globals(assembler *as)
 {
+	as->current_file = NULL;
     as->num_errors = 0;		/* total number of errors       */
     as->input_line[0] = 0;		/* input line buffer            */
     as->label[0] = 0;		/* label on current line        */
@@ -839,7 +860,7 @@ void init_globals(assembler *as)
     as->Ctotal = 0;		/* # of cycles seen so far */
     as->N_page = 0;		/* new page flag */
     as->page_number = 2;		/* page number */
-    as->CREflag = 0;		/* cross reference table flag */
+    as->o_show_cross_reference = 0;		/* cross reference table flag */
     as->Cflag = 0;		/* cycle count flag */
     as->Opt_C = BP_TRUE;		/* show conditionals in listing */
     as->o_page_depth = 66;
@@ -858,7 +879,6 @@ void init_globals(assembler *as)
     as->fd_object = NULL;		/* object file's file descriptor*/
     as->object_name[0] = EOS;
     as->bucket = NULL;
-    as->file_stack_index = 0;
     as->do_module_crc = BP_FALSE;
     as->_crc[0] = 0xFF;
     as->_crc[1] = 0xFF;
@@ -874,7 +894,7 @@ void init_globals(assembler *as)
     as->o_decb = 0;
     as->SuppressFlag = 0;	/* suppress errors and warnings */
     as->tabbed = 0;
-    as->h6309 = 0;		/* assume 6809 mode only */
+    as->o_h6309 = BP_FALSE;		/* assume 6809 mode only */
 
     return;
 }

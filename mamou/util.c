@@ -74,7 +74,7 @@ void error(assembler *as, char *str)
 void warn(assembler *as, char *str)
 {
 	fprintf(stderr, "\nallow_warnings: line: %-5d in %-20s    %s\n",
-		(int)as->file_stack[as->file_stack_index].current_line, as->file_stack[as->file_stack_index].file, str);
+		(int)as->current_file->current_line, as->current_file->file, str);
 	fprintf(stderr, "%s\n", as->input_line);
 }
 

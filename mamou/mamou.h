@@ -124,6 +124,7 @@ struct filestack
 	BP_int32		current_line;
 	BP_int32		num_blank_lines;
 	BP_int32		num_comment_lines;
+	BP_Bool			end_encountered;
 };
 
 struct link
@@ -164,7 +165,9 @@ typedef struct _assembler
 {
 	int					num_errors;					/* total number of errors */
 	int					num_warnings;				/* assembler warnings */
-	int					num_blank_lines;			/* blank line count */
+	int					cumulative_blank_lines;		/* blank line count across all files */
+	int					cumulative_comment_lines;   /* comment line count across all files */
+	int					cumulative_total_lines;		/* total line count across all files */
 	char				input_line[MAXBUF];			/* input line buffer */
 	char				label[MAXLAB];				/* label on current line */
 	char				Op[MAXOP];					/* opcode mnemonic on current line */
@@ -175,18 +178,23 @@ typedef struct _assembler
 	int					force_byte;					/* result should be a byte when set */
 	int					program_counter;			/* Program Counter */
 	int					data_counter;				/* data counter */
-	int					old_program_counter;						/* Program Counter at beginning */
+	int					old_program_counter;		/* Program Counter at beginning */
 	int					DP;							/* Direct Page pointer */
 	int					allow_warnings;				/* allow assembler warnings */
 	int					last_symbol;				/* result of last symbol_find */
 	int					pass;						/* current pass */
+	struct filestack	*current_file;
+	BP_int32			use_depth;					/* depth of includes/uses */
 #define MAXAFILE	16
 	int					file_index;
 	char				*file_name[MAXAFILE];		/* assembly file name on cmd line */
-	int					current_filename_index;						/* file number count            */
+	int					current_filename_index;		/* file number count            */
+#define INCSIZE 16
+	int					include_index;
+	char				*includes[INCSIZE];	
 	int					Ffn;						/* forward ref file #           */
 	int					F_ref;						/* next line with forward ref   */
-	char				**arguments;						/* pointer to file names        */
+	char				**arguments;				/* pointer to file names        */
 	int					E_total;					/* total # bytes for one line   */
 	BP_char				E_bytes[E_LIMIT + MAXBUF];  /* Emitted held bytes           */
 	int					E_pc;						/* Pc at beginning of collection*/
@@ -197,7 +205,7 @@ typedef struct _assembler
 	long				Ctotal;						/* # of cycles seen so far */
 	int					N_page;						/* new page flag */
 	int					page_number;				/* page number */
-	int					CREflag;					/* cross reference table flag */
+	int					o_show_cross_reference;					/* cross reference table flag */
 	int					Cflag;						/* cycle count flag */
 	int					Opt_C;						/* */
 	BP_int32			o_page_depth;				/* page depth */
@@ -207,7 +215,7 @@ typedef struct _assembler
 	BP_Bool				o_show_listing;				/* listing flag 0=nolist, 1=list*/
 	BP_Bool				o_decb;						/* */
 	int					Opt_N;						/* */
-	int					o_quiet_mode;				/* quiet mode */
+	BP_Bool				o_quiet_mode;				/* quiet mode */
 	int					o_show_symbol_table;		/* symbol table flag, 0=no symbol */
 	int					o_pagewidth;						/* */
 	int					current_line;				/* line counter for printing */
@@ -226,21 +234,15 @@ typedef struct _assembler
 	int					do_module_crc;
 	int					SuppressFlag;
 	int					tabbed;
-#define F_LIMIT	32
-	int					file_stack_index;
-	struct filestack	file_stack[F_LIMIT];
 #define	CONDSTACKLEN	256
 	int					conditional_stack_index;
 	char				conditional_stack[CONDSTACKLEN];
 	int					Preprocess;
-	int					h6309;
+	BP_Bool				o_h6309;
 #define NAMLEN 64
 #define TTLLEN NAMLEN
 	char				Nam[NAMLEN];
 	char				Ttl[TTLLEN];
-#define INCSIZE 16
-	int					include_index;
-	char				*includes[INCSIZE];
 	struct nlist		*bucket;            /* root node of the tree */
 	struct orglist		orgs[256];
 	BP_uint32			current_org;
@@ -248,13 +250,14 @@ typedef struct _assembler
 
 
 /* function prototypes */
-/* as.c */
+/* mamou.c */
 int main(int argc, char **argv);
+void mamou_pass(assembler *as);
 int mamou_parse_line(assembler *as);
 void process(assembler *as);
 void init_globals(assembler *as);
 
-/* do9.c */
+/* h6309.c */
 void local_init(void);
 
 /* env.c */
@@ -270,9 +273,6 @@ void fwd_mark(assembler *as);
 void fwd_next(assembler *as);
 void fwd_reinit(assembler *as);
 
-/* output.c */
-void cross(struct nlist *point);
-void stable(struct nlist *ptr);
 
 /* print.c */
 void print_line(assembler *as, int override, char infochar, int counter);
@@ -281,10 +281,13 @@ void print_header(assembler *as);
 void print_footer(assembler *as);
 
 
-/* symtab.c */
+/* symbol_bucket.c */
 int symbol_add(assembler *as, char *str, int val, int override);
 struct nlist *symbol_find(assembler *as, char *name, int);
 struct oper *mne_look(assembler *as, char *str);
+void symbol_dump_bucket(struct nlist *ptr);
+void symbol_cross_reference(struct nlist *ptr);
+
 
 /* util.c */
 char *extractfilename(char *pathlist);

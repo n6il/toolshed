@@ -20,7 +20,7 @@ int _nam(assembler *as)
 
 	/* 2. Ignore this directive in any file but the root (main) file. */
 	
-	if (as->file_stack_index > 0)
+	if (as->use_depth > 0)
 	{
 		return 0;
 	}
@@ -64,7 +64,7 @@ int _ttl(assembler *as)
 
 	/* 2. Ignore this directive in any file but the root (main) file. */
 
-	if (as->file_stack_index > 0)
+	if (as->use_depth > 0)
 	{
 		return 0;
 	}
@@ -393,8 +393,9 @@ int _fcs(assembler *as)
 
 
 /*
- * org - set origin for PC (motorola mode) or DATA (OS-9 mode)
+ * org: set origin for PC (motorola mode) or DATA (OS-9 mode)
  */
+
 int _org(assembler *as)
 {
 	BP_int32	result;
@@ -566,7 +567,7 @@ int _opt(assembler *as)
 		return 0;
 	}
 
-	if (as->file_stack_index > 0)
+	if (as->use_depth > 0)
 	{
 		/* OPTs are ignored in files brought in by
 		 * the 'use' directive, but are still printed.
@@ -1254,8 +1255,8 @@ int _spc(assembler *as)	/* TODO! */
 int _use(assembler *as)
 {
 	error_code ec = 0;
-	char path[128];
 
+	
 	/* 1. If we are currently in a FALSE conditional, just return. */
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
@@ -1264,51 +1265,76 @@ int _use(assembler *as)
 	}
 
 
-	/* test for presence of a label and error if found */
+	/* 2. Test for presence of a label and return error if found. */
+
 	if (*as->label != EOS)
 	{
 		error(as, "label not allowed");
 	}
+
+	
+	/* 3. Print the line. */
+	
 	print_line(as, 0, ' ', 0);
-	strcpy(path, as->optr);
-	as->file_stack_index++;
-	ec = _coco_open(&(as->file_stack[as->file_stack_index].fd), path, FAM_READ);
-	if (ec != 0)
-	{
-		/* try alternate include directories */
-		int i;
 
-		for (i = 0; i < as->include_index; i++)
+	{
+		struct filestack use_file, *prev_file;
+		BP_char		path[FNAMESIZE];
+		int			i = 0;
+		
+		
+		/* 1. Set up the structure. */
+
+		prev_file = as->current_file;
+		
+		as->current_file = &use_file;
+		
+		strncpy(use_file.file, as->optr, FNAMESIZE);
+
+		use_file.current_line = 0;
+		use_file.num_blank_lines = 0;
+		use_file.num_comment_lines = 0;
+		use_file.end_encountered = BP_FALSE;
+		
+		
+		/* 2. Open a path to the file. */
+		
+		strncpy(path, use_file.file, FNAMESIZE);
+
+		do
 		{
-			strcpy(path, as->includes[i]);
-			strcat(path, "/");
-			strcat(path, as->optr);
-			ec = _coco_open(&(as->file_stack[as->file_stack_index].fd), path, FAM_READ);
-			if (ec == 0)
+			ec = _coco_open(&(use_file.fd), path, FAM_READ);
+
+			if (ec != 0 && i < as->include_index)
 			{
-				break;
+				/* 1. Try any alternate include directories. */
+			
+				strcpy(path, as->includes[i]);
+				strcat(path, "/");
+				strcat(path, use_file.file);				
 			}
-		}
-		if (ec != 0)
+		} while (ec != 0 && i++ < as->include_index);
+		
+		if (ec == 0)
 		{
-			as->file_stack_index--;
-			error(as, "Cannot open file\n");
-			return 0;
+			/* 1. Make the first pass. */
+			
+			mamou_pass(as);
+			
+			
+			/* 2. Close the file. */
+			
+			_coco_close(use_file.fd);
 		}
-	}
-	strncpy(as->file_stack[as->file_stack_index].file, path, FNAMESIZE-1);
+		else
+		{
+			printf("mamou: can't open %s\n", use_file.file);
+		}	
 
-	if (as->pass == 1)
-	{
-		/* restart line number at zero */
-		as->file_stack[as->file_stack_index].current_line = 0;
-		as->file_stack[as->file_stack_index].num_blank_lines = 0;
+		as->current_file = prev_file;			
 	}
-	else
-	{
-		/* force this file's line num to previous file's line num */
-		as->file_stack[as->file_stack_index].current_line = as->file_stack[as->file_stack_index-1].current_line;
-	}
+
+	
 	return 0;
 }
 
@@ -1334,11 +1360,12 @@ int __end(assembler *as)
 	}
 	else
 	{
-		int size = MAXBUF - 1;
-
-		/* read the remainder of the file's lines */
+		/* 1. Read the remainder of the file's lines. */
+		
 		print_line(as, 0, ' ', 0);
-		while (_coco_readln(as->file_stack[as->file_stack_index].fd, as->input_line, &size) == 0 && size > 0);
+
+		as->current_file->end_encountered = BP_TRUE;
 	}
+
 	return 0;
 }

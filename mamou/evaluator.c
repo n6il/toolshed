@@ -408,7 +408,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 					bpnt->next = pnt;
 				}
 
-				pnt->L_num = as->file_stack[as->file_stack_index].current_line;
+				pnt->L_num = as->current_file->current_line;
 				pnt->next = NULL;
 			}
 
@@ -432,7 +432,7 @@ static BP_Bool get_term(assembler *as, BP_int32 *term, BP_char **eptr, BP_Bool i
 				return BP_FALSE;
 			}
 		}
-		if (as->pass == 2 && as->file_stack[as->file_stack_index].current_line == as->F_ref && as->current_filename_index == as->Ffn)
+		if (as->pass == 2 && as->current_file->current_line == as->F_ref && as->current_filename_index == as->Ffn)
 		{
 #if 0
 			if (as->force_byte == NO)

@@ -44,6 +44,7 @@ struct oper pseudo[] = {
 	{"ifne", PSEUDO, IFNE,   1,	1,	_ifne},
 	{"ifp1", PSEUDO, IFP1,   0,	1,	_ifp1},
 	{"ifp2", PSEUDO, IFP2,   0,	1,	_ifp2},
+	{"include",  PSEUDO, USE,    1,	1,	_use},
 	{"mod",  PSEUDO, MOD,    1,	1,	_mod},
 	{"nam",  PSEUDO, NULL_OP,4,	1,	_nam},
 	{"name", PSEUDO, NULL_OP,4,	1,	_nam},

@@ -1064,19 +1064,19 @@ static int do_indexed(assembler *as, int op)
 		abd_index(as, pbyte + 11);
 		return 0;
 	}
-	if (j == RE && as->h6309 == 1)
+	if (j == RE && as->o_h6309 == BP_TRUE)
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 7);
 		return 0;
    	}
-	if (j == RF && as->h6309 == 1)
+	if (j == RF && as->o_h6309 == BP_TRUE)
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 10);
 		return 0;
 	}
-	if (j == RW && as->h6309 == 1)
+	if (j == RW && as->o_h6309 == BP_TRUE)
 	{
 		as->cumulative_cycles += 4;
 		abd_index(as, pbyte + 14);
@@ -1279,7 +1279,7 @@ static int do_indexed(assembler *as, int op)
 	    return 0;
 	  }
 
-	  if (pbyte & 0x10 && as->h6309 == 1) {	/* [,W] */
+	  if (pbyte & 0x10 && as->o_h6309 == BP_TRUE) {	/* [,W] */
 	    if (as->force_word || (result != 0)) {
 	      emit(as, 0xb0);
 	      eword(as, result);
@@ -1290,7 +1290,7 @@ static int do_indexed(assembler *as, int op)
 	    emit(as, 0x90);
 	    return 0;
 	  } else {		/* ,W */
-	    if (as->force_word || (result != 0) && as->h6309 == 1) {
+	    if (as->force_word || (result != 0) && as->o_h6309 == BP_TRUE) {
 	      emit(as, 0xaf);
 	      eword(as, result);
 	      as->cumulative_cycles += 3;
@@ -1343,7 +1343,7 @@ static int rtype(assembler *as, int r)
 		case RS:
 			return(0x60);
 		case RW:
-		 	if (as->h6309 == 1) return(0x100);
+		 	if (as->o_h6309 == BP_TRUE) return(0x100);
 	}
 	error(as, "Illegal Register for Indexed");
 	return 0;
@@ -1434,19 +1434,19 @@ static h6309_reg regnum(assembler *as)
 	{
 		return(RPC);
 	}
-	if (head(as->optr, "W") && as->h6309 == 1)
+	if (head(as->optr, "W") && as->o_h6309 == BP_TRUE)
 	{
 		return(RW);
 	}
-	if (head(as->optr, "w") && as->h6309 == 1)
+	if (head(as->optr, "w") && as->o_h6309 == BP_TRUE)
 	{
 		return(RW);
 	}
-	if (head(as->optr, "V") && as->h6309 == 1)
+	if (head(as->optr, "V") && as->o_h6309 == BP_TRUE)
 	{
 		return(RV);
 	}
-	if (head(as->optr, "v") && as->h6309 == 1)
+	if (head(as->optr, "v") && as->o_h6309 == BP_TRUE)
 	{
 		return(RV);
 	}
@@ -1491,31 +1491,31 @@ static h6309_reg regnum(assembler *as)
 	{
 		return(RDP);
 	}
-	if (head(as->optr, "0") && as->h6309 == 1)
+	if (head(as->optr, "0") && as->o_h6309 == BP_TRUE)
 	{
 		return(RZERO);
 	}
-	if (head(as->optr, "Z") && as->h6309 == 1)
+	if (head(as->optr, "Z") && as->o_h6309 == BP_TRUE)
 	{
 		return(RZERO);
 	}
-	if (head(as->optr, "z") && as->h6309 == 1)
+	if (head(as->optr, "z") && as->o_h6309 == BP_TRUE)
 	{
 		return(RZERO);
 	}
-	if (head(as->optr, "E") && as->h6309 == 1)
+	if (head(as->optr, "E") && as->o_h6309 == BP_TRUE)
 	{
 		return(RE);
 	}
-	if (head(as->optr, "e") && as->h6309 == 1)
+	if (head(as->optr, "e") && as->o_h6309 == BP_TRUE)
 	{
 		return(RE);
 	}
-	if (head(as->optr, "F") && as->h6309 == 1)
+	if (head(as->optr, "F") && as->o_h6309 == BP_TRUE)
 	{
 		return(RF);
 	}
-	if (head(as->optr, "f") && as->h6309 == 1)
+	if (head(as->optr, "f") && as->o_h6309 == BP_TRUE)
 	{
 		return(RF);
 	}

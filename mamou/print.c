@@ -33,7 +33,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 
 		/* 1. Print line number. */
 		
-		sprintf(Tmp_buff, "%05d ", (int)as->file_stack[as->file_stack_index].current_line);
+		sprintf(Tmp_buff, "%05d ", (int)as->current_file->current_line);
 		
 		strcat(Line_buff, Tmp_buff);
 	
@@ -132,9 +132,9 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		{
 			if (i % 4 == 0)
 			{
-				as->file_stack[as->file_stack_index].current_line++;
+				as->current_file->current_line++;
 				Temp_pc += 4;
-				sprintf(Tmp_buff, "\n%05d   %04X ", (int)as->file_stack[as->file_stack_index].current_line, Temp_pc);
+				sprintf(Tmp_buff, "\n%05d   %04X ", (int)as->current_file->current_line, Temp_pc);
 				strcat(Line_buff, Tmp_buff);
 			}
 			sprintf(Tmp_buff, "%02x", lobyte(as->P_bytes[i]));
@@ -166,13 +166,31 @@ void print_line(assembler *as, int override, char infochar, int counter)
 void report_summary(assembler *as)
 {
 	printf("\n");
-	printf("%05d error(s)\n", as->num_errors);
-	printf("%05d warning(s)\n", as->num_warnings);
-	printf("%05d blank line(s)\n", (int)as->file_stack[0].num_blank_lines);
-	printf("%05d comment line(s)\n", (int)as->file_stack[0].num_comment_lines);
-	printf("$%04X %05d program bytes generated\n", as->program_counter, as->program_counter);
-	printf("$%04X %05d data bytes generated\n", as->data_counter, as->data_counter);
+	printf("Assembler Summary:\n");
+	printf(" - %d errors, %d warnings\n", as->num_errors, as->num_warnings);
+	printf(" - %d lines (%d code, %d blank, %d comment)\n",
+		(int)as->cumulative_total_lines,
+		(int)(as->cumulative_total_lines - (as->cumulative_blank_lines + as->cumulative_comment_lines)),
+		(int)as->cumulative_blank_lines,
+		(int)as->cumulative_comment_lines
+	);
+	printf(" - $%04X (%d) program bytes, $%04X (%d) data bytes\n",
+		as->program_counter,
+		as->program_counter,
+		as->data_counter,
+		as->data_counter
+	);
 
+	if (as->object_name[0] == '\0')
+	{
+		printf(" - No output file\n");
+	}
+	else
+	{
+		printf(" - Output file: \"%s\"\n", as->object_name);
+	}
+	
+	
 	return;
 }
 

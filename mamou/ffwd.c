@@ -85,8 +85,8 @@ void fwd_mark(assembler *as)
 	size = sizeof(as->current_filename_index);	
 	_coco_write(forward_path, (char *)&as->current_filename_index, &size);
 
-	size = sizeof(as->file_stack[as->file_stack_index].current_line);
-	_coco_write(forward_path, (char *)&(as->file_stack[as->file_stack_index].current_line), &size);
+	size = sizeof(as->current_file->current_line);
+	_coco_write(forward_path, (char *)&(as->current_file->current_line), &size);
 
 
 	return;
