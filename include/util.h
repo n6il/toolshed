@@ -35,6 +35,7 @@ int os9makdir(int, char **);
 int os9modbust(int, char **);
 int os9padrom(int, char **);
 int os9rename(int, char **);
+int os9rdump(int, char **);
 
 int StrToInt(char *s);
 void show_help(char **helpMessage);
