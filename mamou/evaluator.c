@@ -468,6 +468,23 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 		{
 			if (as->pass == 1)
 			{
+				/* NEW!! 04/09/05 - if symbol begins with
+				 * _$, assume it is an environment var
+				 */
+
+				if (hold[0] == '_' && hold[1] == '$')
+				{
+					char *p;
+
+
+					p = getenv(&(hold[2]));
+
+					if (p != NULL)
+					{
+						symbol_add(as, hold, atoi(p), 0);
+					}
+				}
+
 				/* forward ref here */
 				fwd_mark(as);
 #if 0
