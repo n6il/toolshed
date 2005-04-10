@@ -9,9 +9,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cococonv.h>
 #include <cocotypes.h>
 #include <cocopath.h>
-
 
 /* Help message */
 static char *helpMessage[] =
@@ -31,7 +31,8 @@ int decblist(int argc, char *argv[])
 	coco_path_id path;
 	int i;
 	unsigned char *buffer;
-	int size;
+	char *buffer2;
+	int size, size2;
 	
 
 	/* 1. Walk command line for options */
@@ -124,9 +125,12 @@ int decblist(int argc, char *argv[])
 		size = program_size;
 	}
 
-	printf( "%s", buffer );
+	DECBToNative( buffer, size, &buffer2, &size2);
+
+	printf( "%s", buffer2 );
 
 	free( buffer );
+	free( buffer2 );
 	
 	_coco_close(path);
 

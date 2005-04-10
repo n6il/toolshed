@@ -19,6 +19,7 @@ char *OS9NameToString(u_char *f);
 int UnixToCoCoError(int ec);
 
 void DECBNameToString(u_char *filename, u_char *ext, u_char *string);
+void DECBToNative(char *buffer, int size, char **newBuffer, int *newSize);
 
 typedef enum _EOL_Type
 {

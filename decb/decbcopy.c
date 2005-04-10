@@ -21,7 +21,6 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int t
 static char *GetFilename(char *path);
 static EOL_Type DetermineEOLType(char *buffer, int size);
 static void NativeToDECB(char *buffer, int size, char **newBuffer, int *newSize);
-static void DECBToNative(char *buffer, int size, char **newBuffer, int *newSize);
 
 
 /* Help message */
@@ -589,7 +588,7 @@ static void NativeToDECB(char *buffer, int size, char **newBuffer, int *newSize)
 }
 
 
-static void DECBToNative(char *buffer, int size, char **newBuffer, int *newSize)
+void DECBToNative(char *buffer, int size, char **newBuffer, int *newSize)
 {
 #ifdef _WIN32
     int dosEOLCount = 0;
