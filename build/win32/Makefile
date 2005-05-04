@@ -6,6 +6,8 @@ PACKAGENAME	= os9tools.tgz
 INSTALLDIR	= /usr/local/bin
 DIRS		= libcoco libnative librbf libmisc libsys libdecb os9 mamou decb
 
+CC=gcc
+
 all:
 	$(foreach dir, $(DIRS), (cd $(dir); make);)
 
