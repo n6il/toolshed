@@ -230,7 +230,14 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 			
 			/* 1. Look for markers that this is an OS-9 disk image. */
 			
-			/* First, check out the dir sector for .. and . entries. */
+			/* First, assume bps value is valid and get it */
+			
+			if (int1(os9_sector->dd_lsnsize) > 0)
+			{
+				bps = int1(os9_sector->dd_lsnsize) * 256;
+			}
+			
+			/* Then, check out the dir sector for .. and . entries. */
 			
 			dir_sector_offset = (int3(os9_sector->dd_dir) + 1) * bps;
 			
