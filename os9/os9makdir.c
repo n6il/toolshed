@@ -95,7 +95,8 @@ static int do_makdir(char **argv, char *p)
 	
 	if (strchr(p, ',') == NULL)
 	{
-		ec = EOS_BPNAM;
+		/* 1. Call the native file system makdir */
+		ec = mkdir(p, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 	}
 	else
 	{
