@@ -13,7 +13,7 @@
 
 /* Static functions. */
 
-static void mamou_assemble(assembler *as);
+static int mamou_assemble(assembler *as);
 static void mamou_initialize(assembler *as);
 static void mamou_deinitialize(assembler *as);
 
@@ -268,12 +268,7 @@ int main(int argc, char **argv)
 	
 	/* 4. Call the assembler to do its work. */
 
-	mamou_assemble(&as);
-	
-	
-	/* 5. Return status. */
-	
-	return 0;
+	return mamou_assemble(&as);
 }
 
 
@@ -284,8 +279,10 @@ int main(int argc, char **argv)
 	@param as The assembler state structure
  */
 
-void mamou_assemble(assembler *as)
+int mamou_assemble(assembler *as)
 {
+	int ret = 0;
+
 	/* Get the current time for future reference. */
 
 	as->start_time = time(NULL);
@@ -322,7 +319,7 @@ void mamou_assemble(assembler *as)
         {
             printf("mamou: can't open %s\n", root_file.file);
 
-            return;
+            return 1;
         }
 
 
@@ -386,7 +383,7 @@ void mamou_assemble(assembler *as)
 			{
 				printf("mamou: can't open %s\n", root_file.file);
 				
-				return;
+				return 1;
 			}
 			
 			
@@ -446,6 +443,7 @@ void mamou_assemble(assembler *as)
 
     if (as->num_errors != 0)
     {
+	ret = 1;			/* error status */
         _coco_delete(as->object_name);
     }
 
@@ -457,7 +455,7 @@ void mamou_assemble(assembler *as)
 
 	/* Return. */
 
-    return;
+    return ret;
 }
 
 
