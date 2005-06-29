@@ -156,13 +156,19 @@ typedef enum
 
 /* mnemonic table entry */
 
+enum {
+	CPU_M6809=0,
+	CPU_H6309=1,
+	CPU_X9=2
+};
+
 struct h6309_opcode
 {
 	char    *mnemonic;      /* its name */
 	char    class;          /* its class */
 	int     opcode;         /* its base opcode */
 	char    cycles;         /* its base # of cycles */
-	char    h6309;          /* its processor class (0 = 6809, 1 = 6309) */
+	char    cpuclass;       /* its processor class (CPU_* above) */
 	int	(*func)();	/* function */
 };
 
@@ -314,7 +320,7 @@ typedef struct _assembler
 	unsigned int			conditional_stack_index;
 	char				conditional_stack[CONDSTACKLEN];
 	int				o_do_parsing;
-	int				o_h6309;
+	int				o_cpuclass;
 	unsigned int			code_bytes;					/* number of emitted code bytes */
 #define NAMLEN 64
 #define TTLLEN NAMLEN

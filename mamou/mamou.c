@@ -61,6 +61,7 @@ int main(int argc, char **argv)
         fprintf(stderr, " -a<sym>[=<val>] assign val to sym\n");
         fprintf(stderr, " -d        debug mode\n");
         fprintf(stderr, " -e        enhanced 6309 assembler mode\n");
+	fprintf(stderr, " -ee       enhanced 6309 and X9 assembler mode\n");
         fprintf(stderr, " -i<dir>   additional include directories\n");
         fprintf(stderr, " -p        don't assemble, just parse\n");
         fprintf(stderr, " -q        quiet mode\n");
@@ -147,7 +148,8 @@ int main(int argc, char **argv)
 					
                 case 'e':
                     /* 6309 extended instruction mode */
-                    as.o_h6309 = 1;
+                    as.o_cpuclass = CPU_H6309;
+		    if (tolower(argv[j][2]) == 'e') as.o_cpuclass = CPU_X9;
                     break;	
 					
                 case 'i':
@@ -971,7 +973,7 @@ void process(assembler *as)
         if (as->f_count_cycles)
         {
             as->cumulative_cycles = as->line.mnemonic.opcode.h6309->cycles;
-            if (as->o_h6309 == 1)
+            if (as->o_cpuclass >= CPU_H6309)
             {
                 as->cumulative_cycles--;
             }

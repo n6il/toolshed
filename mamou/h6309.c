@@ -30,9 +30,9 @@ typedef enum _h6309_reg
 	RZERO = 12,
 	RPCR  = 13,
 	RE    = 14,
-	RF	  = 15
+	RF	  = 15,
+	RT 	= 16		/* X9 extension */
 } h6309_reg;
-
 
 /* static functions */
 static int do_gen(assembler *as, int opcode, int amode, int always_word);
@@ -672,8 +672,8 @@ int _p3gen8(assembler *as, int opcode)
 
 int _rtor(assembler *as, int opcode)
 {
-	int src;
-	int dst;
+	int src, srcsz;
+	int dst, dstsz;
 
 	/* tfr and exg */
 	
@@ -720,6 +720,9 @@ int _rtor(assembler *as, int opcode)
 		emit(as, 0);
 		return 0;
 	}
+
+	if (src == RT) src = RPCR;	/* _DIRTY_ hack for T register */
+	if (dst == RT) dst = RPCR;	
 	
 	if (dst == RZERO)
 	{
@@ -727,15 +730,11 @@ int _rtor(assembler *as, int opcode)
 		return 0;
 	}
 
-	if ((src != RZERO) &&
-#if 0
-	    ((src < 8 && dst >= 8) ||
-	    (src >= 8 && dst < 8)))
-#else
-	/* Rodney's 16->8 addition -- 05/30/04 */
-            ((src & 8) != (dst & 8)) &&
-            (src >= 8 && opcode == 30)) /* EXG disallows R16->R8 */
-#endif
+	srcsz = ((src & 8) && (src != RPCR)) ? 8 : 16;
+	dstsz = ((dst & 8) && (dst != RPCR)) ? 8 : 16;
+	if ((src == RZERO) && (dstsz == 8)) srcsz = 8;
+
+	if ((srcsz != dstsz) && (opcode == 30)) /* EXG disallows R16->R8 */
 	{
 		error(as, "Register Size Mismatch");
 		emit(as, 0);
@@ -1485,7 +1484,7 @@ static int do_indexed(assembler *as, int op)
 		return 0;
 	}
 
-	if (j == RE && as->o_h6309 == 1)
+	if (j == RE && (as->o_cpuclass >= CPU_H6309))
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 7);
@@ -1493,7 +1492,7 @@ static int do_indexed(assembler *as, int op)
 		return 0;
    	}
 
-	if (j == RF && as->o_h6309 == 1)
+	if (j == RF && (as->o_cpuclass >= CPU_H6309))
 	{
 		as->cumulative_cycles++;
 		abd_index(as, pbyte + 10);
@@ -1501,7 +1500,7 @@ static int do_indexed(assembler *as, int op)
 		return 0;
 	}
 
-	if (j == RW && as->o_h6309 == 1)
+	if (j == RW && (as->o_cpuclass >= CPU_H6309))
 	{
 		as->cumulative_cycles += 4;
 		abd_index(as, pbyte + 14);
@@ -1763,7 +1762,7 @@ static int do_indexed(assembler *as, int op)
 			return 0;
 		}
 
-		if (pbyte & 0x10 && as->o_h6309 == 1)
+		if (pbyte & 0x10 && (as->o_cpuclass >= CPU_H6309))
 		{
 			/* [,W] */
 			if (as->line.force_word || (result != 0))
@@ -1781,7 +1780,8 @@ static int do_indexed(assembler *as, int op)
 		else
 		{		
 			/* ,W */
-			if (as->line.force_word || (result != 0) && as->o_h6309 == 1)
+			if (as->line.force_word || (result != 0) && 
+				(as->o_cpuclass >= CPU_H6309))
 			{
 				emit(as, 0xaf);
 				eword(as, result);
@@ -1851,7 +1851,7 @@ static int reg_type(assembler *as, int r)
 			return(0x60);
 
 		case RW:
-		 	if (as->o_h6309 == 1)
+		 	if (as->o_cpuclass >= CPU_H6309)
 			{
 				return(0x100);
 			}
@@ -1969,7 +1969,7 @@ static h6309_reg regnum(assembler *as)
 		return(RDP);
 	}
 
-	if (as->o_h6309 == 1)
+	if (as->o_cpuclass >= CPU_H6309)
 	{
 		if (head(as->line.optr, "E") == 1)
 		{
@@ -2001,6 +2001,11 @@ static h6309_reg regnum(assembler *as)
 		{
 			return(RZERO);
 		}		
+
+		if ((head(as->line.optr, "T") == 1) && (as->o_cpuclass>=CPU_X9))
+		{	
+			return(RT);
+		}
 	}
 		
 	

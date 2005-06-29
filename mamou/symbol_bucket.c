@@ -327,14 +327,13 @@ int mne_look(assembler *as, char *str, mnemonic *m)
 		}
 		else
 		{
-			if (as->o_h6309 == 0 && mid->h6309 == 1)
+			if (as->o_cpuclass < mid->cpuclass)
 			{
 				return 1;
 			}
 
 			m->type = OPCODE_H6309;
 			m->opcode.h6309 = mid;
-			
 			
 			return 0;
 		}
