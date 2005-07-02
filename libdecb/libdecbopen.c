@@ -491,7 +491,7 @@ static int validate_pathlist(decb_path_id *path, char *pathlist)
 	
 		count = sscanf(pathlist, "%512[^,]%*c%64[^:]%*c%d", (*path)->imgfile, (*path)->filename, &((*path)->drive));
 	
-		if (count < 3)
+		if (count < 2)
 		{
 			count = sscanf(pathlist, "%512[^,]%*c%*c%d", (*path)->imgfile, &((*path)->drive));
 		}
