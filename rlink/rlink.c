@@ -5,6 +5,9 @@
 #include "rlink.h"
 
 
+#define	DEBUG
+
+
 int link();	/* The function that "does it all" */
 
 
@@ -20,9 +23,11 @@ char **argv;
 {
 	char *rfiles[MAX_RFILES];
 	char *lfiles[MAX_RFILES];
+	char *ofile;
 	int rfile_count, lfile_count, i;
 
 
+	ofile = NULL;
 	rfile_count = 0;
 	lfile_count = 0;
 
@@ -36,6 +41,28 @@ char **argv;
 			/* option -- process it */
 			switch (tolower(argv[i][1]))
 			{
+				case 'o':
+					/* Output object file */
+					{
+						char *p = &argv[i][2];
+
+						if (argv[i][2] == '=')
+						{
+							p++;
+						}
+
+						if (ofile == NULL)
+						{
+							ofile = p;
+						}
+						else
+						{
+							fprintf(stderr, "linker fatal: -o option already specified\n");
+							exit(1);
+						}
+					}
+					break;
+
 				case 'l':
 					/* Library */
 					{
@@ -60,7 +87,7 @@ char **argv;
 
 				default:
 					fprintf(stderr, "linker fatal: unknown option %c in %s\n", argv[i][1], argv[i]);
-					exit(0);
+					exit(1);
 			}
 		}
 		else if (rfile_count < MAX_RFILES)
@@ -71,9 +98,10 @@ char **argv;
 		}
 	}
 
-	/* Get list of .r files and put them together */
 
-	return link(rfiles, rfile_count, lfiles, lfile_count);
+	/* Call the function which does all the work! */
+
+	return link(rfiles, rfile_count, lfiles, lfile_count, ofile);
 }
 
 
@@ -89,34 +117,48 @@ int help()
 
 
 
-int link(rfiles, rfile_count, lfiles, lfile_count)
+int link(rfiles, rfile_count, lfiles, lfile_count, ofile)
 char *rfiles[];
 int rfile_count;
 char *lfiles[];
 int lfile_count;
+char *ofile;
 {
 	int	i;
 
 
-#ifndef DEBUG
+#ifdef DEBUG
 	if (rfile_count > 0)
 	{
-		printf("ROF files:\n");
+		printf("ROF files: ");
 		for (i = 0; i < rfile_count; i++)
 		{
-			printf("   %s\n", rfiles[i]);
+			printf("[%s] ", rfiles[i]);
 		}
+
+		printf("\n");
 	}
 
 	if (lfile_count > 0)
 	{
-		printf("\nLibrary files:\n");
+		printf("Library files: ");
 		for (i = 0; i < lfile_count; i++)
 		{
-			printf("   %s\n", lfiles[i]);
+			printf("[%s] ", lfiles[i]);
 		}
+
+		printf("\n");
+	}
+
+	if (ofile != NULL)
+	{
+		printf("Output file: [%s]\n", ofile);
 	}
 #endif
+
+	/* We have the ROF input files, the library input files and
+	 * the output file. Now let's go to work and link 'em!
+	 */
 
 	
 	return 0;
