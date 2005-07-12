@@ -9,6 +9,7 @@
 
 
 int link();	/* The function that "does it all" */
+int dump_rof_header();
 
 
 #define MAX_RFILES	32
@@ -160,6 +161,36 @@ char *ofile;
 	 * the output file. Now let's go to work and link 'em!
 	 */
 
+	for (i = 0; i < rfile_count; i++)
+	{
+		FILE *fp;
+
+		fp = fopen(rfiles[i], "r");
+		
+		if (fp != NULL)
+		{
+			binhead hd;
+
+			fread(&hd, sizeof(hd), 1, fp);
+#ifdef DEBUG
+			dump_rof_header(hd);
+#endif
+		}
+		else
+		{
+			fprintf(stderr, "linker error: cannot open file %s\n", rfiles[i]);
+		}
+
+		fclose(fp);
+	}
 	
 	return 0;
 }
+
+
+int dump_rof_header(hd)
+char *hd;
+{
+	printf("ROF Header:\n");
+}
+
