@@ -1,3 +1,16 @@
+/**********************************************************************
+ *
+ * RLINK - Relocatable Linker
+ *
+ * Compatible with Microware's 'rlink' linker for the 6809.
+ *
+ * Written because Allen Huffman wouldn't get off his lazy
+ * ass and send Tim those disks.
+ *
+ * Thanks for the motivation Allen!
+ *
+ **********************************************************************/
+
 #include <stdio.h>
 #ifdef UNIX
 #include <stdlib.h>
