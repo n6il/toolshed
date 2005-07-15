@@ -29,29 +29,83 @@
 
 typedef struct
 {        
-	long		h_sync;         /* should == ROFSYNC */
-	unsigned short	h_tylan;        /* type/language/attr/revision */
-	char		h_valid;        /* asm valid? */ 
-	char		h_date[5];      /* creation date */
-	char		h_edit;         /* edition # */
+	/* Sync bytes used by the linker to recognize a ROF */
+	long		h_sync;
+
+	/* Type/language byte and attribute/revision byte obtained
+	 * from the psect line of the module.  Only meaningful on
+	 * a root psect.
+	 */
+	unsigned short	h_tylan;
+
+	/* Assembly valid, used to prevent the linker from linking
+	 * erroneous modules.  It is non-zero if assembly errors
+	 * have occurred.
+	 */
+	char		h_valid;
+
+	/* Date/Time Assembled (in OS-9/6809 date/time format) */
+	char		h_date[5];
+
+	/* Edition number.  A user definable edition number to place
+	 * in the output module fr root psects.  For non-root psects,
+	 * this is informational only.
+	 */
+	char		h_edit;
+
+	/* Unused. */
 	char		h_spare;        
-					/* next, sizes of: */
-	unsigned short	h_glbl,         /* globals */
-			h_dglbl,        /* direct page globals */
-			h_data,         /* data */
-			h_ddata,        /* direct page data */
-			h_ocode;        /* code */
+
+	/* Size of global (or static) storage.  This value informs the
+	 * linker of the amount of static data storage to reserve
+	 * for the module.  The size is determined by the total size
+	 * of all rmb directives in the vsects.
+	 */
+	unsigned short	h_glbl,
+
+	/* Size of direct page global storage.  This value informs the
+	 * linker of the amount of static direct page data storage to
+	 * reserve for the module.  The size is determined by the total
+	 * size of all rmb directives in the vsects.
+	 */
+			h_dglbl,
+
+	
+	/* Size of initialized data.  This value informs the linker
+	 * of the amount of initialized data contained in the module.
+	 */
+			h_data,
+
+	/* Size of direct page initialized data.  This value informs the
+	 * linker of the amount of initialized data contained in the module.
+	 */
+			h_ddata,
+
+	/* Size of object code.  This value is determined from the size of
+	 * the assembled code.
+	 */
+			h_ocode;
+
+	/* Size of stack required.  This value informs the linker of the
+	 * amountfost ack space the module requires.  This value is obtained
+	 * directly from the psect directive.
+	 */
 	unsigned short	h_stack,
+
+	/* Offset to entry point in the object code, relative to the start
+	 * of the module.  This value is obtained directly from the psect
+	 * directive.
+	 */
 			h_entry;
 } binhead;
 
 
 
-/* definition/reference */
+/* Definition/reference structure */
 
 typedef struct
 {        
-	char		r_flag;		/* type/location */
-	unsigned short	r_offset;
+	char		r_flag;		/* type/location flag */
+	unsigned short	r_offset;	/* reference offset */
 } def_ref;
 
