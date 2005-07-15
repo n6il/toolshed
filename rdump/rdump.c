@@ -89,7 +89,11 @@ pass1()
 unsigned int o9_int(nbr)
 u16 nbr;
 {
+#ifndef __BIG_ENDIAN__
 	return( ((nbr&0xff00)>>8) + ((nbr&0xff)<<8)  );
+#else
+	return nbr;
+#endif
 }
 
 showhead()
@@ -182,7 +186,8 @@ showrefs()
                printf(" %9s ",sym);
           fflag=0;
           while(rcount--) {
-               fread(&ref,sizeof(ref),1,in);
+               fread(&ref.r_flag,sizeof(ref.r_flag),1,in);
+               fread(&ref.r_offset,sizeof(ref.r_offset),1,in);
                if(ferror(in)) ferr(fname);
                if(rflag && oflag) {
                     if(fflag)
@@ -204,7 +209,8 @@ showlcls()
      if(oflag)
           printf("\n%u local references\n",count);
      while(count--) {
-          fread(&ref,sizeof(ref),1,in);
+          fread(&ref.r_flag,sizeof(ref.r_flag),1,in);
+          fread(&ref.r_offset,sizeof(ref.r_offset),1,in);
           if(ferror(in)) ferr(fname);
           if(oflag) {
                printf("   %04x ",o9_int(ref.r_offset));
@@ -215,9 +221,10 @@ showlcls()
 
 unsigned int getwrd(FILE *fp)
 {
-	unsigned char Msb, Lsb;
+	unsigned char Msb, Lsb, nbr;
 	Msb=getc(fp); Lsb=getc(fp);
-	return ((Msb<<8) + (Lsb) );
+	nbr = Msb << 16 | Lsb;
+	return (o9_int(nbr));
 }
 
 error(s1,s2,s3,s4)

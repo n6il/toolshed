@@ -1,4 +1,6 @@
-/* symbol definition/reference type/location */
+/*
+ * Symbol definition/reference type/location
+ */
 
 /* type flags */
 #define CODENT		0x04        /* data/code flag */
@@ -27,21 +29,20 @@
 
 typedef struct
 {        
-long		h_sync;         /* should == ROFSYNC */
-unsigned	h_tylan;        /* type/language/attr/revision */
-char		h_valid;        /* asm valid? */ 
-char		h_date[5];      /* creation date */
-char		h_edit;         /* edition # */
-char		h_spare;        
-                                        /* next, sizes of: */
-unsigned	h_glbl,         /* globals */
-		h_dglbl,        /* direct page globals */
-		h_data,         /* data */
-		h_ddata,        /* direct page data */
-		h_ocode;        /* code */
-unsigned	h_stack,
-		h_entry;
-
+	long		h_sync;         /* should == ROFSYNC */
+	unsigned short	h_tylan;        /* type/language/attr/revision */
+	char		h_valid;        /* asm valid? */ 
+	char		h_date[5];      /* creation date */
+	char		h_edit;         /* edition # */
+	char		h_spare;        
+					/* next, sizes of: */
+	unsigned short	h_glbl,         /* globals */
+			h_dglbl,        /* direct page globals */
+			h_data,         /* data */
+			h_ddata,        /* direct page data */
+			h_ocode;        /* code */
+	unsigned short	h_stack,
+			h_entry;
 } binhead;
 
 
@@ -51,7 +52,6 @@ unsigned	h_stack,
 typedef struct
 {        
 	char		r_flag;		/* type/location */
-	unsigned	r_offset;
-
+	unsigned short	r_offset;
 } def_ref;
 
