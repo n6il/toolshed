@@ -1,0 +1,120 @@
+RLINK SPECIFICATION DOCUMENT
+
+RLINK is a linker for 6809 assembly language modules in Relocatable Object Format, a format which was designed by Microware.
+
+RLINK is broken into two main parts: Pass 1 and Pass 2.
+
+int pass1() :
+1. Initialize FILE, global symbol and external reference lists to nil.
+2. For each ROF file passed on the command line:
+    A. Allocate structure containing binhead and FILE *
+        1a. Open file with fopen, saving FILE * into newly allocated structure.
+        1b. Read in binhead into structure
+        1c. open the ROF and verify ROF header magic number.
+        1d. for first ROF, verify type/lang and attr/rev are not zero, and verify that subsequent ROFs have a type/lang and attr/rev of zero, erroring out if not the case at any point.
+    B. Add all global symbols and external references from the ROF into the respective tables.
+        1a. Global Symbol: Name, Offset, flag and FILE * linked list
+            i. Symbols found immediately after ROF Header
+            ii. First big endian word (two bytes) is total number of symbols.
+            iii. Each entry begins with a null terminated name string (name).
+            iv. Then a flag byte.
+            v. Then a two byte (big endian) offset.
+            vi. Error on duplicate symbols.
+        1b. Seek past Code and initialized data: hd.h_ocode + hd.h_ddata + hd.h_data bytes
+        1c. External Reference: name, reference position, flag, and FILE * linked list
+            i. First big endian word (two bytes) is total number of symbols.
+            ii. Each entry begins with a null terminated string (name).
+            iii. Then a word sized (two bytes, big endian) count of references.
+                1. Each reference contains one byte of flags and two byte offset.
+            
+    C. Check each undefined symbol for an entry in the global symbols table.
+        1a. If there are still undefined symbols, load a library file
+            i. Error on duplicate symbols.
+        1b. Check again for undefined symbols.
+        1c. Do 1a again.
+        1d. If library file are exhusted, report unresolved references error.
+        
+
+From Ultra C:
+
+"The linker uses the ROFs produced by the assembler as input. The linker reads all the ROFs and then assigns each ROF a relative starting  offset for its data storage space and a relative starting offset for its object code space. "
+
+ROF File format:
+
+                    +---------------------------------+
+Header              | Magic value: 62CD2387           | 4 bytes
+                    | Type/Language                   | 2 bytes
+                    | Assembly Valid                  | 1 byte
+                    | Edition Number                  | 1 byte
+                    | Unused                          | 1 byte
+                    | Size of global storage (h_glbl) | 2 bytes
+                    | Size of dp storage (h_dglbl)    | 2 bytes
+                    | Size of initalized data         | 2 bytes
+                    | Size of dp initialized data     | 2 bytes
+                    | Size of object code             | 2 bytes
+                    | Size of stack required          | 2 bytes
+                    | Offset to entry point of code   | 2 bytes
+                    +---------------------------------+
+Global Symbol Table v Count                           v 2 bytes
+                    : +------------------------------+:
+                    : :Name (null terminated)        :: ? bytes
+                    : :Flag                          :: 1 Byte
+                    : :Offset                        :: 2 bytes
+                    : +------------------------------+:
+                    : +------------------------------+:
+                    : :                              ::
+                    ^ :..............................:^
+                    +---------------------------------+
+Initialized data    v                                 v h_data bytes
+                    :                                 :
+                    :                                 :
+                    :                                 :
+                    ^                                 ^
+                    +---------------------------------+
+dp initialized data v                                 v h_ddata bytes
+                    :                                 :
+                    :                                 :
+                    :                                 :
+                    ^                                 ^
+                    +---------------------------------+
+object code         v                                 v h_ocode bytes
+                    :                                 :
+                    :                                 :
+                    :                                 :
+                    ^                                 ^
+                    +---------------------------------+
+External Ref Table  v Count                           v 2 bytes
+                    : +------------------------------+:
+                    : v Name (null terminated)       :: ? bytes
+                    : : Count                        :: 2 Byte
+                    : : +---------------------------+::
+                    : : | Flag                      |:: 1 byte
+                    : : | Offset                    |:: 2 bytes
+                    : : +---------------------------+::
+                    : : +---------------------------+::
+                    : : :                           :::
+                    : : :...........................:::
+                    : +------------------------------+:
+                    : :                              ::
+                    ^ :..............................:^
+                    +---------------------------------+
+Local References    v Count                           v 2 bytes
+                    : +------------------------------+:
+                    : | Flag                         |: 1 byte
+                    : | offset                       |: 2 Byte
+                    : +------------------------------+:
+                    : +------------------------------+:
+                    : :                              ::
+                    ^ :..............................:^
+                    +---------------------------------+
+                  
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
