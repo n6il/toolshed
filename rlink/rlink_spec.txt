@@ -151,6 +151,8 @@ Header              | Magic value: 0x87CD             | 2 bytes
                     +---------------------------------+
                     | Execution offset                | 2 bytes
                     +---------------------------------+
+                    | Permanent Storage Size          | 2 bytes
+                    +---------------------------------+
                     : Module name (os9 string)        : ? bytes
                     : .  .  .  .  .  .  .  .  .  .  . :
                     : +------------------------------::

@@ -25,6 +25,8 @@ unsigned int getwrd();
 
 int link();	/* The function that "does it all" */
 int dump_rof_header();
+char *flagtext();
+unsigned adjoff();
 
 
 #define MAX_RFILES	32
@@ -47,6 +49,8 @@ struct ob_files
 	int			lf_offset;
 	binhead		hd;
 	struct exp_sym	*symbols;
+	char		modname[MAXNAME+1];
+	unsigned	Code, IDat, UDat, IDpD, UDpD;
 };
 
 /* The 'main' function */
@@ -303,10 +307,25 @@ int edition, extramem, printmap, printsym;
 		{
 			ob_start = ob_temp;
 			ob_cur = ob_start;
+			
+			/* Place initial settings stuct */
+			ob_cur->Code = 13 + strlen(ofile) + 1;
+			ob_cur->IDat = 1;			/* Not 100% sure of this value */
+			ob_cur->UDat = 5;			/* Not 100% sure of this value */
+			ob_cur->IDpD = 0;			/* Not 100% sure of this value */
+			ob_cur->UDpD = 1;			/* Not 100% sure of this value */
 		}
 		else
 		{
 			ob_cur->next = ob_temp;
+			
+			/* Accumulate offsets */
+			ob_temp->Code = ob_cur->Code + ob_cur->hd.h_ocode;
+			ob_temp->IDat = ob_cur->IDat + ob_cur->hd.h_data;
+			ob_temp->UDat = ob_cur->UDat + ob_cur->hd.h_glbl;
+			ob_temp->IDpD = ob_cur->IDpD + ob_cur->hd.h_ddata;
+			ob_temp->UDpD = ob_cur->UDpD + ob_cur->hd.h_dglbl;
+			
 			ob_cur = ob_temp;
 		}
 		
@@ -361,14 +380,12 @@ int edition, extramem, printmap, printsym;
 			exit( 1 );
 		}
 		
-		/* Spin past module name */
-		while(getc(ob_cur->fp));
+		/* Get module name */
+		getname( ob_cur->modname, ob_cur->fp ); 
 
 		/* Add external symbols to linked list */
 		
 	     count=getwrd( ob_cur->fp );
-		
-		printf( "Count of globals: %d\n", count );
 		
 	     while( count-- )
 	     {
@@ -380,25 +397,16 @@ int edition, extramem, printmap, printsym;
 				exit(1);
 	     	}
 	     	
-	     	if( ob_cur->symbols == NULL )
-	     	{
-	     		ob_cur->symbols = es_temp;
-	     		es_cur = es_temp;
-	     	}
-	     	else
-	     	{
-	     		es_cur->next = es_temp;
-	     		es_cur = es_temp;
-	     	}
-	     	
-	     	es_cur->next = NULL;
-	     	getname( es_cur->name, ob_cur->fp );
-	     	es_cur->flag = getc(ob_cur->fp);
-	     	es_cur->offset = getwrd(ob_cur->fp );
+			es_temp->next = ob_cur->symbols;
+			ob_cur->symbols = es_temp;
+
+	     	getname( ob_cur->symbols->name, ob_cur->fp );
+	     	ob_cur->symbols->flag = getc(ob_cur->fp);
+	     	ob_cur->symbols->offset = getwrd(ob_cur->fp );
 	     }
 	     
 	     /* Add special symbols to first ROF file */
-	     
+#if 1     
 	     if( i == 0 )
 	     {
 	     	struct exp_sym *es_temp;
@@ -411,21 +419,12 @@ int edition, extramem, printmap, printsym;
 				exit(1);
 	     	}
 	     	
-	     	if( ob_cur->symbols == NULL )
-	     	{
-	     		ob_cur->symbols = es_temp;
-	     		es_cur = es_temp;
-	     	}
-	     	else
-	     	{
-	     		es_cur->next = es_temp;
-	     		es_cur = es_temp;
-	     	}
+			es_temp->next = ob_cur->symbols;
+			ob_cur->symbols = es_temp;
 	     	
-	     	es_cur->next = NULL;
-	     	strcpy( es_cur->name, "dp_size" );
-	     	es_cur->flag = 0; /* To determine */
-	     	es_cur->offset = 0; /* To determine */
+	     	strcpy( ob_cur->symbols->name, "etext" );
+	     	ob_cur->symbols->flag = CODENT; /* To determine */
+	     	ob_cur->symbols->offset = 0; /* To determine */
 
 	     	es_temp = malloc( sizeof( struct exp_sym) );
 	     	
@@ -435,21 +434,12 @@ int edition, extramem, printmap, printsym;
 				exit(1);
 	     	}
 	     	
-	     	if( ob_cur->symbols == NULL )
-	     	{
-	     		ob_cur->symbols = es_temp;
-	     		es_cur = es_temp;
-	     	}
-	     	else
-	     	{
-	     		es_cur->next = es_temp;
-	     		es_cur = es_temp;
-	     	}
+			es_temp->next = ob_cur->symbols;
+			ob_cur->symbols = es_temp;
 	     	
-	     	es_cur->next = NULL;
-	     	strcpy( es_cur->name, "end" );
-	     	es_cur->flag = 0; /* To determine */
-	     	es_cur->offset = 0; /* To determine */
+	     	strcpy( ob_cur->symbols->name, "btext" );
+	     	ob_cur->symbols->flag = CODENT; /* To determine */
+	     	ob_cur->symbols->offset = 0; /* To determine */
 
 	     	es_temp = malloc( sizeof( struct exp_sym) );
 	     	
@@ -459,21 +449,12 @@ int edition, extramem, printmap, printsym;
 				exit(1);
 	     	}
 	     	
-	     	if( ob_cur->symbols == NULL )
-	     	{
-	     		ob_cur->symbols = es_temp;
-	     		es_cur = es_temp;
-	     	}
-	     	else
-	     	{
-	     		es_cur->next = es_temp;
-	     		es_cur = es_temp;
-	     	}
+			es_temp->next = ob_cur->symbols;
+			ob_cur->symbols = es_temp;
 	     	
-	     	es_cur->next = NULL;
-	     	strcpy( es_cur->name, "edata" );
-	     	es_cur->flag = 0; /* To determine */
-	     	es_cur->offset = 0; /* To determine */
+	     	strcpy( ob_cur->symbols->name, "edata" );
+	     	ob_cur->symbols->flag = INIENT; /* To determine */
+	     	ob_cur->symbols->offset = 0; /* To determine */
 
 	     	es_temp = malloc( sizeof( struct exp_sym) );
 	     	
@@ -483,21 +464,12 @@ int edition, extramem, printmap, printsym;
 				exit(1);
 	     	}
 	     	
-	     	if( ob_cur->symbols == NULL )
-	     	{
-	     		ob_cur->symbols = es_temp;
-	     		es_cur = es_temp;
-	     	}
-	     	else
-	     	{
-	     		es_cur->next = es_temp;
-	     		es_cur = es_temp;
-	     	}
+			es_temp->next = ob_cur->symbols;
+			ob_cur->symbols = es_temp;
 	     	
-	     	es_cur->next = NULL;
-	     	strcpy( es_cur->name, "btext" );
-	     	es_cur->flag = 0; /* To determine */
-	     	es_cur->offset = 0; /* To determine */
+	     	strcpy( ob_cur->symbols->name, "end" );
+	     	ob_cur->symbols->flag = 0; /* To determine */
+	     	ob_cur->symbols->offset = 0; /* To determine */
 
 	     	es_temp = malloc( sizeof( struct exp_sym) );
 	     	
@@ -507,38 +479,41 @@ int edition, extramem, printmap, printsym;
 				exit(1);
 	     	}
 	     	
-	     	if( ob_cur->symbols == NULL )
-	     	{
-	     		ob_cur->symbols = es_temp;
-	     		es_cur = es_temp;
-	     	}
-	     	else
-	     	{
-	     		es_cur->next = es_temp;
-	     		es_cur = es_temp;
-	     	}
+			es_temp->next = ob_cur->symbols;
+			ob_cur->symbols = es_temp;
 	     	
-	     	es_cur->next = NULL;
-	     	strcpy( es_cur->name, "etext" );
-	     	es_cur->flag = 0; /* To determine */
-	     	es_cur->offset = 0; /* To determine */
+	     	strcpy( ob_cur->symbols->name, "dpsize" );
+	     	ob_cur->symbols->flag = DIRENT; /* To determine */
+	     	ob_cur->symbols->offset = 0; /* To determine */
 
 	     }
+#endif
 	}
 	
+	/* Check if direct page usage overflows */
+	/* ob_cur must point to last object entry */
+
+	if( ob_cur->IDpD + ob_cur->UDpD > 0xff )
+	{
+		fprintf( stderr, "linker fatal: direct page allocation is %d bytes\n", ob_cur->IDpD + ob_cur->UDpD );
+		exit(1);
+	}
+
 	/* Print linked list -- To make sure my code is working */
+	printf( "Linkage map for a1  File - %s\n\n", ofile );
+	printf( "Section          Code IDat UDat IDpD UDpD File\n\n" );
 	
 	ob_cur = ob_start;
 	
 	do
 	{
-		printf( "File name: %s\n", rfiles[ob_cur->r_file] );
-		printf( "  FILE * is: %x\n", ob_cur->fp );
-		printf( "  Global symbols:\n" );
+		printf( "%-16s %4.4x %4.4x %4.4x   %2.2x   %2.2x %s\n", ob_cur->modname, ob_cur->Code, ob_cur->IDat,
+					ob_cur->UDat, ob_cur->IDpD, ob_cur->UDpD, rfiles[ob_cur->r_file] );
 		es_cur = ob_cur->symbols;
 		do
 		{
-			printf( "     %s: %x\n", es_cur->name, es_cur->offset );
+			printf( "     %-9s %s %4.4x\n", es_cur->name, flagtext(es_cur->flag),
+										adjoff( es_cur->offset, es_cur->flag, ob_cur ) );
 		} while( (es_cur = es_cur->next) != NULL );
 		
 		
@@ -582,3 +557,56 @@ unsigned int getwrd(FILE *fp)
 	return (o9_int(nbr));
 }
 
+char *flagtext( flag )
+char flag;
+{
+	if( flag & CODENT )
+	{
+		return "code";
+	}
+	else
+	{
+		if( flag & INIENT )
+		{
+			if( flag & DIRENT )
+				return "idpd";
+			else
+				return "idat";
+		}
+		else
+		{
+			if( flag & DIRENT )
+				return "udpd";
+			else
+				return "udat";
+		}
+	}
+}
+
+unsigned adjoff( offset, flag, ob )
+unsigned offset;
+char flag;
+struct ob_files *ob;
+{
+	if( flag & CODENT )
+	{
+		return offset + ob->Code;
+	}
+	else
+	{
+		if( flag & INIENT )
+		{
+			if( flag & DIRENT )
+				return offset + ob->IDpD;
+			else
+				return offset + ob->IDat;
+		}
+		else
+		{
+			if( flag & DIRENT )
+				return offset + ob->UDpD;
+			else
+				return offset + ob->UDat;
+		}
+	}
+}
