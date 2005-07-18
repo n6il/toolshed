@@ -17,8 +17,10 @@
 #endif
 #include "rlink.h"
 
+unsigned int o9_int();
+unsigned int getwrd();
 
-#define	DEBUG
+/* #define	DEBUG */
 
 
 int link();	/* The function that "does it all" */
@@ -28,7 +30,24 @@ int dump_rof_header();
 #define MAX_RFILES	32
 #define MAX_LFILES	32
 
+struct exp_sym
+{
+	struct exp_sym *next;
+	char name[SYMLEN+1];
+	char flag;
+	unsigned offset;
+};
 
+struct ob_files
+{        
+	struct ob_files	*next;
+	int			r_file;
+	int			l_file;
+	FILE		*fp;
+	int			lf_offset;
+	binhead		hd;
+	struct exp_sym	*symbols;
+};
 
 /* The 'main' function */
 main(argc,argv)
@@ -154,6 +173,11 @@ char **argv;
 						{
 							lfiles[lfile_count] = p;
 							lfile_count++;
+							if( lfile_count > MAX_LFILES )
+							{
+								fprintf(stderr, "Linker fatal: To many library files.\n" );
+								exit(1);
+							}
 						}
 					}
 					break;
@@ -172,10 +196,20 @@ char **argv;
 			/* file -- add it to the list */
 			rfiles[rfile_count] = argv[i];
 			rfile_count++;
+			if( rfile_count > MAX_RFILES )
+			{
+				fprintf(stderr, "Linker fatal: To many ROF files.\n" );
+				exit(1);
+			}
 		}
 	}
 
-
+	if( ofile == NULL )
+	{
+		fprintf( stderr, "linker fatal: no output file\n" );
+		exit(1);
+	}
+	
 	/* Call the function which does all the work! */
 
 	return link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, printmap, printsym);
@@ -212,7 +246,9 @@ char *modname;
 int edition, extramem, printmap, printsym;
 {
 	int	i;
-
+	struct ob_files *ob_start, *ob_cur;
+	struct exp_sym *es_cur;
+	
 
 #ifdef DEBUG
 	printf("edition = %d, memsize = %d, modname = %s, printmap=%d, printsym=%d\n",
@@ -252,25 +288,261 @@ int edition, extramem, printmap, printsym;
 
 	for (i = 0; i < rfile_count; i++)
 	{
-		FILE *fp;
-
-		fp = fopen(rfiles[i], "r");
+		struct ob_files *ob_temp;
+		unsigned count;
 		
-		if (fp != NULL)
+		ob_temp = malloc( sizeof( struct ob_files  ));
+		
+		if( ob_temp == NULL )
 		{
-			binhead hd;
+			fprintf( stderr, "linker fatal: Out of memory\n" );
+			exit(1);
+		}
+		
+		if( i == 0 )
+		{
+			ob_start = ob_temp;
+			ob_cur = ob_start;
+		}
+		else
+		{
+			ob_cur->next = ob_temp;
+			ob_cur = ob_temp;
+		}
+		
+		ob_cur->next = NULL;
+		ob_cur->r_file = i;
+		ob_cur->l_file = -1;
+		ob_cur->lf_offset = 0;
+		ob_cur->symbols = NULL;
+		ob_cur->fp = fopen(rfiles[i], "r");
 
-			fread(&hd, sizeof(hd), 1, fp);
+		if (ob_cur->fp != NULL)
+		{
+			fread(&(ob_cur->hd), sizeof(binhead), 1, ob_cur->fp);
 #ifdef DEBUG
 			dump_rof_header(hd);
 #endif
-			fclose(fp);
 		}
 		else
 		{
 			fprintf(stderr, "linker error: cannot open file %s\n", rfiles[i]);
+			exit(1);
 		}
+		
+		/* Check for validity of ROF file */
+		
+		if( ob_cur->hd.h_sync != ROFSYNC )
+		{
+			fprintf( stderr, "linker error: File %s is not an ROF file.\n", rfiles[i] );
+			exit(1);
+		}
+		
+		if( i==0 ) /* First ROF file needs special header */
+		{
+			if( ob_cur->hd.h_tylan == 0 )
+			{
+				fprintf( stderr, "Linker error: Initial ROF file (%s) must be type non-zero.\n", rfiles[i] );
+				exit(1);
+			}
+		}
+		else
+		{
+			if( ob_cur->hd.h_tylan != 0 )
+			{
+				fprintf( stderr, "Linker error: ROF file (%s) must be type zero.\n", rfiles[i] );
+				exit(1);
+			}
+		}
+		
+		if( ob_cur->hd.h_valid )
+		{
+			fprintf( stderr, "Linker error: ROF file: %s must contain valid object code.\n", rfiles[i] );
+			exit( 1 );
+		}
+		
+		/* Spin past module name */
+		while(getc(ob_cur->fp));
+
+		/* Add external symbols to linked list */
+		
+	     count=getwrd( ob_cur->fp );
+		
+		printf( "Count of globals: %d\n", count );
+		
+	     while( count-- )
+	     {
+	     	struct exp_sym *es_temp = malloc( sizeof( struct exp_sym) );
+	     	
+	     	if( es_temp == NULL )
+	     	{
+				fprintf( stderr, "linker fatal: Out of memory\n" );
+				exit(1);
+	     	}
+	     	
+	     	if( ob_cur->symbols == NULL )
+	     	{
+	     		ob_cur->symbols = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	else
+	     	{
+	     		es_cur->next = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	
+	     	es_cur->next = NULL;
+	     	getname( es_cur->name, ob_cur->fp );
+	     	es_cur->flag = getc(ob_cur->fp);
+	     	es_cur->offset = getwrd(ob_cur->fp );
+	     }
+	     
+	     /* Add special symbols to first ROF file */
+	     
+	     if( i == 0 )
+	     {
+	     	struct exp_sym *es_temp;
+	     	
+	     	es_temp = malloc( sizeof( struct exp_sym) );
+	     	
+	     	if( es_temp == NULL )
+	     	{
+				fprintf( stderr, "linker fatal: Out of memory\n" );
+				exit(1);
+	     	}
+	     	
+	     	if( ob_cur->symbols == NULL )
+	     	{
+	     		ob_cur->symbols = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	else
+	     	{
+	     		es_cur->next = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	
+	     	es_cur->next = NULL;
+	     	strcpy( es_cur->name, "dp_size" );
+	     	es_cur->flag = 0; /* To determine */
+	     	es_cur->offset = 0; /* To determine */
+
+	     	es_temp = malloc( sizeof( struct exp_sym) );
+	     	
+	     	if( es_temp == NULL )
+	     	{
+				fprintf( stderr, "linker fatal: Out of memory\n" );
+				exit(1);
+	     	}
+	     	
+	     	if( ob_cur->symbols == NULL )
+	     	{
+	     		ob_cur->symbols = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	else
+	     	{
+	     		es_cur->next = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	
+	     	es_cur->next = NULL;
+	     	strcpy( es_cur->name, "end" );
+	     	es_cur->flag = 0; /* To determine */
+	     	es_cur->offset = 0; /* To determine */
+
+	     	es_temp = malloc( sizeof( struct exp_sym) );
+	     	
+	     	if( es_temp == NULL )
+	     	{
+				fprintf( stderr, "linker fatal: Out of memory\n" );
+				exit(1);
+	     	}
+	     	
+	     	if( ob_cur->symbols == NULL )
+	     	{
+	     		ob_cur->symbols = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	else
+	     	{
+	     		es_cur->next = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	
+	     	es_cur->next = NULL;
+	     	strcpy( es_cur->name, "edata" );
+	     	es_cur->flag = 0; /* To determine */
+	     	es_cur->offset = 0; /* To determine */
+
+	     	es_temp = malloc( sizeof( struct exp_sym) );
+	     	
+	     	if( es_temp == NULL )
+	     	{
+				fprintf( stderr, "linker fatal: Out of memory\n" );
+				exit(1);
+	     	}
+	     	
+	     	if( ob_cur->symbols == NULL )
+	     	{
+	     		ob_cur->symbols = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	else
+	     	{
+	     		es_cur->next = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	
+	     	es_cur->next = NULL;
+	     	strcpy( es_cur->name, "btext" );
+	     	es_cur->flag = 0; /* To determine */
+	     	es_cur->offset = 0; /* To determine */
+
+	     	es_temp = malloc( sizeof( struct exp_sym) );
+	     	
+	     	if( es_temp == NULL )
+	     	{
+				fprintf( stderr, "linker fatal: Out of memory\n" );
+				exit(1);
+	     	}
+	     	
+	     	if( ob_cur->symbols == NULL )
+	     	{
+	     		ob_cur->symbols = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	else
+	     	{
+	     		es_cur->next = es_temp;
+	     		es_cur = es_temp;
+	     	}
+	     	
+	     	es_cur->next = NULL;
+	     	strcpy( es_cur->name, "etext" );
+	     	es_cur->flag = 0; /* To determine */
+	     	es_cur->offset = 0; /* To determine */
+
+	     }
 	}
+	
+	/* Print linked list -- To make sure my code is working */
+	
+	ob_cur = ob_start;
+	
+	do
+	{
+		printf( "File name: %s\n", rfiles[ob_cur->r_file] );
+		printf( "  FILE * is: %x\n", ob_cur->fp );
+		printf( "  Global symbols:\n" );
+		es_cur = ob_cur->symbols;
+		do
+		{
+			printf( "     %s: %x\n", es_cur->name, es_cur->offset );
+		} while( (es_cur = es_cur->next) != NULL );
+		
+		
+	} while( (ob_cur = ob_cur->next) != NULL );
 	
 	return 0;
 }
@@ -280,5 +552,33 @@ int dump_rof_header(hd)
 char *hd;
 {
 	printf("ROF Header:\n");
+}
+
+getname(s, fp)
+register char *s;
+FILE *fp;
+{
+     while(*s++ = getc(fp));
+     *s = '\0';
+}
+
+/* Switch a Little-Endian number byte order to make it Big-Endian */
+
+unsigned int o9_int(nbr)
+u16 nbr;
+{
+#ifndef __BIG_ENDIAN__
+	return( ((nbr&0xff00)>>8) + ((nbr&0xff)<<8)  );
+#else
+	return nbr;
+#endif
+}
+
+unsigned int getwrd(FILE *fp)
+{
+	unsigned char Msb, Lsb, nbr;
+	Msb=getc(fp); Lsb=getc(fp);
+	nbr = Msb << 16 | Lsb;
+	return (o9_int(nbr));
 }
 

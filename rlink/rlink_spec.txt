@@ -8,6 +8,17 @@ int pass1() :
 1. Initialize FILE, global symbol and external reference lists to nil.
 2. For each ROF file passed on the command line:
     A. Allocate structure containing binhead and FILE *
+    
+
+So everytime a .r is read we need to record some basic information:
+struct{
+    struct *next_pointer;
+    FILE *filepointer;
+    int offset; /* always zero for .r files, used for .l files */
+    struct binhead binary_header;
+};
+
+    
         1a. Open file with fopen, saving FILE * into newly allocated structure.
         1b. Read in binhead into structure
         1c. open the ROF and verify ROF header magic number.
@@ -26,18 +37,34 @@ int pass1() :
             ii. Each entry begins with a null terminated string (name).
             iii. Then a word sized (two bytes, big endian) count of references.
                 1. Each reference contains one byte of flags and two byte offset.
-            
+        1d. The first ROF has some additional symbols added to it by the linker:
+            i. dpsize (udpd)
+            ii. end (udat) - initialized to one byte higher than the initialized data.
+            iii. edata (idat) - initialized to one byte higher than the uninitialized data.
+            iv. btext (code) - (always zero?)
+            v. etext (code) - End of the code section?
     C. Check each undefined symbol for an entry in the global symbols table.
         1a. If there are still undefined symbols, load a library file
             i. Error on duplicate symbols.
         1b. Check again for undefined symbols.
         1c. Do 1a again.
         1d. If library file are exhusted, report unresolved references error.
-        
+ 
+ 
+ 
+int pass2() :
+1. Open a path to a new file which will contain the OS-9 or DECB module.
+2. OS-9: Write the module header; DECB: Write the DECB LOADM header
+3. Visit each ROF file, writing the object code from the ROF into the new module file.
+4. Revisit each ROF file, writing the initialized DP data to the new module file.
+5. Revisit each ROF file, writing the initialized data to the new module file.
+6. Write out Data-text reference offsets.
+    Formula: Offset comes from the offset in the ROF plus the offset of the inserted psect.
+             Bias comes from the offset of the inserted psect. Hmm. I guess I don't have a handle on this. :(
+7. Write out Data-data reference offsets.
+8. Write out program name.
+9. OS-9: Write out the 3 byte CRC; DECB: Write the DECB LOADM trailer.
 
-From Ultra C:
-
-"The linker uses the ROFs produced by the assembler as input. The linker reads all the ROFs and then assigns each ROF a relative starting  offset for its data storage space and a relative starting offset for its object code space. "
 
 ROF File format:
 
@@ -45,6 +72,7 @@ ROF File format:
 Header              | Magic value: 62CD2387           | 4 bytes
                     | Type/Language                   | 2 bytes
                     | Assembly Valid                  | 1 byte
+                    | Date (OS9 format)               | 5 bytes
                     | Edition Number                  | 1 byte
                     | Unused                          | 1 byte
                     | Size of global storage (h_glbl) | 2 bytes
@@ -55,15 +83,23 @@ Header              | Magic value: 62CD2387           | 4 bytes
                     | Size of stack required          | 2 bytes
                     | Offset to entry point of code   | 2 bytes
                     +---------------------------------+
+                    : Module name (null terminated)   : ? bytes
+                    +---------------------------------+
 Global Symbol Table v Count                           v 2 bytes
                     : +------------------------------+:
-                    : :Name (null terminated)        :: ? bytes
-                    : :Flag                          :: 1 Byte
-                    : :Offset                        :: 2 bytes
+                    : : Name (null terminated)       :: ? bytes
+                    : : Flag                         :: 1 Byte
+                    : : Offset                       :: 2 bytes
                     : +------------------------------+:
                     : +------------------------------+:
                     : :                              ::
                     ^ :..............................:^
+                    +---------------------------------+
+object code         v                                 v h_ocode bytes
+                    :                                 :
+                    :                                 :
+                    :                                 :
+                    ^                                 ^
                     +---------------------------------+
 Initialized data    v                                 v h_data bytes
                     :                                 :
@@ -72,12 +108,6 @@ Initialized data    v                                 v h_data bytes
                     ^                                 ^
                     +---------------------------------+
 dp initialized data v                                 v h_ddata bytes
-                    :                                 :
-                    :                                 :
-                    :                                 :
-                    ^                                 ^
-                    +---------------------------------+
-object code         v                                 v h_ocode bytes
                     :                                 :
                     :                                 :
                     :                                 :
@@ -107,14 +137,63 @@ Local References    v Count                           v 2 bytes
                     : :                              ::
                     ^ :..............................:^
                     +---------------------------------+
-                  
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+
+
+Object Code Module file format:
+
+                    +---------------------------------+
+Header              | Magic value: 0x87CD             | 2 bytes
+                    | Module Size                     | 2 bytes
+                    | Offset to module name           | 2 bytes
+                    | Module type/Language            | 1 byte
+                    | Attributes/Revision level       | 1 byte
+                    | Header check                    | 1 byte
+                    +---------------------------------+
+                    | Execution offset                | 2 bytes
+                    +---------------------------------+
+                    : Module name (os9 string)        : ? bytes
+                    : .  .  .  .  .  .  .  .  .  .  . :
+                    : +------------------------------::
+                    : : Executable code (from ROF)   :: ? bytes
+                    : : String Literals (from ROF)   :: ? bytes
+                    : +------------------------------::
+                    : +------------------------------::
+                    : :                              ::
+                    : :..............................::
+                    +---------------------------------+
+                    : Initializing DP Data Size       : 2 bytes
+                    : +------------------------------::
+                    : : DP Data (from ROF)           :: ? bytes
+                    : +------------------------------::
+                    : +------------------------------::
+                    : :..............................::
+                    +---------------------------------+
+                    : Initializing Data Size          : 2 bytes
+                    : +------------------------------::
+                    : : Data (from ROF)              :: ? bytes
+                    : +------------------------------::
+                    : +------------------------------::
+                    : :..............................::
+                    +---------------------------------+
+                    : Data-text Reference count       : 2 bytes
+                    : +------------------------------::
+                    : : Offset                       :: 2 bytes
+                    : : Bias                         :: 2 bytes
+                    : +------------------------------::
+                    : +------------------------------::
+                    : :                              ::
+                    : :..............................::
+                    +---------------------------------+
+                    : Data-data Reference count       : 2 bytes
+                    : +------------------------------::
+                    : : Offset                       :: 2 bytes
+                    : : Bias                         :: 2 bytes
+                    : +------------------------------::
+                    : +------------------------------::
+                    : :                              ::
+                    : :..............................::
+                    +---------------------------------+
+                    : Program name (Null terminated)  : ? bytes
+                    +---------------------------------+
+                    | CRC check value                 | 3 bytes
+                    +---------------------------------+
