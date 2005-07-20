@@ -221,9 +221,10 @@ showlcls()
 
 unsigned int getwrd(FILE *fp)
 {
-	unsigned char Msb, Lsb, nbr;
+	unsigned Msb, Lsb;
+	unsigned int nbr;
 	Msb=getc(fp); Lsb=getc(fp);
-	nbr = Msb << 16 | Lsb;
+	nbr = Msb << 8 | Lsb;
 	return (o9_int(nbr));
 }
 
