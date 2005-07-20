@@ -33,6 +33,7 @@ int chk_dup();
 int help();
 int getname();
 int rm_exref();
+int asign_sm();
 
 #define MAX_RFILES	32
 #define MAX_LFILES	32
@@ -335,14 +336,6 @@ int edition, extramem, printmap, printsym;
 		else
 		{
 			ob_cur->next = ob_temp;
-			
-			/* Accumulate offsets */
-			t_code += ob_cur->hd.h_ocode;
-			t_idat += ob_cur->hd.h_data;
-			t_udat += ob_cur->hd.h_glbl;
-			t_idpd += ob_cur->hd.h_ddata;
-			t_udpd += ob_cur->hd.h_dglbl;
-			
 			ob_cur = ob_temp;
 		}
 		
@@ -365,6 +358,14 @@ int edition, extramem, printmap, printsym;
 			fprintf(stderr, "linker error: cannot open file %s\n", rfiles[i]);
 			return 1;
 		}
+
+		/* Accumulate offsets */
+		t_code += ob_cur->hd.h_ocode;
+		t_idat += ob_cur->hd.h_data;
+		t_udat += ob_cur->hd.h_glbl;
+		t_idpd += ob_cur->hd.h_ddata;
+		t_udpd += ob_cur->hd.h_dglbl;
+
 		
 		/* Check for validity of ROF file */
 		
@@ -428,108 +429,6 @@ int edition, extramem, printmap, printsym;
 
 	     }
 	     
-	     /* Add special symbols to first ROF file */
-#if 1     
-	     if( i == 0 )
-	     {
-	     	struct exp_sym *es_temp;
-	     	
-	     	es_temp = malloc( sizeof( struct exp_sym) );
-	     	
-	     	if( es_temp == NULL )
-	     	{
-				fprintf( stderr, "linker fatal: Out of memory\n" );
-				return 1;
-	     	}
-	     	
-	     	strcpy( es_temp->name, "etext" );
-	     	es_temp->flag = CODENT; /* To determine */
-	     	es_temp->offset = 0; /* To determine */
-
-			dup_fnd += chk_dup( es_temp, ob_start, ob_cur->modname );
-
-			es_temp->next = ob_cur->symbols;
-			ob_cur->symbols = es_temp;
-	     	
-			rm_exref( es_temp->name, ob_start );
-
-	     	es_temp = malloc( sizeof( struct exp_sym) );
-	     	
-	     	if( es_temp == NULL )
-	     	{
-				fprintf( stderr, "linker fatal: Out of memory\n" );
-				return 1;
-	     	}
-	     	
-	     	strcpy( es_temp->name, "btext" );
-	     	es_temp->flag = CODENT; /* To determine */
-	     	es_temp->offset = 0; /* To determine */
-
-			dup_fnd += chk_dup( es_temp, ob_start, ob_cur->modname );
-
-			es_temp->next = ob_cur->symbols;
-			ob_cur->symbols = es_temp;
-	     	
-			rm_exref( es_temp->name, ob_start );
-
-	     	es_temp = malloc( sizeof( struct exp_sym) );
-	     	
-	     	if( es_temp == NULL )
-	     	{
-				fprintf( stderr, "linker fatal: Out of memory\n" );
-				return 1;
-	     	}
-	     	
-	     	strcpy( es_temp->name, "edata" );
-	     	es_temp->flag = INIENT; /* To determine */
-	     	es_temp->offset = 0; /* To determine */
-
-			dup_fnd += chk_dup( es_temp, ob_start, ob_cur->modname );
-
-			es_temp->next = ob_cur->symbols;
-			ob_cur->symbols = es_temp;
-	     	
-			rm_exref( es_temp->name, ob_start );
-
-	     	es_temp = malloc( sizeof( struct exp_sym) );
-	     	
-	     	if( es_temp == NULL )
-	     	{
-				fprintf( stderr, "linker fatal: Out of memory\n" );
-				return 1;
-	     	}
-	     	
-	     	strcpy( es_temp->name, "end" );
-	     	es_temp->flag = 0; /* To determine */
-	     	es_temp->offset = 0; /* To determine */
-
-			dup_fnd += chk_dup( es_temp, ob_start, ob_cur->modname );
-
-			es_temp->next = ob_cur->symbols;
-			ob_cur->symbols = es_temp;
-	     	
-			rm_exref( es_temp->name, ob_start );
-
-	     	es_temp = malloc( sizeof( struct exp_sym) );
-	     	
-	     	if( es_temp == NULL )
-	     	{
-				fprintf( stderr, "linker fatal: Out of memory\n" );
-				return 1;
-	     	}
-	     	
-	     	strcpy( es_temp->name, "dpsiz" );
-	     	es_temp->flag = DIRENT; /* To determine */
-	     	es_temp->offset = 0; /* To determine */
-
-			dup_fnd += chk_dup( es_temp, ob_start, ob_cur->modname );
-
-			es_temp->next = ob_cur->symbols;
-			ob_cur->symbols = es_temp;
-
-			rm_exref( es_temp->name, ob_start );
-	     }
-#endif
 		/* Grind past the object code and initialized data */
 
 		fseek( ob_cur->fp, ob_cur->hd.h_ocode + ob_cur->hd.h_ddata + ob_cur->hd.h_data, 1 );
@@ -634,12 +533,10 @@ int edition, extramem, printmap, printsym;
 				addrof += rm_exref( es_temp->name, ob_start );
 				
 				if( addrof > 0 )
-				{
 					dup_fnd += chk_dup( es_temp, ob_start, ob_temp->modname );
-		
-					es_temp->next = ob_temp->symbols;
-					ob_temp->symbols = es_temp;
-				}
+
+				es_temp->next = ob_temp->symbols;
+				ob_temp->symbols = es_temp;
 			 }
 			 
 			/* Grind past the object code and initialized data */
@@ -674,6 +571,13 @@ int edition, extramem, printmap, printsym;
 				}
 
 			 	ob_cur->next = ob_temp;
+
+				t_code += ob_temp->hd.h_ocode;
+				t_idat += ob_temp->hd.h_data;
+				t_udat += ob_temp->hd.h_glbl;
+				t_idpd += ob_temp->hd.h_ddata;
+				t_udpd += ob_temp->hd.h_dglbl;
+
 			 	ob_cur = ob_temp;
 			 }
 			 else
@@ -725,6 +629,54 @@ int edition, extramem, printmap, printsym;
 		return 1;
 	}
 	
+	/* Adjust data offsets */
+	ob_cur = ob_start;
+	
+	ob_cur->Code = 13 + strlen( ofile ) + 1;
+	ob_cur->IDpD = 0;
+	ob_cur->UDpD = ob_cur->IDpD + t_idpd;
+	ob_cur->IDat = ob_cur->UDpD + t_udpd;
+	ob_cur->UDat = ob_cur->IDat + t_idat;
+	
+	if( ob_cur->next != NULL )
+	{
+		struct ob_files *prev;
+		
+		prev = ob_cur;
+		ob_cur = ob_cur->next;
+		do
+		{	
+			ob_cur->Code = prev->Code + prev->hd.h_ocode;
+			ob_cur->IDpD = prev->IDpD + prev->hd.h_ddata;
+			ob_cur->UDpD = prev->UDpD + prev->hd.h_dglbl;
+			ob_cur->IDat = prev->IDat + prev->hd.h_data;
+			ob_cur->UDat = prev->UDat + prev->hd.h_glbl;
+			prev = ob_cur;
+		} while( (ob_cur = ob_cur->next) != NULL );
+	}
+	
+	/* Adjust exported symbols */
+	
+	ob_cur = ob_start;
+
+	do
+	{
+		es_cur = ob_cur->symbols;
+		do
+		{
+			es_cur->offset = adjoff( es_cur->offset, es_cur->flag, ob_cur );
+		} while( (es_cur = es_cur->next) != NULL );
+	} while( (ob_cur = ob_cur->next) != NULL );
+
+	/* Add special symbols (linker generated symbols) */
+	
+	if( asign_sm( ob_start, "etext", CODENT, t_code - (13 + strlen( ofile ) + 1) ) != 0 ) return 1;
+	if( asign_sm( ob_start, "btext", CODENT, 0 ) != 0 ) return 1;
+	if( asign_sm( ob_start, "edata", INIENT, t_idpd + t_udpd + t_idat ) != 0 ) return 1;
+	if( asign_sm( ob_start, "end", 0, t_idpd + t_udpd + t_idat + t_udat ) != 0 ) return 1;
+	if( asign_sm( ob_start, "dpsiz", DIRENT, t_idpd + t_udpd ) != 0 ) return 1;
+		
+	
 	/* Check if there are any unresolved symbols */
 	ob_cur = ob_start;
 	
@@ -755,32 +707,6 @@ int edition, extramem, printmap, printsym;
 		return 1;
 	}
 	
-	/* Adjust data offsets */
-	ob_cur = ob_start;
-	
-	ob_cur->Code = 13 + strlen( ofile ) + 1;
-	ob_cur->IDpD = 0;
-	ob_cur->UDpD = ob_cur->IDpD + t_idpd;
-	ob_cur->IDat = ob_cur->UDpD + t_udpd;
-	ob_cur->UDat = ob_cur->IDat + t_idat;
-	
-	if( ob_cur->next != NULL )
-	{
-		struct ob_files *prev;
-		
-		prev = ob_cur;
-		ob_cur = ob_cur->next;
-		do
-		{	
-			ob_cur->Code = prev->Code + prev->hd.h_ocode;
-			ob_cur->IDpD = prev->IDpD + prev->hd.h_ddata;
-			ob_cur->UDpD = prev->UDpD + prev->hd.h_dglbl;
-			ob_cur->IDat = prev->IDat + prev->hd.h_data;
-			ob_cur->UDat = prev->UDat + prev->hd.h_glbl;
-			prev = ob_cur;
-		} while( (ob_cur = ob_cur->next) != NULL );
-	}
-	
 	/* Print linked list -- To make sure my code is working */
 	printf( "Linkage map for a1  File - %s\n\n", ofile );
 	printf( "Section          Code IDat UDat IDpD UDpD File\n\n" );
@@ -794,8 +720,7 @@ int edition, extramem, printmap, printsym;
 		es_cur = ob_cur->symbols;
 		do
 		{
-			printf( "     %-9s %s %4.4x\n", es_cur->name, flagtext(es_cur->flag),
-										adjoff( es_cur->offset, es_cur->flag, ob_cur ) );
+			printf( "     %-9s %s %4.4x\n", es_cur->name, flagtext(es_cur->flag), es_cur->offset);
 		} while( (es_cur = es_cur->next) != NULL );
 		
 		
@@ -804,6 +729,43 @@ int edition, extramem, printmap, printsym;
 	printf( "                 ---- ---- ---- --\n" );
 	printf( "                 %4.4x %4.4x %4.4x %2.2x  %2.2x\n\n", t_code, t_idat, t_udat, t_idpd, t_udpd );
 	
+	return 0;
+}
+
+/* Assign symbol
+   ob must be ob_start */
+   
+int asign_sm( ob, name, flag, offset )
+struct ob_files *ob;
+char *name;
+char flag;
+unsigned offset;
+{
+	struct exp_sym *exp;
+
+	exp = malloc( sizeof( struct exp_sym ) );
+	
+	if( exp == NULL )
+	{
+		fprintf( stderr, "linker failed: out of memory\n" );
+		return 1;
+	}
+	
+	strcpy( exp->name, name );
+	exp->flag = flag;
+	exp->offset = offset;
+	
+	
+	if( chk_dup( exp, ob, "linker" ) > 0 )
+	{
+		free( exp );
+		return 1;
+	}
+	
+	rm_exref( name, ob );
+	
+	exp->next = ob->symbols;
+	ob->symbols = exp;
 	return 0;
 }
 
@@ -838,9 +800,11 @@ u16 nbr;
 
 unsigned int getwrd(FILE *fp)
 {
-	unsigned char Msb, Lsb, nbr;
+	unsigned char Msb, Lsb;
+	unsigned int nbr;
+	
 	Msb=getc(fp); Lsb=getc(fp);
-	nbr = Msb << 16 | Lsb;
+	nbr = Msb << 8 | Lsb;
 	return (o9_int(nbr));
 }
 
@@ -898,7 +862,7 @@ struct ob_files *ob;
 	}
 }
 
-/* Check if a symbol name is a exported symbol table
+/* Check if a symbol name is in the exported symbol table
    Returns true, false */
    
 int check_name( ob, name )
@@ -927,7 +891,7 @@ char *name;
 	return 1;
 }
 
-/* Checks is a symbol name is in the exported symbol table
+/* Checks if a symbol name is in the exported symbol table
    Prints duplicate error if it is */
    
 int chk_dup( es, ob, modname )
