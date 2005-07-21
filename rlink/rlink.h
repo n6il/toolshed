@@ -1,6 +1,6 @@
 #include <rof.h>
 
-typedef unsigned short u16;	/* Little-endian coco int */
+typedef unsigned u16;	/* Little-endian coco int */
 
 /* module.c */
 int create_decb_module();

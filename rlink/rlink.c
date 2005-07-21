@@ -15,16 +15,13 @@
 #ifdef UNIX
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
 #endif
 #include "rlink.h"
 
-unsigned int o9_int();
-unsigned int getwrd();
-
-/* #define	DEBUG */
-
-
-int link();	/* The function that "does it all" */
+unsigned o9_int();
+unsigned getwrd();
+int link();
 int dump_rof_header();
 char *flagtext();
 unsigned adjoff();
@@ -57,7 +54,7 @@ struct ob_files
 	struct ob_files	*next;
 	char		*filename;
 	FILE		*fp;
-	int			lf_offset;
+	long		object;
 	binhead		hd;
 	struct exp_sym *symbols;
 	struct ext_ref *exts;
@@ -71,7 +68,7 @@ int argc;
 char **argv;
 {
 	char *rfiles[MAX_RFILES];
-	char *lfiles[MAX_RFILES];
+	char *lfiles[MAX_LFILES];
 	char *ofile, *modname;
 	int edition, extramem;
 	int printmap, printsym;
@@ -97,6 +94,7 @@ char **argv;
 			/* option -- process it */
 			switch (argv[i][1])
 			{
+				case 'e':
 				case 'E':
 					/* Edition */
 					{
@@ -166,6 +164,11 @@ char **argv;
 						if (ofile == NULL)
 						{
 							ofile = p;
+							if( modname == NULL )
+							{
+								/* Set the module name */
+								modname = basename( p );
+							}
 						}
 						else
 						{
@@ -181,19 +184,14 @@ char **argv;
 						char *p = &argv[i][2];
 
 						if (argv[i][2] == '=')
-						{
 							p++;
-						}
 
-						if (lfile_count < MAX_LFILES)
+						lfiles[lfile_count] = p;
+						lfile_count++;
+						if( lfile_count > MAX_LFILES )
 						{
-							lfiles[lfile_count] = p;
-							lfile_count++;
-							if( lfile_count > MAX_LFILES )
-							{
-								fprintf(stderr, "Linker fatal: To many library files.\n" );
-								exit(1);
-							}
+							fprintf(stderr, "linker fatal: To many library files\n" );
+							exit(1);
 						}
 					}
 					break;
@@ -207,14 +205,14 @@ char **argv;
 					exit(1);
 			}
 		}
-		else if (rfile_count < MAX_RFILES)
+		else
 		{
 			/* file -- add it to the list */
 			rfiles[rfile_count] = argv[i];
 			rfile_count++;
 			if( rfile_count > MAX_RFILES )
 			{
-				fprintf(stderr, "Linker fatal: To many ROF files.\n" );
+				fprintf(stderr, "linker fatal: To many ROF files\n" );
 				exit(1);
 			}
 		}
@@ -235,7 +233,7 @@ char **argv;
 
 int help()
 {
-	fprintf(stderr, "Usage: rlink <opts>\n");
+	fprintf(stderr, "Usage: rlink <opts> source_file [source_file ...] <opts>\n");
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "   -o[=]file      output object file\n");
 	fprintf(stderr, "   -n[=]name      module name of the object file\n");
@@ -267,38 +265,6 @@ int edition, extramem, printmap, printsym;
 	unsigned t_code = 0, t_idat = 0, t_udat = 0, t_idpd = 0, t_udpd = 0;	
 	int	once = 0, dup_fnd = 0;
 
-#ifdef DEBUG
-	printf("edition = %d, memsize = %d, modname = %s, printmap=%d, printsym=%d\n",
-		edition, extramem, modname, printmap, printsym);
-
-	if (rfile_count > 0)
-	{
-		printf("ROF files: ");
-		for (i = 0; i < rfile_count; i++)
-		{
-			printf("[%s] ", rfiles[i]);
-		}
-
-		printf("\n");
-	}
-
-	if (lfile_count > 0)
-	{
-		printf("Library files: ");
-		for (i = 0; i < lfile_count; i++)
-		{
-			printf("[%s] ", lfiles[i]);
-		}
-
-		printf("\n");
-	}
-
-	if (ofile != NULL)
-	{
-		printf("Output file: [%s]\n", ofile);
-	}
-#endif
-
 	/* We have the ROF input files, the library input files and
 	 * the output file. Now let's go to work and link 'em!
 	 */
@@ -327,11 +293,11 @@ int edition, extramem, printmap, printsym;
 			ob_cur = ob_start;
 			
 			/* Place initial settings stuct */
-			t_code = 0;
-			t_idat = 0;
-			t_udat = 0;
-			t_idpd = 0;
-			t_udpd = 0;
+/* 			t_code = 0; */
+/* 			t_idat = 0; */
+/* 			t_udat = 0; */
+/* 			t_idpd = 0; */
+/* 			t_udpd = 0; */
 		}
 		else
 		{
@@ -341,18 +307,12 @@ int edition, extramem, printmap, printsym;
 		
 		ob_cur->next = NULL;
 		ob_cur->filename = rfiles[i];
-		ob_cur->lf_offset = 0;
 		ob_cur->symbols = NULL;
 		ob_cur->exts = NULL;
 		ob_cur->fp = fopen(rfiles[i], "r");
 
 		if (ob_cur->fp != NULL)
-		{
 			fread(&(ob_cur->hd), sizeof(binhead), 1, ob_cur->fp);
-#ifdef DEBUG
-			dump_rof_header(hd);
-#endif
-		}
 		else
 		{
 			fprintf(stderr, "linker error: cannot open file %s\n", rfiles[i]);
@@ -366,7 +326,6 @@ int edition, extramem, printmap, printsym;
 		t_idpd += ob_cur->hd.h_ddata;
 		t_udpd += ob_cur->hd.h_dglbl;
 
-		
 		/* Check for validity of ROF file */
 		
 		if( ob_cur->hd.h_sync != ROFSYNC )
@@ -379,7 +338,7 @@ int edition, extramem, printmap, printsym;
 		{
 			if( ob_cur->hd.h_tylan == 0 )
 			{
-				fprintf( stderr, "Linker error: Initial ROF file (%s) must be type non-zero.\n", rfiles[i] );
+				fprintf( stderr, "linker error: Initial ROF file (%s) must be type non-zero.\n", rfiles[i] );
 				return 1;
 			}
 		}
@@ -387,14 +346,14 @@ int edition, extramem, printmap, printsym;
 		{
 			if( ob_cur->hd.h_tylan != 0 )
 			{
-				fprintf( stderr, "Linker error: ROF file (%s) must be type zero.\n", rfiles[i] );
+				fprintf( stderr, "linker fatal: ROF file (%s) must be type zero\n", rfiles[i] );
 				return 1;
 			}
 		}
 		
 		if( ob_cur->hd.h_valid )
 		{
-			fprintf( stderr, "Linker error: ROF file: %s must contain valid object code.\n", rfiles[i] );
+			fprintf( stderr, "linker fatal: ROF file: %s must contain valid object code\n", rfiles[i] );
 			return 1;
 		}
 		
@@ -428,6 +387,9 @@ int edition, extramem, printmap, printsym;
 			rm_exref( es_temp->name, ob_start );
 
 	     }
+	     
+		/* Record the position of the start of the object code */
+		ob_cur->object = ftell( ob_cur->fp );
 	     
 		/* Grind past the object code and initialized data */
 
@@ -463,7 +425,10 @@ int edition, extramem, printmap, printsym;
 
 	for (i = 0; i < lfile_count; i++)
 	{
-		FILE	*fp;
+		FILE *fp;
+		unsigned modcount;
+		
+		modcount = 0;
 		
 		fp = fopen(lfiles[i], "r");
 
@@ -475,10 +440,12 @@ int edition, extramem, printmap, printsym;
 		
 		do
 		{
-			unsigned count, addrof = 0;
+			unsigned count, addrof;
 			struct ob_files *ob_temp;
-		
-			ob_temp = malloc( sizeof( struct ob_files  ));
+			
+			modcount++;
+			addrof = 0;
+			ob_temp = malloc( sizeof( struct ob_files ));
 			
 			if( ob_temp == NULL )
 			{
@@ -487,12 +454,10 @@ int edition, extramem, printmap, printsym;
 			}
 	
 			ob_temp->next = NULL;
-
 			ob_temp->filename = lfiles[i];
-			ob_temp->lf_offset = ftell( fp );
+			ob_temp->fp = fp;
 			ob_temp->symbols = NULL;
 			ob_temp->exts = NULL;
-			ob_temp->fp = fp;
 			
 			if( fread(&(ob_temp->hd), sizeof(binhead), 1, fp) == 0 )
 			{
@@ -501,15 +466,29 @@ int edition, extramem, printmap, printsym;
 			
 			if( ob_temp->hd.h_sync != ROFSYNC )
 			{
-				fprintf( stderr, "linker fatal: '%s' is not a relocatable module\n", lfiles[i] );
-				return 1;
+				if( modcount == 1 )
+				{
+					fprintf( stderr, "linker fatal: '%s' is not a library file\n", lfiles[i] );
+					return 1;
+				}
+				else
+				{
+					fprintf( stderr, "linker fatal: Module number %d in library %s is corrupt\n", modcount, lfiles[i] );
+					return 1;
+				}
 			}
 			
 			getname( ob_temp->modname, fp );
 
 			if( ob_temp->hd.h_tylan != 0 )
 			{
-				fprintf( stderr, "Linker error: Library file %s, module %s must be type zero.\n", rfiles[i], ob_temp->modname );
+				fprintf( stderr, "linker fatal: Library file %s, module %s must be type zero\n", rfiles[i], ob_temp->modname );
+				return 1;
+			}
+
+			if( ob_temp->hd.h_valid )
+			{
+				fprintf( stderr, "linker fatal: Library file: %s, module %s must contain valid object code\n", rfiles[i], ob_temp->modname );
 				return 1;
 			}
 			
@@ -517,7 +496,9 @@ int edition, extramem, printmap, printsym;
 
 			 while( count-- )
 			 {
-				struct exp_sym *es_temp = malloc( sizeof( struct exp_sym) );
+				struct exp_sym *es_temp;
+				
+				es_temp = malloc( sizeof( struct exp_sym) );
 				
 				if( es_temp == NULL )
 				{
@@ -528,6 +509,7 @@ int edition, extramem, printmap, printsym;
 				getname( es_temp->name, fp );
 				es_temp->flag = getc( fp );
 				es_temp->offset = getwrd( fp );
+				es_temp->next = NULL;
 				
 				/* Now find and remove this symbol from the external references table */
 				addrof += rm_exref( es_temp->name, ob_start );
@@ -539,12 +521,15 @@ int edition, extramem, printmap, printsym;
 				ob_temp->symbols = es_temp;
 			 }
 			 
+			 /* Record the position of the start of the object code */
+			ob_temp->object = ftell( fp );
+
 			/* Grind past the object code and initialized data */
 			fseek( fp, ob_temp->hd.h_ocode + ob_temp->hd.h_ddata + ob_temp->hd.h_data, 1 );
 				
 			 if( addrof > 0 )
 			 {
-			 	/* ROF was used, add it to the list */
+			 	/* Library module is needed, add it to the list */
 				/* Now add external references to linked list - only if they not already in the global list */
 				
 				count = getwrd( fp );
@@ -555,6 +540,7 @@ int edition, extramem, printmap, printsym;
 					
 					er_temp = malloc( sizeof( struct ext_ref ) );
 					getname( er_temp->name, fp );
+					er_temp->next = NULL;
 					fseek( fp, getwrd(fp) * 3, 1 );
 					
 					/* Check if name is listed in globals */
@@ -582,16 +568,15 @@ int edition, extramem, printmap, printsym;
 			 }
 			 else
 			 {
-			 	/* ROF was not used, free memory used */
-			 	struct exp_sym *es_temp;
-			 	es_temp = ob_temp->symbols;
-			 	
-			 	while( es_temp != NULL )
+			 	/* ROF was not used, release it */
+
+			 	while( ob_temp->symbols != NULL )
 			 	{
 			 		struct exp_sym *next;
-			 		next = es_temp->next;
-			 		free( es_temp );
-			 		es_temp = next;
+
+			 		next = ob_temp->symbols->next;
+			 		free( ob_temp->symbols );
+			 		ob_temp->symbols = next;
 			 	}
 				
 				free( ob_temp );
@@ -747,7 +732,7 @@ unsigned offset;
 	
 	if( exp == NULL )
 	{
-		fprintf( stderr, "linker failed: out of memory\n" );
+		fprintf( stderr, "linker fatal: Out of memory\n" );
 		return 1;
 	}
 	
@@ -788,7 +773,7 @@ FILE *fp;
 
 /* Switch a Little-Endian number byte order to make it Big-Endian */
 
-unsigned int o9_int(nbr)
+unsigned o9_int(nbr)
 u16 nbr;
 {
 #ifndef __BIG_ENDIAN__
@@ -798,10 +783,11 @@ u16 nbr;
 #endif
 }
 
-unsigned int getwrd(FILE *fp)
+unsigned getwrd( fp )
+FILE *fp;
 {
-	unsigned char Msb, Lsb;
-	unsigned int nbr;
+	char Msb, Lsb;
+	unsigned nbr;
 	
 	Msb=getc(fp); Lsb=getc(fp);
 	nbr = Msb << 8 | Lsb;
