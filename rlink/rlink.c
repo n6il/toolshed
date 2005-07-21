@@ -566,16 +566,18 @@ int edition, extramem, printmap, printsym;
 				t_udpd += ob_temp->hd.h_dglbl;
 
 			 	ob_cur = ob_temp;
-
+#if 0
 				printf( "\nNeeded %s, mod %s\n", ob_temp->filename, ob_temp->modname );
 				dmp_ext( ob_start );
-			 }
+#endif
+				}
 			 else
 			 {
 			 	/* ROF was not used, release it */
 				
+#if 0
 				printf("\n%s of %s was not needed\n\n", ob_temp->modname, ob_temp->filename );
-			 	
+#endif
 			 	while( ob_temp->symbols != NULL )
 			 	{
 			 		struct exp_sym *next;
@@ -702,7 +704,7 @@ int edition, extramem, printmap, printsym;
 	}
 	
 	/* Print linked list -- To make sure my code is working */
-	printf( "Linkage map for a1  File - %s\n\n", ofile );
+	printf( "Linkage map for %s  File - %s\n\n", modname, ofile );
 	printf( "Section          Code IDat UDat IDpD UDpD File\n\n" );
 	
 	ob_cur = ob_start;
