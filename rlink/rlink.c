@@ -31,6 +31,7 @@ int help();
 int getname();
 int rm_exref();
 int asign_sm();
+int dmp_ext();
 
 #define MAX_RFILES	32
 #define MAX_LFILES	32
@@ -565,11 +566,16 @@ int edition, extramem, printmap, printsym;
 				t_udpd += ob_temp->hd.h_dglbl;
 
 			 	ob_cur = ob_temp;
+
+				printf( "\nNeeded %s, mod %s\n", ob_temp->filename, ob_temp->modname );
+				dmp_ext( ob_start );
 			 }
 			 else
 			 {
 			 	/* ROF was not used, release it */
-
+				
+				printf("\n%s of %s was not needed\n\n", ob_temp->modname, ob_temp->filename );
+			 	
 			 	while( ob_temp->symbols != NULL )
 			 	{
 			 		struct exp_sym *next;
@@ -593,6 +599,9 @@ int edition, extramem, printmap, printsym;
 			 
 			/* Grind past local references */
 			fseek( fp, getwrd( fp ) * 3, 1 );
+		
+
+
 
 		} while( !feof( fp ));
 		
@@ -919,48 +928,72 @@ char *name;
 struct ob_files *ob;
 {
 	int	count = 0;
-	
-	if( ob == NULL )
-		return 0;
-	
-	do
+
+	while( ob != NULL )
 	{
-		struct ext_ref *ext, *prev = NULL;
+		struct ext_ref *ext, *prev;
 		
+		prev = NULL;
 		ext = ob->exts;
-		
-		if( ext == NULL )
-			continue;
-			
-		do
+		while( ext != NULL )
 		{
-				
 			if( strcmp( name, ext->name ) == 0 )
 			{
-				/* Found it, now remove it */
 				count++;
+
 				if( prev == NULL )
 				{
-					ob->exts = NULL;
+					ob->exts = ext->next;
 					free( ext );
-					break;
+					ext = ob->exts;
 				}
 				else
 				{
-					prev->next = ext->next;
+					struct ext_ref *tmp;
+					
+					tmp = ext->next;
+					prev->next = tmp;
 					free( ext );
-					ext = prev;
+					ext = tmp;
 				}
 			}
-			
-			prev = ext;
-		} while( (ext = ext->next) );
-	} while( (ob=ob->next) );
+			else
+			{
+				prev = ext;
+				ext = ext->next;
+			}
+		}
+		
+		ob = ob->next;
+	}
 	
 	return count;
 }
 
-
+int dmp_ext( ob )
+struct ob_files *ob;
+{
+	
+	while( ob != NULL )
+	{
+		struct ext_ref *exts;
+		
+		printf( "   File: %s, mod: %s: ", ob->filename, ob->modname );
+		
+		exts = ob->exts;
+		while( exts != NULL )
+		{
+			printf( "%s ", exts->name );
+			exts = exts->next;
+		
+		}
+		
+		printf( "\n" );
+		ob = ob->next;
+	}
+	
+	return 0;
+}
 
 
 
