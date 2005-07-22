@@ -32,6 +32,11 @@ int getname();
 int rm_exref();
 int asign_sm();
 int dmp_ext();
+unsigned getsym();
+
+int compute_crc();
+unsigned char _crc[3];
+int buffer_crc();
 
 #define MAX_RFILES	32
 #define MAX_LFILES	32
@@ -74,7 +79,6 @@ char **argv;
 	int edition, extramem;
 	int printmap, printsym;
 	int rfile_count, lfile_count, i;
-
 
 	modname = NULL;
 	ofile = NULL;
@@ -263,8 +267,11 @@ int edition, extramem, printmap, printsym;
 	int	i;
 	struct ob_files *ob_start, *ob_cur;
 	struct exp_sym *es_cur;
-	unsigned t_code = 0, t_idat = 0, t_udat = 0, t_idpd = 0, t_udpd = 0;	
+	unsigned t_code = 0, t_idat = 0, t_udat = 0, t_idpd = 0, t_udpd = 0, t_stac = 0;	
 	int	once = 0, dup_fnd = 0;
+	FILE *ofp;
+	unsigned headerParity, moduleSize, nameOffset, execOffset, dataSize;
+
 
 	/* We have the ROF input files, the library input files and
 	 * the output file. Now let's go to work and link 'em!
@@ -326,7 +333,8 @@ int edition, extramem, printmap, printsym;
 		t_udat += ob_cur->hd.h_glbl;
 		t_idpd += ob_cur->hd.h_ddata;
 		t_udpd += ob_cur->hd.h_dglbl;
-
+		t_stac += ob_cur->hd.h_stack;
+		
 		/* Check for validity of ROF file */
 		
 		if( ob_cur->hd.h_sync != ROFSYNC )
@@ -564,6 +572,7 @@ int edition, extramem, printmap, printsym;
 				t_udat += ob_temp->hd.h_glbl;
 				t_idpd += ob_temp->hd.h_ddata;
 				t_udpd += ob_temp->hd.h_dglbl;
+				t_stac += ob_temp->hd.h_stack;
 
 			 	ob_cur = ob_temp;
 #if 0
@@ -628,7 +637,7 @@ int edition, extramem, printmap, printsym;
 	/* Adjust data offsets */
 	ob_cur = ob_start;
 	
-	ob_cur->Code = 13 + strlen( ofile ) + 1;
+	ob_cur->Code = 14 + strlen( modname );
 	ob_cur->IDpD = 0;
 	ob_cur->UDpD = ob_cur->IDpD + t_idpd;
 	ob_cur->IDat = ob_cur->UDpD + t_udpd;
@@ -666,7 +675,7 @@ int edition, extramem, printmap, printsym;
 
 	/* Add special symbols (linker generated symbols) */
 	
-	if( asign_sm( ob_start, "etext", CODENT, t_code - (13 + strlen( ofile ) + 1) ) != 0 ) return 1;
+	if( asign_sm( ob_start, "etext", CODENT, 14 + strlen( ofile ) + t_code ) != 0 ) return 1;
 	if( asign_sm( ob_start, "btext", CODENT, 0 ) != 0 ) return 1;
 	if( asign_sm( ob_start, "edata", INIENT, t_idpd + t_udpd + t_idat ) != 0 ) return 1;
 	if( asign_sm( ob_start, "end", 0, t_idpd + t_udpd + t_idat + t_udat ) != 0 ) return 1;
@@ -724,7 +733,296 @@ int edition, extramem, printmap, printsym;
 	
 	printf( "                 ---- ---- ---- --\n" );
 	printf( "                 %4.4x %4.4x %4.4x %2.2x  %2.2x\n\n", t_code, t_idat, t_udat, t_idpd, t_udpd );
+	printf( "\nTotal stack space: %4.4x\n\n", t_stac );
 	
+	ofp = fopen( ofile, "w+");
+	
+	if( ofp == NULL )
+	{
+		fprintf( stderr, "linker fatal: Cannot open output file %s\n", ofile );
+		return 1;
+	}
+	
+	_crc[0] = 0xFF;		/* CRC */
+	_crc[1] = 0xFF;
+	_crc[2] = 0xFF;
+	headerParity = 0;
+
+	/* Start Generating Module */
+	/* Module signature */
+	fputc(0x87, ofp);
+	fputc(0xCD, ofp);
+	compute_crc(0x87); compute_crc(0xCD);
+	headerParity ^= 0x87;
+	headerParity ^= 0xCD;
+	
+	moduleSize = 14 						/* module header */
+	           + strlen( modname )			/* module name */
+	           + t_code						/* Code size of all segements */
+	           + t_idpd                     /* Initialized direct page data of all segements */
+	           + t_idat						/* Initialized data of all segments */
+	           + 4							/* Extra linker initialized data */
+	           + 2 + 0 * 4  				/* Data-text reference table */
+	           + 2 + 0 * 4  				/* Data-data reference table */
+	           + strlen( modname ) + 1		/* Program name (NULL terminated) */
+	           + 3;							/* CRC bytes */
+	
+	if( moduleSize > 0xffff )
+	{
+		fprintf( stderr, "linker fatal: Module size to big (%d)\n", moduleSize );
+		return 1;
+	}
+	
+	fputc(moduleSize >> 8, ofp);
+	fputc(moduleSize & 0xFF, ofp);
+	compute_crc(moduleSize >> 8); compute_crc(moduleSize & 0xFF);
+	headerParity ^= moduleSize >> 8;
+	headerParity ^= moduleSize & 0xFF;
+	
+	/* Write module name offset (assumed for now) */
+	nameOffset = 0x0D;
+	fputc(nameOffset >> 8, ofp);
+	fputc(nameOffset & 0xFF, ofp);
+	compute_crc(nameOffset >> 8); compute_crc(nameOffset & 0xFF);
+	headerParity ^= nameOffset >> 8;
+	headerParity ^= nameOffset & 0xFF;
+
+	unsigned char typelang, attrev;
+	
+	/* module type/lang (assume prgrm+objct for now) */
+	typelang = 0x11;
+	fputc(typelang, ofp);
+	compute_crc(typelang);
+	headerParity ^= typelang;
+		
+	/* module attr/rev (assume reent+0 for now) */
+	attrev = 0x81;
+	fputc(attrev, ofp);
+	compute_crc(attrev);
+	headerParity ^= attrev;
+		
+	/* header check (computed at end) */
+	headerParity = ~headerParity;
+	fputc(headerParity, ofp);
+	compute_crc(headerParity);
+		
+	/* execution offset */
+	execOffset = ob_start->hd.h_entry + 14 + strlen( modname );
+	fputc(execOffset >> 8, ofp);
+	fputc(execOffset & 0xFF, ofp);
+	compute_crc(execOffset >> 8); compute_crc(execOffset & 0xFF);
+
+	/* Compute data size */
+	dataSize = t_stac + t_idat + t_udat + t_idpd + t_udpd;
+	fputc(dataSize >> 8, ofp);
+	fputc(dataSize & 0xFF, ofp);
+	compute_crc(dataSize >> 8); compute_crc(dataSize & 0xFF);
+
+	/* module name */
+	for (i = 0; i < strlen(modname) - 1; i++)
+	{
+		fputc(modname[i], ofp);
+		compute_crc(modname[i]);
+	}
+	fputc(modname[i] | 0x80, ofp);
+	compute_crc(modname[i] | 0x80);
+		
+	/* edition */
+	fputc(edition, ofp);
+	compute_crc(edition);
+
+	/* Now dump all of the code */
+	
+	ob_cur = ob_start;
+	
+	while( ob_cur != NULL )
+	{
+		char *data;
+		unsigned count;
+		
+		fseek( ob_cur->fp, ob_cur->object, SEEK_SET );
+		data = malloc( ob_cur->hd.h_ocode );
+		if( data == NULL )
+		{
+			fprintf( stderr, "linker fatal: Out of memory\n" );
+			return 1;
+		}
+		
+		fread( data, ob_cur->hd.h_ocode, 1, ob_cur->fp);
+
+		/* Now patch binary */
+		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data + ob_cur->hd.h_ddata, SEEK_SET );
+		count = getwrd( ob_cur->fp );
+		while( count-- )
+		{
+			char	symbol[SYMLEN+1], valueflg;
+			unsigned number, value;
+			
+			getname( symbol, ob_cur->fp );
+			value = getsym( ob_start, symbol, &valueflg );
+			number = getwrd( ob_cur->fp );
+			
+			printf( "%-10s %-10s %4.4x (%2.2x) ", ob_cur->modname, symbol, value, valueflg );
+			while( number-- )
+			{
+				unsigned char flag;
+				unsigned offset, result;
+				flag = getc( ob_cur->fp );
+				offset = getwrd( ob_cur->fp );
+				
+				printf( "%2.2x %4.4x ", flag, offset + ob_cur->Code );
+				/* Do something */
+				
+				switch( flag )
+				{
+					case 0x20:
+						data[offset] = value >> 8;
+						data[offset+1] = value & 0xff;
+						break;
+					case 0xa0:
+						result = value - ob_cur->Code - offset - 2;
+						data[offset] = result >> 8;
+						data[offset+1] = result & 0xff;
+						break;
+					default:
+						printf ( "Major error: Unknown external reference flag %2.2x\n", flag );
+						break;
+				}
+			
+			}
+			
+			printf( "\n" );
+
+		}
+		
+		/* Patch local refs */
+		
+		count = getwrd( ob_cur->fp );
+		
+		if( count > 0 )
+			printf( "Local Refs\n" );
+
+		while( count-- )
+		{
+			unsigned char flag;
+			unsigned offset, result;
+			
+			flag = getc( ob_cur->fp );
+			offset = getwrd( ob_cur->fp );
+			
+			switch( flag )
+			{
+				case 0x20:
+					result = (data[offset] << 8) + data[offset+1];
+					result += ob_cur->UDat;
+					data[offset] = result >> 8;
+					data[offset+1] = result & 0xff;
+					break;
+				case 0x21:
+					result = (data[offset] << 8) + data[offset+1];
+					result += ob_cur->IDpD;
+					data[offset] = result >> 8;
+					data[offset+1] = result & 0xff;
+					break;
+				default:
+					printf( "Major error: unknown local reference flag %2.2x\n", flag );
+					break;
+			}
+			printf( " %2.2x %4.4x\n", flag, offset + ob_cur->Code );
+		}
+		
+		fwrite( data, ob_cur->hd.h_ocode, 1, ofp );
+		buffer_crc( data, ob_cur->hd.h_ocode );
+		free( data );
+		
+		ob_cur = ob_cur->next;
+	}
+		
+	/* Now dump all of the Initialized DP data */
+	
+	ob_cur = ob_start;
+	
+	while( ob_cur != NULL )
+	{
+		char *data;
+		
+		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data, SEEK_SET );
+		data = malloc( ob_cur->hd.h_ddata );
+		if( data == NULL )
+		{
+			fprintf( stderr, "linker fatal: Out of memory\n" );
+			return 1;
+		}
+		
+		fread( data, ob_cur->hd.h_ddata, 1, ob_cur->fp);
+		fwrite( data, ob_cur->hd.h_ddata, 1, ofp );
+		buffer_crc( data, ob_cur->hd.h_ddata );
+		free( data );
+		
+		ob_cur = ob_cur->next;
+	}
+		
+	/* Now dump all of the Initialized data */
+	
+	ob_cur = ob_start;
+	
+	while( ob_cur != NULL )
+	{
+		char *data;
+		
+		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode, SEEK_SET );
+		data = malloc( ob_cur->hd.h_data );
+		if( data == NULL )
+		{
+			fprintf( stderr, "linker fatal: Out of memory\n" );
+			return 1;
+		}
+		
+		fread( data, ob_cur->hd.h_data, 1, ob_cur->fp);
+		fwrite( data, ob_cur->hd.h_data, 1, ofp );
+		buffer_crc( data, ob_cur->hd.h_data );
+		free( data );
+		
+		/* Dump special linker initialized data */
+		if( ob_cur == ob_start )
+		{
+			fputc(t_idpd, ofp);
+			compute_crc(t_idpd);
+			fputc(t_udpd, ofp);
+			compute_crc(t_udpd);
+			fputc(t_idat>>8, ofp);
+			compute_crc(t_idat>>8);
+			fputc(t_idat&0xff, ofp);
+			compute_crc(t_idat&0xff);
+		}
+
+		ob_cur = ob_cur->next;
+	}
+	
+	
+	/* Now dump Data-text table */
+	fputc(0, ofp);
+	compute_crc(0);
+	fputc(0, ofp);
+	compute_crc(0);
+	
+	/* Now dump Data-data table */
+	fputc(0, ofp);
+	compute_crc(0);
+	fputc(0, ofp);
+	compute_crc(0);
+	
+	/* Now dump program name as a C string */
+	fwrite( modname, strlen( modname ), 1, ofp );
+	buffer_crc( modname, strlen( modname ) );
+	fputc(0, ofp);
+	compute_crc(0);
+	
+	/* Now write CRC */
+	fputc(~_crc[0], ofp);
+	fputc(~_crc[1], ofp);
+	fputc(~_crc[2], ofp);
+
 	return 0;
 }
 
@@ -750,8 +1048,7 @@ unsigned offset;
 	strcpy( exp->name, name );
 	exp->flag = flag;
 	exp->offset = offset;
-	
-	
+
 	if( chk_dup( exp, ob, "linker" ) > 0 )
 	{
 		free( exp );
@@ -797,7 +1094,7 @@ u16 nbr;
 unsigned getwrd( fp )
 FILE *fp;
 {
-	char Msb, Lsb;
+	unsigned char Msb, Lsb;
 	unsigned nbr;
 	
 	Msb=getc(fp); Lsb=getc(fp);
@@ -993,6 +1290,71 @@ struct ob_files *ob;
 		printf( "\n" );
 		ob = ob->next;
 	}
+	
+	return 0;
+}
+
+int compute_crc(a)
+unsigned char a;
+{
+	a ^= _crc[0];
+	_crc[0] = _crc[1];
+	_crc[1] = _crc[2];
+	_crc[1] ^= (a >> 7);
+	_crc[2] = (a << 1);
+	_crc[1] ^= (a >> 2);
+	_crc[2] ^= (a << 6);
+	a ^= (a << 1);
+	a ^= (a << 2);
+	a ^= (a << 4);
+	if (a & 0x80)
+	{
+		_crc[0] ^= 0x80;
+		_crc[2] ^= 0x21;
+	}
+
+	return 0;
+}
+
+int buffer_crc( data, size )
+unsigned char data[];
+unsigned size;
+{
+	int	i;
+	for( i=0; i<size; i++ )
+		compute_crc( data[i] );
+	
+	return 0;
+}
+
+/* Get value for symbol */
+unsigned getsym( ob, symbol, flag )
+struct ob_files *ob;
+char *symbol;
+char *flag;
+{
+	while( ob != NULL )
+	{
+		struct exp_sym *exp;
+		
+		exp = ob->symbols;
+		
+		while( exp != NULL )
+		{
+			if( strcmp( symbol, exp->name ) == 0 )
+			{
+				*flag = exp->flag;
+				return exp->offset;
+			}
+			
+			exp = exp->next;
+		}
+		
+		ob = ob->next;
+	}
+	
+	fprintf( stderr, "linker fatal: Could not find requested symbol: %s\n", symbol );
+	exit( 1 );
 	
 	return 0;
 }
