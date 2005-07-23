@@ -34,6 +34,12 @@ int asign_sm();
 int dmp_ext();
 unsigned getsym();
 
+int ftext();
+#define mc(c) ((c)&0xff)
+#define DEF 1
+#define REF 2
+
+
 int compute_crc();
 unsigned char _crc[3];
 int buffer_crc();
@@ -58,14 +64,15 @@ struct exp_sym
 struct ob_files
 {        
 	struct ob_files	*next;
-	char		*filename;
-	FILE		*fp;
-	long		object;
-	binhead		hd;
+	char *filename;
+	FILE *fp;
+	long object;
+	long locref;
+	binhead hd;
 	struct exp_sym *symbols;
 	struct ext_ref *exts;
-	char		modname[MAXNAME+1];
-	unsigned	Code, IDat, UDat, IDpD, UDpD;
+	char modname[MAXNAME+1];
+	unsigned Code, IDat, UDat, IDpD, UDpD;
 };
 
 /* The 'main' function */
@@ -267,11 +274,10 @@ int edition, extramem, printmap, printsym;
 	int	i;
 	struct ob_files *ob_start, *ob_cur;
 	struct exp_sym *es_cur;
-	unsigned t_code = 0, t_idat = 0, t_udat = 0, t_idpd = 0, t_udpd = 0, t_stac = 0;	
+	unsigned t_code = 0, t_idat = 0, t_udat = 0, t_idpd = 0, t_udpd = 0, t_stac = 0, t_dt = 0, t_dd = 0;	
 	int	once = 0, dup_fnd = 0;
 	FILE *ofp;
 	unsigned headerParity, moduleSize, nameOffset, execOffset, dataSize;
-
 
 	/* We have the ROF input files, the library input files and
 	 * the output file. Now let's go to work and link 'em!
@@ -428,7 +434,35 @@ int edition, extramem, printmap, printsym;
 				free( er_temp );
 			}
 		}
+
+		/* count up local references that need data-data or data-text adjustments */
+		ob_cur->locref = ftell( ob_cur->fp );
+		
+		count = getwrd( ob_cur->fp );
+		while( count-- )
+		{
+			unsigned char flag;
+			unsigned offset;
+			
+			flag = getc( ob_cur->fp );
+			offset = getwrd( ob_cur->fp );
+			
+			if( flag & CODLOC )
+			{}
+			else
+			{
+/*				printf( "mod: %s (%d) (.r) ",ob_cur->modname, count );*/
+/* 				ftext(flag, DEF|REF); printf("\n" ); */
+
+				if( flag & CODENT )
+					t_dt++;
+				else
+					t_dd++;
+			}
+		}
 	}
+	
+/* 	printf( "Starting library files\n" ); */
 	
 	/* Process library files to resolve remaining undefined symbols */
 
@@ -440,7 +474,9 @@ int edition, extramem, printmap, printsym;
 		modcount = 0;
 		
 		fp = fopen(lfiles[i], "r");
-
+		
+/* 		printf( "Doing file: %s\n", lfiles[i] ); */
+		
 		if (fp == NULL)
 		{
 			fprintf( stderr, "linker fatal: Library file %s could not be opened\n", lfiles[i] );
@@ -488,6 +524,8 @@ int edition, extramem, printmap, printsym;
 			}
 			
 			getname( ob_temp->modname, fp );
+
+/* 			printf( "Doing file: %s, mod %s\n", lfiles[i], ob_temp->modname ); */
 
 			if( ob_temp->hd.h_tylan != 0 )
 			{
@@ -579,7 +617,32 @@ int edition, extramem, printmap, printsym;
 				printf( "\nNeeded %s, mod %s\n", ob_temp->filename, ob_temp->modname );
 				dmp_ext( ob_start );
 #endif
+				/* count up local references that need data-data or data-text adjustments */
+				ob_temp->locref = ftell( ob_temp->fp );
+				count = getwrd( fp );
+				while( count-- )
+				{
+					unsigned char flag;
+					unsigned offset;
+					
+					flag = getc( fp );
+					offset = getwrd( fp );
+					
+					if( flag & CODLOC )
+					{}
+					else
+					{
+						
+/* 						printf( "mod: %s (%d) (.l) ",ob_temp->modname, count ); */
+/* 						ftext(flag, DEF|REF); printf("\n" ); */
+						
+						if( flag & CODENT )
+							t_dt++;
+						else
+							t_dd++;
+					}
 				}
+			}
 			 else
 			 {
 			 	/* ROF was not used, release it */
@@ -606,12 +669,13 @@ int edition, extramem, printmap, printsym;
 					getname( tmpname, fp );
 					fseek( fp, getwrd(fp) * 3, 1 );
 				}
+				
+				/* Spin past local references */
+				count = getwrd( fp );
+				fseek( fp, count*3, SEEK_CUR );
+				
 			 }
 			 
-			/* Grind past local references */
-			fseek( fp, getwrd( fp ) * 3, 1 );
-		
-
 
 
 		} while( !feof( fp ));
@@ -733,7 +797,9 @@ int edition, extramem, printmap, printsym;
 	
 	printf( "                 ---- ---- ---- --\n" );
 	printf( "                 %4.4x %4.4x %4.4x %2.2x  %2.2x\n\n", t_code, t_idat, t_udat, t_idpd, t_udpd );
-	printf( "\nTotal stack space: %4.4x\n\n", t_stac );
+	printf( "Total stack space: %4.4x\n", t_stac );
+	printf( "Data-Text count: %d\n", t_dt );
+	printf( "Data-data count: %d\n", t_dd );
 	
 	ofp = fopen( ofile, "w+");
 	
@@ -762,8 +828,8 @@ int edition, extramem, printmap, printsym;
 	           + t_idpd                     /* Initialized direct page data of all segements */
 	           + t_idat						/* Initialized data of all segments */
 	           + 4							/* Extra linker initialized data */
-	           + 2 + 0 * 4  				/* Data-text reference table */
-	           + 2 + 0 * 4  				/* Data-data reference table */
+	           + 2 + t_dt * 2  				/* Data-text reference table */
+	           + 2 + t_dd * 2  				/* Data-data reference table */
 	           + strlen( modname ) + 1		/* Program name (NULL terminated) */
 	           + 3;							/* CRC bytes */
 	
@@ -840,6 +906,8 @@ int edition, extramem, printmap, printsym;
 		char *data;
 		unsigned count;
 		
+		printf( "Object %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ocode );
+		
 		fseek( ob_cur->fp, ob_cur->object, SEEK_SET );
 		data = malloc( ob_cur->hd.h_ocode );
 		if( data == NULL )
@@ -853,6 +921,9 @@ int edition, extramem, printmap, printsym;
 		/* Now patch binary */
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data + ob_cur->hd.h_ddata, SEEK_SET );
 		count = getwrd( ob_cur->fp );
+		if( count > 0 )
+			printf( "External References:\n" );
+			
 		while( count-- )
 		{
 			char	symbol[SYMLEN+1], valueflg;
@@ -862,33 +933,65 @@ int edition, extramem, printmap, printsym;
 			value = getsym( ob_start, symbol, &valueflg );
 			number = getwrd( ob_cur->fp );
 			
-			printf( "%-10s %-10s %4.4x (%2.2x) ", ob_cur->modname, symbol, value, valueflg );
+			printf( "%-10s %-10s %4.4x (", ob_cur->modname, symbol, value );
+			ftext( valueflg, DEF );
+			printf( ") " );
+			
 			while( number-- )
 			{
 				unsigned char flag;
-				unsigned offset, result;
+				unsigned offset, result, scratch;
 				flag = getc( ob_cur->fp );
 				offset = getwrd( ob_cur->fp );
-				
-				printf( "%2.2x %4.4x ", flag, offset + ob_cur->Code );
-				/* Do something */
-				
-				switch( flag )
+
+				if( flag & CODLOC )
 				{
-					case 0x20:
-						data[offset] = value >> 8;
-						data[offset+1] = value & 0xff;
-						break;
-					case 0xa0:
-						result = value - ob_cur->Code - offset - 2;
+					printf( " External ref patch: (" );
+					ftext( flag, REF );
+					
+					if( offset > ob_cur->hd.h_ocode )
+					{
+						fprintf( stderr, "linker fatal: Code external reference offset greater than code size\n" );
+						return 1;
+					}
+					
+					if( flag & LOC1BYT )
+						scratch = data[offset];
+					 else
+						scratch = *((unsigned short *)(&data[offset]));
+						
+					printf( ") %4.4x (%4.4x) data: %4.4x, ", offset + ob_cur->Code, offset, scratch );
+					
+					if( flag & NEGMASK )
+						result = ~value;
+					else
+						result = value;
+						
+					switch( flag & ~(LOC1BYT|NEGMASK) )
+					{
+						case 0x20:
+							result += scratch;
+							break;
+						case 0xa0:
+							result -= ob_cur->Code;
+							result -= offset;
+							result -= 2;
+							break;
+						default:
+							fprintf ( stderr, "fatal error: Unknown external reference flag %2.2x\n", flag );
+							return 1;
+							break;
+					}
+					
+					if( flag & LOC1BYT )
+						data[offset] = result;
+					else
+					{
 						data[offset] = result >> 8;
 						data[offset+1] = result & 0xff;
-						break;
-					default:
-						printf ( "Major error: Unknown external reference flag %2.2x\n", flag );
-						break;
+					}
 				}
-			
+				
 			}
 			
 			printf( "\n" );
@@ -898,10 +1001,6 @@ int edition, extramem, printmap, printsym;
 		/* Patch local refs */
 		
 		count = getwrd( ob_cur->fp );
-		
-		if( count > 0 )
-			printf( "Local Refs\n" );
-
 		while( count-- )
 		{
 			unsigned char flag;
@@ -910,25 +1009,51 @@ int edition, extramem, printmap, printsym;
 			flag = getc( ob_cur->fp );
 			offset = getwrd( ob_cur->fp );
 			
-			switch( flag )
+			if( flag & CODLOC )
 			{
-				case 0x20:
-					result = (data[offset] << 8) + data[offset+1];
-					result += ob_cur->UDat;
+				if( offset > ob_cur->hd.h_ocode )
+				{
+					fprintf( stderr, "linker fatal: Code local reference offset greater than code size\n" );
+					return 1;
+				}
+				
+				if( flag & LOC1BYT )
+					result = data[offset];
+				else
+					result = *((unsigned short *)(&data[offset]));
+	
+				if( flag & NEGMASK )
+					result = ~result;
+				else
+					result = result;
+				
+				if( flag & DIRENT )
+				{
+					if( flag & INIENT )
+						result += ob_cur->IDpD;
+					else
+						result += ob_cur->UDpD;
+				}
+				else
+				{
+					if( flag & INIENT )
+						result += ob_cur->IDat;
+					else
+						result += ob_cur->UDat;
+				}
+				
+				if( flag & LOC1BYT )
+					data[offset] = result;
+				else
+				{
 					data[offset] = result >> 8;
 					data[offset+1] = result & 0xff;
-					break;
-				case 0x21:
-					result = (data[offset] << 8) + data[offset+1];
-					result += ob_cur->IDpD;
-					data[offset] = result >> 8;
-					data[offset+1] = result & 0xff;
-					break;
-				default:
-					printf( "Major error: unknown local reference flag %2.2x\n", flag );
-					break;
+				}
+	
+				printf( " Local ref patch (" );
+				ftext( flag, DEF|REF );
+				printf( ") %4.4x (%4.4x)\n", offset + ob_cur->Code, offset );
 			}
-			printf( " %2.2x %4.4x\n", flag, offset + ob_cur->Code );
 		}
 		
 		fwrite( data, ob_cur->hd.h_ocode, 1, ofp );
@@ -945,7 +1070,10 @@ int edition, extramem, printmap, printsym;
 	while( ob_cur != NULL )
 	{
 		char *data;
+		unsigned count;
 		
+		printf( "Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ddata );
+
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data, SEEK_SET );
 		data = malloc( ob_cur->hd.h_ddata );
 		if( data == NULL )
@@ -955,10 +1083,90 @@ int edition, extramem, printmap, printsym;
 		}
 		
 		fread( data, ob_cur->hd.h_ddata, 1, ob_cur->fp);
+
+		/* Adjust local references */
+		fseek( ob_cur->fp, ob_cur->locref, SEEK_SET );
+		
+		count = getwrd( ob_cur->fp );
+		while( count-- )
+		{
+			unsigned char flag;
+			unsigned offset, result;
+			
+			flag = getc( ob_cur->fp );
+			offset = getwrd( ob_cur->fp );
+			
+			if( flag & CODLOC )
+			{}
+			else
+			{
+				if( flag & DIRLOC )
+				{
+					if( flag & LOC1BYT )
+						result = data[offset];
+					else
+						result = *((unsigned short *)(&data[offset]));
+		
+					if( flag & NEGMASK )
+						result = ~result;
+					else
+						result = result;
+
+					if( flag & CODENT )
+					{
+						result += ob_cur->Code;
+					}
+					else
+					{
+						if( flag & DIRENT )
+						{
+							if( flag & INIENT )
+							{
+								result += ob_cur->IDpD;
+							}
+							else
+							{
+								result += ob_cur->UDpD;
+							}
+						}
+						else
+						{
+							if( flag & INIENT )
+							{
+								result += ob_cur->IDat;
+							}
+							else
+							{
+								result += ob_cur->UDat;
+							}
+						}
+					}
+
+					if( flag & LOC1BYT )
+						data[offset] = result;
+					else
+					{
+						data[offset] = result >> 8;
+						data[offset+1] = result & 0xff;
+					}
+				}
+			}
+		}
+
 		fwrite( data, ob_cur->hd.h_ddata, 1, ofp );
 		buffer_crc( data, ob_cur->hd.h_ddata );
 		free( data );
 		
+		/* Dump special linker initialized dp data */
+		if( ob_cur == ob_start )
+		{
+			printf( "Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 );
+			fputc(t_idpd, ofp);
+			compute_crc(t_idpd);
+			fputc(t_udpd, ofp);
+			compute_crc(t_udpd);
+		}
+
 		ob_cur = ob_cur->next;
 	}
 		
@@ -969,7 +1177,9 @@ int edition, extramem, printmap, printsym;
 	while( ob_cur != NULL )
 	{
 		char *data;
+		unsigned count;
 		
+		printf( "Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_data );
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode, SEEK_SET );
 		data = malloc( ob_cur->hd.h_data );
 		if( data == NULL )
@@ -979,6 +1189,79 @@ int edition, extramem, printmap, printsym;
 		}
 		
 		fread( data, ob_cur->hd.h_data, 1, ob_cur->fp);
+
+		/* Adjust local references */
+		fseek( ob_cur->fp, ob_cur->locref, SEEK_SET );
+		
+		count = getwrd( ob_cur->fp );
+		while( count-- )
+		{
+			unsigned char flag;
+			unsigned offset, result;
+			
+			flag = getc( ob_cur->fp );
+			offset = getwrd( ob_cur->fp );
+			
+			if( flag & CODLOC )
+			{}
+			else
+			{
+				if( flag & DIRLOC )
+				{
+				}
+				else
+				{
+					if( flag & LOC1BYT )
+						result = data[offset];
+					else
+						result = *((unsigned short *)(&data[offset]));
+		
+					if( flag & NEGMASK )
+						result = ~result;
+					else
+						result = result;
+
+					if( flag & CODENT )
+					{
+						result += ob_cur->Code;
+					}
+					else
+					{
+						if( flag & DIRENT )
+						{
+							if( flag & INIENT )
+							{
+								result += ob_cur->IDpD;
+							}
+							else
+							{
+								result += ob_cur->UDpD;
+							}
+						}
+						else
+						{
+							if( flag & INIENT )
+							{
+								result += ob_cur->IDat;
+							}
+							else
+							{
+								result += ob_cur->UDat;
+							}
+						}
+					}
+
+					if( flag & LOC1BYT )
+						data[offset] = result;
+					else
+					{
+						data[offset] = result >> 8;
+						data[offset+1] = result & 0xff;
+					}
+				}
+			}
+		}
+
 		fwrite( data, ob_cur->hd.h_data, 1, ofp );
 		buffer_crc( data, ob_cur->hd.h_data );
 		free( data );
@@ -986,10 +1269,7 @@ int edition, extramem, printmap, printsym;
 		/* Dump special linker initialized data */
 		if( ob_cur == ob_start )
 		{
-			fputc(t_idpd, ofp);
-			compute_crc(t_idpd);
-			fputc(t_udpd, ofp);
-			compute_crc(t_udpd);
+			printf( "Initialized linker data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 );
 			fputc(t_idat>>8, ofp);
 			compute_crc(t_idat>>8);
 			fputc(t_idat&0xff, ofp);
@@ -999,19 +1279,101 @@ int edition, extramem, printmap, printsym;
 		ob_cur = ob_cur->next;
 	}
 	
-	
+	printf( "Data-text table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dt*2) );
 	/* Now dump Data-text table */
-	fputc(0, ofp);
-	compute_crc(0);
-	fputc(0, ofp);
-	compute_crc(0);
-	
+	fputc(t_dt>>8, ofp);
+	compute_crc(t_dt>>8);
+	fputc(t_dt&0xff, ofp);
+	compute_crc(t_dt&0xff);
+
+	ob_cur = ob_start;
+	while( ob_cur != NULL )
+	{
+		unsigned count;
+		
+		fseek( ob_cur->fp, ob_cur->locref, SEEK_SET );
+		
+		count = getwrd( ob_cur->fp );
+		while( count-- )
+		{
+			unsigned char flag;
+			unsigned offset;
+			
+			flag = getc( ob_cur->fp );
+			offset = getwrd( ob_cur->fp );
+			
+			if( flag & CODLOC )
+			{}
+			else
+			{
+				if( flag & CODENT )
+				{
+					if( flag & DIRLOC )
+						offset += ob_cur->IDpD;
+					else
+						offset += ob_cur->IDat;
+
+					fputc(offset>>8, ofp);
+					compute_crc(offset>>8);
+					fputc(offset&0xff, ofp);
+					compute_crc(offset&0xff);
+				}
+				else
+				{}
+			}
+		}
+
+		ob_cur = ob_cur->next;
+	}
+
+	printf( "Data-data table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dd*2) );
 	/* Now dump Data-data table */
-	fputc(0, ofp);
-	compute_crc(0);
-	fputc(0, ofp);
-	compute_crc(0);
+	fputc(t_dd>>8, ofp);
+	compute_crc(t_dd>>8);
+	fputc(t_dd&0xff, ofp);
+	compute_crc(t_dd&0xff);
 	
+	ob_cur = ob_start;
+	while( ob_cur != NULL )
+	{
+		unsigned count;
+		
+		fseek( ob_cur->fp, ob_cur->locref, SEEK_SET );
+		
+		count = getwrd( ob_cur->fp );
+		while( count-- )
+		{
+			unsigned char flag;
+			unsigned offset;
+			
+			flag = getc( ob_cur->fp );
+			offset = getwrd( ob_cur->fp );
+			
+			if( flag & CODLOC )
+			{}
+			else
+			{
+				if( flag & CODENT )
+				{}
+				else
+				{
+					if( flag & DIRENT )
+						offset += ob_cur->IDpD;
+					else
+						offset += ob_cur->IDat;
+						
+					fputc(offset>>8, ofp);
+					compute_crc(offset>>8);
+					fputc(offset&0xff, ofp);
+					compute_crc(offset&0xff);
+				}
+			}
+		}
+
+		ob_cur = ob_cur->next;
+	}
+
+	printf( "Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+strlen( modname )+1 );
 	/* Now dump program name as a C string */
 	fwrite( modname, strlen( modname ), 1, ofp );
 	buffer_crc( modname, strlen( modname ) );
@@ -1359,6 +1721,38 @@ char *flag;
 	return 0;
 }
 
+int ftext(c, ref)
+char c;
+int ref;
+{
+	printf("(%02x) ", mc(c));
+	if (ref & REF)
+	{
+		if (c & CODLOC)
+			printf("in code");
+		else
+			printf(c & DIRLOC ? "in dp data" : "in non-dp data");
+		printf(c & LOC1BYT ? "/byte" : "/word");
+		if (c & NEGMASK)
+			printf("/neg");
+		if (c & RELATIVE)
+			printf("/pcr");
+	}
+	if (ref & DEF)
+	{
+		if (ref & REF)
+			printf(" - ");
+		if (c & CODENT)
+			printf("to code");
+		else
+		{
+			printf(c & DIRENT ? "to dp" : "to non-dp");
+			printf(c & INIENT ? " data" : " bss");
+		}
+	}
+/*	putchar('\n'); */
+	return 0;
+}
 
 
 
