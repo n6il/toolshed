@@ -305,13 +305,6 @@ int edition, extramem, printmap, printsym;
 		{
 			ob_start = ob_temp;
 			ob_cur = ob_start;
-			
-			/* Place initial settings stuct */
-/* 			t_code = 0; */
-/* 			t_idat = 0; */
-/* 			t_udat = 0; */
-/* 			t_idpd = 0; */
-/* 			t_udpd = 0; */
 		}
 		else
 		{
@@ -776,30 +769,36 @@ int edition, extramem, printmap, printsym;
 		return 1;
 	}
 	
-	/* Print linked list -- To make sure my code is working */
-	printf( "Linkage map for %s  File - %s\n\n", modname, ofile );
-	printf( "Section          Code IDat UDat IDpD UDpD File\n\n" );
-	
-	ob_cur = ob_start;
-	
-	do
+	/* Print link Map */
+	if( printmap )
 	{
-		printf( "%-16s %4.4x %4.4x %4.4x %2.2x   %2.2x %s\n", ob_cur->modname, ob_cur->Code, ob_cur->IDat,
-					ob_cur->UDat, ob_cur->IDpD, ob_cur->UDpD, ob_cur->filename );
-		es_cur = ob_cur->symbols;
+		printf( "Linkage map for %s  File - %s\n\n", modname, ofile );
+		printf( "Section          Code IDat UDat IDpD UDpD File\n\n" );
+		
+		ob_cur = ob_start;
+		
 		do
 		{
-			printf( "     %-9s %s %4.4x\n", es_cur->name, flagtext(es_cur->flag), es_cur->offset);
-		} while( (es_cur = es_cur->next) != NULL );
+			printf( "%-16s %4.4x %4.4x %4.4x %2.2x   %2.2x %s\n", ob_cur->modname, ob_cur->Code, ob_cur->IDat,
+						ob_cur->UDat, ob_cur->IDpD, ob_cur->UDpD, ob_cur->filename );
+			es_cur = ob_cur->symbols;
+			if( printsym )
+			{
+				do
+				{
+					printf( "     %-9s %s %4.4x\n", es_cur->name, flagtext(es_cur->flag), es_cur->offset);
+				} while( (es_cur = es_cur->next) != NULL );
+			}
+			
+		} while( (ob_cur = ob_cur->next) != NULL );
 		
-		
-	} while( (ob_cur = ob_cur->next) != NULL );
+		printf( "                 ---- ---- ---- --\n" );
+		printf( "                 %4.4x %4.4x %4.4x %2.2x  %2.2x\n\n", t_code, t_idat, t_udat, t_idpd, t_udpd );
+	}
 	
-	printf( "                 ---- ---- ---- --\n" );
-	printf( "                 %4.4x %4.4x %4.4x %2.2x  %2.2x\n\n", t_code, t_idat, t_udat, t_idpd, t_udpd );
-	printf( "Total stack space: %4.4x\n", t_stac );
-	printf( "Data-Text count: %d\n", t_dt );
-	printf( "Data-data count: %d\n", t_dd );
+	/*printf("Total stack space: %4.4x\n", t_stac );*/
+	/*printf( "Data-Text count: %d\n", t_dt );*/
+	/*printf( "Data-data count: %d\n", t_dd );*/
 	
 	ofp = fopen( ofile, "w+");
 	
@@ -906,7 +905,7 @@ int edition, extramem, printmap, printsym;
 		char *data;
 		unsigned count;
 		
-		printf( "Object %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ocode );
+		/*printf( "Object %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ocode );*/
 		
 		fseek( ob_cur->fp, ob_cur->object, SEEK_SET );
 		data = malloc( ob_cur->hd.h_ocode );
@@ -921,8 +920,9 @@ int edition, extramem, printmap, printsym;
 		/* Now patch binary */
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data + ob_cur->hd.h_ddata, SEEK_SET );
 		count = getwrd( ob_cur->fp );
-		if( count > 0 )
-			printf( "External References:\n" );
+
+/*		if( count > 0 )*/
+			/*printf( "External References:\n" );*/
 			
 		while( count-- )
 		{
@@ -933,9 +933,9 @@ int edition, extramem, printmap, printsym;
 			value = getsym( ob_start, symbol, &valueflg );
 			number = getwrd( ob_cur->fp );
 			
-			printf( "%-10s %-10s %4.4x (", ob_cur->modname, symbol, value );
-			ftext( valueflg, DEF );
-			printf( ") " );
+			/*printf( "%-10s %-10s %4.4x (", ob_cur->modname, symbol, value );*/
+			/*ftext( valueflg, DEF );*/
+			/*printf( ") " );*/
 			
 			while( number-- )
 			{
@@ -946,8 +946,8 @@ int edition, extramem, printmap, printsym;
 
 				if( flag & CODLOC )
 				{
-					printf( " External ref patch: (" );
-					ftext( flag, REF );
+					/*printf( " External ref patch: (" );*/
+					/*ftext( flag, REF );*/
 					
 					if( offset > ob_cur->hd.h_ocode )
 					{
@@ -960,7 +960,7 @@ int edition, extramem, printmap, printsym;
 					 else
 						scratch = *((unsigned short *)(&data[offset]));
 						
-					printf( ") %4.4x (%4.4x) data: %4.4x, ", offset + ob_cur->Code, offset, scratch );
+					/*printf( ") %4.4x (%4.4x) data: %4.4x, ", offset + ob_cur->Code, offset, scratch );*/
 					
 					if( flag & NEGMASK )
 						result = ~value;
@@ -994,7 +994,7 @@ int edition, extramem, printmap, printsym;
 				
 			}
 			
-			printf( "\n" );
+			/*printf( "\n" );*/
 
 		}
 		
@@ -1050,9 +1050,9 @@ int edition, extramem, printmap, printsym;
 					data[offset+1] = result & 0xff;
 				}
 	
-				printf( " Local ref patch (" );
-				ftext( flag, DEF|REF );
-				printf( ") %4.4x (%4.4x)\n", offset + ob_cur->Code, offset );
+				/*printf( " Local ref patch (" );*/
+				/*ftext( flag, DEF|REF );*/
+				/*printf( ") %4.4x (%4.4x)\n", offset + ob_cur->Code, offset );*/
 			}
 		}
 		
@@ -1072,7 +1072,7 @@ int edition, extramem, printmap, printsym;
 		char *data;
 		unsigned count;
 		
-		printf( "Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ddata );
+		/*printf( "Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ddata );*/
 
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data, SEEK_SET );
 		data = malloc( ob_cur->hd.h_ddata );
@@ -1160,7 +1160,7 @@ int edition, extramem, printmap, printsym;
 		/* Dump special linker initialized dp data */
 		if( ob_cur == ob_start )
 		{
-			printf( "Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 );
+			/*printf( "Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 );*/
 			fputc(t_idpd, ofp);
 			compute_crc(t_idpd);
 			fputc(t_udpd, ofp);
@@ -1179,7 +1179,7 @@ int edition, extramem, printmap, printsym;
 		char *data;
 		unsigned count;
 		
-		printf( "Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_data );
+		/*printf( "Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_data );*/
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode, SEEK_SET );
 		data = malloc( ob_cur->hd.h_data );
 		if( data == NULL )
@@ -1269,7 +1269,7 @@ int edition, extramem, printmap, printsym;
 		/* Dump special linker initialized data */
 		if( ob_cur == ob_start )
 		{
-			printf( "Initialized linker data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 );
+			/*printf( "Initialized linker data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 );*/
 			fputc(t_idat>>8, ofp);
 			compute_crc(t_idat>>8);
 			fputc(t_idat&0xff, ofp);
@@ -1279,7 +1279,7 @@ int edition, extramem, printmap, printsym;
 		ob_cur = ob_cur->next;
 	}
 	
-	printf( "Data-text table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dt*2) );
+	/*printf( "Data-text table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dt*2) );*/
 	/* Now dump Data-text table */
 	fputc(t_dt>>8, ofp);
 	compute_crc(t_dt>>8);
@@ -1326,7 +1326,7 @@ int edition, extramem, printmap, printsym;
 		ob_cur = ob_cur->next;
 	}
 
-	printf( "Data-data table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dd*2) );
+	/*printf( "Data-data table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dd*2) );*/
 	/* Now dump Data-data table */
 	fputc(t_dd>>8, ofp);
 	compute_crc(t_dd>>8);
@@ -1373,7 +1373,7 @@ int edition, extramem, printmap, printsym;
 		ob_cur = ob_cur->next;
 	}
 
-	printf( "Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+strlen( modname )+1 );
+	/*printf( "Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+strlen( modname )+1 );*/
 	/* Now dump program name as a C string */
 	fwrite( modname, strlen( modname ), 1, ofp );
 	buffer_crc( modname, strlen( modname ) );
