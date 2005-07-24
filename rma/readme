@@ -1,0 +1,7 @@
+This version will assemble all the rma sources to rof's that are identical
+to those compiled with the original rma on the coco.
+
+Several warnings are produced, however
+some have been eliminated.. We are going to change OptBPtr and d0791 from
+ref_ent * to symblstr * hoping to clear up some warnings about mismatched
+pointer types.
