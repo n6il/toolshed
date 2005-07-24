@@ -154,26 +154,35 @@ Header              | Magic value: 0x87CD             | 2 bytes
                     : Module name (os9 string)        : ? bytes
                     | Edition                         | 1 bytes
                     +---------------------------------+
+TEXT section        : +------------------------------+:
+                    : : Executable code              :: ? bytes
+                    : : String Literals              :: ? bytes
                     : +------------------------------+:
-                    : : Executable code (from ROF)   :: ? bytes
-                    : : String Literals (from ROF)   :: ? bytes
                     : +------------------------------+:
-                    : +------------------------------+:
-                    : :                              ::
+                    : : Remaining object code        :: ? bytes
                     : :..............................::
                     +---------------------------------+
-                    : Initializing DP Data Size       : 2 bytes
+DATA section (DP)   : Initializing DP Data Size       : 2 bytes
                     : +------------------------------+:
-                    : : DP Data (from ROF)           :: ? bytes
+                    : : DP Data (from cstart)        :: ? bytes
                     : +------------------------------+:
                     : +------------------------------+:
+                    : |	Total init DP data size      |: 1 byte
+                    : | Total uninit DP data size    |: 1 byte
+                    : +------------------------------+:
+                    : +------------------------------+:
+                    : : DP Data (from remaining ROFs):: ? bytes
                     : :..............................::
                     +---------------------------------+
-                    : Initializing Data Size          : 2 bytes
+DATA section        : Initializing Data Size          : 2 bytes
                     : +------------------------------+:
-                    : : Data (from ROF)              :: ? bytes
+                    : : Data (from cstart)           :: ? bytes
                     : +------------------------------+:
                     : +------------------------------+:
+                    : |	Total init data size         |: 2 bytes
+                    : +------------------------------+:
+                    : +------------------------------+:
+                    : : Data (from remaining ROFs)   :: ? bytes
                     : :..............................::
                     +---------------------------------+
                     : Data-text Reference count       : 2 bytes
