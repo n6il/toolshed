@@ -162,8 +162,7 @@ TEXT section        : +------------------------------+:
                     : : Remaining object code        :: ? bytes
                     : :..............................::
                     +---------------------------------+
-DATA section (DP)   : Initializing DP Data Size       : 2 bytes
-                    : +------------------------------+:
+DATA section (DP)   : +------------------------------+:
                     : : DP Data (from cstart)        :: ? bytes
                     : +------------------------------+:
                     : +------------------------------+:
@@ -174,8 +173,7 @@ DATA section (DP)   : Initializing DP Data Size       : 2 bytes
                     : : DP Data (from remaining ROFs):: ? bytes
                     : :..............................::
                     +---------------------------------+
-DATA section        : Initializing Data Size          : 2 bytes
-                    : +------------------------------+:
+DATA section        : +------------------------------+:
                     : : Data (from cstart)           :: ? bytes
                     : +------------------------------+:
                     : +------------------------------+:
