@@ -132,6 +132,12 @@ char **argv;
 						}
 
 						extramem = atoi(p);
+						
+						if( p[strlen(p)-1] == 'K' || p[strlen(p)-1] == 'k' )
+							extramem *= 1024;
+						else
+							extramem *= 256;
+							
 					}
 					break;
 
@@ -251,7 +257,7 @@ int help()
 	fprintf(stderr, "   -n[=]name      module name of the object file\n");
 	fprintf(stderr, "   -l[=]path      additional library\n");
 	fprintf(stderr, "   -E[=]edition   edition number in the module\n");
-	fprintf(stderr, "   -M[=]size      additional number of pages of memory\n");
+	fprintf(stderr, "   -M[=]size[K]   additional number of pages of memory\n");
 	fprintf(stderr, "   -m             print the linkage map\n");
 	fprintf(stderr, "   -s             print the symbol table\n");
 /*	fprintf(stderr, "   -b=ept         Make callable from BASIC09\n"); */
@@ -878,7 +884,7 @@ int edition, extramem, printmap, printsym;
 	compute_crc(execOffset >> 8); compute_crc(execOffset & 0xFF);
 
 	/* Compute data size */
-	dataSize = t_stac + t_idat + t_udat + t_idpd + t_udpd;
+	dataSize = t_stac + t_idat + t_udat + t_idpd + t_udpd + extramem;
 	fputc(dataSize >> 8, ofp);
 	fputc(dataSize & 0xFF, ofp);
 	compute_crc(dataSize >> 8); compute_crc(dataSize & 0xFF);
