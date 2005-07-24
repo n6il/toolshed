@@ -1,4 +1,4 @@
-/*extern  char    _chcodes[];*/      /* in chcodes.r */
+/* extern  char    _chcodes[]; *//* in chcodes.r */
 #ifndef  _CTYPE_H
 #define _CTYPE_H        1
 
@@ -26,4 +26,4 @@
 #define _tolower(c)     ((c)|0x20)
 #define toascii(c)      ((c)&0x7f)
 
-#endif    /* ndef _CTYPE_H */
+#endif				/* ndef _CTYPE_H */
