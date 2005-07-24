@@ -139,7 +139,7 @@ Local References    v Count                           v 2 bytes
                     +---------------------------------+
 
 
-Object Code Module file format:
+Object Code Module file format (produced by rlink):
 
                     +---------------------------------+
 Header              | Magic value: 0x87CD             | 2 bytes
@@ -155,17 +155,17 @@ Header              | Magic value: 0x87CD             | 2 bytes
                     | Edition                         | 1 bytes
                     +---------------------------------+
 TEXT section        : +------------------------------+:
-                    : : Executable code              :: ? bytes
-                    : : String Literals              :: ? bytes
+                    : : Executable code (ROF 1)      :: ? bytes
+                    : : String Literals (ROF 1)      :: ? bytes
                     : +------------------------------+:
+                    : . . . . . . . . . . . . . . . .::
                     : +------------------------------+:
-                    : : Remaining object code        :: ? bytes
+                    : : Executable code (ROF n)      :: ? bytes
+                    : : String Literals (ROF n)      :: ? bytes
                     : :..............................::
                     +---------------------------------+
 DATA section (DP)   : +------------------------------+:
-                    : : DP Data (from cstart)        :: ? bytes
-                    : +------------------------------+:
-                    : +------------------------------+:
+                    : : DP Data (from mainline)      :: ? bytes
                     : |	Total init DP data size      |: 1 byte
                     : | Total uninit DP data size    |: 1 byte
                     : +------------------------------+:
@@ -174,9 +174,7 @@ DATA section (DP)   : +------------------------------+:
                     : :..............................::
                     +---------------------------------+
 DATA section        : +------------------------------+:
-                    : : Data (from cstart)           :: ? bytes
-                    : +------------------------------+:
-                    : +------------------------------+:
+                    : : Data (from mainline)         :: ? bytes
                     : |	Total init data size         |: 2 bytes
                     : +------------------------------+:
                     : +------------------------------+:

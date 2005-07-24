@@ -91,7 +91,7 @@ char **argv;
 	modname = NULL;
 	ofile = NULL;
 	B09EntPt = NULL;
-	edition = 1;
+	edition = -1;
 	extramem = 0;
 	printmap = 0;
 	printsym = 0;
@@ -226,7 +226,9 @@ char **argv;
 							p++;
 						
 						if( B09EntPt == NULL )
+						{
 							B09EntPt = p;
+						}
 						else
 						{
 							fprintf(stderr, "linker fatal: -b option already specified\n" );
@@ -372,17 +374,17 @@ int edition, extramem, printmap, printsym, okstatic;
 		
 		if( ob_cur->hd.h_sync != ROFSYNC )
 		{
-			fprintf( stderr, "linker error: File %s is not an ROF file.\n", rfiles[i] );
+			fprintf( stderr, "linker error: File %s is not an ROF file\n", rfiles[i] );
 			return 1;
 		}
 		
-		if( B09EntPt != NULL )
+		if( B09EntPt == NULL )
 		{
 			if( i==0 ) /* First ROF file needs special header */
 			{
 				if( ob_cur->hd.h_tylan == 0 )
 				{
-					fprintf( stderr, "linker error: Initial ROF file (%s) must be type non-zero.\n", rfiles[i] );
+					fprintf( stderr, "linker error: '%s' contains no mainline\n", rfiles[i] );
 					return 1;
 				}
 			}
@@ -390,7 +392,7 @@ int edition, extramem, printmap, printsym, okstatic;
 			{
 				if( ob_cur->hd.h_tylan != 0 )
 				{
-					fprintf( stderr, "linker fatal: ROF file (%s) must be type zero\n", rfiles[i] );
+					fprintf( stderr, "linker fatal: mainline found in both %s and %s\n", ob_start->filename, rfiles[i] );
 					return 1;
 				}
 			}
@@ -728,21 +730,6 @@ int edition, extramem, printmap, printsym, okstatic;
 		return 1;
 	}
 	
-	/* Static data and BASIC09 usually dont mix */
-	
-	if( t_idat > 0 || t_idpd > 0 )
-	{
-		if( okstatic == 0 )
-		{
-			fprintf( stderr, "no static data\nlinker fatal: BASIC09 conflict\n" );
-			return 1;
-		}
-		else
-		{
-			printf( "BASIC09 static data size is %d byte%s.\n", t_idat+t_idpd, t_idat+t_idpd > 1 ? "s" : "" );
-		}
-	}
-	
 	/* Adjust data offsets */
 	ob_cur = ob_start;
 	
@@ -784,15 +771,6 @@ int edition, extramem, printmap, printsym, okstatic;
 		}
 		ob_cur = ob_cur->next;
 	}
-	
-/* 	do */
-/* 	{ */
-/* 		es_cur = ob_cur->symbols; */
-/* 		do */
-/* 		{ */
-/* 			es_cur->offset = adjoff( es_cur->offset, es_cur->flag, ob_cur ); */
-/* 		} while( (es_cur = es_cur->next) != NULL ); */
-/* 	} while( (ob_cur = ob_cur->next) != NULL ); */
 
 	/* Add special symbols (linker generated symbols) */
 	
@@ -801,11 +779,9 @@ int edition, extramem, printmap, printsym, okstatic;
 	if( asign_sm( ob_start, "edata", INIENT, t_idpd + t_udpd + t_idat ) != 0 ) return 1;
 	if( asign_sm( ob_start, "end", 0, t_idpd + t_udpd + t_idat + t_udat ) != 0 ) return 1;
 	if( asign_sm( ob_start, "dpsiz", DIRENT, t_idpd + t_udpd ) != 0 ) return 1;
-		
 	
 	/* Check if there are any unresolved symbols */
 	ob_cur = ob_start;
-	
 	do
 	{
 		struct ext_ref *ex_cur;
@@ -831,6 +807,30 @@ int edition, extramem, printmap, printsym, okstatic;
 	{
 		fprintf( stderr, "linker fatal: unresolved references\n" );
 		return 1;
+	}
+	
+	/* Static data and BASIC09 usually dont mix */
+	
+	if( B09EntPt != NULL )
+	{
+		if( t_idat > 0 || t_idpd > 0 )
+		{
+			fprintf( stderr, "no init data allowed\nlinker fatal: BASIC09 conflict\n" );
+			return 1;
+		}
+	}
+	
+	if( t_idat > 0 || t_idpd > 0 )
+	{
+		if( okstatic == 0 )
+		{
+			fprintf( stderr, "no static data\nlinker fatal: BASIC09 conflict\n" );
+			return 1;
+		}
+		else
+		{
+			printf( "BASIC09 static data size is %d byte%s.\n", t_idat+t_idpd, t_idat+t_idpd > 1 ? "s" : "" );
+		}
 	}
 	
 	/* Print link Map */
@@ -860,7 +860,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		printf( "                 %4.4x %4.4x %4.4x %2.2x  %2.2x\n\n", t_code, t_idat, t_udat, t_idpd, t_udpd );
 	}
 	
-	/*printf("Total stack space: %4.4x\n", t_stac );*/
+	/*printf( "Total stack space: %4.4x\n", t_stac );*/
 	/*printf( "Data-Text count: %d\n", t_dt );*/
 	/*printf( "Data-data count: %d\n", t_dd );*/
 	
@@ -889,8 +889,9 @@ int edition, extramem, printmap, printsym, okstatic;
 	           + strlen( modname )			/* module name */
 	           + t_code						/* Code size of all segements */
 	           + t_idpd                     /* Initialized direct page data of all segements */
+	           + 2							/* Linker direct page initialized data */
 	           + t_idat						/* Initialized data of all segments */
-	           + 4							/* Extra linker initialized data */
+	           + 2							/* Linker initialized data */
 	           + 2 + t_dt * 2  				/* Data-text reference table */
 	           + 2 + t_dd * 2  				/* Data-data reference table */
 	           + strlen( modname ) + 1		/* Program name (NULL terminated) */
@@ -902,13 +903,14 @@ int edition, extramem, printmap, printsym, okstatic;
 		return 1;
 	}
 	
+	/* Magic bytes */
 	fputc(moduleSize >> 8, ofp);
 	fputc(moduleSize & 0xFF, ofp);
 	compute_crc(moduleSize >> 8); compute_crc(moduleSize & 0xFF);
 	headerParity ^= moduleSize >> 8;
 	headerParity ^= moduleSize & 0xFF;
 	
-	/* Write module name offset (assumed for now) */
+	/* Write module name offset */
 	nameOffset = 0x0D;
 	fputc(nameOffset >> 8, ofp);
 	fputc(nameOffset & 0xFF, ofp);
@@ -918,25 +920,33 @@ int edition, extramem, printmap, printsym, okstatic;
 
 	unsigned char typelang, attrev;
 	
-	/* module type/lang (assume prgrm+objct for now) */
-	typelang = 0x11;
+	/* module type/lang */
+	if( B09EntPt != NULL )
+		typelang = 0x21;
+	else
+		typelang = 0x11;
+		
 	fputc(typelang, ofp);
 	compute_crc(typelang);
 	headerParity ^= typelang;
 		
-	/* module attr/rev (assume reent+0 for now) */
+	/* module attr/rev */
 	attrev = 0x81;
 	fputc(attrev, ofp);
 	compute_crc(attrev);
 	headerParity ^= attrev;
 		
-	/* header check (computed at end) */
+	/* header check */
 	headerParity = ~headerParity;
 	fputc(headerParity, ofp);
 	compute_crc(headerParity);
 		
 	/* execution offset */
-	execOffset = ob_start->hd.h_entry + 14 + strlen( modname );
+	if( B09EntPt == NULL )
+		execOffset = ob_start->hd.h_entry + 14 + strlen( modname );
+	else
+		execOffset = getsym( ob_start, B09EntPt, NULL );
+		
 	fputc(execOffset >> 8, ofp);
 	fputc(execOffset & 0xFF, ofp);
 	compute_crc(execOffset >> 8); compute_crc(execOffset & 0xFF);
@@ -957,6 +967,9 @@ int edition, extramem, printmap, printsym, okstatic;
 	compute_crc(modname[i] | 0x80);
 		
 	/* edition */
+	if( edition == -1 )
+		edition = ob_start->hd.h_edit;
+		
 	fputc(edition, ofp);
 	compute_crc(edition);
 
@@ -1769,7 +1782,7 @@ char *flag;
 		{
 			if( strcmp( symbol, exp->name ) == 0 )
 			{
-				*flag = exp->flag;
+				if( flag != NULL ) *flag = exp->flag;
 				return exp->offset;
 			}
 			
