@@ -28,6 +28,13 @@
 #include <string.h>
 #include "rstruct.h"
 
+GLOBAL direct char *incdirs[32];
+GLOBAL direct int  inccount
+#ifdef MAIN
+ = 0
+#endif
+		;
+
 GLOBAL direct char e_flg
 #ifdef MAIN
 = ON

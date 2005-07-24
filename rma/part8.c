@@ -148,6 +148,18 @@ GetOpts(_argc, _argv)		/* parse parameter line */
 					O_Nam = ++SrcChar;
 				}
 			}
+
+			if (_toupper(*SrcChar) == 'I')
+			{
+				char *p = ++SrcChar;
+
+				if (*p == '=')
+				{
+					p++;
+				}
+
+				incdirs[inccount++] = p;
+			}
 		}
 		else
 		{
@@ -189,6 +201,38 @@ FILE           *f_opn(fna, fmo)
 		errexit("can't open file");
 	}
 	return fptr;
+}
+
+#ifdef __STDC__
+
+FILE
+* u_opn(char *fna, char *fmo)
+#else
+
+FILE           *u_opn(fna, fmo)
+	char           *fna,
+	               *fmo;
+
+#endif
+{
+	FILE           *fptr;
+	char           f[128];
+	int            i;
+
+	for (i = 0; i < inccount; i++)
+	{	
+		/* try prepending include dirs in front */
+
+		sprintf(f, "%s/%s", incdirs[i], fna);
+
+		if ((fptr = fopen(f, fmo)) != 0)
+		{
+			return fptr;
+		}
+	}
+
+	fprintf(stderr, "\"%s\" - ", fna);
+	errexit("can't open file");
 }
 
 #ifdef __STDC__

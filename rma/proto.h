@@ -137,6 +137,7 @@ int             _getnum(void);
 /* part8.c */
 int             GetOpts(unsigned _argc, char **_argv);
 FILE           *f_opn(char *fna, char *fmo);
+FILE           *u_opn(char *fna, char *fmo);
 int             prnthdr(void);
 int             new_pag(void);
 int             getUseLn(void);

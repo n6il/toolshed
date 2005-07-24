@@ -35,6 +35,10 @@ main(argc, argv)
 {
 	char          **rd_fil;
 
+	/* Start off by inserting current directory as a place to look for includes. */
+	incdirs[0] = ".";
+	inccount++;
+
 	GetOpts(argc, argv);
 	if (ListFlg)
 	{

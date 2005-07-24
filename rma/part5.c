@@ -766,7 +766,7 @@ do_use()
 	char            var;
 
 	*(ThisFile++) = SrcFile;
-	SrcFile = f_opn(SrcChar, "r");
+	SrcFile = u_opn(SrcChar, "r");
 	while (var = *(++SrcChar))
 	{
 		if (var == ' ' || var == '\t')
