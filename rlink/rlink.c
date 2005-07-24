@@ -83,17 +83,20 @@ char **argv;
 	char *rfiles[MAX_RFILES];
 	char *lfiles[MAX_LFILES];
 	char *ofile, *modname;
-	int edition, extramem;
+	char *B09EntPt;
+	int edition, extramem, okstatic;
 	int printmap, printsym;
 	int rfile_count, lfile_count, i;
 
 	modname = NULL;
 	ofile = NULL;
+	B09EntPt = NULL;
 	edition = 1;
 	extramem = 0;
 	printmap = 0;
 	printsym = 0;
-
+	okstatic = 0;
+	
 	rfile_count = 0;
 	lfile_count = 0;
 
@@ -214,6 +217,31 @@ char **argv;
 					}
 					break;
 
+				case 'b':
+					/* BASIC09 Entry point */
+					{
+						char *p = &argv[i][2];
+						
+						if( argv[i][2] == '=' )
+							p++;
+						
+						if( B09EntPt == NULL )
+							B09EntPt = p;
+						else
+						{
+							fprintf(stderr, "linker fatal: -b option already specified\n" );
+							exit(1);
+						}
+					}
+					break;
+					
+				case 't':
+					/* Allow static data in BASIC09 modules */
+					{
+						okstatic = 1;
+					}
+					break;
+
 				case '?':
 					help();
 					exit(0);
@@ -244,7 +272,7 @@ char **argv;
 	
 	/* Call the function which does all the work! */
 
-	return link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, printmap, printsym);
+	return link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, B09EntPt, printmap, printsym, okstatic);
 }
 
 
@@ -257,25 +285,25 @@ int help()
 	fprintf(stderr, "   -n[=]name      module name of the object file\n");
 	fprintf(stderr, "   -l[=]path      additional library\n");
 	fprintf(stderr, "   -E[=]edition   edition number in the module\n");
-	fprintf(stderr, "   -M[=]size[K]   additional number of pages of memory\n");
+	fprintf(stderr, "   -M[=]size[K]   additional number of pages [or kilobytes] of memory\n");
 	fprintf(stderr, "   -m             print the linkage map\n");
 	fprintf(stderr, "   -s             print the symbol table\n");
-/*	fprintf(stderr, "   -b=ept         Make callable from BASIC09\n"); */
-/*	fprintf(stderr, "   -t             allow static data to appear in BASIC09 module\n"); */
+	fprintf(stderr, "   -b=ept         Make callable from BASIC09\n"); 
+	fprintf(stderr, "   -t             allow static data to appear in BASIC09 module\n");
 
 	return 0;
 }
 
 
 
-int link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, printmap, printsym)
+int link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, B09EntPt, printmap, printsym, okstatic)
 char *rfiles[];
 int rfile_count;
 char *lfiles[];
 int lfile_count;
 char *ofile;
-char *modname;
-int edition, extramem, printmap, printsym;
+char *modname, *B09EntPt;
+int edition, extramem, printmap, printsym, okstatic;
 {
 	int	i;
 	struct ob_files *ob_start, *ob_cur;
@@ -348,20 +376,23 @@ int edition, extramem, printmap, printsym;
 			return 1;
 		}
 		
-		if( i==0 ) /* First ROF file needs special header */
+		if( B09EntPt != NULL )
 		{
-			if( ob_cur->hd.h_tylan == 0 )
+			if( i==0 ) /* First ROF file needs special header */
 			{
-				fprintf( stderr, "linker error: Initial ROF file (%s) must be type non-zero.\n", rfiles[i] );
-				return 1;
+				if( ob_cur->hd.h_tylan == 0 )
+				{
+					fprintf( stderr, "linker error: Initial ROF file (%s) must be type non-zero.\n", rfiles[i] );
+					return 1;
+				}
 			}
-		}
-		else
-		{
-			if( ob_cur->hd.h_tylan != 0 )
+			else
 			{
-				fprintf( stderr, "linker fatal: ROF file (%s) must be type zero\n", rfiles[i] );
-				return 1;
+				if( ob_cur->hd.h_tylan != 0 )
+				{
+					fprintf( stderr, "linker fatal: ROF file (%s) must be type zero\n", rfiles[i] );
+					return 1;
+				}
 			}
 		}
 		
@@ -681,7 +712,7 @@ int edition, extramem, printmap, printsym;
 		
 		clearerr( fp );
 	}
-
+	
 	/* Check if duplicate globals are found */
 	if( dup_fnd > 0 )
 	{
@@ -695,6 +726,21 @@ int edition, extramem, printmap, printsym;
 	{
 		fprintf( stderr, "linker fatal: direct page allocation is %d bytes\n", t_idpd + t_udpd );
 		return 1;
+	}
+	
+	/* Static data and BASIC09 usually dont mix */
+	
+	if( t_idat > 0 || t_idpd > 0 )
+	{
+		if( okstatic == 0 )
+		{
+			fprintf( stderr, "no static data\nlinker fatal: BASIC09 conflict\n" );
+			return 1;
+		}
+		else
+		{
+			printf( "BASIC09 static data size is %d byte%s.\n", t_idat+t_idpd, t_idat+t_idpd > 1 ? "s" : "" );
+		}
 	}
 	
 	/* Adjust data offsets */
@@ -727,14 +773,26 @@ int edition, extramem, printmap, printsym;
 	
 	ob_cur = ob_start;
 
-	do
+	while( ob_cur != NULL )
 	{
 		es_cur = ob_cur->symbols;
-		do
+		
+		while( es_cur != NULL )
 		{
 			es_cur->offset = adjoff( es_cur->offset, es_cur->flag, ob_cur );
-		} while( (es_cur = es_cur->next) != NULL );
-	} while( (ob_cur = ob_cur->next) != NULL );
+			es_cur = es_cur->next;
+		}
+		ob_cur = ob_cur->next;
+	}
+	
+/* 	do */
+/* 	{ */
+/* 		es_cur = ob_cur->symbols; */
+/* 		do */
+/* 		{ */
+/* 			es_cur->offset = adjoff( es_cur->offset, es_cur->flag, ob_cur ); */
+/* 		} while( (es_cur = es_cur->next) != NULL ); */
+/* 	} while( (ob_cur = ob_cur->next) != NULL ); */
 
 	/* Add special symbols (linker generated symbols) */
 	
