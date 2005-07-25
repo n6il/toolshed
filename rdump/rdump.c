@@ -85,6 +85,8 @@ pass1()
 		}
 		for (;;)
 		{
+			char c1;
+
 			if (fread(&hd, sizeof(hd), 1, in) == 0)
 				break;
 			if (hd.h_sync != ROFSYNC)
@@ -101,8 +103,18 @@ pass1()
 			showrefs();
 			showlcls();
 
-			/* Added to skip over two zero bytes after ROFs made by rma */
-			fseek(in, 2, SEEK_CUR);
+			/* Some ROFs have two extra zero bytes at the end.  We check if that is the case -- BGP */
+			c1 = fgetc(in);
+			if (c1 == 0)
+			{
+				c1 = fgetc(in);
+			}
+			else
+			{
+				/* not a zero, put it back. */
+
+				ungetc(c1, in);
+			}
 		}
 		fclose(in);
 	}
