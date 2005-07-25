@@ -100,6 +100,9 @@ pass1()
 					 o9_int(hd.h_data)), 1);
 			showrefs();
 			showlcls();
+
+			/* Added to skip over two zero bytes after ROFs made by rma */
+			fseek(in, 2, SEEK_CUR);
 		}
 		fclose(in);
 	}
