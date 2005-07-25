@@ -709,6 +709,20 @@ int edition, extramem, printmap, printsym, okstatic;
 			 }
 			 
 
+				/* Added to get around double zeros at the end of some ROF files -- BGP */
+				{
+					char c = getc(fp);
+
+					if (c == 0)
+					{
+						getc(fp);
+					}
+					else
+					{
+						ungetc(c, fp);
+					}
+				}
+
 
 		} while( !feof( fp ));
 		
