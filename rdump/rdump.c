@@ -80,7 +80,7 @@ pass1()
 		fname = snames[count];
 		if ((in = fopen(fname, "r")) == NULL)
 		{
-			printf("can't open '%s'", fname);
+			printf("can't open '%s'\n", fname);
 			continue;
 		}
 		for (;;)
@@ -89,7 +89,7 @@ pass1()
 				break;
 			if (hd.h_sync != ROFSYNC)
 			{
-				printf("'%s' is not a relocatable module", fname);
+				printf("'%s' is not a relocatable module\n", fname);
 				break;
 			}
 			showhead();

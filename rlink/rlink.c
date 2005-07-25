@@ -358,7 +358,7 @@ int edition, extramem, printmap, printsym, okstatic;
 			fread(&(ob_cur->hd), sizeof(binhead), 1, ob_cur->fp);
 		else
 		{
-			fprintf(stderr, "linker error: cannot open file %s\n", rfiles[i]);
+			fprintf(stderr, "linker fatal: cannot open file %s\n", rfiles[i]);
 			return 1;
 		}
 
@@ -374,7 +374,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		
 		if( ob_cur->hd.h_sync != ROFSYNC )
 		{
-			fprintf( stderr, "linker error: File %s is not an ROF file\n", rfiles[i] );
+			fprintf( stderr, "linker fatal: '%s' is not a relocatable module\n", rfiles[i] );
 			return 1;
 		}
 		
@@ -384,7 +384,7 @@ int edition, extramem, printmap, printsym, okstatic;
 			{
 				if( ob_cur->hd.h_tylan == 0 )
 				{
-					fprintf( stderr, "linker error: '%s' contains no mainline\n", rfiles[i] );
+					fprintf( stderr, "linker fatal: '%s' contains no mainline\n", rfiles[i] );
 					return 1;
 				}
 			}
@@ -818,21 +818,21 @@ int edition, extramem, printmap, printsym, okstatic;
 			fprintf( stderr, "no init data allowed\nlinker fatal: BASIC09 conflict\n" );
 			return 1;
 		}
-	}
-	
-	if( t_idat > 0 || t_idpd > 0 )
-	{
-		if( okstatic == 0 )
+
+		if( t_idat > 0 || t_idpd > 0 )
 		{
-			fprintf( stderr, "no static data\nlinker fatal: BASIC09 conflict\n" );
-			return 1;
-		}
-		else
-		{
-			printf( "BASIC09 static data size is %d byte%s.\n", t_idat+t_idpd, t_idat+t_idpd > 1 ? "s" : "" );
+			if( okstatic == 0 )
+			{
+				fprintf( stderr, "no static data\nlinker fatal: BASIC09 conflict\n" );
+				return 1;
+			}
+			else
+			{
+				printf( "BASIC09 static data size is %d byte%s.\n", t_idat+t_idpd, t_idat+t_idpd > 1 ? "s" : "" );
+			}
 		}
 	}
-	
+		
 	/* Print link Map */
 	if( printmap )
 	{
