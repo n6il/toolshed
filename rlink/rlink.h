@@ -45,3 +45,14 @@ struct ob_files
 #define DBGPNT(x)
 #endif
 
+extern int getname();
+extern unsigned getwrd();
+extern int chk_dup();
+extern int rm_exref();
+extern int check_name();
+extern int ftext();
+
+#define mc(c) ((c)&0xff)
+#define DEF 1
+#define REF 2
+
