@@ -19,10 +19,8 @@
 #endif
 #include "rlink.h"
 
-unsigned o9_int();
 unsigned getwrd();
 int link();
-int dump_rof_header();
 char *flagtext();
 unsigned adjoff();
 int check_name();
@@ -41,39 +39,12 @@ int ftext();
 
 
 int compute_crc();
+#ifdef UNIX
 unsigned char _crc[3];
+#else
+char _crc[3];
+#endif
 int buffer_crc();
-
-#define MAX_RFILES	32
-#define MAX_LFILES	32
-
-struct ext_ref
-{
-	struct ext_ref *next;
-	char name[SYMLEN+1];
-};
-
-struct exp_sym
-{
-	struct exp_sym *next;
-	char name[SYMLEN+1];
-	char flag;
-	unsigned offset;
-};
-
-struct ob_files
-{        
-	struct ob_files	*next;
-	char *filename;
-	FILE *fp;
-	long object;
-	long locref;
-	binhead hd;
-	struct exp_sym *symbols;
-	struct ext_ref *exts;
-	char modname[MAXNAME+1];
-	unsigned Code, IDat, UDat, IDpD, UDpD;
-};
 
 /* The 'main' function */
 int main(argc,argv)
@@ -100,8 +71,14 @@ char **argv;
 	rfile_count = 0;
 	lfile_count = 0;
 
+	/* Check sctrucure alignment */
+	if( sizeof (binhead) != 28 )
+	{
+		fprintf( stderr, "compiler error: Relocatable object header def incorrectly sized\n" );
+		return 1;
+	}
+	
 	/* Parse options */
-
 	for (i = 1; i < argc; i++)
 	{
 		if (argv[i][0] == '-')
@@ -314,6 +291,8 @@ int edition, extramem, printmap, printsym, okstatic;
 	int	once = 0, dup_fnd = 0;
 	FILE *ofp;
 	unsigned headerParity, moduleSize, nameOffset, execOffset, dataSize;
+	unsigned typelang, attrev;
+	
 
 	/* We have the ROF input files, the library input files and
 	 * the output file. Now let's go to work and link 'em!
@@ -361,8 +340,19 @@ int edition, extramem, printmap, printsym, okstatic;
 			fprintf(stderr, "linker fatal: cannot open file %s\n", rfiles[i]);
 			return 1;
 		}
-
-		/* Accumulate offsets */
+	
+		/* Twiddle bytes if necessary */
+		
+		ob_cur->hd.h_tylan = ntohs(ob_cur->hd.h_tylan);
+		ob_cur->hd.h_glbl = ntohs(ob_cur->hd.h_glbl);
+		ob_cur->hd.h_dglbl = ntohs(ob_cur->hd.h_dglbl);
+		ob_cur->hd.h_data = ntohs(ob_cur->hd.h_data);
+		ob_cur->hd.h_ddata = ntohs(ob_cur->hd.h_ddata);
+		ob_cur->hd.h_ocode = ntohs(ob_cur->hd.h_ocode);
+		ob_cur->hd.h_stack = ntohs(ob_cur->hd.h_stack);
+		ob_cur->hd.h_entry = ntohs(ob_cur->hd.h_entry);
+		
+		/* Accumulate totals */
 		t_code += ob_cur->hd.h_ocode;
 		t_idat += ob_cur->hd.h_data;
 		t_udat += ob_cur->hd.h_glbl;
@@ -473,7 +463,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		count = getwrd( ob_cur->fp );
 		while( count-- )
 		{
-			unsigned char flag;
+			unsigned flag;
 			unsigned offset;
 			
 			flag = getc( ob_cur->fp );
@@ -483,9 +473,10 @@ int edition, extramem, printmap, printsym, okstatic;
 			{}
 			else
 			{
-/*				printf( "mod: %s (%d) (.r) ",ob_cur->modname, count );*/
-/* 				ftext(flag, DEF|REF); printf("\n" ); */
-
+				DBGPNT(( "mod: %s (%d) (.r) ",ob_cur->modname, count ));
+ 				ftext(flag, DEF|REF);
+				DBGPNT(("\n" ));
+				
 				if( flag & CODENT )
 					t_dt++;
 				else
@@ -494,7 +485,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		}
 	}
 	
-/* 	printf( "Starting library files\n" ); */
+	DBGPNT(( "Starting library files\n" ));
 	
 	/* Process library files to resolve remaining undefined symbols */
 
@@ -507,7 +498,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		
 		fp = fopen(lfiles[i], "r");
 		
-/* 		printf( "Doing file: %s\n", lfiles[i] ); */
+ 		DBGPNT(( "Doing file: %s\n", lfiles[i] ));
 		
 		if (fp == NULL)
 		{
@@ -557,7 +548,7 @@ int edition, extramem, printmap, printsym, okstatic;
 			
 			getname( ob_temp->modname, fp );
 
-/* 			printf( "Doing file: %s, mod %s\n", lfiles[i], ob_temp->modname ); */
+ 			DBGPNT(( "Doing file: %s, mod %s\n", lfiles[i], ob_temp->modname ));
 
 			if( ob_temp->hd.h_tylan != 0 )
 			{
@@ -645,16 +636,16 @@ int edition, extramem, printmap, printsym, okstatic;
 				t_stac += ob_temp->hd.h_stack;
 
 			 	ob_cur = ob_temp;
-#if 0
-				printf( "\nNeeded %s, mod %s\n", ob_temp->filename, ob_temp->modname );
-				dmp_ext( ob_start );
-#endif
+
+				DBGPNT(( "\nNeeded %s, mod %s\n", ob_temp->filename, ob_temp->modname ));
+/*				dmp_ext( ob_start ); */
+
 				/* count up local references that need data-data or data-text adjustments */
 				ob_temp->locref = ftell( ob_temp->fp );
 				count = getwrd( fp );
 				while( count-- )
 				{
-					unsigned char flag;
+					unsigned flag;
 					unsigned offset;
 					
 					flag = getc( fp );
@@ -665,8 +656,9 @@ int edition, extramem, printmap, printsym, okstatic;
 					else
 					{
 						
-/* 						printf( "mod: %s (%d) (.l) ",ob_temp->modname, count ); */
-/* 						ftext(flag, DEF|REF); printf("\n" ); */
+ 						DBGPNT(( "mod: %s (%d) (.l) ",ob_temp->modname, count ));
+ 						ftext(flag, DEF|REF);
+ 						DBGPNT(("\n" ));
 						
 						if( flag & CODENT )
 							t_dt++;
@@ -679,9 +671,8 @@ int edition, extramem, printmap, printsym, okstatic;
 			 {
 			 	/* ROF was not used, release it */
 				
-#if 0
-				printf("\n%s of %s was not needed\n\n", ob_temp->modname, ob_temp->filename );
-#endif
+				DBGPNT(("\n%s of %s was not needed\n\n", ob_temp->modname, ob_temp->filename ));
+
 			 	while( ob_temp->symbols != NULL )
 			 	{
 			 		struct exp_sym *next;
@@ -874,9 +865,9 @@ int edition, extramem, printmap, printsym, okstatic;
 		printf( "                 %4.4x %4.4x %4.4x %2.2x  %2.2x\n\n", t_code, t_idat, t_udat, t_idpd, t_udpd );
 	}
 	
-	/*printf( "Total stack space: %4.4x\n", t_stac );*/
-	/*printf( "Data-Text count: %d\n", t_dt );*/
-	/*printf( "Data-data count: %d\n", t_dd );*/
+	DBGPNT(( "Total stack space: %4.4x\n", t_stac ));
+	DBGPNT(( "Data-Text count: %d\n", t_dt ));
+	DBGPNT(( "Data-data count: %d\n", t_dd ));
 	
 	ofp = fopen( ofile, "w+");
 	
@@ -895,7 +886,8 @@ int edition, extramem, printmap, printsym, okstatic;
 	/* Module signature */
 	fputc(0x87, ofp);
 	fputc(0xCD, ofp);
-	compute_crc(0x87); compute_crc(0xCD);
+	compute_crc(0x87);
+	compute_crc(0xCD);
 	headerParity ^= 0x87;
 	headerParity ^= 0xCD;
 	
@@ -917,10 +909,10 @@ int edition, extramem, printmap, printsym, okstatic;
 		return 1;
 	}
 	
-	/* Magic bytes */
 	fputc(moduleSize >> 8, ofp);
 	fputc(moduleSize & 0xFF, ofp);
-	compute_crc(moduleSize >> 8); compute_crc(moduleSize & 0xFF);
+	compute_crc(moduleSize >> 8);
+	compute_crc(moduleSize & 0xFF);
 	headerParity ^= moduleSize >> 8;
 	headerParity ^= moduleSize & 0xFF;
 	
@@ -928,12 +920,11 @@ int edition, extramem, printmap, printsym, okstatic;
 	nameOffset = 0x0D;
 	fputc(nameOffset >> 8, ofp);
 	fputc(nameOffset & 0xFF, ofp);
-	compute_crc(nameOffset >> 8); compute_crc(nameOffset & 0xFF);
+	compute_crc(nameOffset >> 8);
+	compute_crc(nameOffset & 0xFF);
 	headerParity ^= nameOffset >> 8;
 	headerParity ^= nameOffset & 0xFF;
 
-	unsigned char typelang, attrev;
-	
 	/* module type/lang */
 	if( B09EntPt != NULL )
 		typelang = 0x21;
@@ -969,7 +960,8 @@ int edition, extramem, printmap, printsym, okstatic;
 	dataSize = t_stac + t_idat + t_udat + t_idpd + t_udpd + extramem;
 	fputc(dataSize >> 8, ofp);
 	fputc(dataSize & 0xFF, ofp);
-	compute_crc(dataSize >> 8); compute_crc(dataSize & 0xFF);
+	compute_crc(dataSize >> 8);
+	compute_crc(dataSize & 0xFF);
 
 	/* module name */
 	for (i = 0; i < strlen(modname) - 1; i++)
@@ -996,7 +988,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		char *data;
 		unsigned count;
 		
-		/*printf( "Object %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ocode );*/
+		DBGPNT(( "Object %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ocode ));
 		
 		fseek( ob_cur->fp, ob_cur->object, SEEK_SET );
 		data = malloc( ob_cur->hd.h_ocode );
@@ -1012,8 +1004,10 @@ int edition, extramem, printmap, printsym, okstatic;
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data + ob_cur->hd.h_ddata, SEEK_SET );
 		count = getwrd( ob_cur->fp );
 
-/*		if( count > 0 )*/
-			/*printf( "External References:\n" );*/
+		if( count > 0 )
+		{
+			DBGPNT(( "External References:\n" ));
+		}
 			
 		while( count-- )
 		{
@@ -1024,21 +1018,21 @@ int edition, extramem, printmap, printsym, okstatic;
 			value = getsym( ob_start, symbol, &valueflg );
 			number = getwrd( ob_cur->fp );
 			
-			/*printf( "%-10s %-10s %4.4x (", ob_cur->modname, symbol, value );*/
-			/*ftext( valueflg, DEF );*/
-			/*printf( ") " );*/
+			DBGPNT(( "%-10s %-10s %4.4x (", ob_cur->modname, symbol, value ));
+			ftext( valueflg, DEF );
+			DBGPNT(( ") " ));
 			
 			while( number-- )
 			{
-				unsigned char flag;
+				unsigned flag;
 				unsigned offset, result, scratch;
 				flag = getc( ob_cur->fp );
 				offset = getwrd( ob_cur->fp );
 
 				if( flag & CODLOC )
 				{
-					/*printf( " External ref patch: (" );*/
-					/*ftext( flag, REF );*/
+					DBGPNT(( " External ref patch: (" ));
+					ftext( flag, REF );
 					
 					if( offset > ob_cur->hd.h_ocode )
 					{
@@ -1049,9 +1043,9 @@ int edition, extramem, printmap, printsym, okstatic;
 					if( flag & LOC1BYT )
 						scratch = data[offset];
 					 else
-						scratch = *((unsigned short *)(&data[offset]));
+						scratch = (unsigned)(data[offset]<<8) + data[offset+1];
 						
-					/*printf( ") %4.4x (%4.4x) data: %4.4x, ", offset + ob_cur->Code, offset, scratch );*/
+					DBGPNT(( ") %4.4x (%4.4x) data: %4.4x, ", offset + ob_cur->Code, offset, scratch ));
 					
 					if( flag & NEGMASK )
 						result = ~value;
@@ -1085,7 +1079,7 @@ int edition, extramem, printmap, printsym, okstatic;
 				
 			}
 			
-			/*printf( "\n" );*/
+			DBGPNT(( "\n" ));
 
 		}
 		
@@ -1094,7 +1088,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		count = getwrd( ob_cur->fp );
 		while( count-- )
 		{
-			unsigned char flag;
+			unsigned flag;
 			unsigned offset, result;
 			
 			flag = getc( ob_cur->fp );
@@ -1111,7 +1105,7 @@ int edition, extramem, printmap, printsym, okstatic;
 				if( flag & LOC1BYT )
 					result = data[offset];
 				else
-					result = *((unsigned short *)(&data[offset]));
+					result = (unsigned)(data[offset]<<8) + data[offset+1];
 	
 				if( flag & NEGMASK )
 					result = ~result;
@@ -1141,9 +1135,9 @@ int edition, extramem, printmap, printsym, okstatic;
 					data[offset+1] = result & 0xff;
 				}
 	
-				/*printf( " Local ref patch (" );*/
-				/*ftext( flag, DEF|REF );*/
-				/*printf( ") %4.4x (%4.4x)\n", offset + ob_cur->Code, offset );*/
+				DBGPNT(( " Local ref patch (" ));
+				ftext( flag, DEF|REF );
+				DBGPNT(( ") %4.4x (%4.4x)\n", offset + ob_cur->Code, offset ));
 			}
 		}
 		
@@ -1163,7 +1157,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		char *data;
 		unsigned count;
 		
-		/*printf( "Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ddata );*/
+		DBGPNT(( "Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ddata ));
 
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data, SEEK_SET );
 		data = malloc( ob_cur->hd.h_ddata );
@@ -1181,7 +1175,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		count = getwrd( ob_cur->fp );
 		while( count-- )
 		{
-			unsigned char flag;
+			unsigned flag;
 			unsigned offset, result;
 			
 			flag = getc( ob_cur->fp );
@@ -1196,7 +1190,7 @@ int edition, extramem, printmap, printsym, okstatic;
 					if( flag & LOC1BYT )
 						result = data[offset];
 					else
-						result = *((unsigned short *)(&data[offset]));
+						result = (unsigned)(data[offset]<<8) + data[offset+1];
 		
 					if( flag & NEGMASK )
 						result = ~result;
@@ -1251,7 +1245,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		/* Dump special linker initialized dp data */
 		if( ob_cur == ob_start )
 		{
-			/*printf( "Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 );*/
+			DBGPNT(( "Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 ));
 			fputc(t_idpd, ofp);
 			compute_crc(t_idpd);
 			fputc(t_udpd, ofp);
@@ -1270,7 +1264,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		char *data;
 		unsigned count;
 		
-		/*printf( "Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_data );*/
+		DBGPNT(( "Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_data ));
 		fseek( ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode, SEEK_SET );
 		data = malloc( ob_cur->hd.h_data );
 		if( data == NULL )
@@ -1287,7 +1281,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		count = getwrd( ob_cur->fp );
 		while( count-- )
 		{
-			unsigned char flag;
+			unsigned flag;
 			unsigned offset, result;
 			
 			flag = getc( ob_cur->fp );
@@ -1305,7 +1299,7 @@ int edition, extramem, printmap, printsym, okstatic;
 					if( flag & LOC1BYT )
 						result = data[offset];
 					else
-						result = *((unsigned short *)(&data[offset]));
+						result = (unsigned)(data[offset]<<8) + data[offset+1];
 		
 					if( flag & NEGMASK )
 						result = ~result;
@@ -1360,7 +1354,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		/* Dump special linker initialized data */
 		if( ob_cur == ob_start )
 		{
-			/*printf( "Initialized linker data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 );*/
+			DBGPNT(( "Initialized linker data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 ));
 			fputc(t_idat>>8, ofp);
 			compute_crc(t_idat>>8);
 			fputc(t_idat&0xff, ofp);
@@ -1370,7 +1364,8 @@ int edition, extramem, printmap, printsym, okstatic;
 		ob_cur = ob_cur->next;
 	}
 	
-	/*printf( "Data-text table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dt*2) );*/
+	DBGPNT(( "Data-text table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dt*2) ));
+
 	/* Now dump Data-text table */
 	fputc(t_dt>>8, ofp);
 	compute_crc(t_dt>>8);
@@ -1387,7 +1382,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		count = getwrd( ob_cur->fp );
 		while( count-- )
 		{
-			unsigned char flag;
+			unsigned flag;
 			unsigned offset;
 			
 			flag = getc( ob_cur->fp );
@@ -1417,7 +1412,8 @@ int edition, extramem, printmap, printsym, okstatic;
 		ob_cur = ob_cur->next;
 	}
 
-	/*printf( "Data-data table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dd*2) );*/
+	DBGPNT(( "Data-data table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dd*2) ));
+
 	/* Now dump Data-data table */
 	fputc(t_dd>>8, ofp);
 	compute_crc(t_dd>>8);
@@ -1434,7 +1430,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		count = getwrd( ob_cur->fp );
 		while( count-- )
 		{
-			unsigned char flag;
+			unsigned flag;
 			unsigned offset;
 			
 			flag = getc( ob_cur->fp );
@@ -1464,7 +1460,7 @@ int edition, extramem, printmap, printsym, okstatic;
 		ob_cur = ob_cur->next;
 	}
 
-	/*printf( "Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+strlen( modname )+1 );*/
+	DBGPNT(( "Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+strlen( modname )+1 ));
 	/* Now dump program name as a C string */
 	fwrite( modname, strlen( modname ), 1, ofp );
 	buffer_crc( modname, strlen( modname ) );
@@ -1515,14 +1511,6 @@ unsigned offset;
 	return 0;
 }
 
-
-int dump_rof_header(hd)
-char *hd;
-{
-	printf("ROF Header:\n");
-	return 0;
-}
-
 int getname(s, fp)
 register char *s;
 FILE *fp;
@@ -1532,27 +1520,15 @@ FILE *fp;
      return 0;
 }
 
-/* Switch a Little-Endian number byte order to make it Big-Endian */
-
-unsigned o9_int(nbr)
-u16 nbr;
-{
-#ifndef __BIG_ENDIAN__
-	return( ((nbr&0xff00)>>8) + ((nbr&0xff)<<8)  );
-#else
-	return nbr;
-#endif
-}
-
 unsigned getwrd( fp )
 FILE *fp;
 {
-	unsigned char Msb, Lsb;
+	unsigned Msb, Lsb;
 	unsigned nbr;
 	
 	Msb=getc(fp); Lsb=getc(fp);
 	nbr = Msb << 8 | Lsb;
-	return (o9_int(nbr));
+	return nbr;
 }
 
 char *flagtext( flag )
@@ -1730,17 +1706,16 @@ struct ob_files *ob;
 	{
 		struct ext_ref *exts;
 		
-		printf( "   File: %s, mod: %s: ", ob->filename, ob->modname );
+		DBGPNT(( "   File: %s, mod: %s: ", ob->filename, ob->modname ));
 		
 		exts = ob->exts;
 		while( exts != NULL )
 		{
-			printf( "%s ", exts->name );
+			DBGPNT(( "%s ", exts->name ));
 			exts = exts->next;
-		
 		}
 		
-		printf( "\n" );
+		DBGPNT(( "\n" ));
 		ob = ob->next;
 	}
 	
@@ -1748,7 +1723,7 @@ struct ob_files *ob;
 }
 
 int compute_crc(a)
-unsigned char a;
+unsigned a;
 {
 	a ^= _crc[0];
 	_crc[0] = _crc[1];
@@ -1770,17 +1745,17 @@ unsigned char a;
 }
 
 int buffer_crc( data, size )
-unsigned char data[];
+char data[];
 unsigned size;
 {
-	int	i;
+	register int i;
 	for( i=0; i<size; i++ )
 		compute_crc( data[i] );
 	
 	return 0;
 }
 
-/* Get value for symbol */
+/* Get value and flag for symbol */
 unsigned getsym( ob, symbol, flag )
 struct ob_files *ob;
 char *symbol;
@@ -1816,32 +1791,49 @@ int ftext(c, ref)
 char c;
 int ref;
 {
-	printf("(%02x) ", mc(c));
+	DBGPNT(("(%02x) ", mc(c)));
+
 	if (ref & REF)
 	{
 		if (c & CODLOC)
-			printf("in code");
+		{
+			DBGPNT(("in code"));
+		}
 		else
-			printf(c & DIRLOC ? "in dp data" : "in non-dp data");
-		printf(c & LOC1BYT ? "/byte" : "/word");
+		{
+			DBGPNT((c & DIRLOC ? "in dp data" : "in non-dp data"));
+		}
+		
+		DBGPNT((c & LOC1BYT ? "/byte" : "/word"));
+		
 		if (c & NEGMASK)
-			printf("/neg");
+		{
+			DBGPNT(("/neg"));
+		}
+		
 		if (c & RELATIVE)
-			printf("/pcr");
+		{
+			DBGPNT(("/pcr"));
+		}
 	}
+
 	if (ref & DEF)
 	{
 		if (ref & REF)
-			printf(" - ");
+		{
+			DBGPNT((" - "));
+		}
 		if (c & CODENT)
-			printf("to code");
+		{
+			DBGPNT(("to code"));
+		}
 		else
 		{
-			printf(c & DIRENT ? "to dp" : "to non-dp");
-			printf(c & INIENT ? " data" : " bss");
+			DBGPNT((c & DIRENT ? "to dp" : "to non-dp"));
+			DBGPNT((c & INIENT ? " data" : " bss"));
 		}
 	}
-/*	putchar('\n'); */
+
 	return 0;
 }
 
