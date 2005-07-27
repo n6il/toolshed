@@ -38,6 +38,7 @@ struct ob_files
 };
 
 /* Define DEBUG to get way more verbose output */
+/*#define DEBUG*/
 
 #ifdef DEBUG
 #define DBGPNT(x)	printf x

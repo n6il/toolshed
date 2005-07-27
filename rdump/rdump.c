@@ -200,12 +200,7 @@ ftext(c, ref)
 	{
 		if (c & CODLOC)
 		{
-			if( c & CONENT )
-				puts( "a constant (csect rmb)" );
-			else if( c & SETENT )
-				puts( "a constant (set)" );
-			else
-				puts("in code");
+			puts("in code");
 		}
 		else
 			puts(c & DIRLOC ? "in dp data" : "in non-dp data");

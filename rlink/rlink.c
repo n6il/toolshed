@@ -444,10 +444,11 @@ int edition, extramem, printmap, printsym, okstatic, omitC;
 			es_cur = ob_cur->symbols;
 			if( printsym )
 			{
-				do
+				while( es_cur != NULL )
 				{
 					printf( "     %-9s %s %4.4x\n", es_cur->name, flagtext(es_cur->flag), es_cur->offset);
-				} while( (es_cur = es_cur->next) != NULL );
+					es_cur = es_cur->next;
+				}
 			}
 			
 		} while( (ob_cur = ob_cur->next) != NULL );
@@ -529,7 +530,10 @@ char flag;
 {
 	if( flag & CODENT )
 	{
-		return "code";
+		if( (flag & CONENT) || (flag & SETENT) )
+			return "cnst";
+		else
+			return "code";
 	}
 	else
 	{
@@ -557,7 +561,10 @@ struct ob_files *ob;
 {
 	if( flag & CODENT )
 	{
-		return offset + ob->Code;
+		if( (flag & CONENT) || (flag & SETENT) )
+			return offset;
+		else
+			return offset + ob->Code;
 	}
 	else
 	{

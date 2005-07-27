@@ -61,10 +61,8 @@ int omitC;
 
 	/* Start Generating Module */
 	/* Module signature */
-	fputc(0x87, ofp);
-	fputc(0xCD, ofp);
-	compute_crc(0x87);
-	compute_crc(0xCD);
+	compute_crc(ofp, 0x87);
+	compute_crc(ofp, 0xCD);
 	headerParity ^= 0x87;
 	headerParity ^= 0xCD;
 	
@@ -98,19 +96,15 @@ int omitC;
 		return 1;
 	}
 	
-	fputc(moduleSize >> 8, ofp);
-	fputc(moduleSize & 0xFF, ofp);
-	compute_crc(moduleSize >> 8);
-	compute_crc(moduleSize & 0xFF);
+	compute_crc(ofp, moduleSize >> 8);
+	compute_crc(ofp, moduleSize & 0xFF);
 	headerParity ^= moduleSize >> 8;
 	headerParity ^= moduleSize & 0xFF;
 	
 	/* Write module name offset */
 	nameOffset = 0x0D;
-	fputc(nameOffset >> 8, ofp);
-	fputc(nameOffset & 0xFF, ofp);
-	compute_crc(nameOffset >> 8);
-	compute_crc(nameOffset & 0xFF);
+	compute_crc(ofp, nameOffset >> 8);
+	compute_crc(ofp, nameOffset & 0xFF);
 	headerParity ^= nameOffset >> 8;
 	headerParity ^= nameOffset & 0xFF;
 
@@ -120,20 +114,17 @@ int omitC;
 	else
 		typelang = 0x11;
 		
-	fputc(typelang, ofp);
-	compute_crc(typelang);
+	compute_crc(ofp, typelang);
 	headerParity ^= typelang;
 		
 	/* module attr/rev */
 	attrev = 0x81;
-	fputc(attrev, ofp);
-	compute_crc(attrev);
+	compute_crc(ofp, attrev);
 	headerParity ^= attrev;
 		
 	/* header check */
 	headerParity = ~headerParity;
-	fputc(headerParity, ofp);
-	compute_crc(headerParity);
+	compute_crc(ofp, headerParity);
 		
 	/* execution offset */
 	if( B09EntPt == NULL )
@@ -141,32 +132,26 @@ int omitC;
 	else
 		execOffset = getsym( *ob_start, B09EntPt, NULL );
 
-	fputc(execOffset >> 8, ofp);
-	fputc(execOffset & 0xFF, ofp);
-	compute_crc(execOffset >> 8); compute_crc(execOffset & 0xFF);
+	compute_crc(ofp, execOffset >> 8);
+	compute_crc(ofp, execOffset & 0xFF);
 
 	/* Compute data size */
 	dataSize = t_stac + t_idat + t_udat + t_idpd + t_udpd + extramem;
-	fputc(dataSize >> 8, ofp);
-	fputc(dataSize & 0xFF, ofp);
-	compute_crc(dataSize >> 8);
-	compute_crc(dataSize & 0xFF);
+	compute_crc(ofp, dataSize >> 8);
+	compute_crc(ofp, dataSize & 0xFF);
 
 	/* module name */
 	for (i = 0; i < strlen(modname) - 1; i++)
 	{
-		fputc(modname[i], ofp);
-		compute_crc(modname[i]);
+		compute_crc(ofp, modname[i]);
 	}
-	fputc(modname[i] | 0x80, ofp);
-	compute_crc(modname[i] | 0x80);
+	compute_crc(ofp, modname[i] | 0x80);
 		
 	/* edition */
 	if( edition == -1 )
 		edition = (*ob_start)->hd.h_edit;
 		
-	fputc(edition, ofp);
-	compute_crc(edition);
+	compute_crc(ofp, edition);
 
 	/* Now dump all of the code */
 	
@@ -330,8 +315,7 @@ int omitC;
 			}
 		}
 		
-		fwrite( data, ob_cur->hd.h_ocode, 1, ofp );
-		buffer_crc( data, ob_cur->hd.h_ocode );
+		buffer_crc( ofp, data, ob_cur->hd.h_ocode );
 		free( data );
 		
 		ob_cur = ob_cur->next;
@@ -427,18 +411,15 @@ int omitC;
 			}
 		}
 
-		fwrite( data, ob_cur->hd.h_ddata, 1, ofp );
-		buffer_crc( data, ob_cur->hd.h_ddata );
+		buffer_crc( ofp, data, ob_cur->hd.h_ddata );
 		free( data );
 		
 		/* Dump special linker initialized dp data */
 		if( ob_cur == *ob_start && !omitC )
 		{
 			DBGPNT(( "Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 ));
-			fputc(t_idpd, ofp);
-			compute_crc(t_idpd);
-			fputc(t_udpd, ofp);
-			compute_crc(t_udpd);
+			compute_crc(ofp, t_idpd);
+			compute_crc(ofp, t_udpd);
 		}
 
 		ob_cur = ob_cur->next;
@@ -536,18 +517,15 @@ int omitC;
 			}
 		}
 
-		fwrite( data, ob_cur->hd.h_data, 1, ofp );
-		buffer_crc( data, ob_cur->hd.h_data );
+		buffer_crc( ofp, data, ob_cur->hd.h_data );
 		free( data );
 		
 		/* Dump special linker initialized data */
 		if( ob_cur == *ob_start && !omitC )
 		{
 			DBGPNT(( "Initialized linker data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 ));
-			fputc(t_idat>>8, ofp);
-			compute_crc(t_idat>>8);
-			fputc(t_idat&0xff, ofp);
-			compute_crc(t_idat&0xff);
+			compute_crc(ofp, t_idat>>8);
+			compute_crc(ofp, t_idat&0xff);
 		}
 
 		ob_cur = ob_cur->next;
@@ -556,10 +534,8 @@ int omitC;
 	DBGPNT(( "Data-text table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dt*2) ));
 
 	/* Now dump Data-text table */
-	fputc(t_dt>>8, ofp);
-	compute_crc(t_dt>>8);
-	fputc(t_dt&0xff, ofp);
-	compute_crc(t_dt&0xff);
+	compute_crc(ofp, t_dt>>8);
+	compute_crc(ofp, t_dt&0xff);
 
 	ob_cur = *ob_start;
 	while( ob_cur != NULL )
@@ -594,10 +570,8 @@ int omitC;
 					else
 						offset += ob_cur->IDat;
 					
-					fputc(offset>>8, ofp);
-					compute_crc(offset>>8);
-					fputc(offset&0xff, ofp);
-					compute_crc(offset&0xff);
+					compute_crc(ofp, offset>>8);
+					compute_crc(ofp, offset&0xff);
 				}
 				else
 				{}
@@ -610,10 +584,8 @@ int omitC;
 	DBGPNT(( "Data-data table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dd*2) ));
 
 	/* Now dump Data-data table */
-	fputc(t_dd>>8, ofp);
-	compute_crc(t_dd>>8);
-	fputc(t_dd&0xff, ofp);
-	compute_crc(t_dd&0xff);
+	compute_crc(ofp, t_dd>>8);
+	compute_crc(ofp, t_dd&0xff);
 	
 	ob_cur = *ob_start;
 	while( ob_cur != NULL )
@@ -650,10 +622,8 @@ int omitC;
 					else
 						offset += ob_cur->IDat;
 						
-					fputc(offset>>8, ofp);
-					compute_crc(offset>>8);
-					fputc(offset&0xff, ofp);
-					compute_crc(offset&0xff);
+					compute_crc(ofp, offset>>8);
+					compute_crc(ofp, offset&0xff);
 				}
 			}
 		}
@@ -665,10 +635,8 @@ int omitC;
 	{
 		DBGPNT(( "Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+strlen( modname )+1 ));
 		/* Now dump program name as a C string */
-		fwrite( modname, strlen( modname ), 1, ofp );
-		buffer_crc( modname, strlen( modname ) );
-		fputc(0, ofp);
-		compute_crc(0);
+		buffer_crc( ofp, modname, strlen( modname ) );
+		compute_crc(ofp, 0);
 	}
 	
 	/* Now write CRC */
@@ -679,9 +647,16 @@ int omitC;
 	return 0;
 }
 
-int compute_crc(a)
-unsigned a;
+int compute_crc(fp, a)
+FILE *fp;
+#ifdef UNIX
+unsigned char a;
+#else
+char a
+#endif
 {
+	fputc( a, fp );
+	
 	a ^= _crc[0];
 	_crc[0] = _crc[1];
 	_crc[1] = _crc[2];
@@ -701,13 +676,14 @@ unsigned a;
 	return 0;
 }
 
-int buffer_crc( data, size )
+int buffer_crc( fp, data, size )
+FILE *fp;
 char data[];
 unsigned size;
 {
 	register int i;
 	for( i=0; i<size; i++ )
-		compute_crc( data[i] );
+		compute_crc( fp, data[i] );
 	
 	return 0;
 }

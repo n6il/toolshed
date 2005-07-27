@@ -116,6 +116,7 @@ int lfile_count;
 			 while( count-- )
 			 {
 				struct exp_sym *es_temp;
+				int used;
 				
 				es_temp = malloc( sizeof( struct exp_sym) );
 				
@@ -131,13 +132,29 @@ int lfile_count;
 				es_temp->next = NULL;
 				
 				/* Now find and remove this symbol from the external references table */
-				addrof += rm_exref( es_temp->name, *ob_start );
+				used = rm_exref( es_temp->name, *ob_start );
 				
-				if( addrof > 0 )
-					dup_fnd += chk_dup( es_temp, *ob_start, ob_temp->modname );
+				/* If symbol is a unused constant, don't add it */
+				
+				if( es_temp->flag & CODENT )
+				{
+					if( ((es_temp->flag & CONENT) || (es_temp->flag & SETENT)) )
+					{
+						if( used == 0 )
+						{
+							free( es_temp );
+							es_temp = NULL;
+						}
+					}
+				}
 
-				es_temp->next = ob_temp->symbols;
-				ob_temp->symbols = es_temp;
+				if( es_temp != NULL )
+				{
+					es_temp->next = ob_temp->symbols;
+					ob_temp->symbols = es_temp;
+					addrof += used;
+ 				}
+
 			 }
 			 
 			 /* Record the position of the start of the object code */
