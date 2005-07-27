@@ -583,7 +583,7 @@ int omitC;
 			{
 				if( flag & CODENT )
 				{
-					if( !omitC )
+					if( omitC )
 					{
 						fprintf( stderr, "linker fatal: Data-text tables not allowed in non C based modules\n" );
 						return 1;
@@ -639,7 +639,7 @@ int omitC;
 				{}
 				else
 				{
-					if( !omitC )
+					if( omitC )
 					{
 						fprintf( stderr, "linker fatal: Data-data tables not allowed in non C based modules\n" );
 						return 1;
