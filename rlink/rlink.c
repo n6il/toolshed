@@ -42,7 +42,7 @@ char **argv;
 	char *lfiles[MAX_LFILES];
 	char *ofile, *modname;
 	char *B09EntPt;
-	int edition, extramem, okstatic;
+	int edition, extramem, okstatic, omitC;
 	int printmap, printsym;
 	int rfile_count, lfile_count, i;
 
@@ -54,6 +54,7 @@ char **argv;
 	printmap = 0;
 	printsym = 0;
 	okstatic = 0;
+	omitC = 0;
 	
 	rfile_count = 0;
 	lfile_count = 0;
@@ -208,6 +209,13 @@ char **argv;
 					}
 					break;
 
+				case 'y':
+					/* omit C related data */
+					{
+						omitC = 1;
+					}
+					break;
+
 				case '?':
 					help();
 					exit(0);
@@ -238,7 +246,7 @@ char **argv;
 	
 	/* Call the function which does all the work! */
 
-	return link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, B09EntPt, printmap, printsym, okstatic);
+	return link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, B09EntPt, printmap, printsym, okstatic, omitC);
 }
 
 
@@ -254,22 +262,23 @@ int help()
 	fprintf(stderr, "   -M[=]size[K]   additional number of pages [or kilobytes] of memory\n");
 	fprintf(stderr, "   -m             print the linkage map\n");
 	fprintf(stderr, "   -s             print the symbol table\n");
-	fprintf(stderr, "   -b=ept         Make callable from BASIC09\n"); 
+	fprintf(stderr, "   -b=ept         make callable from BASIC09\n"); 
 	fprintf(stderr, "   -t             allow static data to appear in BASIC09 module\n");
+	fprintf(stderr, "   -y             omit C related data\n");
 
 	return 0;
 }
 
 
 
-int link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, B09EntPt, printmap, printsym, okstatic)
+int link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, edition, extramem, B09EntPt, printmap, printsym, okstatic, omitC )
 char *rfiles[];
 int rfile_count;
 char *lfiles[];
 int lfile_count;
 char *ofile;
 char *modname, *B09EntPt;
-int edition, extramem, printmap, printsym, okstatic;
+int edition, extramem, printmap, printsym, okstatic, omitC;
 {
 	struct ob_files *ob_start;
 	struct ob_files *ob_cur;
@@ -358,11 +367,14 @@ int edition, extramem, printmap, printsym, okstatic;
 
 	/* Add special symbols (linker generated symbols) */
 	
-	if( asign_sm( ob_start, "etext", CODENT, 14 + strlen( ofile ) + t_code ) != 0 ) return 1;
-	if( asign_sm( ob_start, "btext", CODENT, 0 ) != 0 ) return 1;
-	if( asign_sm( ob_start, "edata", INIENT, t_idpd + t_udpd + t_idat ) != 0 ) return 1;
-	if( asign_sm( ob_start, "end", 0, t_idpd + t_udpd + t_idat + t_udat ) != 0 ) return 1;
-	if( asign_sm( ob_start, "dpsiz", DIRENT, t_idpd + t_udpd ) != 0 ) return 1;
+	if( omitC == 0 )
+	{
+		if( asign_sm( ob_start, "etext", CODENT, 14 + strlen( ofile ) + t_code ) != 0 ) return 1;
+		if( asign_sm( ob_start, "btext", CODENT, 0 ) != 0 ) return 1;
+		if( asign_sm( ob_start, "edata", INIENT, t_idpd + t_udpd + t_idat ) != 0 ) return 1;
+		if( asign_sm( ob_start, "end", 0, t_idpd + t_udpd + t_idat + t_udat ) != 0 ) return 1;
+		if( asign_sm( ob_start, "dpsiz", DIRENT, t_idpd + t_udpd ) != 0 ) return 1;
+	}
 	
 	/* Check if there are any unresolved symbols */
 	ob_cur = ob_start;
@@ -448,7 +460,7 @@ int edition, extramem, printmap, printsym, okstatic;
 	DBGPNT(( "Data-Text count: %d\n", t_dt ));
 	DBGPNT(( "Data-data count: %d\n", t_dd ));
 	
-	result = pass2( &ob_start, ofile, modname, B09EntPt, extramem, edition );
+	result = pass2( &ob_start, ofile, modname, B09EntPt, extramem, edition, omitC );
 	
 	if( result != 0 )
 		return result;
@@ -752,9 +764,3 @@ int ref;
 
 	return 0;
 }
-
-
-
-
-
-

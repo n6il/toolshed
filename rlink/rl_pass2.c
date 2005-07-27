@@ -24,19 +24,21 @@ extern unsigned t_code, t_idat, t_udat, t_idpd, t_udpd, t_stac, t_dt, t_dd;
 static unsigned getsym();
 static int compute_crc();
 static int buffer_crc();
+
 #ifdef UNIX
 unsigned char _crc[3];
 #else
 char _crc[3];
 #endif
 
-int pass2( ob_start, ofile, modname, B09EntPt, extramem, edition )
+int pass2( ob_start, ofile, modname, B09EntPt, extramem, edition, omitC )
 struct ob_files **ob_start;
 char *ofile;
 char *modname;
 char *B09EntPt;
 int extramem;
 int edition;
+int omitC;
 {
 	FILE *ofp;
 	struct ob_files *ob_cur;
@@ -66,17 +68,29 @@ int edition;
 	headerParity ^= 0x87;
 	headerParity ^= 0xCD;
 	
-	moduleSize = 14 						/* module header */
-	           + strlen( modname )			/* module name */
-	           + t_code						/* Code size of all segements */
-	           + t_idpd                     /* Initialized direct page data of all segements */
-	           + 2							/* Linker direct page initialized data */
-	           + t_idat						/* Initialized data of all segments */
-	           + 2							/* Linker initialized data */
-	           + 2 + t_dt * 2  				/* Data-text reference table */
-	           + 2 + t_dd * 2  				/* Data-data reference table */
-	           + strlen( modname ) + 1		/* Program name (NULL terminated) */
-	           + 3;							/* CRC bytes */
+	if( omitC )
+	{
+		moduleSize = 14 						/* module header */
+				   + strlen( modname )			/* module name */
+				   + t_code						/* Code size of all segements */
+				   + t_idpd                     /* Initialized direct page data of all segements */
+				   + t_idat						/* Initialized data of all segments */
+				   + 3;							/* CRC bytes */
+	}
+	else
+	{
+		moduleSize = 14 						/* module header */
+				   + strlen( modname )			/* module name */
+				   + t_code						/* Code size of all segements */
+				   + t_idpd                     /* Initialized direct page data of all segements */
+				   + 2							/* Linker direct page initialized data */
+				   + t_idat						/* Initialized data of all segments */
+				   + 2							/* Linker initialized data */
+				   + 2 + t_dt * 2  				/* Data-text reference table */
+				   + 2 + t_dd * 2  				/* Data-data reference table */
+				   + strlen( modname ) + 1		/* Program name (NULL terminated) */
+				   + 3;							/* CRC bytes */
+	}
 	
 	if( moduleSize > 0xffff )
 	{
@@ -126,7 +140,7 @@ int edition;
 		execOffset = (*ob_start)->hd.h_entry + 14 + strlen( modname );
 	else
 		execOffset = getsym( *ob_start, B09EntPt, NULL );
-		
+
 	fputc(execOffset >> 8, ofp);
 	fputc(execOffset & 0xFF, ofp);
 	compute_crc(execOffset >> 8); compute_crc(execOffset & 0xFF);
@@ -418,7 +432,7 @@ int edition;
 		free( data );
 		
 		/* Dump special linker initialized dp data */
-		if( ob_cur == *ob_start )
+		if( ob_cur == *ob_start && !omitC )
 		{
 			DBGPNT(( "Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 ));
 			fputc(t_idpd, ofp);
@@ -527,7 +541,7 @@ int edition;
 		free( data );
 		
 		/* Dump special linker initialized data */
-		if( ob_cur == *ob_start )
+		if( ob_cur == *ob_start && !omitC )
 		{
 			DBGPNT(( "Initialized linker data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2 ));
 			fputc(t_idat>>8, ofp);
@@ -569,11 +583,17 @@ int edition;
 			{
 				if( flag & CODENT )
 				{
+					if( !omitC )
+					{
+						fprintf( stderr, "linker fatal: Data-text tables not allowed in non C based modules\n" );
+						return 1;
+					}
+					
 					if( flag & DIRLOC )
 						offset += ob_cur->IDpD;
 					else
 						offset += ob_cur->IDat;
-
+					
 					fputc(offset>>8, ofp);
 					compute_crc(offset>>8);
 					fputc(offset&0xff, ofp);
@@ -619,6 +639,12 @@ int edition;
 				{}
 				else
 				{
+					if( !omitC )
+					{
+						fprintf( stderr, "linker fatal: Data-data tables not allowed in non C based modules\n" );
+						return 1;
+					}
+
 					if( flag & DIRENT )
 						offset += ob_cur->IDpD;
 					else
@@ -635,12 +661,15 @@ int edition;
 		ob_cur = ob_cur->next;
 	}
 
-	DBGPNT(( "Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+strlen( modname )+1 ));
-	/* Now dump program name as a C string */
-	fwrite( modname, strlen( modname ), 1, ofp );
-	buffer_crc( modname, strlen( modname ) );
-	fputc(0, ofp);
-	compute_crc(0);
+	if( !omitC )
+	{
+		DBGPNT(( "Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+strlen( modname )+1 ));
+		/* Now dump program name as a C string */
+		fwrite( modname, strlen( modname ), 1, ofp );
+		buffer_crc( modname, strlen( modname ) );
+		fputc(0, ofp);
+		compute_crc(0);
+	}
 	
 	/* Now write CRC */
 	fputc(~_crc[0], ofp);

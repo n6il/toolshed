@@ -55,4 +55,3 @@ extern int ftext();
 #define mc(c) ((c)&0xff)
 #define DEF 1
 #define REF 2
-

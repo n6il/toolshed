@@ -118,7 +118,7 @@ char *B09EntPt;
 		
 		if( ob_cur->hd.h_valid )
 		{
-			fprintf( stderr, "linker fatal: ROF file: %s must contain valid object code\n", rfiles[i] );
+			fprintf( stderr, "linker fatal: '%s' contains assembly errors\n", rfiles[i] );
 			return 1;
 		}
 		

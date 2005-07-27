@@ -107,7 +107,7 @@ int lfile_count;
 
 			if( ob_temp->hd.h_valid )
 			{
-				fprintf( stderr, "linker fatal: Library file: %s, module %s must contain valid object code\n", lfiles[i], ob_temp->modname );
+				fprintf( stderr, "linker fatal: Library file: %s, module: '%s' contains assembly errors\n", lfiles[i], ob_temp->modname );
 				return 1;
 			}
 			
