@@ -534,8 +534,11 @@ int omitC;
 	DBGPNT(( "Data-text table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dt*2) ));
 
 	/* Now dump Data-text table */
-	compute_crc(ofp, t_dt>>8);
-	compute_crc(ofp, t_dt&0xff);
+	if( !omitC )
+	{
+		compute_crc(ofp, t_dt>>8);
+		compute_crc(ofp, t_dt&0xff);
+	}
 
 	ob_cur = *ob_start;
 	while( ob_cur != NULL )
@@ -584,8 +587,11 @@ int omitC;
 	DBGPNT(( "Data-data table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp)+2+(t_dd*2) ));
 
 	/* Now dump Data-data table */
-	compute_crc(ofp, t_dd>>8);
-	compute_crc(ofp, t_dd&0xff);
+	if( !omitC )
+	{
+		compute_crc(ofp, t_dd>>8);
+		compute_crc(ofp, t_dd&0xff);
+	}
 	
 	ob_cur = *ob_start;
 	while( ob_cur != NULL )
