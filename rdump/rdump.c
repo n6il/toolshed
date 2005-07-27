@@ -199,7 +199,14 @@ ftext(c, ref)
 	if (ref & REF)
 	{
 		if (c & CODLOC)
-			puts("in code");
+		{
+			if( c & CONENT )
+				puts( "a constant (csect rmb)" );
+			else if( c & SETENT )
+				puts( "a constant (set)" );
+			else
+				puts("in code");
+		}
 		else
 			puts(c & DIRLOC ? "in dp data" : "in non-dp data");
 		puts(c & LOC1BYT ? "/byte" : "/word");
@@ -213,7 +220,14 @@ ftext(c, ref)
 		if (ref & REF)
 			puts(" - ");
 		if (c & CODENT)
-			puts("to code");
+		{
+			if( c & CONENT )
+				puts( "a constant (csect rmb)" );
+			else if( c & SETENT )
+				puts( "a constant (set)" );
+			else
+				puts("in code");
+		}
 		else
 		{
 			puts(c & DIRENT ? "to dp" : "to non-dp");

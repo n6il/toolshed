@@ -5,6 +5,10 @@
 /* type flags */
 #define CODENT		0x04        /* data/code flag */
 
+/* Code type flags */
+#define CONENT		0x02		/* Constant */
+#define SETENT		0x01		/* Constant */
+
 /* data type flags */
 #define DIRENT		0x02        /* global/direct flag */
 #define INIENT		0x01        /* clear/init. data flag */
