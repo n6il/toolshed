@@ -75,7 +75,8 @@ GLOBAL CODFORM  S_Lbr[]
 	{"beor", 0x34, NO_IMMED | PRE_11 | 17},
 	{"bieor", 0x35, NO_IMMED | PRE_11 | 17},
 	{"oim", 0x01, NO_IMMED | 18}, {"aim", 0x02, NO_IMMED | 18},
-	{"eim", 0x05, NO_IMMED | 18}, {"tim", 0x0b, NO_IMMED | 18}
+	{"eim", 0x05, NO_IMMED | 18}, {"tim", 0x0b, NO_IMMED | 18},
+	{"emubrk", 0xfc, PRE_11 | 5}
 }
 
 #endif
