@@ -109,7 +109,7 @@ int             do_rept(void);
 int             end_rept(void);
 
 /* part6.c */
-int             MovLbl(char *destpos);
+int             MoveLabel(char *destpos);
 int             l1e4d(void);
 int             l1f63(void);
 void            SetArow(struct symblstr * parm);

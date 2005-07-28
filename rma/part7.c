@@ -346,7 +346,7 @@ l257e()
 		{
 			break;
 		}
-		if (MovLbl(d0587) != 0)
+		if (MoveLabel(d0587) != 0)
 		{
 			l1f63();
 			break;

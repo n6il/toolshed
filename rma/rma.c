@@ -229,7 +229,7 @@ static          AsmblLin()
 	{
 		return (1);
 	}
-	if (MovLbl(LabelName) != 0)
+	if (MoveLabel(LabelName) != 0)
 	{
 		operatr = LabelName;
 		SkipSpac();

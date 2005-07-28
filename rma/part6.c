@@ -21,13 +21,18 @@
 
 /* *********************************** */
 
+/*
+ * Moves the label at SrcChar to destpos
+ *
+ * Returns 1 of copy was successful.
+ */
 #ifdef __STDC__
 
 int
-                MovLbl(char *destpos)
+                MoveLabel(char *destpos)
 #else
 
-MovLbl(destpos)
+MoveLabel(destpos)
 	char           *destpos;
 
 #endif
@@ -64,7 +69,7 @@ l1e4d()
 	int             strrel;
 
 	SmblDsc = 0;
-	if (MovLbl(AltLbl) == 0)
+	if (MoveLabel(AltLbl) == 0)
 	{
 		return 0;
 	}
