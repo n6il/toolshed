@@ -420,7 +420,8 @@ l1215()
 		}
 	}
 
-	return 0;
+	/* Was: return 0, I suspect this was causing clr ,-s and others to be incorrect - BGP */
+	return 1;
 }
 
 l12a2()
