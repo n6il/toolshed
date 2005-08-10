@@ -73,7 +73,7 @@ GLOBAL direct long nmbr_int;
 GLOBAL direct unsigned char nmbr_str[8];	/* Little-Endian ordered
 						 * string */
 GLOBAL direct short d0033;
-GLOBAL direct int HadBrkt,
+GLOBAL direct int HadBracket,
                 HadArrow;
 GLOBAL direct int d0039[2];	/* ???   */
 GLOBAL direct int doList,

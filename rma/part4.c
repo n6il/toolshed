@@ -10,7 +10,7 @@
 
 /*
  * extern direct unsigned NumBytes, jsrOfst, d0021; extern direct long
- * nmbr_int; extern direct short d0033; extern direct int HadBrkt, HadArrow,
+ * nmbr_int; extern direct short d0033; extern direct int HadBracket, HadArrow,
  * d0039; extern direct unsigned CodeSize, undeflbl;
  * 
  * extern direct short ref_cnt, locl_cnt;
@@ -189,7 +189,7 @@ regofst()			/* l10d1()                 */
 {				/* Parses indexed mode for A/B/D offset */
 	char            itm;
 
-	if (HadBrkt = (((itm = SkipSpac()) == '[') ? 1 : 0))
+	if (HadBracket = (((itm = SkipSpac()) == '[') ? 1 : 0))
 	{
 		itm = *(++SrcChar);
 	}
@@ -238,7 +238,7 @@ regofst()			/* l10d1()                 */
 	else
 	{
 		/* if  no '[' && dp referencing */
-		if ((HadBrkt == 0) && (HadArrow >= 0))
+		if ((HadBracket == 0) && (HadArrow >= 0))
 		{
 			if ((HadArrow > 0) || ((d0033 >> 8) == d0027))
 			{
@@ -302,7 +302,7 @@ l11be()
 
 #endif
 	NumBytes += 2;
-	if (HadBrkt)
+	if (HadBracket)
 	{
 		INDX_BYT = 0x9f;/* Let "C_Oprnd" be struct ref_ent */
 #ifdef COCO
@@ -425,7 +425,7 @@ l1215()
 
 l12a2()
 {
-	if (HadBrkt)
+	if (HadBracket)
 	{
 		ilAdrMod();
 	}
@@ -500,9 +500,9 @@ not_pcr()			/* process 0,[reg] */
 		++SrcChar;
 
 		/*
-		 * if (HadBrkt) { if ( *(SrcChar) != ']' ) { return(
+		 * if (HadBracket) { if ( *(SrcChar) != ']' ) { return(
 		 * e_report( "bracket missing" ) ); } INDX_BYT ^= 0x1f;
-		 * ++SrcChar; HadBrkt = 0; }
+		 * ++SrcChar; HadBracket = 0; }
 		 */
 		return 1;
 	default:
@@ -535,7 +535,7 @@ l1326()
 	MLCod.opcode |= 0x20;
 	++NumBytes;
 	++d0021;
-	if (HadBrkt)
+	if (HadBracket)
 	{
 		if (!Is_W)
 		{
@@ -768,7 +768,7 @@ l1584()
 	}
 	else
 	{
-		if ((HadArrow > 0) || HadBrkt || (d0033 > 0x0f) || (d0033 < -(0x10)))
+		if ((HadArrow > 0) || HadBracket || (d0033 > 0x0f) || (d0033 < -(0x10)))
 		{
 			opr_ptr[1] = d0033;
 			++NumBytes;
