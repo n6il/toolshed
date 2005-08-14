@@ -1,4 +1,7 @@
+#include <stdlib.h>
 #include <rof.h>
+#include "out.h"
+
 
 typedef unsigned u16;		/* Little-endian coco int */
 
@@ -52,6 +55,11 @@ extern int      chk_dup();
 extern int      rm_exref();
 extern int      check_name();
 extern int      ftext();
+
+extern	int     (*XXX_header)();
+extern	int     (*XXX_body_byte)();
+extern	int     (*XXX_body)();
+extern	int     (*XXX_tail)();
 
 #define mc(c) ((c)&0xff)
 #define DEF 1

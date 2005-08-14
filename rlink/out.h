@@ -11,7 +11,7 @@ struct os9
 	unsigned short  offset_to_module_name;
 	int             type_language;
 	int             attr_rev;
-	int             execuation_offset;
+	int             execution_offset;
 	unsigned short  permanent_storage_size;
 	char            module_name[SYMLEN + 1];
 	int             edition;
@@ -19,7 +19,8 @@ struct os9
 
 struct decb
 {
-	int             exeution_offset;
+	uint16_t        segment_size;
+	uint16_t        org_offset;
 };
 
 struct object_header

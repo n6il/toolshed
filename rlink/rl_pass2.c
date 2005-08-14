@@ -18,7 +18,12 @@
 #include <libgen.h>
 #endif
 #include "rlink.h"
-#include "module.h"
+
+
+int     (*XXX_header)();
+int     (*XXX_body)();
+int     (*XXX_body_byte)();
+int     (*XXX_tail)();
 
 extern unsigned t_code,
                 t_idat,
@@ -90,9 +95,9 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 	obh.os9.attr_rev = 0x81;
 
 	if (B09EntPt == NULL)
-		obh.os9.execuation_offset = (*ob_start)->hd.h_entry + 14 + strlen(modname);
+		obh.os9.execution_offset = (*ob_start)->hd.h_entry + 14 + strlen(modname);
 	else
-		obh.os9.execuation_offset = getsym(*ob_start, B09EntPt, NULL);
+		obh.os9.execution_offset = getsym(*ob_start, B09EntPt, NULL);
 
 	/* Compute data size */
 	obh.os9.permanent_storage_size = t_stac + t_idat + t_udat + t_idpd + t_udpd + extramem;

@@ -9,28 +9,12 @@ unsigned char   _crc[3];
 FILE           *ofp;
 
 
-int             create_decb_module()
-{
-	/* Write Disk BASIC BIN Header */
-
-	/* Write Disk BASIC BIN Code/Data Segment */
-
-	/* Write Disk BASIC BIN Trailer */
-
-	return 0;
-}
-
 int             os9_header(obh, filename)
 	struct object_header *obh;
 	char           *filename;
 {
 	char            headerParity;
 	int             acc;
-
-	if (obh->kind != object_kind_os9)
-	{
-		return 1;
-	}
 
 	/* Initialize variables */
 	headerParity = 0;
@@ -86,10 +70,10 @@ int             os9_header(obh, filename)
 	compute_crc(headerParity);
 
 	/* execution offset */
-	fputc(obh->os9.execuation_offset >> 8, ofp);
-	fputc(obh->os9.execuation_offset & 0xFF, ofp);
-	compute_crc(obh->os9.execuation_offset >> 8);
-	compute_crc(obh->os9.execuation_offset & 0xFF);
+	fputc(obh->os9.execution_offset >> 8, ofp);
+	fputc(obh->os9.execution_offset & 0xFF, ofp);
+	compute_crc(obh->os9.execution_offset >> 8);
+	compute_crc(obh->os9.execution_offset & 0xFF);
 
 	/* Compute data size - tally _BSS and _DATA areas */
 	fputc(obh->os9.permanent_storage_size >> 8, ofp);
@@ -142,15 +126,11 @@ int             os9_body_byte(obh, byte)
 int             os9_tail(obh)
 	struct object_header *obh;
 {
-	if (obh->kind == object_kind_os9)
-	{
-		fputc(~_crc[0], ofp);
-		fputc(~_crc[1], ofp);
-		fputc(~_crc[2], ofp);
-	}
-	else if (obh->kind == object_kind_decb);
-	{
-	}
+	fputc(~_crc[0], ofp);
+	fputc(~_crc[1], ofp);
+	fputc(~_crc[2], ofp);
+
+	fclose(ofp);
 
 	return 0;
 }

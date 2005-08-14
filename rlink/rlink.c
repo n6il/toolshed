@@ -80,6 +80,13 @@ int             main(argc, argv)
 		return 1;
 	}
 
+
+	/* Assume default output is OS-9 module */
+	XXX_header = os9_header;
+	XXX_body_byte = os9_body_byte;
+	XXX_body = os9_body;
+	XXX_tail = os9_tail;
+
 	/* Parse options */
 	for (i = 1; i < argc; i++)
 	{
@@ -100,6 +107,16 @@ int             main(argc, argv)
 					}
 
 					edition = atoi(p);
+				}
+				break;
+
+			case 'B':
+				/* Disk BASIC Modle */
+				{
+					XXX_header = decb_header;
+					XXX_body_byte = decb_body_byte;
+					XXX_body = decb_body;
+					XXX_tail = decb_tail;
 				}
 				break;
 
@@ -281,6 +298,7 @@ int             help()
 	fprintf(stderr, "   -m             print the linkage map\n");
 	fprintf(stderr, "   -s             print the symbol table\n");
 	fprintf(stderr, "   -b=ept         make callable from BASIC09\n");
+	fprintf(stderr, "   -B             emit Disk BASCIC loadable module\n");
 	fprintf(stderr, "   -t             allow static data to appear in BASIC09 module\n");
 	fprintf(stderr, "   -y             omit C related data\n");
 
