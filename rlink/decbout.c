@@ -19,10 +19,10 @@ int             decb_header(obh, filename)
 	}
 
 	fputc('\x00', ofp);	/* Header flag */
-	fputc(obh->decb.segment_size >> 8, ofp);	/* Segment size hi */
-	fputc(obh->decb.segment_size & 0xFF, ofp);	/* Segment size lo */
-	fputc(obh->decb.org_offset >> 8, ofp);	/* Org address hi */
-	fputc(obh->decb.org_offset & 0xFF, ofp);	/* Org address lo */
+	fputc(obh->module_size >> 8, ofp);	/* Segment size hi */
+	fputc(obh->module_size & 0xFF, ofp);	/* Segment size lo */
+	fputc(obh->execution_offset >> 8, ofp);	/* Org address hi */
+	fputc(obh->execution_offset & 0xFF, ofp);	/* Org address lo */
 
 	return 0;
 }

@@ -5,6 +5,7 @@ typedef enum
 
 }               object_type;
 
+#if 0
 struct os9
 {
 	unsigned short  module_size;
@@ -22,15 +23,27 @@ struct decb
 	uint16_t        segment_size;
 	uint16_t        org_offset;
 };
+#endif
 
 struct object_header
 {
-	object_type     kind;
+	unsigned short  module_size;
+	unsigned short  offset_to_module_name;
+	int             type_language;
+	int             attr_rev;
+	int             execution_offset;
+	unsigned short  permanent_storage_size;
+	char            module_name[SYMLEN + 1];
+	int             edition;
+
+#if 0
+object_type     kind;
 	union
 	{
 		struct os9      os9;
 		struct decb     decb;
 	};
+#endif
 };
 
 int     os9_header();

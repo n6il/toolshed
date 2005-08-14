@@ -22,6 +22,10 @@ int             os9_header(obh, filename)
 	_crc[1] = 0xFF;
 	_crc[2] = 0xFF;
 
+	/* Adjust module size for OS-9 extras */
+	obh->module_size += 14	/* module header */
+			+ 3;	/* CRC bytes */
+
 	/* Create the file that the module will reside in */
 
 	ofp = fopen(filename, "w+");
@@ -39,30 +43,30 @@ int             os9_header(obh, filename)
 	headerParity ^= 0x87;
 	headerParity ^= 0xCD;
 
-	fputc(obh->os9.module_size >> 8, ofp);
-	fputc(obh->os9.module_size & 0xFF, ofp);
-	compute_crc(obh->os9.module_size >> 8);
-	compute_crc(obh->os9.module_size & 0xFF);
-	headerParity ^= obh->os9.module_size >> 8;
-	headerParity ^= obh->os9.module_size & 0xFF;
+	fputc(obh->module_size >> 8, ofp);
+	fputc(obh->module_size & 0xFF, ofp);
+	compute_crc(obh->module_size >> 8);
+	compute_crc(obh->module_size & 0xFF);
+	headerParity ^= obh->module_size >> 8;
+	headerParity ^= obh->module_size & 0xFF;
 
 	/* Write module name offset (assumed for now) */
-	fputc(obh->os9.offset_to_module_name >> 8, ofp);
-	fputc(obh->os9.offset_to_module_name & 0xFF, ofp);
-	compute_crc(obh->os9.offset_to_module_name >> 8);
-	compute_crc(obh->os9.offset_to_module_name & 0xFF);
-	headerParity ^= obh->os9.offset_to_module_name >> 8;
-	headerParity ^= obh->os9.offset_to_module_name & 0xFF;
+	fputc(obh->offset_to_module_name >> 8, ofp);
+	fputc(obh->offset_to_module_name & 0xFF, ofp);
+	compute_crc(obh->offset_to_module_name >> 8);
+	compute_crc(obh->offset_to_module_name & 0xFF);
+	headerParity ^= obh->offset_to_module_name >> 8;
+	headerParity ^= obh->offset_to_module_name & 0xFF;
 
 	/* module type/lang (assume prgrm+objct for now) */
-	fputc(obh->os9.type_language, ofp);
-	compute_crc(obh->os9.type_language);
-	headerParity ^= obh->os9.type_language;
+	fputc(obh->type_language, ofp);
+	compute_crc(obh->type_language);
+	headerParity ^= obh->type_language;
 
 	/* module attr/rev (assume reent+0 for now) */
-	fputc(obh->os9.attr_rev, ofp);
-	compute_crc(obh->os9.attr_rev);
-	headerParity ^= obh->os9.attr_rev;
+	fputc(obh->attr_rev, ofp);
+	compute_crc(obh->attr_rev);
+	headerParity ^= obh->attr_rev;
 
 	/* header check (computed at end) */
 	headerParity = ~headerParity;
@@ -70,29 +74,29 @@ int             os9_header(obh, filename)
 	compute_crc(headerParity);
 
 	/* execution offset */
-	fputc(obh->os9.execution_offset >> 8, ofp);
-	fputc(obh->os9.execution_offset & 0xFF, ofp);
-	compute_crc(obh->os9.execution_offset >> 8);
-	compute_crc(obh->os9.execution_offset & 0xFF);
+	fputc(obh->execution_offset >> 8, ofp);
+	fputc(obh->execution_offset & 0xFF, ofp);
+	compute_crc(obh->execution_offset >> 8);
+	compute_crc(obh->execution_offset & 0xFF);
 
 	/* Compute data size - tally _BSS and _DATA areas */
-	fputc(obh->os9.permanent_storage_size >> 8, ofp);
-	fputc(obh->os9.permanent_storage_size & 0xFF, ofp);
-	compute_crc(obh->os9.permanent_storage_size >> 8);
-	compute_crc(obh->os9.permanent_storage_size & 0xFF);
+	fputc(obh->permanent_storage_size >> 8, ofp);
+	fputc(obh->permanent_storage_size & 0xFF, ofp);
+	compute_crc(obh->permanent_storage_size >> 8);
+	compute_crc(obh->permanent_storage_size & 0xFF);
 
 	/* module name */
-	for (acc = 0; acc < strlen(obh->os9.module_name) - 1; acc++)
+	for (acc = 0; acc < strlen(obh->module_name) - 1; acc++)
 	{
-		fputc(obh->os9.module_name[acc], ofp);
-		compute_crc(obh->os9.module_name[acc]);
+		fputc(obh->module_name[acc], ofp);
+		compute_crc(obh->module_name[acc]);
 	}
-	fputc(obh->os9.module_name[acc] | 0x80, ofp);
-	compute_crc(obh->os9.module_name[acc] | 0x80);
+	fputc(obh->module_name[acc] | 0x80, ofp);
+	compute_crc(obh->module_name[acc] | 0x80);
 
 	/* edition */
-	fputc(obh->os9.edition, ofp);
-	compute_crc(obh->os9.edition);
+	fputc(obh->edition, ofp);
+	compute_crc(obh->edition);
 
 	return 0;
 }

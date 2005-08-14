@@ -56,22 +56,17 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 	struct ob_files *ob_cur;
 	struct object_header obh;
 
-	obh.kind = object_kind_os9;
-
 	if (omitC)
 	{
-		obh.os9.module_size = 14	/* module header */
-			+ strlen(modname)	/* module name */
+		obh.module_size = strlen(modname)	/* module name */
 			+ t_code/* Code size of all segements */
 			+ t_idpd/* Initialized direct page data of all
 				 * segements */
-			+ t_idat/* Initialized data of all segments */
-			+ 3;	/* CRC bytes */
+			+ t_idat; /* Initialized data of all segments */
 	}
 	else
 	{
-		obh.os9.module_size = 14	/* module header */
-			+ strlen(modname)	/* module name */
+		obh.module_size = strlen(modname)	/* module name */
 			+ t_code/* Code size of all segements */
 			+ t_idpd/* Initialized direct page data of all
 				 * segements */
@@ -80,33 +75,32 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 			+ 2	/* Linker initialized data */
 			+ 2 + t_dt * 2	/* Data-text reference table */
 			+ 2 + t_dd * 2	/* Data-data reference table */
-			+ strlen(modname) + 1	/* Program name (NULL
+			+ strlen(modname) + 1;	/* Program name (NULL
 						 * terminated) */
-			+ 3;	/* CRC bytes */
 	}
 
-	obh.os9.offset_to_module_name = 0x0d;
+	obh.offset_to_module_name = 0x0d;
 
 	if (B09EntPt != NULL)
-		obh.os9.type_language = 0x21;
+		obh.type_language = 0x21;
 	else
-		obh.os9.type_language = 0x11;
+		obh.type_language = 0x11;
 
-	obh.os9.attr_rev = 0x81;
+	obh.attr_rev = 0x81;
 
 	if (B09EntPt == NULL)
-		obh.os9.execution_offset = (*ob_start)->hd.h_entry + 14 + strlen(modname);
+		obh.execution_offset = (*ob_start)->hd.h_entry + strlen(modname);
 	else
-		obh.os9.execution_offset = getsym(*ob_start, B09EntPt, NULL);
+		obh.execution_offset = getsym(*ob_start, B09EntPt, NULL);
 
 	/* Compute data size */
-	obh.os9.permanent_storage_size = t_stac + t_idat + t_udat + t_idpd + t_udpd + extramem;
+	obh.permanent_storage_size = t_stac + t_idat + t_udat + t_idpd + t_udpd + extramem;
 
-	strncpy(obh.os9.module_name, modname, SYMLEN);
+	strncpy(obh.module_name, modname, SYMLEN);
 
-	obh.os9.edition = edition;
-	if (obh.os9.edition == -1)
-		obh.os9.edition = (*ob_start)->hd.h_edit;
+	obh.edition = edition;
+	if (obh.edition == -1)
+		obh.edition = (*ob_start)->hd.h_edit;
 
 	if (XXX_header(&obh, ofile))
 	{
