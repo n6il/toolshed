@@ -25,6 +25,7 @@ int             os9_header(obh, filename)
 	/* Adjust module size for OS-9 extras */
 	obh->module_size += 14	/* module header */
 			+ 3;	/* CRC bytes */
+	obh->execution_offset += 14;	/* add module header */
 
 	/* Create the file that the module will reside in */
 
