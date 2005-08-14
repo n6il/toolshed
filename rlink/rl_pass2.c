@@ -36,14 +36,6 @@ extern unsigned t_code,
 
 static unsigned getsym();
 
-#ifdef UNIX
-unsigned char   _crc[3];
-
-#else
-char            _crc[3];
-
-#endif
-
 int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omitC)
 	struct ob_files **ob_start;
 	char           *ofile;
@@ -96,7 +88,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 	/* Compute data size */
 	obh.permanent_storage_size = t_stac + t_idat + t_udat + t_idpd + t_udpd + extramem;
 
-	strncpy(obh.module_name, modname, SYMLEN);
+	strlcpy(obh.module_name, modname, SYMLEN+1);
 
 	obh.edition = edition;
 	if (obh.edition == -1)
