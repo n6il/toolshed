@@ -159,7 +159,7 @@ int omitC;
 	
 	while( ob_cur != NULL )
 	{
-		char *data;
+		unsigned char *data;
 		unsigned count;
 		
 		DBGPNT(( "Object %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ocode ));
@@ -327,7 +327,7 @@ int omitC;
 	
 	while( ob_cur != NULL )
 	{
-		char *data;
+		unsigned char *data;
 		unsigned count;
 		
 		DBGPNT(( "Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_ddata ));
@@ -431,7 +431,7 @@ int omitC;
 	
 	while( ob_cur != NULL )
 	{
-		char *data;
+		unsigned char *data;
 		unsigned count;
 		
 		DBGPNT(( "Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp)+ob_cur->hd.h_data ));
