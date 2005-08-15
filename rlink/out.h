@@ -14,7 +14,7 @@ struct os9
 	int             attr_rev;
 	int             execution_offset;
 	unsigned short  permanent_storage_size;
-	char            module_name[SYMLEN + 1];
+	char            module_name[29 + 1];
 	int             edition;
 };
 
@@ -33,7 +33,7 @@ struct object_header
 	int             attr_rev;
 	int             execution_offset;
 	unsigned short  permanent_storage_size;
-	char            module_name[SYMLEN + 1];
+	char            module_name[29 + 1];
 	int             edition;
 
 #if 0

@@ -88,7 +88,13 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 	/* Compute data size */
 	obh.permanent_storage_size = t_stac + t_idat + t_udat + t_idpd + t_udpd + extramem;
 
-	strlcpy(obh.module_name, modname, SYMLEN+1);
+	if( strlen( basename(modname)) > 29 )
+	{
+		fprintf( stderr, "linker fatal: Output file name cannot exceede 29 characters\n" );
+		return 1;
+	}
+	
+	strlcpy(obh.module_name, modname, 29+1);
 
 	obh.edition = edition;
 	if (obh.edition == -1)
