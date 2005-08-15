@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <rof.h>
+#include "hd6309.h"
 
 typedef unsigned short u16;	/* Little-endian coco int */
 
@@ -21,6 +22,7 @@ char           *snames[MAXSOURCE],
 u16             scount;
 u16             gflag,
                 rflag,
+                dflag,
                 oflag;
 binhead         hd;
 FILE           *in;
@@ -50,6 +52,9 @@ main(argc, argv)
 					break;
 				case 'o':
 					oflag = 1;
+					break;
+				case 'd':
+					dflag = 1;
 					break;
 				case 'a':
 					gflag = rflag = oflag = 1;
@@ -96,10 +101,21 @@ pass1()
 			}
 			showhead();
 			showglobs();
-			/* skip code and initialized data */
-			fseek(in, o9_int(hd.h_ocode +
+
+			if( dflag == 1 )
+			{
+				/* Disasemble object code */
+				Disasm();
+				fseek(in, o9_int(hd.h_ddata) + o9_int(hd.h_data), 1);
+			}
+			else
+			{
+				/* skip code and initialized data */
+				fseek(in, o9_int(hd.h_ocode) +
 					 o9_int(hd.h_ddata) +
-					 o9_int(hd.h_data)), 1);
+					 o9_int(hd.h_data), 1);
+			}
+			
 			showrefs();
 			showlcls();
 
@@ -291,6 +307,47 @@ showlcls()
 			ftext(ref.r_flag, DEF | REF);
 		}
 	}
+}
+
+Disasm()
+{
+	unsigned char *buffer;
+	int i,x, used;
+	char string[256];
+	
+	buffer = malloc( o9_int(hd.h_ocode) );
+	
+	if( buffer == NULL )
+	{
+		fprintf( stderr, "Not enough memory to disasemble\n\b" );
+		return;
+	}
+	
+	fread( buffer, o9_int(hd.h_ocode), 1, in );
+	i=0;
+	
+	printf( "\n" );
+	while( i < o9_int(hd.h_ocode) )
+	{
+		used = Dasm6309 (string, &(buffer[i]), 0l);
+		printf( "%4.4x ", i );
+		
+		x = 0;
+		while( x<5 )
+		{
+			if( x<used )
+				printf( "%2.2x", buffer[i+x] );
+			else
+				printf( "  " );
+			
+			x++;
+		}
+			
+		printf( " %s\n", string );
+		i += used;
+	}
+	printf( "\n" );
+	free( buffer );
 }
 
 unsigned int
