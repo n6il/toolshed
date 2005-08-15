@@ -29,6 +29,7 @@ FILE           *in;
 
 unsigned int    o9_int();
 unsigned int    getwrd();
+int             help();
 
 
 main(argc, argv)
@@ -44,23 +45,32 @@ main(argc, argv)
 			while (*++p)
 				switch (*p)
 				{
-				case 'g':
-					gflag = 1;
-					break;
-				case 'r':
-					rflag = 1;
-					break;
-				case 'o':
-					oflag = 1;
-					break;
-				case 'd':
-					dflag = 1;
-					break;
-				case 'a':
-					gflag = rflag = oflag = 1;
-					break;
-				default:
-					error("unknown option -%c", *p);
+					case 'g':
+						gflag = 1;
+						break;
+
+					case 'r':
+						rflag = 1;
+						break;
+
+					case 'o':
+						oflag = 1;
+						break;
+
+					case 'd':
+						dflag = 1;
+						break;
+
+					case 'a':
+						gflag = rflag = oflag = 1;
+						break;
+
+					case '?':
+						help();
+						exit(0);
+
+					default:
+						error("unknown option -%c", *p);
 				}
 	done:		;
 		}
@@ -330,13 +340,13 @@ Disasm()
 	while( i < o9_int(hd.h_ocode) )
 	{
 		used = Dasm6309 (string, &(buffer[i]), 0l);
-		printf( "%4.4x ", i );
+		printf( "%4.4X ", i );
 		
 		x = 0;
 		while( x<5 )
 		{
 			if( x<used )
-				printf( "%2.2x", buffer[i+x] );
+				printf( "%2.2X", buffer[i+x] );
 			else
 				printf( "  " );
 			
@@ -363,6 +373,7 @@ unsigned int
 	return (o9_int(nbr));
 }
 
+
 error(s1, s2, s3, s4)
 	int             s1,
 	                s2,
@@ -374,6 +385,17 @@ error(s1, s2, s3, s4)
 	putc('\n', stderr);
 	exit(1);
 }
+
+
+int             help()
+{
+	fprintf(stderr, "Usage: rdump <opts> object_file [object_file ...] <opts>\n");
+	fprintf(stderr, "Options:\n");
+	fprintf(stderr, "   -d             disassemble object code\n");
+
+	return 0;
+}
+
 
 ferr(s)
 {
