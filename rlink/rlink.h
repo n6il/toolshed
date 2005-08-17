@@ -5,8 +5,8 @@
 
 typedef unsigned u16;		/* Little-endian coco int */
 
-#define MAX_RFILES	32
-#define MAX_LFILES	32
+#define MAX_RFILES	64
+#define MAX_LFILES	64
 
 struct ext_ref
 {

@@ -211,7 +211,7 @@ int             main(argc, argv)
 					lfile_count++;
 					if (lfile_count > MAX_LFILES)
 					{
-						fprintf(stderr, "linker fatal: To many library files\n");
+						fprintf(stderr, "linker fatal: too many library files\n");
 						exit(1);
 					}
 				}
@@ -267,7 +267,7 @@ int             main(argc, argv)
 			rfile_count++;
 			if (rfile_count > MAX_RFILES)
 			{
-				fprintf(stderr, "linker fatal: To many ROF files\n");
+				fprintf(stderr, "linker fatal: too many ROF files\n");
 				exit(1);
 			}
 		}
@@ -533,7 +533,7 @@ int             asign_sm(ob, name, flag, offset)
 
 	if (exp == NULL)
 	{
-		fprintf(stderr, "linker fatal: Out of memory\n");
+		fprintf(stderr, "linker fatal: out of memory\n");
 		return 1;
 	}
 

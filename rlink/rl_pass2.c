@@ -90,7 +90,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 	if( strlen( basename(modname)) > 29 )
 	{
-		fprintf( stderr, "linker fatal: Output file name cannot exceede 29 characters\n" );
+		fprintf( stderr, "linker fatal: output file name cannot exceede 29 characters\n" );
 		return 1;
 	}
 	
@@ -102,7 +102,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 	if (XXX_header(&obh, ofile))
 	{
-		fprintf(stderr, "linker fatal: Cannot open output file %s\n", ofile);
+		fprintf(stderr, "linker fatal: cannot open output file %s\n", ofile);
 		return 1;
 	}
 
@@ -121,7 +121,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		data = malloc(ob_cur->hd.h_ocode);
 		if (data == NULL)
 		{
-			fprintf(stderr, "linker fatal: Out of memory\n");
+			fprintf(stderr, "linker fatal: out of memory\n");
 			return 1;
 		}
 
@@ -168,7 +168,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 					if (offset > ob_cur->hd.h_ocode)
 					{
-						fprintf(stderr, "linker fatal: Code external reference offset greater than code size\n");
+						fprintf(stderr, "linker fatal: code external reference offset greater than code size\n");
 						return 1;
 					}
 
@@ -231,7 +231,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 			{
 				if (offset > ob_cur->hd.h_ocode)
 				{
-					fprintf(stderr, "linker fatal: Code local reference offset greater than code size\n");
+					fprintf(stderr, "linker fatal: code local reference offset greater than code size\n");
 					return 1;
 				}
 
@@ -295,7 +295,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		data = malloc(ob_cur->hd.h_ddata);
 		if (data == NULL)
 		{
-			fprintf(stderr, "linker fatal: Out of memory\n");
+			fprintf(stderr, "linker fatal: out of memory\n");
 			return 1;
 		}
 
@@ -400,7 +400,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		data = malloc(ob_cur->hd.h_data);
 		if (data == NULL)
 		{
-			fprintf(stderr, "linker fatal: Out of memory\n");
+			fprintf(stderr, "linker fatal: out of memory\n");
 			return 1;
 		}
 
@@ -528,7 +528,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 				{
 					if (omitC)
 					{
-						fprintf(stderr, "linker fatal: Data-text tables not allowed in non C based modules\n");
+						fprintf(stderr, "linker fatal: data-text tables not allowed in non C based modules\n");
 						return 1;
 					}
 
@@ -586,7 +586,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 				{
 					if (omitC)
 					{
-						fprintf(stderr, "linker fatal: Data-data tables not allowed in non C based modules\n");
+						fprintf(stderr, "linker fatal: data-data tables not allowed in non C based modules\n");
 						return 1;
 					}
 
@@ -645,7 +645,7 @@ unsigned        getsym(ob, symbol, flag)
 		ob = ob->next;
 	}
 
-	fprintf(stderr, "linker fatal: Could not find requested symbol: %s\n", symbol);
+	fprintf(stderr, "linker fatal: could not find requested symbol: %s\n", symbol);
 	exit(1);
 
 	return 0;

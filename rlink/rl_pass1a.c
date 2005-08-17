@@ -48,7 +48,7 @@ int             pass1a(ob_start, rfiles, rfile_count, B09EntPt)
 
 		if (ob_temp == NULL)
 		{
-			fprintf(stderr, "linker fatal: Out of memory\n");
+			fprintf(stderr, "linker fatal: out of memory\n");
 			return 1;
 		}
 
@@ -144,7 +144,7 @@ int             pass1a(ob_start, rfiles, rfile_count, B09EntPt)
 
 			if (es_temp == NULL)
 			{
-				fprintf(stderr, "linker fatal: Out of memory\n");
+				fprintf(stderr, "linker fatal: out of memory\n");
 				return 1;
 			}
 

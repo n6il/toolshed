@@ -58,7 +58,7 @@ int             pass1b(ob_start, lfiles, lfile_count)
 
 		if (fp == NULL)
 		{
-			fprintf(stderr, "linker fatal: Library file %s could not be opened\n", lfiles[i]);
+			fprintf(stderr, "linker fatal: library file %s could not be opened\n", lfiles[i]);
 			return 1;
 		}
 
@@ -74,7 +74,7 @@ int             pass1b(ob_start, lfiles, lfile_count)
 
 			if (ob_temp == NULL)
 			{
-				fprintf(stderr, "linker fatal: Out of memory\n");
+				fprintf(stderr, "linker fatal: out of memory\n");
 				return 1;
 			}
 
@@ -98,7 +98,7 @@ int             pass1b(ob_start, lfiles, lfile_count)
 				}
 				else
 				{
-					fprintf(stderr, "linker fatal: Module number %d in library %s is corrupt\n", modcount, lfiles[i]);
+					fprintf(stderr, "linker fatal: module number %d in library %s is corrupt\n", modcount, lfiles[i]);
 					return 1;
 				}
 			}
@@ -109,13 +109,13 @@ int             pass1b(ob_start, lfiles, lfile_count)
 
 			if (ob_temp->hd.h_tylan != 0)
 			{
-				fprintf(stderr, "linker fatal: Library file %s, module %s must be type zero\n", lfiles[i], ob_temp->modname);
+				fprintf(stderr, "linker fatal: library file %s, module %s must be type zero\n", lfiles[i], ob_temp->modname);
 				return 1;
 			}
 
 			if (ob_temp->hd.h_valid)
 			{
-				fprintf(stderr, "linker fatal: Library file: %s, module: '%s' contains assembly errors\n", lfiles[i], ob_temp->modname);
+				fprintf(stderr, "linker fatal: library file: %s, module: '%s' contains assembly errors\n", lfiles[i], ob_temp->modname);
 				return 1;
 			}
 
@@ -130,7 +130,7 @@ int             pass1b(ob_start, lfiles, lfile_count)
 
 				if (es_temp == NULL)
 				{
-					fprintf(stderr, "linker fatal: Out of memory\n");
+					fprintf(stderr, "linker fatal: out of memory\n");
 					return 1;
 				}
 
