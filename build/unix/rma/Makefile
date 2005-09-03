@@ -1,13 +1,16 @@
-# Makefile for rma
+include ../rules.mak
 
 vpath %.c ../../../rma
+vpath %.h ../../../rma
 
-CFLAGS	+=
-LDFLAGS	+=
+BINARY	= rma
+OBJS	= chcodes.o part2.o part3.o part4.o part5.o part6.o part7.o part8.o part9.o rma.o
 
-rma:	rma.o part2.o part3.o part4.o part5.o part6.o part7.o \
-	part8.o  part9.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+$(BINARY):	$(OBJS)
+	$(CC) $(OBJS) -o $@
 
 clean:
-	rm *.o rma
+	rm $(BINARY) *.o
+
+install: $(BINARY)
+	cp $(BINARY) $(HOME)/bin

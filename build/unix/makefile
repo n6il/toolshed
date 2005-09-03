@@ -5,15 +5,15 @@ vpath %.c ../../mamou:../../os9
 PACKAGENAME	= cocotools.tgz
 INSTALLDIR	= $(HOME)/bin
 DIRS		= libnative librbf libcoco libdecb libmisc libsys libdecb \
-		os9 mamou decb
-#		rma rdump as6809 aslink
+		os9 mamou decb rma rlink rdump
 
 all:
 	$(foreach dir, $(DIRS), (cd $(dir); make);)
 
 install: all
-	cp os9/os9 mamou/mamou decb/decb rma/rma \
-	as6809/as6809 aslink/aslink $(INSTALLDIR)
+	cp os9/os9 mamou/mamou decb/decb rma/rma rlink/rlink rdump/rdump \
+	$(INSTALLDIR)
+#	as6809/as6809 aslink/aslink $(INSTALLDIR)
 
 package: all
 	rm -rf cocotools

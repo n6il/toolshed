@@ -1,12 +1,18 @@
-# Makefile for rdump
+include ../rules.mak
 
 vpath %.c ../../../rdump
+vpath %.h ../../../rdump
 
-CFLAGS	+=
-LDFLAGS	+=
+BINARY	= rdump
+OBJS	= rdump.o 6309dasm.o
 
-rdump:	rdump.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+$(BINARY):	$(OBJS)
+	$(CC) $(OBJS) -o $@
+
+$(OBJS):	hd6309.h ../include/rof.h
 
 clean:
-	rm *.o rdump
+	rm $(BINARY) *.o
+
+install: $(BINARY)
+	cp $(BINARY) $(HOME)/bin
