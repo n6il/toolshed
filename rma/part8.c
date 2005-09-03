@@ -272,7 +272,7 @@ prnthdr()
 		       tm->tm_mon + 1, tm->tm_mday, tm->tm_year + 1900,
 		       tm->tm_hour, tm->tm_min, tm->tm_sec);
 		printf("   %-22s Page %03d\n", SrcNam[0], ++ListPag);
-		printf("%s - %s\n\n", d0591, _ttl);
+		printf("%s - %s\n\n", _nam, _ttl);
 		list_lin = 3;
 	}
 }

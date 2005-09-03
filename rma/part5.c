@@ -531,7 +531,7 @@ int
 do_nam()
 #endif
 {
-	copy_to(d0591);
+	copy_to(_nam);
 }
 
 #ifdef __STDC__

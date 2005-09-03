@@ -61,7 +61,7 @@ main(argc, argv)
 	{
 		SrcFile = f_opn(*rd_fil, "r");
 		d007e.wrd = d0092.wrd = d00a6.wrd = (struct ref_str *) 0;
-		Pass2 = *d0591 = _ttl[0] = '\0';
+		Pass2 = *_nam = _ttl[0] = '\0';
 		ReadFil();	/* PASS 1 */
 		rewind(SrcFile);
 		Pass2 = TRUE;

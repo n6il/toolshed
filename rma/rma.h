@@ -164,9 +164,8 @@ GLOBAL char     AltLbl[10],
                 LabelName[10];
 GLOBAL char     cmntlen[10];	/* To hold " %1.xs val for comment length */
 GLOBAL char     d0587[10],
-                d0591[10];
-GLOBAL char     namxtra[110],	/* extra bytes for "nam" usage ?????? */
-                _ttl[120];
+                _nam[128],
+                _ttl[128];
 GLOBAL char     d0681[10];
 GLOBAL long     reptFpos;
 GLOBAL struct symblstr *d068f[128],
