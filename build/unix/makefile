@@ -18,13 +18,10 @@ install: all
 package: all
 	rm -rf cocotools
 	mkdir cocotools
-	cp os9/os9 mamou/mamou cocotools
-	cp os9/os9 mamou/mamou cocotools
-	cp decb/decb cocotools
+	cp os9/os9 decb/decb mamou/mamou rma/rma rlink/rlink rdump/rdump cocotools
 	tar czvf $(PACKAGENAME) cocotools
 	rm -rf cocotools
 
 clean:
 	$(foreach dir, $(DIRS), (cd $(dir); make clean);)
 	rm cocotools.tgz
-
