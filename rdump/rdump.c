@@ -6,10 +6,24 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <rof.h>
 #include "hd6309.h"
 
 typedef unsigned short u16;	/* Little-endian coco int */
+
+void pass1(void);
+void showhead(void);
+void Disasm(void);
+void showrefs(void);
+void showlcls(void);
+void showglobs(void);
+void getname(char *s);
+unsigned int getwrd(FILE * fp);
+int help(void);
+void ftext(char c, int ref);
+void ferr(char *s);
+
 
 #define MAXSOURCE 20
 #define puts(s) fputs(s,stdout)
@@ -32,7 +46,7 @@ unsigned int    getwrd();
 int             help();
 
 
-main(argc, argv)
+int main(argc, argv)
 	int             argc;
 	char          **argv;
 {
@@ -70,21 +84,30 @@ main(argc, argv)
 						exit(0);
 
 					default:
-						error("unknown option -%c", *p);
+						fprintf(stderr, "unknown option -%c\n", *p);
+						exit(1);
 				}
-	done:		;
 		}
 		else
 		{
 			if (scount == MAXSOURCE)
-				error(0, "too many source files");
+			{
+				fprintf(stderr, "too many source files\n");
+				exit(1);
+			}
 			snames[scount++] = *argv;
 		}
 	}
+	
 	pass1();
+
+
+	return 0;
 }
 
-pass1()
+
+
+void pass1(void)
 {
 	int             count;
 
@@ -159,12 +182,14 @@ unsigned int
 #endif
 }
 
-showhead()
+
+
+void showhead(void)
 {
 	int             c;
 
 	puts("\nModule name: ");
-	while (c = getc(in))
+	while ((c = getc(in)) != 0)
 		putchar(c);
 	if (ferror(in))
 		ferr(fname);
@@ -185,7 +210,9 @@ showhead()
 	printf("Entry point: %04x\n", o9_int(hd.h_entry));
 }
 
-showglobs()
+
+
+void showglobs(void)
 {
 	register unsigned count,
 	                offset;
@@ -208,18 +235,19 @@ showglobs()
 	}
 }
 
-getname(s)
-	register char  *s;
+
+
+void getname(char *s)
 {
-	while (*s++ = getc(in));
+	while ((*s++ = getc(in)) != 0);
 	*s = '\0';
 	if (ferror(in))
 		ferr(fname);
 }
 
-ftext(c, ref)
-	char            c;
-	int             ref;
+
+
+void ftext(char c, int ref)
 {
 	printf("(%02x) ", mc(c));
 	if (ref & REF)
@@ -256,9 +284,13 @@ ftext(c, ref)
 		}
 	}
 	putchar('\n');
+
+	return;
 }
 
-showrefs()
+
+
+void showrefs(void)
 {
 	register unsigned count,
 	                rcount;
@@ -295,12 +327,18 @@ showrefs()
 		if (rflag && !oflag)
 			putchar('\n');
 	}
+	
+	
+	return;
 }
 
-showlcls()
+
+
+void showlcls(void)
 {
 	register unsigned count;
 	def_ref         ref;
+
 
 	count = getwrd(in);
 	if (oflag)
@@ -317,13 +355,19 @@ showlcls()
 			ftext(ref.r_flag, DEF | REF);
 		}
 	}
+	
+	
+	return;
 }
 
-Disasm()
+
+
+void Disasm(void)
 {
 	unsigned char *buffer;
 	int i,x, used;
 	char string[256];
+	
 	
 	buffer = malloc( o9_int(hd.h_ocode) );
 	
@@ -358,7 +402,12 @@ Disasm()
 	}
 	printf( "\n" );
 	free( buffer );
+	
+	
+	return;
 }
+
+
 
 unsigned int
                 getwrd(FILE * fp)
@@ -374,20 +423,8 @@ unsigned int
 }
 
 
-error(s1, s2, s3, s4)
-	int             s1,
-	                s2,
-	                s3,
-	                s4;
-{
-	fprintf(stderr, "rdump: ");
-	fprintf(stderr, s1, s2, s3, s4);
-	putc('\n', stderr);
-	exit(1);
-}
 
-
-int             help()
+int             help(void)
 {
 	fprintf(stderr, "Usage: rdump <opts> object_file [object_file ...] <opts>\n");
 	fprintf(stderr, "Options:\n");
@@ -397,7 +434,9 @@ int             help()
 }
 
 
-ferr(s)
+void ferr(char *s)
 {
-	error("error reading '%s'", s);
+	fprintf(stderr, "error reading '%s'\n", s);
+	
+	exit(1);
 }
