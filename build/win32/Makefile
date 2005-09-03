@@ -1,29 +1,31 @@
-# Makefile for os9/decb suite
+# Makefile for ToolShed
 
 vpath %.c ../../mamou:../../os9
 
-PACKAGENAME	= os9tools.tgz
-INSTALLDIR	= /usr/local/bin
-DIRS		= libcoco libnative librbf libmisc libsys libdecb os9 mamou decb
-
-CC=gcc
+RELEASE		= 0.9
+PACKAGENAME	= toolshed$(RELEASE).tgz
+INSTALLDIR	= $(HOME)/bin
+DIRS		= libnative librbf libcoco libdecb libmisc libsys libdecb \
+		os9 mamou decb rma rlink rdump
 
 all:
 	$(foreach dir, $(DIRS), (cd $(dir); make);)
 
 install: all
-	cp os9/os9 mamou/mamou decb/decb $(INSTALLDIR)
+	cp os9/os9 mamou/mamou decb/decb rma/rma rlink/rlink rdump/rdump \
+	$(INSTALLDIR)
+#	as6809/as6809 aslink/aslink $(INSTALLDIR)
 
 package: all
-	rm -rf os9tools
-	mkdir os9tools
-	mkdir os9tools/bin
-	cp os9/os9 mamou/mamou os9tools/bin
-	cp ../../README os9tools
-	tar czvf $(PACKAGENAME) os9tools
-	rm -rf os9tools
+	rm -rf toolshed$(RELEASE)
+	mkdir toolshed$(RELEASE)
+	mkdir toolshed$(RELEASE)/bin
+	mkdir toolshed$(RELEASE)/lib
+	cp os9/os9 decb/decb mamou/mamou rma/rma rlink/rlink rdump/rdump toolshed$(RELEASE)/bin
+	cp ../../alib/alib.l toolshed$(RELEASE)/lib
+	tar czvf $(PACKAGENAME) toolshed$(RELEASE)
+	rm -rf toolshed$(RELEASE)
 
 clean:
 	$(foreach dir, $(DIRS), (cd $(dir); make clean);)
-	rm os9tools.tgz
-
+	rm $(PACKAGENAME)
