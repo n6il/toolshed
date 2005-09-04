@@ -175,10 +175,10 @@ unsigned int
                 o9_int(nbr)
 	u16             nbr;
 {
-#ifndef __BIG_ENDIAN__
-	return (((nbr & 0xff00) >> 8) + ((nbr & 0xff) << 8));
-#else
+#ifdef __BIGENDIAN__
 	return nbr;
+#else
+	return (((nbr & 0xff00) >> 8) + ((nbr & 0xff) << 8));
 #endif
 }
 
@@ -233,13 +233,16 @@ void showglobs(void)
 			ftext(flag, DEF);
 		}
 	}
+
+
+	return;
 }
 
 
 
 void getname(char *s)
 {
-	while ((*s++ = getc(in)) != 0);
+	while (feof(in) == 0 && (*s++ = getc(in)) != 0);
 	*s = '\0';
 	if (ferror(in))
 		ferr(fname);
@@ -419,7 +422,8 @@ unsigned int
 	Msb = getc(fp);
 	Lsb = getc(fp);
 	nbr = Msb << 8 | Lsb;
-	return (o9_int(nbr));
+
+	return nbr;
 }
 
 
