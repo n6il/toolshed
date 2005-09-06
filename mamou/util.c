@@ -389,7 +389,7 @@ void f_record(assembler *as)
 
 	if (as->do_module_crc == 1 && as->pass == 2)
 	{
-		_os9_crc_compute(as->E_bytes, as->E_total, as->_crc);
+		_os9_crc_compute((u_char *)as->E_bytes, as->E_total, (u_char *)as->_crc);
 	}
 
 

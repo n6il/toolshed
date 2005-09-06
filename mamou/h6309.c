@@ -1780,7 +1780,7 @@ static int do_indexed(assembler *as, int op)
 		else
 		{		
 			/* ,W */
-			if (as->line.force_word || (result != 0) && 
+			if ((as->line.force_word || (result != 0)) && 
 				(as->o_cpuclass >= CPU_H6309))
 			{
 				emit(as, 0xaf);

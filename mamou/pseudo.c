@@ -345,7 +345,8 @@ static int _generic_if(assembler *as, conditional whichone)
 	
 	/* Previous conditional true, evaluate this one */
 		
-	if (whichone != _IFP1 & whichone != _IFP2)
+/*	if (whichone != _IFP1 & whichone != _IFP2) */
+	if (whichone != _IFP1 && whichone != _IFP2)
 	{
 		evaluate(as, &result, &as->line.optr, 1);
 	}
@@ -1615,7 +1616,7 @@ int __end(assembler *as)
 
 		if (as->pass == 2 && as->o_asm_mode == ASM_DECB && *as->line.optr != EOS)
 		{
-			evaluate(as, &as->decb_exec_address, &as->line.optr, 0);
+			evaluate(as, (int *)&as->decb_exec_address, &as->line.optr, 0);
 		}
 		
 		print_line(as, 0, ' ', 0);
