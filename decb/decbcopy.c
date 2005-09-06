@@ -276,7 +276,7 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int t
 	unsigned char *buffer;
 	char *translation_buffer;
 	int new_translation_size;
-	int buffer_size;
+	u_int buffer_size;
 	
 
     /* 1. Set mode based on rewrite. */
@@ -317,7 +317,7 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int t
 		return -1;
 	};
 	
-	ec = _coco_read(path, buffer, &buffer_size);
+	ec = _coco_read(path, buffer, (int *)&buffer_size);
 
 	if (ec != 0)
 	{
@@ -328,7 +328,7 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int t
 	{
 		if( buffer[0] == 0xff )
 		{
-			char *detokenize_buffer;
+			u_char *detokenize_buffer;
 			int detokenize_size;
 			
 			/* File is already a tokenized BASIC file, de-tokenize it */
@@ -376,7 +376,7 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int t
 		{
 			/* source is native, destination is coco */
 
-			NativeToDECB(buffer, buffer_size, &translation_buffer, &new_translation_size);
+			NativeToDECB((char *)buffer, buffer_size, &translation_buffer, &new_translation_size);
 
 			ec = _coco_write(destpath, translation_buffer, &new_translation_size);
 
@@ -386,7 +386,7 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int t
 		{
 			/* source is coco, destination is native */
 			
-			DECBToNative(buffer, buffer_size, &translation_buffer, &new_translation_size);
+			DECBToNative((char *)buffer, buffer_size, &translation_buffer, &new_translation_size);
 			ec = _coco_write(destpath, translation_buffer, &new_translation_size);
 
 			free(translation_buffer);
@@ -396,7 +396,7 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int t
 	{
 		/* One-to-one writing of the data -- no translation needed. */
 		
-		ec = _coco_write(destpath, buffer, &buffer_size);
+		ec = _coco_write(destpath, buffer, (int *)&buffer_size);
 	}
 
 	if (ec != 0)

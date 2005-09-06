@@ -88,7 +88,7 @@ static int do_fstat(char **argv, char *p)
 	error_code	ec = 0;
 	decb_path_id path;
 	decb_dir_entry dentry;
-	int			curr_granule, size, remaining_bytes = 0;;
+	u_int			curr_granule, size, remaining_bytes = 0;;
 	
 
 	/* 1. Open a path to the device. */

@@ -32,7 +32,7 @@ int decblist(int argc, char *argv[])
 	int i;
 	unsigned char *buffer;
 	char *buffer2;
-	int size, size2;
+	u_int size, size2;
 	
 
 	/* 1. Walk command line for options */
@@ -103,7 +103,7 @@ int decblist(int argc, char *argv[])
 		return -1;
 	}
 	
-	ec = _coco_read(path, buffer, &size);
+	ec = _coco_read(path, buffer, (int *)&size);
 	if (ec != 0)
 	{
 		return -1;
@@ -121,11 +121,11 @@ int decblist(int argc, char *argv[])
 		}
 		
 		free( buffer );
-		buffer = program;
+		buffer = (u_char *)program;
 		size = program_size;
 	}
 
-	DECBToNative( buffer, size, &buffer2, &size2);
+	DECBToNative((char *)buffer, size, &buffer2, (int *)&size2);
 
 	printf( "%s", buffer2 );
 
