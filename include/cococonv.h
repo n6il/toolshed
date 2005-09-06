@@ -13,9 +13,9 @@
 
 
 char *UnixToOS9Time(time_t currentTime, char *os9time);
-char *StringToOS9Name(u_char *f);
+u_char *StringToOS9Name(u_char *f);
 int OS9NameLen(u_char *f);
-char *OS9NameToString(u_char *f);
+u_char *OS9NameToString(u_char *f);
 int UnixToCoCoError(int ec);
 
 void DECBNameToString(u_char *filename, u_char *ext, u_char *string);

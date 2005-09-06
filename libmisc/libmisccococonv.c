@@ -32,10 +32,10 @@ char *UnixToOS9Time(time_t currentTime, char *os9time)
  * character in the name as with bit 7 set. This is also used in LSN0 for
  * the disk name.
  */
-char *StringToOS9Name(u_char *f)
+u_char *StringToOS9Name(u_char *f)
 {
-    char *p;
-    int len = strlen(f);
+    u_char *p;
+    int len = strlen((char *)f);
 
     p = f + len - 1;
     *p |= 0x80;
@@ -62,9 +62,9 @@ int OS9NameLen(u_char *f)
  * character in the name as with bit 7 set. This is also used in LSN0 for
  * the disk name.
  */
-char *OS9NameToString(u_char *f)
+u_char *OS9NameToString(u_char *f)
 {
-    char *p;
+    u_char *p;
 
     p = f;
     while (*p != '\0')
