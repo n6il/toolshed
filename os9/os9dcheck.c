@@ -401,16 +401,16 @@ static error_code BuildSecondaryAllocationMap( os9_path_id os9_path, int dir_lsn
 
 					OS9NameToString(dEnt[k].name);
 					
-					if (strcmp(dEnt[k].name, ".") == 0)
+					if (strcmp((char *)dEnt[k].name, ".") == 0)
 					{
 						continue;
 					}
-					if (strcmp( dEnt[k].name, "..") == 0)
+					if (strcmp((char *)dEnt[k].name, "..") == 0)
 					{
 						continue;
 					}
 
-					newPath = strcatdup(path, "/", dEnt[k].name);
+					newPath = strcatdup(path, "/", (char *)dEnt[k].name);
 					
 					if (int3(dEnt[k].lsn) > dd_tot)
 					{

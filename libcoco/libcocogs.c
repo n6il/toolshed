@@ -169,7 +169,7 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 }
 
 
-error_code _coco_gs_size(coco_path_id path, int *size)
+error_code _coco_gs_size(coco_path_id path, u_int *size)
 {
 	error_code		ec = 0;
 	
@@ -188,6 +188,34 @@ error_code _coco_gs_size(coco_path_id path, int *size)
 			
 		case DECB:
 			ec = _decb_gs_size(path->path.decb, size);
+			break;
+	}
+	
+	
+	return ec;
+}
+
+
+
+error_code _coco_gs_pos(coco_path_id path, u_int *pos)
+{
+	error_code		ec = 0;
+	
+	
+    /* 1. Call appropriate function. */
+	
+	switch (path->type)
+	{
+		case NATIVE:
+			ec = _native_gs_pos(path->path.native, pos);
+			break;
+			
+		case OS9:
+			ec = _os9_gs_pos(path->path.os9, pos);
+			break;
+			
+		case DECB:
+			ec = _decb_gs_pos(path->path.decb, pos);
 			break;
 	}
 	

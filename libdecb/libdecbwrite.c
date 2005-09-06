@@ -18,7 +18,7 @@ error_code find_free_granule(decb_path_id path, int *granule, int next_to);
 error_code _decb_write(decb_path_id path, void *buffer, int *size)
 {
     error_code	ec = EOS_WRITE;
-	int current_size = 0, accum_size = 0, curr_granule, bytes_left;
+	u_int current_size = 0, accum_size = 0, curr_granule, bytes_left;
 		
 
 	/* 1. Check the mode. */

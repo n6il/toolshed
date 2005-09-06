@@ -85,7 +85,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 	
 	/* 4. At this point, sector and granule function will work - Load FAT */
 	
-	_decb_gs_sector(*path, 17, 2, (*path)->FAT);
+	_decb_gs_sector(*path, 17, 2, (char *)(*path)->FAT);
 	
 	
 	/* 5. Determine if there is enough space. */
@@ -133,7 +133,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 			
 			if (length > 8) length = 8;
 			
-			strncpy((*path)->dir_entry.filename, (*path)->filename, length);
+			strncpy((char *)(*path)->dir_entry.filename, (*path)->filename, length);
 		}
 		else
 		{
@@ -145,7 +145,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 				length = 8;
 			}
 			
-			strncpy((*path)->dir_entry.filename, (*path)->filename, length);
+			strncpy((char *)(*path)->dir_entry.filename, (*path)->filename, length);
 			
 			
 			p++; /* skip over '.' */
@@ -157,7 +157,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 				length = 3;
 			}
 			
-			strncpy((*path)->dir_entry.file_extension, p, length);
+			strncpy((char *)(*path)->dir_entry.file_extension, p, length);
 		}
 		
 		(*path)->dir_entry.file_type = file_type;
@@ -187,7 +187,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 				(*path)->this_directory_entry_index = (*path)->directory_entry_index;
 			}
 
-			if (strcmp(de.filename, (*path)->dir_entry.filename) == 0 && strcmp(de.file_extension, (*path)->dir_entry.file_extension) == 0)
+			if (strcmp((char *)de.filename, (char *)(*path)->dir_entry.filename) == 0 && strcmp((char *)de.file_extension, (char *)(*path)->dir_entry.file_extension) == 0)
 			{
 				/* 1. A file of this type already exists. */
 				
@@ -333,7 +333,7 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 	
 	/* 6. At this point, sector and granule function will work - Load FAT */
 
-	_decb_gs_sector(*path, 17, 2, (*path)->FAT);
+	_decb_gs_sector(*path, 17, 2, (char *)(*path)->FAT);
 
 
 	/* 7. If path is raw, just return now. */
@@ -394,7 +394,7 @@ error_code _decb_close(decb_path_id path)
 
 	/* 1. Write out FAT sector. */
 	
-	_decb_ss_sector(path, 17, 2, path->FAT);
+	_decb_ss_sector(path, 17, 2, (char *)path->FAT);
 	
 	
 	/* 2. Close path. */
@@ -417,8 +417,8 @@ error_code _decb_close(decb_path_id path)
 static int _decb_cmp(decb_dir_entry *entry, char *name)
 {
 	char modified_name[13];
-	char *filename = entry->filename;
-	char *ext = entry->file_extension;
+	u_char *filename = entry->filename;
+	u_char *ext = entry->file_extension;
 	char *p = modified_name;
 	int count = 0;
 	

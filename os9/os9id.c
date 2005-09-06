@@ -167,8 +167,8 @@ static int do_id(char **argv, char *p)
 			buffer.dd_dat[0] + 1900,
 			buffer.dd_dat[3],
 			buffer.dd_dat[4]);
-		p = strdup(buffer.dd_nam);
-		printf("  Disk name       :   %s\n", OS9NameToString(p));
+		p = strdup((char *)buffer.dd_nam);
+		printf("  Disk name       :   %s\n", OS9NameToString((u_char *)p));
 
 		/* Attempt to identify an OS-9/68K os9 formatted disk image */
 		if (int4(buffer.dd_sync) == 0x4372757A)

@@ -164,9 +164,9 @@ static int do_free(char **argv, char *p)
 		largest_free_block = largest_count;
 	}
 
-	p = strdup(sector0.dd_nam);
+	p = strdup((char *)sector0.dd_nam);
 	printf("\n\"%s\" created on %02d/%02d/%04d\n",
-		OS9NameToString(p), sector0.dd_dat[1],
+		OS9NameToString((u_char *)p), sector0.dd_dat[1],
 		sector0.dd_dat[1], sector0.dd_dat[0] + 1900);
 	if ((total_sectors * path->bps) < (1024 * 1024))
 	{

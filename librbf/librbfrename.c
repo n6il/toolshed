@@ -66,15 +66,15 @@ error_code _os9_rename( char *pathlist, char *new_name )
             break;
         }
 		
-        strncpy(fname, dentry.name, 29);
+        strncpy(fname, (char *)dentry.name, 29);
 		
-        OS9NameToString(fname);
+        OS9NameToString((u_char *)fname);
 		
         if( !strcasecmp( fname, filename ) )
         {
             /* Found the source, rename it */
 			
-            strncpy( dentry.name, new_name, 29 );
+            strncpy((char *)dentry.name, new_name, 29 );
             StringToOS9Name( dentry.name );
 			
             /* Back up file pointer in preparation of updating directory entry */

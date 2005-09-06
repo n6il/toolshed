@@ -82,7 +82,7 @@ error_code _os9_gs_fd(os9_path_id path, int count, fd_stats *fdbuf)
 
 
 
-error_code _os9_gs_size(os9_path_id path, int *size)
+error_code _os9_gs_size(os9_path_id path, u_int *size)
 {
     error_code	ec = 0;
     fd_stats fdbuf;
@@ -106,6 +106,19 @@ error_code _os9_gs_size(os9_path_id path, int *size)
 
     *size = (int)fdbuf.fd_siz;
 
+	
+    return ec;
+}	
+
+
+
+error_code _os9_gs_pos(os9_path_id path, u_int *pos)
+{
+    error_code	ec = 0;
+
+
+	*pos = path->filepos;
+	
 	
     return ec;
 }	

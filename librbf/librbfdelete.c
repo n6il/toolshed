@@ -86,9 +86,9 @@ error_code _os9_delete(char *pathlist)
             break;
         }
 		
-        strncpy(fname, dentry.name, 29);
+        strncpy(fname, (char *)dentry.name, 29);
 		
-        OS9NameToString(fname);
+        OS9NameToString((u_char *)fname);
 		
         if (!strcasecmp(fname, filename))
         {			

@@ -155,12 +155,12 @@ static int do_deldir(char **argv, char *path, int interaction)
         /* Skip over dot directories and empty entries. */
         if (dentry.name[0] == '\0' )
             continue;
-        if( strcmp( dentry.name, "." ) == 0 )
+        if( strcmp((char *)dentry.name, "." ) == 0 )
             continue;
-        if( strcmp( dentry.name, ".." ) == 0 )
+        if( strcmp((char *)dentry.name, ".." ) == 0 )
             continue;
 		
-        dirpath = malloc( strlen( path ) + strlen( dentry.name ) + 2 );
+        dirpath = malloc( strlen((char *)path ) + strlen((char *)dentry.name) + 2 );
         if( dirpath == NULL )
         {
             fprintf( stderr, "Not enough memory.\n" );
@@ -171,7 +171,7 @@ static int do_deldir(char **argv, char *path, int interaction)
 
         strcpy( dirpath, path );
         strcat( dirpath, "/" );
-        strcat( dirpath, dentry.name );
+        strcat( dirpath, (char *)dentry.name );
 
         /* Determine if file is really another directory */
         ec = _os9_open(&path2, dirpath, FAM_DIR | FAM_READ);

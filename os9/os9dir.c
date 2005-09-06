@@ -195,8 +195,8 @@ retry:
 			break;
 		}
 
-		filename = strdup(dentry.name);
-		OS9NameToString(filename);
+		filename = strdup((char *)dentry.name);
+		OS9NameToString((u_char *)filename);
 		if (filename[0] == '\0' || (filename[0] == '.' && dotfiles == 0))
 		{
 			/* skip over deleted entries & dot files */

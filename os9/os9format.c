@@ -384,7 +384,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	_int2(0, s0.dd_res);
 	_int3(0, s0.dd_bt);
 	_int2(0, s0.dd_bsz);
-	UnixToOS9Time(time(NULL), s0.dd_dat);
+	UnixToOS9Time(time(NULL), (char *)s0.dd_dat);
 
 	{
 		int i;
@@ -579,14 +579,14 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 			os9_dir_entry *d = (os9_dir_entry *)&allocedSectors[sectorSize];
 
 			/* Create '..' */
-			strcpy(d->name, "..");
+			strcpy((char *)d->name, "..");
 			StringToOS9Name(d->name);
 			_int3(int3(s0.dd_dir), d->lsn);
 
 			/* Create '.' */
 			d++;
 
-			strcpy(d->name, ".");
+			strcpy((char *)d->name, ".");
 			StringToOS9Name(d->name);
 			_int3(int3(s0.dd_dir), d->lsn);
 		}

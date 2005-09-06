@@ -136,7 +136,7 @@ static int do_modbust(char **argv, char *filename)
 				size = 2;
 
 				ec = _os9_read(path, buffer, &size);
-				size = int2(buffer);
+				size = int2((u_char *)buffer);
 				module = (u_char *)malloc(size);
 
 				if (module == NULL)
@@ -153,7 +153,7 @@ static int do_modbust(char **argv, char *filename)
 				ec = _os9_read(path, &module[4], &size);
 				nameoffset = int2(&module[4]);
 				memcpy(name, &module[nameoffset], OS9NameLen(&module[nameoffset]));
-				OS9NameToString(name);
+				OS9NameToString((u_char *)name);
 				printf("Busting module %s...\n", name);
 
 				ec = _os9_create(&path2, name, FAM_WRITE, FAP_READ | FAP_WRITE);

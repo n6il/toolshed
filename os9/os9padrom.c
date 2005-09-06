@@ -123,7 +123,7 @@ static int do_padrom(char **argv, char *file, int padSize, char padChar)
     error_code	ec = 0;
     coco_path_id path;
     int j;
-    int fileSize;
+    u_int fileSize;
 
 
     ec = _coco_open(&path, file, FAM_WRITE);

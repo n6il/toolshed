@@ -15,7 +15,7 @@
 error_code _decb_gs_fd(decb_path_id path, decb_file_stat *stat)
 {
     error_code		ec = 0;
-	int				size;
+	u_int			size;
 
 	
 	stat->file_type = path->dir_entry.file_type;
@@ -36,8 +36,8 @@ error_code _decb_gs_fd(decb_path_id path, decb_file_stat *stat)
 
 error_code _decb_gs_eof(decb_path_id path)
 {
-    error_code	ec = 0;
-	int filesize;
+    error_code		ec = 0;
+	u_int			filesize;
 
 
 	ec = _decb_gs_size(path, &filesize);
@@ -53,7 +53,7 @@ error_code _decb_gs_eof(decb_path_id path)
 
 
 
-error_code _decb_gs_size(decb_path_id path, int *size)
+error_code _decb_gs_size(decb_path_id path, u_int *size)
 {
     error_code	ec = 0;
 	int curr_granule;
@@ -75,6 +75,18 @@ error_code _decb_gs_size(decb_path_id path, int *size)
 
 	*size += 256 * ((path->FAT[curr_granule] & 0x3f) - 1)+ int2(path->dir_entry.last_sector_size);
 	
+
+    return ec;
+}
+
+
+
+error_code _decb_gs_pos(decb_path_id path, u_int *pos)
+{
+    error_code	ec = 0;
+
+
+	*pos = path->filepos;	
 
     return ec;
 }

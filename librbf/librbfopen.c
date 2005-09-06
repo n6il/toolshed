@@ -147,7 +147,7 @@ aa:
 
         newFD.fd_att =  perms;
         _int2(0, newFD.fd_own);
-        UnixToOS9Time(now, newFD.fd_dat);
+        UnixToOS9Time(now, (char *)newFD.fd_dat);
         newFD.fd_lnk = 1;
         _int4(0, newFD.fd_siz);
         newFD.fd_creat[0] = newFD.fd_dat[0];
@@ -400,9 +400,9 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 
             /* 2. Try to match up the pathlist element to this entry. */
 			
-            strcpy(q, diskent.name);
+            strcpy(q, (char *)diskent.name);
 
-            if (strcasecmp(p, (char *)OS9NameToString(q)) == 0)
+            if (strcasecmp((char *)p, (char *)OS9NameToString((u_char *)q)) == 0)
             {
                 (*path)->pl_fd_lsn = int3(diskent.lsn);
                 (*path)->filepos = 0;

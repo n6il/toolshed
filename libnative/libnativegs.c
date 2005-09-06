@@ -98,7 +98,7 @@ error_code _native_gs_fd(native_path_id path, struct stat *statbuf)
 
 
 
-error_code _native_gs_size(native_path_id path, int *size)
+error_code _native_gs_size(native_path_id path, u_int *size)
 {
     error_code	ec = 0;
 	struct stat statbuf;
@@ -118,5 +118,18 @@ error_code _native_gs_size(native_path_id path, int *size)
 	}
 
 
+	return ec;
+}
+
+
+
+error_code _native_gs_pos(native_path_id path, u_int *pos)
+{
+    error_code	ec = 0;
+
+
+	*pos = ftell(path->fd);
+	
+	
 	return ec;
 }
