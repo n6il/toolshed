@@ -24,6 +24,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.3  2005/09/16 23:46:35  boisy
+ * ar2 now makes under OS X
+ *
  * Revision 1.2  1996/07/20 22:15:35  cc
  * Merged in pwz's unixification (Sunos).
  *
@@ -103,6 +106,8 @@ int		compt;					/* default to new compression		*/
 int		rmflag = 0;				/* don't rm file after save			*/
 int		zflag = FALSE;			/* true if names come from stdin	*/
 /*page*/
+
+char	*emalloc();
 
 main(argc, argv)
 int		argc;

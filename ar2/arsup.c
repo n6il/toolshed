@@ -24,6 +24,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.3  2005/09/16 23:46:35  boisy
+ * ar2 now makes under OS X
+ *
  * Revision 1.2  1996/07/20 22:23:02  cc
  * Merged in pwz's unixification (Sunos).
  *
@@ -513,6 +516,7 @@ register char	*s2;
 #endif
 /*page*/
 #ifdef SYSV
+#if 0
 # include <sys/types.h>
 # include <sys/param.h>
 # include <sys/dir.h>
@@ -591,6 +595,7 @@ register DIR	*dirp;
 	return (0);
 	}
 
+#endif
 #else
 # ifndef OSK
 #  ifndef CKLIB
