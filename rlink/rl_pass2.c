@@ -93,8 +93,8 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		fprintf( stderr, "linker fatal: output file name cannot exceede 29 characters\n" );
 		return 1;
 	}
-	
-	strlcpy(obh.module_name, modname, 29+1);
+
+   (void)strncpy(obh.module_name, modname, sizeof(obh.module_name));
 
 	obh.edition = edition;
 	if (obh.edition == -1)
