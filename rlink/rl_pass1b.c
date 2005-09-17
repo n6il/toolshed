@@ -178,7 +178,9 @@ int             pass1b(ob_start, lfiles, lfile_count)
 			ob_temp->object = ftell(fp);
 
 			/* Grind past the object code and initialized data */
-			fseek(fp, ob_temp->hd.h_ocode + ob_temp->hd.h_ddata + ob_temp->hd.h_data, 1);
+			fseek(fp, ntohs (ob_temp->hd.h_ocode) +
+                   ntohs (ob_temp->hd.h_ddata) +
+                   ntohs (ob_temp->hd.h_data ), 1);
 
 			if (addrof > 0)
 			{
@@ -224,12 +226,12 @@ int             pass1b(ob_start, lfiles, lfile_count)
 
 				ob_cur->next = ob_temp;
 
-				t_code += ob_temp->hd.h_ocode;
-				t_idat += ob_temp->hd.h_data;
-				t_udat += ob_temp->hd.h_glbl;
-				t_idpd += ob_temp->hd.h_ddata;
-				t_udpd += ob_temp->hd.h_dglbl;
-				t_stac += ob_temp->hd.h_stack;
+				t_code += ntohs (ob_temp->hd.h_ocode);
+				t_idat += ntohs (ob_temp->hd.h_data );
+				t_udat += ntohs (ob_temp->hd.h_glbl );
+				t_idpd += ntohs (ob_temp->hd.h_ddata);
+				t_udpd += ntohs (ob_temp->hd.h_dglbl);
+				t_stac += ntohs (ob_temp->hd.h_stack);
 
 				ob_cur = ob_temp;
 
