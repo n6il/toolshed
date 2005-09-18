@@ -1,4 +1,3 @@
-
 #ifndef lint
 static char *id = "$Id$";
 #endif
@@ -24,6 +23,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.4  2005/09/18 21:45:14  boisy
+ * Testing indent
+ *
  * Revision 1.3  2005/09/16 23:46:35  boisy
  * ar2 now makes under OS X
  *
