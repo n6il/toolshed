@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
+#include <netinet/in.h>
 #endif
 #include "rlink.h"
 
@@ -42,7 +43,7 @@ int             pass1b(ob_start, lfiles, lfile_count)
 	/* Process library files to resolve remaining undefined symbols */
 
 	ob_cur = *ob_start;
-	while (ob_cur->next != NULL)
+	while (ob_cur && ob_cur->next != NULL)
 		ob_cur = ob_cur->next;
 
 	for (i = 0; i < lfile_count; i++)
@@ -88,6 +89,17 @@ int             pass1b(ob_start, lfiles, lfile_count)
 			{
 				break;	/* All done */
 			}
+
+			/** correct endianness */
+			ob_temp->hd.h_tylan = ntohs(ob_temp->hd.h_tylan);
+			ob_temp->hd.h_glbl  = ntohs(ob_temp->hd.h_glbl );
+			ob_temp->hd.h_dglbl = ntohs(ob_temp->hd.h_dglbl);
+			ob_temp->hd.h_data  = ntohs(ob_temp->hd.h_data );
+			ob_temp->hd.h_ddata = ntohs(ob_temp->hd.h_ddata);
+			ob_temp->hd.h_ocode = ntohs(ob_temp->hd.h_ocode);
+			ob_temp->hd.h_stack = ntohs(ob_temp->hd.h_stack);
+			ob_temp->hd.h_entry = ntohs(ob_temp->hd.h_entry);
+
 
 			if (ob_temp->hd.h_sync != ROFSYNC)
 			{
@@ -178,9 +190,7 @@ int             pass1b(ob_start, lfiles, lfile_count)
 			ob_temp->object = ftell(fp);
 
 			/* Grind past the object code and initialized data */
-			fseek(fp, ntohs (ob_temp->hd.h_ocode) +
-                   ntohs (ob_temp->hd.h_ddata) +
-                   ntohs (ob_temp->hd.h_data ), 1);
+			fseek(fp,  ob_temp->hd.h_ocode + ob_temp->hd.h_ddata + ob_temp->hd.h_data , 1);
 
 			if (addrof > 0)
 			{
@@ -226,12 +236,12 @@ int             pass1b(ob_start, lfiles, lfile_count)
 
 				ob_cur->next = ob_temp;
 
-				t_code += ntohs (ob_temp->hd.h_ocode);
-				t_idat += ntohs (ob_temp->hd.h_data );
-				t_udat += ntohs (ob_temp->hd.h_glbl );
-				t_idpd += ntohs (ob_temp->hd.h_ddata);
-				t_udpd += ntohs (ob_temp->hd.h_dglbl);
-				t_stac += ntohs (ob_temp->hd.h_stack);
+				t_code += ob_temp->hd.h_ocode;
+				t_idat += ob_temp->hd.h_data ;
+				t_udat += ob_temp->hd.h_glbl ;
+				t_idpd += ob_temp->hd.h_ddata;
+				t_udpd += ob_temp->hd.h_dglbl;
+				t_stac += ob_temp->hd.h_stack;
 
 				ob_cur = ob_temp;
 

@@ -80,9 +80,9 @@ int             pass1a(ob_start, rfiles, rfile_count, B09EntPt)
 		/* Twiddle bytes if necessary */
 
 		ob_cur->hd.h_tylan = ntohs(ob_cur->hd.h_tylan);
-		ob_cur->hd.h_glbl = ntohs(ob_cur->hd.h_glbl);
+		ob_cur->hd.h_glbl  = ntohs(ob_cur->hd.h_glbl );
 		ob_cur->hd.h_dglbl = ntohs(ob_cur->hd.h_dglbl);
-		ob_cur->hd.h_data = ntohs(ob_cur->hd.h_data);
+		ob_cur->hd.h_data  = ntohs(ob_cur->hd.h_data );
 		ob_cur->hd.h_ddata = ntohs(ob_cur->hd.h_ddata);
 		ob_cur->hd.h_ocode = ntohs(ob_cur->hd.h_ocode);
 		ob_cur->hd.h_stack = ntohs(ob_cur->hd.h_stack);

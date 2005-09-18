@@ -19,7 +19,6 @@
 #endif
 #include "rlink.h"
 
-
 int     (*XXX_header)();
 int     (*XXX_body)();
 int     (*XXX_body_byte)();
@@ -90,11 +89,11 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 	if( strlen( basename(modname)) > 29 )
 	{
-		fprintf( stderr, "linker fatal: output file name cannot exceede 29 characters\n" );
+		fprintf( stderr, "linker fatal: output file name cannot exceed 29 characters\n" );
 		return 1;
 	}
 
-   (void)strncpy(obh.module_name, modname, sizeof(obh.module_name));
+   	(void)strncpy(obh.module_name, modname, sizeof(obh.module_name));
 
 	obh.edition = edition;
 	if (obh.edition == -1)
@@ -115,7 +114,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		unsigned char  *data;
 		unsigned        count;
 
-		DBGPNT(("Object %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp) + ob_cur->hd.h_ocode));
+		DBGPNT(("Object %s is %4.4lx - %4.4lx, len: %u\n", ob_cur->modname, ftell(ob_cur->fp), ftell(ob_cur->fp) + ob_cur->hd.h_ocode, ob_cur->hd.h_ocode));
 
 		fseek(ob_cur->fp, ob_cur->object, SEEK_SET);
 		data = malloc(ob_cur->hd.h_ocode);
@@ -133,7 +132,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 		if (count > 0)
 		{
-			DBGPNT(("External References:\n"));
+			DBGPNT(("%u external References:\n", count));
 		}
 
 		while (count--)
@@ -289,7 +288,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		unsigned char  *data;
 		unsigned        count;
 
-		DBGPNT(("Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp) + ob_cur->hd.h_ddata));
+		DBGPNT(("Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ob_cur->fp), ftell(ob_cur->fp) + ob_cur->hd.h_ddata));
 
 		fseek(ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data, SEEK_SET);
 		data = malloc(ob_cur->hd.h_ddata);
@@ -378,7 +377,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		/* Dump special linker initialized dp data */
 		if (ob_cur == *ob_start && !omitC)
 		{
-			DBGPNT(("Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp) + 2));
+			DBGPNT(("Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ob_cur->fp), ftell(ob_cur->fp) + 2));
 			XXX_body_byte(&obh, t_idpd);
 			XXX_body_byte(&obh, t_udpd);
 		}
@@ -395,7 +394,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		unsigned char  *data;
 		unsigned        count;
 
-		DBGPNT(("Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ofp), ftell(ofp) + ob_cur->hd.h_data));
+		DBGPNT(("Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ob_cur->fp), ftell(ob_cur->fp) + ob_cur->hd.h_data));
 		fseek(ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode, SEEK_SET);
 		data = malloc(ob_cur->hd.h_data);
 		if (data == NULL)
@@ -486,7 +485,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		/* Dump special linker initialized data */
 		if (ob_cur == *ob_start && !omitC)
 		{
-			DBGPNT(("Initialized linker data is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp) + 2));
+			DBGPNT(("Initialized linker data is %4.4lx - %4.4lx\n", ftell(ob_cur->fp), ftell(ob_cur->fp) + 2));
 			XXX_body_byte(&obh, (t_idat >> 8) & 0xff);
 			XXX_body_byte(&obh, t_idat & 0xff);
 		}
@@ -494,7 +493,9 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		ob_cur = ob_cur->next;
 	}
 
-	DBGPNT(("Data-text table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp) + 2 + (t_dt * 2)));
+	if (ob_cur && ob_cur->fp)
+		DBGPNT(("Data-text table is %4.4lx - %4.4lx\n", ftell(ob_cur->fp), ftell(ob_cur->fp) + 2 + (t_dt * 2)));
+	
 
 	/* Now dump Data-text table */
 	if (!omitC)
@@ -549,7 +550,8 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		ob_cur = ob_cur->next;
 	}
 
-	DBGPNT(("Data-data table is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp) + 2 + (t_dd * 2)));
+	if (ob_cur && ob_cur->fp)
+		DBGPNT(("Data-data table is %4.4lx - %4.4lx\n", ftell(ob_cur->fp), ftell(ob_cur->fp) + 2 + (t_dd * 2)));
 
 	/* Now dump Data-data table */
 	if (!omitC)
@@ -606,7 +608,9 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 	if (!omitC)
 	{
-		DBGPNT(("Program name is %4.4lx - %4.4lx\n", ftell(ofp), ftell(ofp) + strlen(modname) + 1));
+		if (ob_cur && ob_cur->fp)
+			DBGPNT(("Program name is %4.4lx - %4.4lx\n", 
+				ftell(ob_cur->fp), ftell(ob_cur->fp) + strlen(modname) + 1));
 		/* Now dump program name as a C string */
 		XXX_body(&obh, modname, strlen(modname));
 		XXX_body_byte(&obh, 0);
