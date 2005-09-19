@@ -414,7 +414,12 @@ error_code buffer_sprintf(int *position, char **str, size_t *buffer_size, const 
 		}
 		
 		*buffer_size = *buffer_size + BLOCK_QUANTUM;
-		*str = buffer;
+		
+		if( *str != buffer )
+		{
+			free( *str );
+			*str = buffer;
+		}
 	}
 
 	va_start(ap, format);
