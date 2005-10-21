@@ -4,7 +4,7 @@
  * $Id$
  ********************************************************************/
 
-#define BLOCK_QUANTUM  64
+#define BLOCK_QUANTUM  256
 
 #include <stdlib.h>
 #include <string.h>
@@ -400,7 +400,7 @@ error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size )
 error_code buffer_sprintf(int *position, char **str, size_t *buffer_size, const char *format, ...)
 {
 	va_list	ap;
-	
+
 	if( *position > ((*buffer_size) - 20) )
 	{
 		char *buffer;
@@ -417,7 +417,6 @@ error_code buffer_sprintf(int *position, char **str, size_t *buffer_size, const 
 		
 		if( *str != buffer )
 		{
-			free( *str );
 			*str = buffer;
 		}
 	}
