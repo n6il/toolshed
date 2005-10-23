@@ -283,38 +283,38 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 				}
 				else
 				{
-					/* Tokenize a function*/
+					/* Tokenize a command */
 					for( i=0; i<0x80; i++ )
 					{
-						if( tok_strcmp( functions[i], (char *)&(in_buffer[in_pos]) ) == 0 )
+						if( tok_strcmp( commands[i], (char *)&(in_buffer[in_pos]) ) == 0 )
 						{
-							(*out_buffer)[out_pos++] = 0xff; /* Function marker */
+							if( i==3 ) /* Preface ' with a colon */
+								(*out_buffer)[out_pos++] = ':';
+							
+							if( i==4 ) /* Preface ELSE with a colon */
+								(*out_buffer)[out_pos++] = ':';
+							
 							(*out_buffer)[out_pos++] = i + 0x80;
-							in_pos += strlen( functions[i] );
+							in_pos += strlen( commands[i] );
+							
+							if( i==6 ) data_literal = 1;
+							
+							if( i==2 || i==3 ) rem_literal = 1;
+							
 							break;
 						}
 					}
-				
+
 					if( i == 0x80 )
 					{
-						/* Tokenize a command */
+						/* Tokenize a function*/
 						for( i=0; i<0x80; i++ )
 						{
-							if( tok_strcmp( commands[i], (char *)&(in_buffer[in_pos]) ) == 0 )
+							if( tok_strcmp( functions[i], (char *)&(in_buffer[in_pos]) ) == 0 )
 							{
-								if( i==3 ) /* Preface ' with a colon */
-									(*out_buffer)[out_pos++] = ':';
-								
-								if( i==4 ) /* Preface ELSE with a colon */
-									(*out_buffer)[out_pos++] = ':';
-								
+								(*out_buffer)[out_pos++] = 0xff; /* Function marker */
 								(*out_buffer)[out_pos++] = i + 0x80;
-								in_pos += strlen( commands[i] );
-								
-								if( i==6 ) data_literal = 1;
-								
-								if( i==2 || i==3 ) rem_literal = 1;
-								
+								in_pos += strlen( functions[i] );
 								break;
 							}
 						}
