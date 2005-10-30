@@ -18,7 +18,7 @@ struct personality
     int startlsn;
 };
 
-static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile, struct personality *hwtype);
+static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile, struct personality *hwtype, int extended);
 
 static struct personality coco = { 18 * 34 };
 static struct personality dragon = { 2 };
@@ -32,6 +32,7 @@ static char *helpMessage[] =
 	"     -b=bootfile     bootfile to copy and link to the image\n",
 	"     -c              CoCo disk\n",
 	"     -d              Dragon disk\n",
+	"     -e              Extended boot (fragmented)\n",
 	"     -t=trackfile    kernel trackfile to copy to the image\n",
 	NULL
 };
@@ -44,6 +45,7 @@ int os9gen(int argc, char *argv[])
 	char *device = NULL, *bootfile = NULL, *trackfile = NULL;
 	int i;
 	struct personality *hwtype= &coco;
+	int extended = 0;
 
 	/* walk command line for options */
 	for (i = 1; i < argc; i++)
@@ -71,6 +73,9 @@ int os9gen(int argc, char *argv[])
 						break;
 					case 'd':
 						hwtype = &dragon;
+						break;
+					case 'e':
+						extended = 1;
 						break;
 					case 't':
 						if (*(++p) == '=')
@@ -112,7 +117,7 @@ int os9gen(int argc, char *argv[])
 		return(0);
 	}
 
-	ec = do_os9gen(argv, device, bootfile, trackfile, hwtype);
+	ec = do_os9gen(argv, device, bootfile, trackfile, hwtype, extended);
 
 	if (ec != 0)
 	{
@@ -124,7 +129,7 @@ int os9gen(int argc, char *argv[])
 	
 
 
-static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile, struct personality *hwtype)
+static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile, struct personality *hwtype, int extended)
 {
 	error_code	ec = 0;
 	os9_path_id opath;
@@ -265,7 +270,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		bootfile_LSN = int3(fdbuf.fd_seg[0].lsn);
 		bootfile_Size = int4(fdbuf.fd_siz);
 
-		if (int3(fdbuf.fd_seg[1].lsn) != 0)
+		if (int3(fdbuf.fd_seg[1].lsn) != 0 && extended == 0)
 		{
 			printf("Error: %s is fragmented\n", bootfile);
 			_os9_close(opath);
@@ -287,8 +292,17 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 
 		size = sizeof(lsn0_sect);
 		_os9_read(opath, &LSN0, &size);
-		_int3(bootfile_LSN, LSN0.dd_bt);
-		_int2(bootfile_Size, LSN0.dd_bsz);
+		if (extended == 0)
+		{
+			_int3(bootfile_LSN, LSN0.dd_bt);
+			_int2(bootfile_Size, LSN0.dd_bsz);
+		}
+		else
+		{
+			bootfile_LSN--;
+			_int3(bootfile_LSN, LSN0.dd_bt);
+			_int2(0, LSN0.dd_bsz);
+		}
 		_os9_seek(opath, 0, SEEK_SET);
 		_os9_write(opath, &LSN0, &size);
 		_os9_close(opath);
