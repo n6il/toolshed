@@ -411,7 +411,7 @@ static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int r
 	
     _coco_gs_fd(path, &fdesc);
 	
-	if (owner_set == 1)
+	if ( (owner_set == 1) || (path->type == NATIVE) )
 	{
 		fdesc.user_id = owner % 65536;
 		fdesc.group_id = owner / 65536;
