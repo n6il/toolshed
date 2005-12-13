@@ -201,6 +201,7 @@ int main(int argc, char **argv)
 					
                 case 'p':
                     /* Parse only output */
+                    as.o_cpuclass = CPU_H6309; /* So 6309 instructions come out looking good when printed */
                     as.o_do_parsing = 0;
                     break;
 					
