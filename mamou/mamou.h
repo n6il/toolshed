@@ -332,6 +332,7 @@ typedef struct _assembler
 	int				code_segment_start;
 	unsigned int			decb_exec_address;
 	int					newstyle;
+	int					pseudoUppercase;
 } assembler;
 
 

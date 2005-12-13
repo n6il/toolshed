@@ -74,6 +74,7 @@ int main(int argc, char **argv)
         fprintf(stderr, " -ls       source only list (no line numbers)\n");
         fprintf(stderr, " -ln       format source in 'new style' assembly\n");
         fprintf(stderr, " -lt       use tabs instead of spaces\n");
+        fprintf(stderr, " -lu       force pseudo-ops to print in uppercase\n");
         fprintf(stderr, " -np       suppress 'page' pseudo output\n");
         fprintf(stderr, " -o<file>  output to file\n");
         fprintf(stderr, " -s        show symbol table\n");
@@ -181,6 +182,10 @@ int main(int argc, char **argv)
                     if (tolower(argv[j][2]) == 'n')
                     {
                         as.newstyle = 1;
+                    }
+                    if (tolower(argv[j][2]) == 'u')
+                    {
+                        as.pseudoUppercase = 1;
                     }
                     as.o_show_listing = 1;
                     break;

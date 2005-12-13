@@ -165,6 +165,17 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	}
 	
 	
+	/* New -- make all pseudo opcodes uppercase if wanted */
+	if (as->pseudoUppercase == 1 && as->line.mnemonic.type == OPCODE_PSEUDO)
+	{
+		int i;
+		
+                for (i = 0; i < strlen(as->line.Op); i++)
+		{
+			as->line.Op[i] = toupper(as->line.Op[i]);
+		}
+	}
+
 	if (as->line.type == LINETYPE_COMMENT)
 //	if (*as->line.label == EOS && *as->line.Op == EOS && *as->line.operand == EOS)
 	{
