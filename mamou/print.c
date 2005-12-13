@@ -196,7 +196,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 			}
 			else
 			{
-				sprintf(Tmp_buff, "%-14s %-9s %-20s", as->line.label, as->line.Op, as->line.operand);
+				sprintf(Tmp_buff, "%-14s %-9s %s", as->line.label, as->line.Op, as->line.operand);
 			}
 			strcat(Line_buff, Tmp_buff);
 		}
@@ -208,7 +208,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 			}
 			else
 			{
-				sprintf(Tmp_buff, "%-14s %-9s %-20s   %s", as->line.label, as->line.Op, as->line.operand, as->line.comment);
+				sprintf(Tmp_buff, "%-14s %-9s %-19s %s", as->line.label, as->line.Op, as->line.operand, as->line.comment);
 			}
 			strcat(Line_buff, Tmp_buff);
 		}
