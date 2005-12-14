@@ -186,7 +186,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 			strcat(Line_buff, Tmp_buff);
 		}
 	}
-	else
+	else if (as->line.type != LINETYPE_BLANK)
 	{
 		if (*as->line.comment == EOS)
 		{
