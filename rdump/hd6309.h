@@ -1,4 +1,4 @@
-extern unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size);
+extern unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_size);
 
 enum {
 	HD6309_PC=1, HD6309_S, HD6309_CC ,HD6309_A, HD6309_B, HD6309_U, HD6309_X, HD6309_Y, HD6309_DP, 

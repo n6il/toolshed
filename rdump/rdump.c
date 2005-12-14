@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <rof.h>
 #include "hd6309.h"
 
@@ -23,7 +24,10 @@ unsigned int getwrd(FILE * fp);
 int help(void);
 void ftext(char c, int ref);
 void ferr(char *s);
-
+char *get_global( int pc, unsigned char flag_on, unsigned char flag_off );
+char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, unsigned char *out_flag );
+char *get_label( int pc, unsigned char flag_on, unsigned char flag_off );
+char *remove_colon( char *s );
 
 #define MAXSOURCE 20
 #define puts(s) fputs(s,stdout)
@@ -40,10 +44,14 @@ u16             gflag,
                 oflag;
 binhead         hd;
 FILE           *in;
+long			global_symbol_table;
+long            object_code;
 
 unsigned int    o9_int();
 unsigned int    getwrd();
 int             help();
+char symbols[8][40];
+int symPtr = 0;
 
 
 int main(argc, argv)
@@ -109,8 +117,10 @@ int main(argc, argv)
 
 void pass1(void)
 {
-	int             count;
-
+	int             count, i;
+	char module_name[256];
+	unsigned char flag;
+	
 	if (scount == 0)
 		return;
 	for (count = 0; count < scount; ++count)
@@ -132,22 +142,141 @@ void pass1(void)
 				printf("'%s' is not a relocatable module\n", fname);
 				break;
 			}
+
 			showhead();
+
+			global_symbol_table = ftell( in );
 			showglobs();
 
+			object_code = ftell( in );
 			if( dflag == 1 )
 			{
+				/* Build psect */
+				
+				printf( "\nDisassembly:\n                 psect " );
+				fseek(in, sizeof( binhead ), SEEK_SET);
+				getname( module_name );
+				printf( "%s, $%x, $%x, %d, %d, %s\n", module_name,
+				o9_int(hd.h_tylan)>>8,
+				o9_int(hd.h_tylan)&0x00ff,
+				o9_int(hd.h_edit),
+				o9_int(hd.h_stack),
+				remove_colon(get_label( o9_int(hd.h_entry), CODENT, CONENT|SETENT )) );
+				
+				/* Build vsect dp */
+				if( (o9_int(hd.h_ddata) > 0) || (o9_int(hd.h_dglbl) > 0) )
+				{
+					unsigned int c;
+					char *label, *ext_ref;
+
+					printf( "\n                 vsect dp\n" );
+					for( i=0; i<o9_int(hd.h_ddata); i++ )
+					{
+						
+						/* Get global symbol or local reference*/
+						label = get_label( i, DIRENT|INIENT, CODENT );
+						
+						/* Get named external reference or global symbol or local label */
+						ext_ref = get_external_ref( i, DIRLOC, CODLOC, &flag );
+
+						if( label == ext_ref )
+							printf( "oops!\n" );
+							
+						fseek( in, object_code + o9_int(hd.h_ocode) + o9_int(hd.h_data) + i, SEEK_SET );
+						if( strcmp( ext_ref, "" ) == 0 )
+						{
+							c = getc( in );
+							printf( "%04x   %02x       %s fcb $%x\n", i, c, label, c );
+						}
+						else
+						{
+							if( flag & LOC1BYT )
+							{
+								c = getc( in );
+								printf( "%04x   %02x       %s fcb %s\n", i, c, label, ext_ref );
+							}
+							else
+							{
+								c = getwrd( in );
+								printf( "%04x %04x       %s fdb %s\n", i, c, label, ext_ref );
+								i++;
+							}
+						}
+					}
+					
+					for( i=0; i<o9_int(hd.h_dglbl); i++ )
+					{
+						/* Check for global or local symbol */
+						label = get_label( i, DIRENT, INIENT|CODENT );
+
+						printf( "%04x            %s rmb 1\n", i+o9_int(hd.h_ddata), label );
+					}
+					
+					printf( "                 endsect\n" );
+				}
+				
+				/* Build vsect */
+				if( (o9_int(hd.h_data) > 0) || (o9_int(hd.h_glbl) > 0) )
+				{
+					unsigned int c;
+					char *label, *ext_ref;
+
+					printf( "\n                 vsect\n" );
+					for( i=0; i<o9_int(hd.h_data); i++ )
+					{
+						
+						/* Get global symbol or local reference*/
+						label = get_label( i, INIENT, DIRENT );
+
+						/* Get named external reference or local label */
+						
+						ext_ref = get_external_ref( i, 0, CODLOC|DIRLOC, &flag );
+						
+						fseek( in, object_code + o9_int(hd.h_ocode) + i, SEEK_SET );
+						if( strcmp( ext_ref, "" ) == 0 )
+						{
+							c = getc( in );
+							printf( "%04x   %02x       %s fcb $%x\n", i, c, label, c );
+						}
+						else
+						{
+							if( flag & LOC1BYT )
+							{
+								c = getc( in );
+								printf( "%04x   %02x       %s fcb %s\n", i, c, label, ext_ref );
+							}
+							else
+							{
+								c = getwrd( in );
+								printf( "%04x %04x       %s fdb %s\n", i, c, label, ext_ref );
+								i++;
+							}
+						}
+					}
+					
+					for( i=0; i<o9_int(hd.h_glbl); i++ )
+					{
+						/* Check for global or local symbol */
+						label = get_label( i, 0, DIRENT|INIENT|CODENT );
+
+						printf( "%04x            %s rmb 1\n", i+o9_int(hd.h_data), label );
+					}
+					
+					printf( "                 endsect\n" );
+				}
+				
 				/* Disasemble object code */
+				fseek(in, object_code, SEEK_SET);
 				Disasm();
-				fseek(in, o9_int(hd.h_ddata) + o9_int(hd.h_data), 1);
+
+				printf( "                 endsect\n" );
 			}
-			else
-			{
-				/* skip code and initialized data */
-				fseek(in, o9_int(hd.h_ocode) +
-					 o9_int(hd.h_ddata) +
-					 o9_int(hd.h_data), 1);
-			}
+
+			fseek(in, object_code + 
+			     o9_int(hd.h_ocode) +
+				 o9_int(hd.h_ddata) +
+				 o9_int(hd.h_data), SEEK_SET);
+
 			
 			showrefs();
 			showlcls();
@@ -386,7 +515,7 @@ void Disasm(void)
 	printf( "\n" );
 	while( i < o9_int(hd.h_ocode) )
 	{
-		used = Dasm6309 (string, &(buffer[i]), 0l);
+		used = Dasm6309 (string, i, buffer, 0l);
 		printf( "%4.4X ", i );
 		
 		x = 0;
@@ -443,4 +572,268 @@ void ferr(char *s)
 	fprintf(stderr, "error reading '%s'\n", s);
 	
 	exit(1);
+}
+
+char *remove_colon( char *s )
+{
+	int l = strlen( s ) - 1;
+	
+	if( s[l] == ':' )
+		s[l] = '\0';
+	
+	return s;
+}
+
+char *get_global( int pc, unsigned char flag_on, unsigned char flag_off )
+{
+	int count;
+	int flag, offset;
+	int pointer = symPtr++;
+	
+	symPtr &= 0x07;
+	
+	/* Position file pointer to start of Global Symbol Table */
+	fseek( in, global_symbol_table, SEEK_SET );
+
+	/* Get table size */
+	count = getwrd( in );
+
+	while (count--)
+	{
+		getname(symbols[pointer]);
+		flag = getc(in);
+		offset = getwrd(in);
+		
+		if( (offset == pc) && ((flag & flag_on)==flag_on) && ((~flag & flag_off)==flag_off) )
+		{
+			strcat( symbols[pointer], ":" );
+			return symbols[pointer];
+		}
+	}
+	
+	return strcpy( symbols[pointer], "" );
+}
+
+char *get_label( int pc, unsigned char flag_on, unsigned char flag_off )
+{
+	int count;
+	int flag, offset;
+	long filepos;
+	int pointer = symPtr++;
+	
+	symPtr &= 0x07;
+
+	/* Check if global */
+	strcpy( symbols[pointer], get_global( pc, flag_on, flag_off ) );
+	if( strcmp(symbols[pointer], "" ) != 0 )
+		return symbols[pointer];
+		
+	/* Spin past external ref table */
+	
+	fseek(in, object_code + 
+		 o9_int(hd.h_ocode) +
+		 o9_int(hd.h_ddata) +
+		 o9_int(hd.h_data), SEEK_SET);
+	
+	count = getwrd( in );
+	
+	while( count-- )
+	{	
+		int refcount;
+		
+		getname( symbols[pointer] );
+		refcount = getwrd( in );
+		while( refcount-- )
+		{
+			flag = getc( in );
+			offset = getwrd( in );
+		}
+	}
+	
+	/* Check if this is a local reference. */
+
+	/* Get table size */
+	count = getwrd( in );
+	filepos = ftell( in ) - 3;
+	while (count--)
+	{
+		filepos += 3;
+		fseek( in, filepos, SEEK_SET );
+		flag = getc(in);
+		offset = getwrd(in);
+
+		/* Now seek to the proper data block */
+		if( flag & CODLOC )
+			fseek( in, object_code + offset, SEEK_SET);
+		else if( flag & DIRLOC )
+			fseek( in, object_code + o9_int(hd.h_ocode) + o9_int(hd.h_data) + offset, SEEK_SET);
+		else
+			fseek( in, object_code + o9_int(hd.h_ocode) + offset, SEEK_SET);
+		
+		if( flag & LOC1BYT )
+			offset = getc( in );
+		else
+			offset = getwrd( in );
+
+		if( ( (pc == offset) && (flag & flag_on)==flag_on) && ((~flag & flag_off)==flag_off) )
+		{
+			
+			if( flag & CODENT )
+			{
+				sprintf( symbols[pointer], "_%04x", pc );
+				return symbols[pointer];
+			}
+			else if( flag & DIRENT )
+			{
+				if( flag & INIENT )
+				{
+					sprintf( symbols[pointer], "di%02x", pc );
+					return symbols[pointer];
+				}
+				else
+				{
+					sprintf( symbols[pointer], "du%02x", pc+o9_int(hd.h_ddata) );
+					return symbols[pointer];
+				}
+			}
+			else
+			{
+				if( flag & INIENT )
+				{
+					sprintf( symbols[pointer], "i%04x", pc );
+					return symbols[pointer];
+				}
+				else
+				{
+					sprintf( symbols[pointer], "u%04x", pc );
+					return symbols[pointer];
+				}
+			}
+		}
+	}
+					
+	return strcpy( symbols[pointer], "" );
+}
+
+char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, unsigned char *out_flag )
+{
+	int count, refcount;
+	unsigned char flag;
+	int offset;
+	long filepos;
+	int pointer = symPtr++;
+	
+	symPtr &= 0x07;
+	
+	/* forward to external ref table */
+	fseek(in, object_code + 
+		 o9_int(hd.h_ocode) +
+		 o9_int(hd.h_ddata) +
+		 o9_int(hd.h_data), SEEK_SET);
+	
+	count = getwrd( in );
+	
+	while( count-- )
+	{
+		getname( symbols[pointer] );
+		refcount = getwrd( in );
+		while( refcount-- )
+		{
+			flag = getc( in );
+			offset = getwrd( in );
+
+			if( (offset == pc) && ((flag & flag_on)==flag_on) && ((~flag & flag_off)==flag_off) )
+			{
+				if( out_flag )
+					*out_flag = flag;
+				return symbols[pointer];
+			}
+		}
+	}
+	
+	/* Check if this is a local reference. */
+
+	/* Get table size */
+	count = getwrd( in );
+	filepos = ftell( in ) - 3;
+	while (count--)
+	{
+		int value;
+		
+		filepos += 3;
+		fseek( in, filepos, SEEK_SET );
+		flag = getc(in);
+		offset = getwrd(in);
+
+		if( (pc == offset) && ((flag & flag_on)==flag_on) && ((~flag & flag_off)==flag_off) )
+		{
+			/* Now seek to the proper data block */
+			if( flag & CODLOC )
+				fseek( in, object_code + offset, SEEK_SET);
+			else if( flag & DIRLOC )
+				fseek( in, object_code + o9_int(hd.h_ocode) + o9_int(hd.h_data) + offset, SEEK_SET);
+			else
+				fseek( in, object_code + o9_int(hd.h_ocode) + offset, SEEK_SET);
+			
+			if( flag & LOC1BYT )
+				value = getc( in );
+			else
+				value = getwrd( in );
+			
+			/* Check if label corresponds to a global symbol */
+			strcpy( symbols[pointer], remove_colon( get_label( value, flag & 0x03, 0 ) ) );
+			if( strcmp( symbols[pointer], "" ) != 0 )
+			{
+				if( out_flag)
+					*out_flag = flag;
+				return symbols[pointer];
+			}
+			
+			/* no global symbol, create a local symbol */
+			
+			if( flag & CODENT )
+			{
+				sprintf( symbols[pointer], "_%04x", value );
+				if( out_flag )
+					*out_flag = flag;
+				return symbols[pointer];
+			}
+			else if( flag & DIRENT )
+			{
+				if( flag & INIENT )
+				{
+					sprintf( symbols[pointer], "di%02x", value );
+					if( out_flag )
+						*out_flag = flag;
+					return symbols[pointer];
+				}
+				else
+				{
+					sprintf( symbols[pointer], "du%02x", value+o9_int(hd.h_ddata) );
+					if( out_flag )
+						*out_flag = flag;
+					return symbols[pointer];
+				}
+			}
+			else
+			{
+				if( flag & INIENT )
+				{
+					sprintf( symbols[pointer], "i%04x", value );
+					if( out_flag )
+						*out_flag = flag;
+					return symbols[pointer];
+				}
+				else
+				{
+					sprintf( symbols[pointer], "u%04x", value );
+					if( out_flag )
+						*out_flag = flag;
+					return symbols[pointer];
+				}
+			}
+		}
+	}
+
+	return strcpy( symbols[pointer], "" );
 }

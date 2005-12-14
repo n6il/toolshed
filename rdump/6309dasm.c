@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include "hd6309.h"
+#include "rof.h"
 
 #ifndef TRUE
 #define TRUE	-1
@@ -649,8 +650,10 @@ const char *set_ea_info( int what, unsigned value, int size, int access );
 static char *hexstring (int address);
 int	activecpu_get_reg( int reg);
 int program_read_byte_8( int address );
+extern char *get_label( int pc, unsigned char flag_on, unsigned char flag_off );
+extern char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, unsigned char *flag );
 
-unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
+unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_size)
 {
 	int i, j, k, page=0, opcode, numoperands, mode, size, access;
 	UINT8 operandarray[4];
@@ -659,10 +662,13 @@ unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
 	unsigned ea = 0;
 	int p = 0;
 	unsigned flags;
-	int	pc = 0;
+	int pc_start = pc;
 	
 	*buffer = '\0';
 
+	/* Write global label if this PC has one */
+	buffer += sprintf (buffer, "%s " , get_label( pc, CODENT, CONENT|SETENT ));
+	
 	opcode = memory[pc++];
 	for( i = 0; i < numops6309[0]; i++ )
 		if (pg1opcodes[i].opcode == opcode)
@@ -691,7 +697,7 @@ unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
 			 }
 			 else
 			 {	/* not found in alternate page */
-				strcpy (buffer, "Illegal Opcode (jmp [$FFF0])");
+				buffer += sprintf (buffer, "fcb %d,%d", (page-1) ? 0x10 : 0x11, opcode );
 				return 2;
 			 }
 		}
@@ -709,7 +715,7 @@ unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
 	}
 	else
 	{
-		strcpy (buffer, "Illegal Opcode (jmp [$FFF0])");
+		buffer += sprintf (buffer, "fcb %d", opcode );
 		return 1;
 	}
 
@@ -784,13 +790,20 @@ unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
 			{
 				sym1 = set_ea_info(1, pc, (INT8)offset, EA_REL_PC);
 				ea = (pc + (INT8)offset + activecpu_get_reg(regid_6309[reg])) & 0xffff;
-				buffer += sprintf (buffer, "%d,%s", offset, regs_6309[reg]);
+				if( strcmp( get_external_ref(pc-1, CODENT, 0, NULL ), "" ) == 0 )
+					buffer += sprintf (buffer, "%d,%s", offset, regs_6309[reg]);
+				else
+					buffer += sprintf (buffer, "%s,%s", get_external_ref(pc-1, CODENT, 0, NULL ), regs_6309[reg]);
+				
 			}
 			else
 			{
 				sym1 = set_ea_info(1, offset, EA_INT8, EA_VALUE);
 				ea = (activecpu_get_reg(regid_6309[reg]) + offset) & 0xffff;
-				buffer += sprintf (buffer, "%d,%s", offset, regs_6309[reg]);
+				if( strcmp( get_external_ref(pc-1, CODENT, 0, NULL ), "" ) == 0 )
+					buffer += sprintf (buffer, "%d,%s", offset, regs_6309[reg]);
+				else
+					buffer += sprintf (buffer, "%s,%s", get_external_ref(pc-1, CODENT, 0, NULL ), regs_6309[reg]);
 			}
 		}
 		else
@@ -819,7 +832,10 @@ unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
 			if( pb == 0x8d || pb == 0xad || pb == 0xcd || pb == 0xed || pb == 0x9d || pb == 0xbd || pb == 0xdd || pb == 0xfd )
 			{
 				sym1 = set_ea_info(1, pc, (INT16)offset, EA_REL_PC);
-				buffer += sprintf (buffer, "%d,%s", offset, regs_6309[reg]);
+				if( strcmp( get_external_ref(pc-2, CODENT, 0, NULL ), "" ) == 0 )
+					buffer += sprintf (buffer, "%d,%s", offset, regs_6309[reg]);
+				else
+					buffer += sprintf (buffer, "%s,%s", get_external_ref(pc-2, CODENT, 0, NULL ), regs_6309[reg]);
 			}
 			else if ( pb == 0x9f || pb == 0xbf || pb == 0xdf || pb == 0xff ) /* hmm, bf, df, and ff are marked as illegal on the 6309 */
 			{
@@ -850,7 +866,9 @@ unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
 			}
 			else
 			{
-				sym1 = set_ea_info(1, offset, EA_INT16, EA_VALUE);
+				sym1 = get_external_ref( pc-2, CODENT, 0, NULL );
+				if( strcmp( sym1, "" ) == 0 )
+					sym1 = set_ea_info(1, offset, EA_INT16, EA_VALUE);
 				ea = (activecpu_get_reg(regid_6309[reg]) + offset) & 0xffff;
 				buffer += sprintf (buffer, "%s,%s", sym1, regs_6309[reg]);
 			}
@@ -1049,7 +1067,6 @@ unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
 			{
 				if( pb2 & 0x7f ) buffer += sprintf (buffer, ",");
 				buffer += sprintf (buffer, "pc");
-				buffer += sprintf (buffer, " ; (pul? pc=rts)");
 			}
 		}
 		else
@@ -1108,7 +1125,7 @@ unsigned Dasm6309 (char *buffer, unsigned char *memory, size_t memory_size)
 		break;
 	}
 
-	return pc;
+	return pc - pc_start;
 }
 
 const char *set_ea_info( int what, unsigned value, int size, int access )
@@ -1119,7 +1136,7 @@ const char *set_ea_info( int what, unsigned value, int size, int access )
 	unsigned width, result;
 
 	which = (which+1) % 8;
-
+	
 	if( access == EA_REL_PC )
 		/* PC relative calls set_ea_info with value = PC and size = offset */
 		result = value + size;
@@ -1205,8 +1222,21 @@ const char *set_ea_info( int what, unsigned value, int size, int access )
 		break;
 
 	case EA_REL_PC: /* Relative program counter change */
+		if( strcmp( get_external_ref( value-2, CODLOC|RELATIVE, 0, NULL ), "" ) != 0 )
+		{
+			sprintf( buffer[which], "%s", get_external_ref( value-2, CODLOC|RELATIVE, 0, NULL ) );
+			return buffer[which];
+		}
+			
+		if( strcmp( get_external_ref( value-1, CODLOC|RELATIVE|LOC1BYT, 0, NULL ), "" ) != 0 )
+		{
+			sprintf( buffer[which], "%s", get_external_ref( value-1, CODLOC|RELATIVE|LOC1BYT, 0, NULL ) );
+			return buffer[which];
+		}
+			
 		if( dbg_dasm_relative_jumps )
 		{
+			
 			if( size == 0 )
 				return "$";
 			if( size < 0 )
