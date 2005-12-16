@@ -53,6 +53,13 @@ int             help();
 char symbols[8][40];
 int symPtr = 0;
 
+typedef struct
+{
+	void *next;
+	int address;
+	int bytes_used;
+	char line[40];
+} text_line;
 
 int main(argc, argv)
 	int             argc;
@@ -407,7 +414,7 @@ void ftext(char c, int ref)
 			else if( c & SETENT )
 				puts( "a constant (set)" );
 			else
-				puts("in code");
+				puts("to code");
 		}
 		else
 		{
@@ -497,9 +504,8 @@ void showlcls(void)
 void Disasm(void)
 {
 	unsigned char *buffer;
-	int i,x, used;
-	char string[256];
-	
+	int i, x;
+	text_line *start, *cur_line;
 	
 	buffer = malloc( o9_int(hd.h_ocode) );
 	
@@ -512,27 +518,55 @@ void Disasm(void)
 	fread( buffer, o9_int(hd.h_ocode), 1, in );
 	i=0;
 	
-	printf( "\n" );
+	start = malloc( sizeof( text_line ) );
+	if( start == NULL )
+	{
+		fprintf( stderr, "Disasm: out of memory\n" );
+		exit( 1 );
+	}
+	
+	cur_line = start;
+	
 	while( i < o9_int(hd.h_ocode) )
 	{
-		used = Dasm6309 (string, i, buffer, 0l);
-		printf( "%4.4X ", i );
+		text_line *next_line;
+		
+		cur_line->next = NULL;
+		cur_line->address = i;
+		cur_line->line[0] = '\0';
+		cur_line->bytes_used = Dasm6309 (cur_line->line, i, buffer, 0l);
+
+		next_line = malloc( sizeof( text_line ) );
+		if( next_line == NULL )
+		{
+			fprintf( stderr, "Disasm: out of memory\n" );
+			exit( 1 );
+		}
+	
+		i += cur_line->bytes_used;
+		cur_line->next = next_line;
+		cur_line = next_line;	
+
+	}
+	
+	for( cur_line = start; cur_line->next != NULL; cur_line = cur_line->next )
+	{
+		printf( "%4.4X ", cur_line->address );
 		
 		x = 0;
 		while( x<5 )
 		{
-			if( x<used )
-				printf( "%2.2X", buffer[i+x] );
+			if( x<cur_line->bytes_used )
+				printf( "%2.2X", buffer[cur_line->address+x] );
 			else
 				printf( "  " );
 			
 			x++;
 		}
 			
-		printf( " %s\n", string );
-		i += used;
+		printf( " %s\n", cur_line->line );
 	}
-	printf( "\n" );
+
 	free( buffer );
 	
 	
