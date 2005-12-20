@@ -28,6 +28,7 @@ char *get_global( int pc, unsigned char flag_on, unsigned char flag_off );
 char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, unsigned char *out_flag );
 char *get_label( int pc, unsigned char flag_on, unsigned char flag_off );
 char *remove_colon( char *s );
+void add_code_label( int address );
 
 #define MAXSOURCE 20
 #define puts(s) fputs(s,stdout)
@@ -60,6 +61,14 @@ typedef struct
 	int bytes_used;
 	char line[40];
 } text_line;
+
+typedef struct
+{
+	void *next;
+	int address;
+} code_label;
+
+code_label *cl_list;
 
 int main(argc, argv)
 	int             argc;
@@ -525,6 +534,10 @@ void Disasm(void)
 		exit( 1 );
 	}
 	
+	/* Initialize code labels linked list */
+	
+	cl_list = NULL;
+	
 	cur_line = start;
 	
 	while( i < o9_int(hd.h_ocode) )
@@ -563,7 +576,26 @@ void Disasm(void)
 			
 			x++;
 		}
+		
+		/* Write global label if this PC has one */
+		if( strcmp( get_label( cur_line->address, CODENT, CONENT|SETENT ), "" ) != 0 )
+			printf( "%s" , get_label( cur_line->address, CODENT, CONENT|SETENT ));
+		else
+		{
+			/* Else see if we need a local label */
+			code_label *walk;
 			
+			for( walk = cl_list; walk != NULL; walk = walk->next )
+			{
+				if( walk->address == cur_line->address )
+				{
+					printf( "_%04x", cur_line->address );
+					break;
+				}
+			}
+		}
+		
+		/* Write disasembled line */
 		printf( " %s\n", cur_line->line );
 	}
 
@@ -573,7 +605,33 @@ void Disasm(void)
 	return;
 }
 
+void add_code_label( int address )
+{
+	code_label *walk, *new;
+	
+	for( walk = cl_list; walk != NULL; walk = walk->next )
+	{
+		if( walk->address == address )
+			return;
+	}
 
+	/* Add address to begining */
+	new = malloc( sizeof( code_label ) );
+
+	if( new == NULL )
+	{
+		fprintf( stderr, "Out of memory: add_code_label\n" );
+		exit(1);
+	}
+
+	if( cl_list == NULL )
+		new->next = NULL;
+	else
+		new->next = cl_list;
+		
+	cl_list = new;
+	cl_list->address = address;
+}
 
 unsigned int
                 getwrd(FILE * fp)
@@ -691,6 +749,8 @@ char *get_label( int pc, unsigned char flag_on, unsigned char flag_off )
 	filepos = ftell( in ) - 3;
 	while (count--)
 	{
+		int data;
+		
 		filepos += 3;
 		fseek( in, filepos, SEEK_SET );
 		flag = getc(in);
@@ -705,28 +765,29 @@ char *get_label( int pc, unsigned char flag_on, unsigned char flag_off )
 			fseek( in, object_code + o9_int(hd.h_ocode) + offset, SEEK_SET);
 		
 		if( flag & LOC1BYT )
-			offset = getc( in );
+			data = getc( in );
 		else
-			offset = getwrd( in );
+			data = getwrd( in );
 
-		if( ( (pc == offset) && (flag & flag_on)==flag_on) && ((~flag & flag_off)==flag_off) )
+		if( ( (pc == data) && (flag & flag_on)==flag_on) && ((~flag & flag_off)==flag_off) )
 		{
-			
 			if( flag & CODENT )
 			{
-				sprintf( symbols[pointer], "_%04x", pc );
+				sprintf( symbols[pointer], "_%04x", data );
+
 				return symbols[pointer];
 			}
 			else if( flag & DIRENT )
 			{
 				if( flag & INIENT )
 				{
-					sprintf( symbols[pointer], "di%02x", pc );
+					sprintf( symbols[pointer], "di%02x", data );
+						
 					return symbols[pointer];
 				}
 				else
 				{
-					sprintf( symbols[pointer], "du%02x", pc+o9_int(hd.h_ddata) );
+					sprintf( symbols[pointer], "du%02x", data );
 					return symbols[pointer];
 				}
 			}
@@ -734,12 +795,12 @@ char *get_label( int pc, unsigned char flag_on, unsigned char flag_off )
 			{
 				if( flag & INIENT )
 				{
-					sprintf( symbols[pointer], "i%04x", pc );
+					sprintf( symbols[pointer], "i%04x", data );
 					return symbols[pointer];
 				}
 				else
 				{
-					sprintf( symbols[pointer], "u%04x", pc );
+					sprintf( symbols[pointer], "u%04x", data );
 					return symbols[pointer];
 				}
 			}
@@ -798,6 +859,8 @@ char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, u
 		fseek( in, filepos, SEEK_SET );
 		flag = getc(in);
 		offset = getwrd(in);
+		if( out_flag )
+			*out_flag = flag;
 
 		if( (pc == offset) && ((flag & flag_on)==flag_on) && ((~flag & flag_off)==flag_off) )
 		{
@@ -815,21 +878,15 @@ char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, u
 				value = getwrd( in );
 			
 			/* Check if label corresponds to a global symbol */
-			strcpy( symbols[pointer], remove_colon( get_label( value, flag & 0x03, 0 ) ) );
+			strcpy( symbols[pointer], remove_colon( get_label( value, flag & 0x07, ~(flag & 0x07) ) ) );
 			if( strcmp( symbols[pointer], "" ) != 0 )
-			{
-				if( out_flag)
-					*out_flag = flag;
 				return symbols[pointer];
-			}
 			
 			/* no global symbol, create a local symbol */
 			
 			if( flag & CODENT )
 			{
 				sprintf( symbols[pointer], "_%04x", value );
-				if( out_flag )
-					*out_flag = flag;
 				return symbols[pointer];
 			}
 			else if( flag & DIRENT )
@@ -837,15 +894,11 @@ char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, u
 				if( flag & INIENT )
 				{
 					sprintf( symbols[pointer], "di%02x", value );
-					if( out_flag )
-						*out_flag = flag;
 					return symbols[pointer];
 				}
 				else
 				{
 					sprintf( symbols[pointer], "du%02x", value+o9_int(hd.h_ddata) );
-					if( out_flag )
-						*out_flag = flag;
 					return symbols[pointer];
 				}
 			}
@@ -854,15 +907,11 @@ char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, u
 				if( flag & INIENT )
 				{
 					sprintf( symbols[pointer], "i%04x", value );
-					if( out_flag )
-						*out_flag = flag;
 					return symbols[pointer];
 				}
 				else
 				{
 					sprintf( symbols[pointer], "u%04x", value );
-					if( out_flag )
-						*out_flag = flag;
 					return symbols[pointer];
 				}
 			}

@@ -652,6 +652,8 @@ int	activecpu_get_reg( int reg);
 int program_read_byte_8( int address );
 extern char *get_label( int pc, unsigned char flag_on, unsigned char flag_off );
 extern char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, unsigned char *flag );
+extern char *remove_colon( char *s );
+extern void add_code_label( int address );
 
 unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_size)
 {
@@ -666,9 +668,6 @@ unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_si
 	
 	*buffer = '\0';
 
-	/* Write global label if this PC has one */
-	buffer += sprintf (buffer, "%s " , get_label( pc, CODENT, CONENT|SETENT ));
-	
 	opcode = memory[pc++];
 	for( i = 0; i < numops6309[0]; i++ )
 		if (pg1opcodes[i].opcode == opcode)
@@ -866,7 +865,7 @@ unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_si
 			}
 			else
 			{
-				sym1 = get_external_ref( pc-2, CODENT, 0, NULL );
+				sym1 = get_external_ref( pc-2, CODLOC, DIRLOC|LOC1BYT, NULL );
 				if( strcmp( sym1, "" ) == 0 )
 					sym1 = set_ea_info(1, offset, EA_INT16, EA_VALUE);
 				ea = (activecpu_get_reg(regid_6309[reg]) + offset) & 0xffff;
@@ -1073,22 +1072,33 @@ unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_si
 		{
 			if ( numoperands == 4)
 			{
-				ea = (operandarray[0] << 24) + (operandarray[1] << 16) + (operandarray[2] << 8) + operandarray[3];
-				sym1 = set_ea_info(0, ea, size, access );
+				if( strcmp( get_external_ref( pc-2, CODLOC, DIRLOC|LOC1BYT, NULL ), "" ) != 0 )
+					sym1 = remove_colon( get_external_ref( pc-2, CODLOC, DIRLOC|LOC1BYT, NULL ) );
+				else
+				{
+					ea = (operandarray[0] << 24) + (operandarray[1] << 16) + (operandarray[2] << 8) + operandarray[3];
+					sym1 = set_ea_info(0, ea, size, access );
+				}
+				
 				buffer += sprintf (buffer, "%s", sym1 );
 			}
 			else
 			if ( numoperands == 3)
 			{
-				buffer += sprintf (buffer, "#");
-				ea = operandarray[0];
-				sym1 = set_ea_info(0, ea, EA_INT8, EA_VALUE );
-				buffer += sprintf (buffer, "%s", sym1 );
-
-				buffer += sprintf (buffer, ",");
-
-				ea = (operandarray[1] << 8) + operandarray[2];
-				sym1 = set_ea_info(0, ea, size, access );
+				if( strcmp( get_external_ref( pc-2, CODLOC, DIRLOC|LOC1BYT, NULL ), "" ) != 0 )
+					sym1 = remove_colon( get_external_ref( pc-2, CODLOC, DIRLOC|LOC1BYT, NULL ) );
+				else
+				{
+					buffer += sprintf (buffer, "#");
+					ea = operandarray[0];
+					sym1 = set_ea_info(0, ea, EA_INT8, EA_VALUE );
+					buffer += sprintf (buffer, "%s", sym1 );
+	
+					buffer += sprintf (buffer, ",");
+	
+					ea = (operandarray[1] << 8) + operandarray[2];
+					sym1 = set_ea_info(0, ea, size, access );
+				}
 				buffer += sprintf (buffer, "%s", sym1 );
 			}
 			else
@@ -1109,16 +1119,39 @@ unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_si
 				}
 				else
 				{
-					ea = (operandarray[0] << 8) + operandarray[1];
-					sym1 = set_ea_info(0, ea, size, access );
+					if( strcmp( get_external_ref( pc-2, CODLOC, DIRLOC|LOC1BYT, NULL ), "" ) != 0 )
+						sym1 = remove_colon( get_external_ref( pc-2, CODLOC, DIRLOC|LOC1BYT, NULL ) );
+					else
+					{
+						ea = (operandarray[0] << 8) + operandarray[1];
+						sym1 = set_ea_info(0, ea, size, access );
+					}
+
 					buffer += sprintf (buffer, "%s", sym1 );
 				}
 			}
 			else
 			if( numoperands == 1 )
 			{
-				ea = operandarray[0];
-				sym1 = set_ea_info(0, ea, size, access );
+				switch( access )
+				{
+					case EA_ZPG_RD:
+					case EA_ZPG_WR:
+					case EA_ZPG_RDWR:
+						if( strcmp( get_external_ref( pc-1, CODLOC|LOC1BYT, DIRLOC, NULL ), "" ) != 0 )
+							sym1 = remove_colon( get_external_ref( pc-1, CODLOC|LOC1BYT, DIRLOC, NULL ) );
+						else
+						{
+							ea = operandarray[0];
+							sym1 = set_ea_info(0, ea, size, access );
+						}
+						break;
+					default:
+						ea = operandarray[0];
+						sym1 = set_ea_info(0, ea, size, access );
+						break;
+				}
+
 				buffer += sprintf (buffer, "%s", sym1 );
 			}
 		}
@@ -1233,7 +1266,18 @@ const char *set_ea_info( int what, unsigned value, int size, int access )
 			sprintf( buffer[which], "%s", get_external_ref( value-1, CODLOC|RELATIVE|LOC1BYT, 0, NULL ) );
 			return buffer[which];
 		}
+		
+		/* Check for global label */
+		if( strcmp( get_label( value + size, CODENT, CONENT|SETENT ), "" ) != 0 )
+			sprintf( buffer[which], "%s " , remove_colon( get_label( value + size, CODENT, CONENT|SETENT ) ) );
+		else
+		{
+			add_code_label( value + size );
+			sprintf( buffer[which], "_%04x", value + size );
+		}
 			
+		return buffer[which];
+		
 		if( dbg_dasm_relative_jumps )
 		{
 			
