@@ -10,4 +10,4 @@ mamou:	evaluator.o ffwd.o h6309.o mamou.o pseudo.o print.o symbol_bucket.o \
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm *.o mamou
+	rm *.o mamou.exe
