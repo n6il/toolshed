@@ -10,4 +10,4 @@ decb:	decb.o decbattr.o decbcopy.o decbdir.o decbdskini.o decbfree.o decbfstat.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm *.o decb
+	rm *.o decb.exe
