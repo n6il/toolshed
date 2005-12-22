@@ -2,7 +2,16 @@
  * os9makdir.c - Create an os9 directory
  *
  * $Id$
- ********************************************************************/
+ ********************************************************************
+*
+* Edt/Rev         YYYY/MM/DD     Modified by
+* Comment
+* ----------------------------------------------------------
+*   1             2005/12/22     Robert Gault
+* Added missing Defines for Windows. I'm not sure if _WIN32 is defined
+* on systems other than Windows. This will need to be tested.
+*/
+
 #include <util.h>
 #include <string.h>
 #include <sys/types.h>
@@ -12,6 +21,18 @@
 #include <cocotypes.h>
 #include <cocopath.h>
 
+/* New for Windows             RG */
+#ifdef	_WIN32
+#define	_S_IRGRP	0x0020	/* RG, made this up */
+#define	_S_IXGRP	0x0008	/* ditto */
+#define	_S_IROTH	0x0004	/* ditto */
+#define	_S_IXOTH	0x0001	/* ditto */
+#define	S_IRGRP		_S_IRGRP	/* ditto */
+#define	S_IXGRP		_S_IXGRP	/* ditto */
+#define	S_IROTH		_S_IROTH	/* ditto */
+#define	S_IXOTH		_S_IXOTH	/* ditto */
+#define MKDIR(D,P) mkdir((D))
+#endif
 
 static int do_makdir(char **argv, char *p);
 
@@ -96,7 +117,8 @@ static int do_makdir(char **argv, char *p)
 	if (strchr(p, ',') == NULL)
 	{
 		/* 1. Call the native file system makdir */
-		ec = mkdir(p, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+		ec = MKDIR(p, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+		/* ec = mkdir(p); */
 	}
 	else
 	{
