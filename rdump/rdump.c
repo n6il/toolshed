@@ -579,7 +579,7 @@ void Disasm(void)
 		
 		/* Write global label if this PC has one */
 		if( strcmp( get_label( cur_line->address, CODENT, CONENT|SETENT ), "" ) != 0 )
-			printf( "%s" , get_label( cur_line->address, CODENT, CONENT|SETENT ));
+			printf( " %s" , get_label( cur_line->address, CODENT, CONENT|SETENT ));
 		else
 		{
 			/* Else see if we need a local label */
@@ -589,14 +589,14 @@ void Disasm(void)
 			{
 				if( walk->address == cur_line->address )
 				{
-					printf( "_%04x", cur_line->address );
+					printf( " _%04x", cur_line->address );
 					break;
 				}
 			}
 		}
 		
 		/* Write disasembled line */
-		printf( " %s\n", cur_line->line );
+		printf( "  %s\n", cur_line->line );
 	}
 
 	free( buffer );

@@ -628,7 +628,7 @@ static const UINT8 regid_6309[5] = {
 	HD6309_X, HD6309_Y, HD6309_U, HD6309_S, HD6309_PC
 };
 
-static const char *regs_6309[5] = { "x","y","y","s","pc" };
+static const char *regs_6309[5] = { "x","y","u","s","pc" };
 
 static const UINT8 btmRegs_id[] = { HD6309_CC, HD6309_A, HD6309_B, 0 };
 
@@ -831,10 +831,13 @@ unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_si
 			if( pb == 0x8d || pb == 0xad || pb == 0xcd || pb == 0xed || pb == 0x9d || pb == 0xbd || pb == 0xdd || pb == 0xfd )
 			{
 				sym1 = set_ea_info(1, pc, (INT16)offset, EA_REL_PC);
-				if( strcmp( get_external_ref(pc-2, CODENT, 0, NULL ), "" ) == 0 )
-					buffer += sprintf (buffer, "%d,%s", offset, regs_6309[reg]);
+				if( strcmp( get_external_ref(pc-2, CODENT, DIRENT|INIENT, NULL ), "" ) == 0 )
+				{
+					buffer += sprintf (buffer, "_%04x,%s", pc+offset, regs_6309[reg]);
+					add_code_label( pc+offset );
+				}
 				else
-					buffer += sprintf (buffer, "%s,%s", get_external_ref(pc-2, CODENT, 0, NULL ), regs_6309[reg]);
+					buffer += sprintf (buffer, "%s,%s", get_external_ref(pc-2, CODENT, DIRENT|INIENT, NULL ), regs_6309[reg]);
 			}
 			else if ( pb == 0x9f || pb == 0xbf || pb == 0xdf || pb == 0xff ) /* hmm, bf, df, and ff are marked as illegal on the 6309 */
 			{
