@@ -32,6 +32,8 @@
 #define	S_IROTH		_S_IROTH	/* ditto */
 #define	S_IXOTH		_S_IXOTH	/* ditto */
 #define MKDIR(D,P) mkdir((D))
+#else
+#define MKDIR(D,P) mkdir(D,P)
 #endif
 
 static int do_makdir(char **argv, char *p);
