@@ -15,6 +15,7 @@ typedef unsigned short u16;	/* Little-endian coco int */
 
 void pass1(void);
 void showhead(void);
+void showfoot(void);
 void Disasm(void);
 void showrefs(void);
 void showlcls(void);
@@ -47,7 +48,10 @@ binhead         hd;
 FILE           *in;
 long			global_symbol_table;
 long            object_code;
-
+long			rof_start;
+long			code_size, init_data_size, init_dpdata_size,
+                uninit_data_size, uninit_dpdata_size;
+                
 unsigned int    o9_int();
 unsigned int    getwrd();
 int             help();
@@ -123,8 +127,10 @@ int main(argc, argv)
 		}
 	}
 	
-	pass1();
+	rof_start = 0;
+	code_size = init_data_size = init_dpdata_size = uninit_data_size = uninit_dpdata_size = 0;
 
+	pass1();
 
 	return 0;
 }
@@ -170,7 +176,7 @@ void pass1(void)
 				/* Build psect */
 				
 				printf( "\nDisassembly:\n                 psect " );
-				fseek(in, sizeof( binhead ), SEEK_SET);
+				fseek(in, rof_start + sizeof( binhead ), SEEK_SET);
 				getname( module_name );
 				printf( "%s, $%x, $%x, %d, %d, %s\n", module_name,
 				o9_int(hd.h_tylan)>>8,
@@ -300,25 +306,22 @@ void pass1(void)
 			/* Some ROFs have two extra zero bytes at the end.  We check if that is the case -- BGP */
 			c1 = fgetc(in);
 			if (c1 == 0)
-			{
 				c1 = fgetc(in);
-			}
 			else
-			{
-				/* not a zero, put it back. */
+				ungetc(c1, in);  /* not a zero, put it back. */
 
-				ungetc(c1, in);
-			}
+			rof_start = ftell( in );
 		}
 		fclose(in);
 	}
+	
+	showfoot();
 }
 
 /* Switch a Little-Endian number byte order to make it Big-Endian */
 
-unsigned int
-                o9_int(nbr)
-	u16             nbr;
+unsigned int o9_int(nbr)
+u16 nbr;
 {
 #ifdef __BIG_ENDIAN__
 	return nbr;
@@ -353,8 +356,22 @@ void showhead(void)
 	       o9_int(hd.h_glbl));
 	printf("  Stack:     %04x\n", o9_int(hd.h_stack));
 	printf("Entry point: %04x\n", o9_int(hd.h_entry));
+	
+	code_size += o9_int(hd.h_ocode);
+	init_data_size += o9_int(hd.h_data);
+	init_dpdata_size += o9_int(hd.h_ddata);
+	uninit_data_size += o9_int(hd.h_glbl);
+	uninit_dpdata_size += o9_int(hd.h_dglbl);
 }
 
+void showfoot()
+{
+	printf("\nTotals:\n");
+	puts("  Section    Init     Uninit\n");
+	printf("   Code:     %08lx\n", code_size);
+	printf("     DP:     %08lx %08lx\n", init_dpdata_size, uninit_dpdata_size);
+	printf("   Data:     %08lx %08lx\n", init_data_size, uninit_data_size);
+}
 
 
 void showglobs(void)
