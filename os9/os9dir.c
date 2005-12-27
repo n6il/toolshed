@@ -240,7 +240,7 @@ retry:
 	
 				/* print fd sector, file size, filename */
 				printf("%8X  %8d %s\n",
-					int3(fdbuf.fd_seg[0].lsn),
+					int3(dentry.lsn),
 					int4(fdbuf.fd_siz),
 					filename );
 			}
