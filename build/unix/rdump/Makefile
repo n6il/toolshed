@@ -9,7 +9,7 @@ OBJS	= rdump.o 6309dasm.o
 $(BINARY):	$(OBJS)
 	$(CC) $(OBJS) -o $@ $(DEBUG)
 
-$(OBJS):	hd6309.h ../include/rof.h makefile
+$(OBJS):	hd6309.h ../include/rof.h Makefile
 
 clean:
 	rm $(BINARY) *.o
