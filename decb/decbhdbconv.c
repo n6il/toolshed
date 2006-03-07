@@ -17,7 +17,7 @@
 //static u_int buffer_size = 32768;
 //static char *buffer;
 
-static error_code HDBConv(char *srcfile, char *dstfile);
+static error_code HDBConv(char *srcfile, char *dstfile, int sourceSize, int targetSize);
 
 
 /* Help message */
@@ -26,6 +26,8 @@ static char *helpMessage[] =
     "Syntax: hdbconv {[<opts>]} <srcfile> {[<...>]} <target> {[<opts>]}\n",
     "Usage:  Converts an HDB-DOS disk image into a 512-byte sector compatible one.\n",
     "Options:\n",
+    "     -2         go from 512-byte sector to 256-byte sector\n",
+    "     -5         go from 256-byte sector to 512-byte sector (default)\n",
     NULL
 };
 
@@ -37,6 +39,8 @@ int decbhdbconv(int argc, char *argv[])
     char *source = NULL, *destination = NULL, *p;
     int i;
     int	count = 0;
+    int sourceSize = 256;
+    int targetSize = 512;
 
 
     /* 1. Walk command line for options. */
@@ -49,6 +53,14 @@ int decbhdbconv(int argc, char *argv[])
             {
                 switch(*p)
                 {
+                    case '2':
+                        sourceSize = 512;
+                        targetSize = 256;
+                        break;
+                    case '5':
+                        sourceSize = 256;
+                        targetSize = 512;
+                        break;
                     case 'h':
                     case '?':
                         show_help(helpMessage);
@@ -106,7 +118,7 @@ int decbhdbconv(int argc, char *argv[])
     }
 
 
-	ec = HDBConv(source, destination);
+	ec = HDBConv(source, destination, sourceSize, targetSize);
 
 	if (ec != 0)
 	{
@@ -118,7 +130,7 @@ int decbhdbconv(int argc, char *argv[])
 }
 
 
-static error_code HDBConv(char *srcfile, char *dstfile)
+static error_code HDBConv(char *srcfile, char *dstfile, int sourceSize, int targetSize)
 {
     error_code	ec = 0;
     coco_path_id path;
@@ -153,7 +165,7 @@ static error_code HDBConv(char *srcfile, char *dstfile)
 
 	while (ec == 0)
 	{
-		buffer_size = 256;
+		buffer_size = sourceSize;
 		ec = _coco_read(path, buffer, &buffer_size);
 
 		if (ec == EOS_EOF)
@@ -162,7 +174,7 @@ static error_code HDBConv(char *srcfile, char *dstfile)
 			break;
 		}
 
-		buffer_size = 512;
+		buffer_size = targetSize;
 		ec = _coco_write(destpath, buffer, &buffer_size);
 
 		if (ec != 0)
