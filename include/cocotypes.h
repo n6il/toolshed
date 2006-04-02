@@ -14,7 +14,9 @@
 #include <sys/types.h>
 
 #ifdef  WIN32
-#include <gmon.h>
+//#include <gmon.h>
+typedef unsigned char u_char;
+typedef unsigned int u_int;
 #else
 #if !defined(__u_char_defined) && !defined(__APPLE__)
 typedef unsigned char u_char;

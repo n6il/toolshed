@@ -6,7 +6,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#ifndef _BORLAND
 #include <unistd.h>
+#endif
 #include <sys/stat.h>
 #include <errno.h>
 

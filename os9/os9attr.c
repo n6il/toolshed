@@ -6,9 +6,11 @@
 #include <util.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#ifndef _BORLAND
 #include <unistd.h>
+#include <sys/stat.h>
+#endif
 #include <cocotypes.h>
 #include <os9path.h>
 

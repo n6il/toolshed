@@ -41,7 +41,7 @@ error_code _native_gs_eof(native_path_id path)
 
 	if (path->mode & FAM_DIR)
 	{
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_BORLAND)
 #else
 		off_t offset;
 
@@ -85,6 +85,8 @@ error_code _native_gs_fd(native_path_id path, struct stat *statbuf)
 
 #if defined(__APPLE__) || defined(__MINGW32__)
 	if (fstat(path->fd->_file, statbuf) < 0)
+#elif defined(_BORLAND)
+	if (fstat(path->fd->fd, statbuf) < 0)
 #else
 	if (fstat(path->fd->_fileno, statbuf) < 0)
 #endif
@@ -106,6 +108,8 @@ error_code _native_gs_size(native_path_id path, u_int *size)
         
 #if defined(__APPLE__) || defined(__MINGW32__)
 	if (fstat(path->fd->_file, &statbuf) < 0)
+#elif defined(_BORLAND)
+	if (fstat(path->fd->fd, &statbuf) < 0)
 #else
 	if (fstat(path->fd->_fileno, &statbuf) < 0)
 #endif

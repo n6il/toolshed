@@ -5,7 +5,9 @@
  ********************************************************************/
 #include <stdlib.h>
 #include <string.h>
+#ifndef _BORLAND
 #include <unistd.h>
+#endif
 #include <errno.h>
 
 #include "cocotypes.h"

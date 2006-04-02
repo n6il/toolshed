@@ -17,7 +17,7 @@
 //static u_int buffer_size = 32768;
 //static char *buffer;
 
-static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type);
+static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type);
 static char *GetFilename(char *path);
 static EOL_Type DetermineEOLType(char *buffer, int size);
 static void NativeToDECB(char *buffer, int size, char **newBuffer, int *newSize);
@@ -221,7 +221,7 @@ int decbcopy(int argc, char *argv[])
 		}
 		
 		
-        ec = CopyFile(argv[j], df, eolTranslate, tokTranslate, rewrite, file_type, data_type);
+        ec = CopyDECBFile(argv[j], df, eolTranslate, tokTranslate, rewrite, file_type, data_type);
 
         if (ec != 0)
         {
@@ -267,7 +267,7 @@ static char *GetFilename(char *path)
 
 
 
-static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type)
+static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type)
 {
     error_code	ec = 0;
     coco_path_id path;

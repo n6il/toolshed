@@ -149,7 +149,11 @@ error_code _decb_read(decb_path_id path, void *buffer, int *size)
 
 		bytes_left -= read_size;
 		path->filepos += read_size;
+#ifdef _BORLAND
+		(char *)buffer += read_size;
+#else
 		buffer += read_size;
+#endif
 	}
 
 	
@@ -311,7 +315,11 @@ error_code _decb_readln(decb_path_id path, void *buffer, int *size)
 		
 		bytes_left -= read_size;
 		path->filepos += read_size;
+#ifdef _BORLAND
+		(char *)buffer += read_size;
+#else
 		buffer += read_size;
+#endif
 	}
 	
 	

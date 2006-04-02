@@ -6,7 +6,11 @@
 
 #include <stdlib.h>
 #include <string.h>
+#ifdef _BORLAND
+#include <time.h>
+#else
 #include <sys/time.h>
+#endif
 #include <sys/stat.h>
 
 #include "cocotypes.h"
@@ -45,7 +49,7 @@ error_code _native_ss_fd(native_path_id path, struct stat *statbuf)
 #if defined(__APPLE__)
 	tarray[0].tv_sec = statbuf->st_ctimespec.tv_sec;
 	tarray[1].tv_sec = statbuf->st_mtimespec.tv_sec;
-#elif defined(__MINGW32__)
+#elif defined(__MINGW32__) || defined(_BORLAND)
 	tarray[0].tv_sec = statbuf->st_ctime;
 	tarray[1].tv_sec = statbuf->st_mtime;
 #else

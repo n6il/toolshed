@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "queue.h"
+#include <queue.h>
 
 
 int qAllocNode(NodeType *node, void *data, int size)
@@ -33,7 +33,7 @@ int qAllocNode(NodeType *node, void *data, int size)
 
     if (*node == NULL)
     {
-        /* error */
+		/* error */
         return(1);
     }
     else
@@ -66,7 +66,7 @@ int qAddNode(NodeType *head, void *data, int size)
     }
 
     /* populate node data structure */
-    node->next = NULL;
+	node->next = NULL;
 
     /* if head is NULL, then this will be the 1st element in the queue */
     if (*head == NULL)
@@ -132,3 +132,4 @@ int qDeleteNode(NodeType *head, NodeType targetNode)
 
     return(1);
 }
+

@@ -4,11 +4,12 @@
  * $Id$
  ********************************************************************/
 #include <string.h>
+#ifndef _BORLAND
 #include <sys/stat.h>
-
-#include "util.h"
-#include "cocopath.h"
-#include "cocotypes.h"
+#endif
+#include <util.h>
+#include <cocopath.h>
+#include <cocotypes.h>
 
 
 #define YES 1
@@ -18,7 +19,7 @@
 static u_int buffer_size = 32768;
 static char *buffer;
 
-static error_code CopyFile( char *srcfile, char *dstfile, int eolTranslate, int rewrite, int owner, int owner_set);
+static error_code CopyOS9File( char *srcfile, char *dstfile, int eolTranslate, int rewrite, int owner, int owner_set);
 static char *GetFilename( char *path );
 static EOL_Type DetermineEOLType(char *buffer, int size);
 static void NativeToCoCo(char *buffer, int size, char **newBuffer, int *newSize);
@@ -275,7 +276,7 @@ int os9copy(int argc, char *argv[])
             strcat( df, GetFilename( argv[j] ) );
         }
 
-        ec = CopyFile(argv[j], df, eolTranslate, rewrite, owner, owner_set);
+        ec = CopyOS9File(argv[j], df, eolTranslate, rewrite, owner, owner_set);
 
         if (ec != 0)
         {
@@ -318,7 +319,7 @@ static char *GetFilename( char *path )
 
 
 
-static error_code CopyFile(char *srcfile, char *dstfile, int eolTranslate, int rewrite, int owner, int owner_set)
+static error_code CopyOS9File(char *srcfile, char *dstfile, int eolTranslate, int rewrite, int owner, int owner_set)
 {
     error_code	ec = 0;
     coco_path_id path;

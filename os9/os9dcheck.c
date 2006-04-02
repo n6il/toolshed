@@ -212,7 +212,11 @@ static int do_dcheck(char **argv, char *p)
 	
 	size = (float)os9_path->bitmap_bytes / (float)os9_path->bps;
 	
+#ifdef _BORLAND
+	_os9_allbit(secondaryBitmap, 1, size );
+#else
 	_os9_allbit(secondaryBitmap, 1, ceilf(size) );
+#endif
 
 	/* Setup questionable cluster array */
 	qCluster = NULL;

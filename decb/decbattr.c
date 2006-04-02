@@ -7,7 +7,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#ifndef _BORLAND
 #include <unistd.h>
+#endif
 
 #include "util.h"
 #include "cocotypes.h"

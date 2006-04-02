@@ -454,6 +454,37 @@ static int _decb_cmp(decb_dir_entry *entry, char *name)
 }
 
 
+int strcasecmp(char *s1, char *s2)
+{
+	while (*s1 != '\0' && *s2 != '\0')
+	{
+		if (*s1 == *s2)
+		{
+			s1++;
+			s2++;
+			continue;
+		}
+		if (*s1 > *s2)
+		{
+			return -1;
+		}
+		if (*s1 < *s2)
+		{
+			return 1;
+		}
+	}
+
+	if (*s1 == '\0' && *s2 == '0')
+	{
+		return 0;
+	}
+	if (*s1 == '\0')
+	{
+		return -1;
+	}
+
+	return 1;
+}
 
 /*
  * validate_pathlist()

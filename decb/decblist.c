@@ -8,7 +8,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#ifndef _BORLAND
 #include <unistd.h>
+#endif
 #include <cococonv.h>
 #include <cocotypes.h>
 #include <cocopath.h>

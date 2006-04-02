@@ -131,8 +131,11 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 		
 		bytes_left -= write_size;
 		path->filepos += write_size;
+#ifdef _BORLAND
+		(char *)buffer += write_size;
+#else
 		buffer += write_size;
-
+#endif
 		
 		/* Point to next granule for next pass. */
 		

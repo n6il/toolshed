@@ -8,7 +8,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#ifndef _BORLAND
 #include <unistd.h>
+#endif
 #include <cocotypes.h>
 #include <cocopath.h>
 
@@ -92,30 +94,33 @@ int os9deldir(int argc, char *argv[])
 
     return(0);
 }
-	
+
 
 static int do_deldir(char **argv, char *path, int interaction)
 {
-    error_code	ec = 0;
-    os9_path_id fold_path;
-    char	*dirpath;
-    fd_stats fdbuf;
-    char	c[10];
-			
-    if( interaction == 0 )
-    {
-        do
-        {
-            printf("\nDeleting directory: %s\n", path );
-            printf("List directory, delete directory, or quit? (l/d/q) ");
+	error_code	ec = 0;
+	os9_path_id fold_path;
+	char	*dirpath;
+	fd_stats fdbuf;
+	char	c[10];
 
-            scanf("%s", c);
+	if( interaction == 0 )
+	{
+		do
+		{
+			printf("\nDeleting directory: %s\n", path );
+			printf("List directory, delete directory, or quit? (l/d/q) ");
 
-            switch( c[0] )
-            {
-                case 'l':
-                    {
-                         char *argv[3] = {"dir", path, NULL};
+			scanf("%s", c);
+
+			switch( c[0] )
+			{
+				case 'l':
+					{
+						 char *argv[3];
+						 argv[0] = "dir";
+						 argv[1] = path;
+						 argv[2] = NULL;
 
 						 os9dir(2, argv);
                     }
