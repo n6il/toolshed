@@ -38,7 +38,9 @@ int os9rename(int, char **);
 int os9rdump(int, char **);
 
 int StrToInt(char *s);
+#ifdef BDS
 int strcasecmp(char *s1, char *s2);
+#endif
 void show_help(char **helpMessage);
 
 /* Function prototypes for supported Disk BASIC commands are here */

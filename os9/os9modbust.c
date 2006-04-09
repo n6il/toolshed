@@ -110,7 +110,7 @@ static int do_modbust(char **argv, char *filename)
     
 	while (_os9_gs_eof(path) == 0)
 	{
-		int size = 1;
+		u_int size = 1;
 
 		ec = _os9_read(path, buffer, &size);
 		if (ec != 0)

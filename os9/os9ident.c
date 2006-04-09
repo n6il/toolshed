@@ -225,7 +225,7 @@ static int do_ident(char **argv, char *filename)
 
     while (_coco_gs_eof(path) == 0)
     {
-        int size = 2;
+        u_int size = 2;
 
         ec = _coco_read(path, buffer, &size);
 

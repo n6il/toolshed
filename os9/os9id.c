@@ -108,7 +108,7 @@ static int do_id(char **argv, char *p)
 	{
 		char *p;
 		lsn0_sect buffer;
-		int size = sizeof(buffer);
+		u_int size = sizeof(buffer);
 
 		/* read LSN0 */
 		ec = _os9_read(path, &buffer, &size);

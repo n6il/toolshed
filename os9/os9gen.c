@@ -139,7 +139,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 	int bootfile_LSN = 0, bootfile_Size = 0;
 	char buffer[256];
 	lsn0_sect LSN0;
-	int size;
+	u_int size;
 
 	
 	/* 1. If we have a boot track file, put it on the disk first */
@@ -225,7 +225,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 	if (bootfile != NULL)
 	{
 		fd_stats fdbuf;
-		int size = sizeof(fdbuf);
+		u_int size = sizeof(fdbuf);
 		char *bootfileMem;
 
 		

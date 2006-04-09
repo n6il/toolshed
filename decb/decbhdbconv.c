@@ -136,8 +136,8 @@ static error_code HDBConv(char *srcfile, char *dstfile, int sourceSize, int targ
     coco_path_id path;
     coco_path_id destpath;
     int		mode = FAM_WRITE;
-	int		buffer_size;
-	unsigned char buffer[512];
+	u_int		buffer_size;
+	u_char buffer[512];
 	
 
 	memset(buffer, 0, 512);

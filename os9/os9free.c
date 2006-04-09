@@ -95,13 +95,13 @@ static int do_free(char **argv, char *p)
 	os9_path_id path;
 	int bytes_in_bitmap, sectors_in_bitmap;
 	lsn0_sect sector0;
-	int size;
-	unsigned int bytes_free = 0, free_sectors = 0;
-	unsigned int largest_free_block = 0, sectors_per_cluster = 0;
-	unsigned int total_sectors = 0;
-	unsigned int largest_count = 0;
-	unsigned int sector_count = 0;
-	unsigned int postfixDivisor = 1;
+	u_int size;
+	u_int bytes_free = 0, free_sectors = 0;
+	u_int largest_free_block = 0, sectors_per_cluster = 0;
+	u_int total_sectors = 0;
+	u_int largest_count = 0;
+	u_int sector_count = 0;
+	u_int postfixDivisor = 1;
 	char postfix[4];
 
 	strcpy(os9pathlist, p);

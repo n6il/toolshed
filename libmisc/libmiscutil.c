@@ -80,6 +80,7 @@ int StrToInt(char *s)
 }
 
 
+#ifdef BDS
 int strcasecmp(char *s1, char *s2)
 {
 	while (*s1 != '\0' && *s2 != '\0')
@@ -111,6 +112,7 @@ int strcasecmp(char *s1, char *s2)
 
 	return 1;
 }
+#endif
 
 
 void show_help(char **helpMessage)

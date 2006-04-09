@@ -20,7 +20,7 @@
 static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type);
 static char *GetFilename(char *path);
 static EOL_Type DetermineEOLType(char *buffer, int size);
-static void NativeToDECB(char *buffer, int size, char **newBuffer, int *newSize);
+static void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize);
 
 
 /* Help message */
@@ -275,7 +275,7 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
     int		mode = FAM_NOCREATE | FAM_WRITE;
 	unsigned char *buffer;
 	char *translation_buffer;
-	int new_translation_size;
+	u_int new_translation_size;
 	u_int buffer_size;
 	
 
@@ -309,7 +309,7 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
     }
 
 
-	ec = _coco_gs_size( path, &buffer_size);
+	ec = _coco_gs_size(path, &buffer_size);
 	buffer = malloc( buffer_size );
 	
 	if( buffer == NULL )
@@ -317,7 +317,7 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 		return -1;
 	};
 	
-	ec = _coco_read(path, buffer, (int *)&buffer_size);
+	ec = _coco_read(path, buffer, &buffer_size);
 
 	if (ec != 0)
 	{
@@ -396,7 +396,7 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 	{
 		/* One-to-one writing of the data -- no translation needed. */
 		
-		ec = _coco_write(destpath, buffer, (int *)&buffer_size);
+		ec = _coco_write(destpath, buffer, &buffer_size);
 	}
 
 	if (ec != 0)
@@ -499,7 +499,7 @@ static EOL_Type DetermineEOLType(char *buffer, int size)
  * The caller must free the returned buffer in 'newBuffer' once
  * finished with the buffer.
  */
-static void NativeToDECB(char *buffer, int size, char **newBuffer, int *newSize)
+static void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
 {
     EOL_Type	eolMethod;
     int		i;
@@ -588,7 +588,7 @@ static void NativeToDECB(char *buffer, int size, char **newBuffer, int *newSize)
 }
 
 
-void DECBToNative(char *buffer, int size, char **newBuffer, int *newSize)
+void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 {
 #ifdef _WIN32
     int dosEOLCount = 0;

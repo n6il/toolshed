@@ -158,7 +158,7 @@ static int do_padrom(char **argv, char *file, int padSize, char padChar)
 
     for (j = 0; j < padSize - fileSize; j++)
     {
-        int size = 1;
+        u_int size = 1;
 
         _coco_write(path, &padChar, &size);
     }

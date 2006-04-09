@@ -155,7 +155,7 @@ static int do_dump(char **argv, char *file, int format)
 
     while (1)
     {
-        int num_bytes = BUFFSIZ;
+        u_int num_bytes = BUFFSIZ;
 
         ec = _coco_read(path, buffer, &num_bytes);
         if (ec != 0)

@@ -146,7 +146,7 @@ static int do_deldir(char **argv, char *path, int interaction)
 	
     while (_os9_gs_eof(fold_path) == 0)
     {
-        int size, i = 0;
+        u_int size, i = 0;
         os9_dir_entry dentry;
         os9_path_id path2;
 

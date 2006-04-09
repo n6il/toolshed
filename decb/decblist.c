@@ -105,7 +105,7 @@ int decblist(int argc, char *argv[])
 		return -1;
 	}
 	
-	ec = _coco_read(path, buffer, (int *)&size);
+	ec = _coco_read(path, buffer, &size);
 	if (ec != 0)
 	{
 		return -1;
@@ -127,7 +127,7 @@ int decblist(int argc, char *argv[])
 		size = program_size;
 	}
 
-	DECBToNative((char *)buffer, size, &buffer2, (int *)&size2);
+	DECBToNative((char *)buffer, size, &buffer2, &size2);
 
 	printf( "%s", buffer2 );
 

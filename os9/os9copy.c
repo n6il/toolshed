@@ -22,8 +22,8 @@ static char *buffer;
 static error_code CopyOS9File( char *srcfile, char *dstfile, int eolTranslate, int rewrite, int owner, int owner_set);
 static char *GetFilename( char *path );
 static EOL_Type DetermineEOLType(char *buffer, int size);
-static void NativeToCoCo(char *buffer, int size, char **newBuffer, int *newSize);
-static void CoCoToNative(char *buffer, int size, char **newBuffer, int *newSize);
+static void NativeToCoCo(char *buffer, int size, char **newBuffer, u_int *newSize);
+static void CoCoToNative(char *buffer, int size, char **newBuffer, u_int *newSize);
 
 
 /* Help message */
@@ -361,8 +361,8 @@ static error_code CopyOS9File(char *srcfile, char *dstfile, int eolTranslate, in
     while (_coco_gs_eof(path) == 0)
     {
         char *newBuffer;
-        int newSize;
-        int size = buffer_size;
+        u_int newSize;
+        u_int size = buffer_size;
 
         ec = _coco_read(path, buffer, &size);
 
@@ -481,7 +481,7 @@ static EOL_Type DetermineEOLType(char *buffer, int size)
  * The caller must free the returned buffer in 'newBuffer' once
  * finished with the buffer.
  */
-static void NativeToCoCo(char *buffer, int size, char **newBuffer, int *newSize)
+static void NativeToCoCo(char *buffer, int size, char **newBuffer, u_int *newSize)
 {
     EOL_Type	eolMethod;
     int		i;
@@ -570,7 +570,7 @@ static void NativeToCoCo(char *buffer, int size, char **newBuffer, int *newSize)
 }
 
 
-static void CoCoToNative(char *buffer, int size, char **newBuffer, int *newSize)
+static void CoCoToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 {
 #ifdef _WIN32
     int dosEOLCount = 0;

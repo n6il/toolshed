@@ -97,7 +97,7 @@ static int do_cmp(char **argv, char *file1, char *file2)
     u_char buffer1[BUFFSIZ];
     u_char buffer2[BUFFSIZ];
     coco_path_id path1, path2;
-    int num_bytes1, num_bytes2;
+    u_int num_bytes1, num_bytes2;
     error_code ec1, ec2;
     int accum1 = 0, accum2 = 0;
     int diffCount = 0;

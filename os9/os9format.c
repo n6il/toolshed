@@ -430,8 +430,8 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 
 	/***** Write LSN0 *****/
 	{
-		int size = sizeof(s0);
-		int size2 = sectorSize - size;
+		u_int size = sizeof(s0);
+		u_int size2 = sectorSize - size;
 
 		/* write LSN0 structure */
 		_native_write(path, &s0, &size);
@@ -439,7 +439,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 		/* fill in rest of sector with zeros */
 		while (size2--)
 		{
-			int size = 1;
+			u_int size = 1;
 			char nil = '\0';
 
 			_native_write(path, &nil, &size);
@@ -449,7 +449,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	/***** Write Bitmap Sector(s) *****/
 	{
 		u_char *bitmap;
-		int size;
+		u_int size;
 
 		bitmapSectors = (int2(s0.dd_map) / sectorSize + (int2(s0.dd_map) % sectorSize != 0));
 
@@ -519,7 +519,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	if(isDragon)
 	{
 		char	*DragonBoot;
-		int		BootSize;
+		u_int		BootSize;
 
 		BootSize=DragonBootSize*sectorSize;
 
@@ -534,7 +534,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	{
 		char *allocedSectors;
 		int totalSectors;
-		int totalBytes;
+		u_int totalBytes;
 
 		if(isDragon)
 		{
@@ -610,7 +610,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 
 			while (sectorsLeft--)
 			{
-				int size = sectorSize;
+				u_int size = sectorSize;
 
 				_native_write(path, oneEmptySector, &size);
 			}

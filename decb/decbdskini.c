@@ -160,7 +160,7 @@ static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int h
 			{
 				for (s = 1; s < 19; s++)
 				{
-					int size = bps;
+					u_int size = bps;
 				
 					_native_write(nativepath, sector, &size);
 				}
@@ -174,7 +174,7 @@ static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int h
 
 		{
 			int s;
-			int size, min_s = 0;
+			u_int size, min_s = 0;
 		
 		
 			/* 1. Write sector of track 17 (all 0s..). */
@@ -270,7 +270,7 @@ static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int h
 			{
 				for (s = 1; s < 19; s++)
 				{
-					int size = bps;
+					u_int size = bps;
 				
 					_native_write(nativepath, sector, &size);
 				}

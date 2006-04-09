@@ -87,7 +87,7 @@ int os9list(int argc, char *argv[])
 
 	while (_os9_gs_eof(path) == 0)
 	{
-		int size = 1022;
+		u_int size = 1022;
 		char buffer[1024];
 		char *p;
 
