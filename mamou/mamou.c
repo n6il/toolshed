@@ -604,7 +604,7 @@ static void mamou_deinitialize(assembler *as)
 
 void mamou_pass(assembler *as)
 {
-	int size = MAXBUF - 1;
+	u_int		size = MAXBUF - 1;
 	char		input_line[1024];
 	
 	
@@ -939,7 +939,7 @@ void process(assembler *as)
 //			(as->line.mnemonic.opcode.pseudo->class == IF || as->line.mnemonic.opcode.pseudo->class == ELSE || as->line.mnemonic.opcode.pseudo->class == ENDC)
 //		)
         {
-            as->line.mnemonic.opcode.pseudo->func(as);
+			as->line.mnemonic.opcode.pseudo->func(as);
         }
 		
         return;

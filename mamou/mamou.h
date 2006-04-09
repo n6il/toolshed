@@ -110,7 +110,7 @@ struct filestack
 {
 	coco_path_id	fd;
 	char			file[FNAMESIZE];
-	int		current_line;
+	u_int			current_line;
 	int		num_blank_lines;
 	int		num_comment_lines;
 	int			end_encountered;
@@ -258,81 +258,81 @@ typedef struct _assembler
 	time_t				start_time;
 	struct source_line  line;						/* current source line */
 	object_file_type	output_type;				/* type of output file */
-	unsigned int			num_errors;					/* total number of errors */
-	unsigned int			num_warnings;				/* assembler warnings */
-	unsigned int			cumulative_blank_lines;		/* blank line count across all files */
-	unsigned int			cumulative_comment_lines;   /* comment line count across all files */
-	unsigned int			cumulative_total_lines;		/* total line count across all files */
+	u_int			num_errors;					/* total number of errors */
+	u_int			num_warnings;				/* assembler warnings */
+	u_int			cumulative_blank_lines;		/* blank line count across all files */
+	u_int			cumulative_comment_lines;   /* comment line count across all files */
+	u_int			cumulative_total_lines;		/* total line count across all files */
 	char				input_line[MAXBUF];			/* input line buffer */
-	unsigned int			program_counter;			/* Program Counter */
-	unsigned int			data_counter;				/* data counter */
-	unsigned int			old_program_counter;		/* Program Counter at beginning */
-	unsigned int			DP;							/* Direct Page pointer */
-	unsigned int			last_symbol;				/* result of last symbol_find */
-	unsigned int			pass;						/* current pass */
+	u_int			program_counter;			/* Program Counter */
+	u_int			data_counter;				/* data counter */
+	u_int			old_program_counter;		/* Program Counter at beginning */
+	u_int			DP;							/* Direct Page pointer */
+	u_int			last_symbol;				/* result of last symbol_find */
+	u_int			pass;						/* current pass */
 	struct filestack	*current_file;
-	unsigned int			use_depth;					/* depth of includes/uses */
+	u_int			use_depth;					/* depth of includes/uses */
 #define MAXAFILE	16
-	int			file_index;
+	u_int			file_index;
 	char				*file_name[MAXAFILE];		/* assembly file name on cmd line */
-	unsigned int			current_filename_index;		/* file number count            */
+	u_int			current_filename_index;		/* file number count            */
 #define INCSIZE 16
-	unsigned int			include_index;
+	u_int			include_index;
 	char				*includes[INCSIZE];	
-	int					Ffn;						/* forward ref file #           */
-	unsigned int			F_ref;						/* next line with forward ref   */
+	u_int					Ffn;						/* forward ref file #           */
+	u_int			F_ref;						/* next line with forward ref   */
 	char				**arguments;				/* pointer to file names        */
-	unsigned int			E_total;					/* total # bytes for one line   */
+	u_int			E_total;					/* total # bytes for one line   */
 	char				E_bytes[E_LIMIT + MAXBUF];  /* Emitted held bytes           */
-	unsigned int			E_pc;						/* Pc at beginning of collection*/
-	unsigned int			P_force;					/* force listing line to include Old_pc */
-	unsigned int			P_total;					/* current number of bytes collected    */
+	u_int			E_pc;						/* Pc at beginning of collection*/
+	u_int			P_force;					/* force listing line to include Old_pc */
+	u_int			P_total;					/* current number of bytes collected    */
 	char				P_bytes[P_LIMIT + 60];		/* Bytes collected for listing  */
-	unsigned int			cumulative_cycles;			/* # of cycles per instruction  */
-	unsigned int			Ctotal;						/* # of cycles seen so far */
+	u_int			cumulative_cycles;			/* # of cycles per instruction  */
+	u_int			Ctotal;						/* # of cycles seen so far */
 	int				f_new_page;					/* new page flag */
-	unsigned int			page_number;				/* page number */
+	u_int			page_number;				/* page number */
 	int				o_show_cross_reference;		/* cross reference table flag */
 	int				f_count_cycles;				/* cycle count flag */
-	unsigned int			Opt_C;						/* */
+	u_int			Opt_C;						/* */
 	int			o_page_depth;				/* page depth */
 	int				o_show_error;				/* show error */
-	unsigned int			Opt_F;						/* */
-	unsigned int			Opt_G;						/* */
+	u_int			Opt_F;						/* */
+	u_int			Opt_G;						/* */
 	int				o_show_listing;				/* listing flag 0=nolist, 1=list*/
 	asm_mode			o_asm_mode;					/* assembler mode */
-	unsigned int			Opt_N;						/* */
+	u_int			Opt_N;						/* */
 	int				o_quiet_mode;				/* quiet mode */
 	int				o_show_symbol_table;		/* symbol table flag, 0=no symbol */
-	unsigned int			o_pagewidth;				/* page width */
-	unsigned int			current_line;				/* line counter for printing */
-	unsigned int			current_page;				/* page counter for printing */
-	unsigned int			header_depth;				/* page header number of lines */
-	unsigned int			footer_depth;				/* page footer of lines */
+	u_int			o_pagewidth;				/* page width */
+	u_int			current_line;				/* line counter for printing */
+	u_int			current_page;				/* page counter for printing */
+	u_int			header_depth;				/* page header number of lines */
+	u_int			footer_depth;				/* page footer of lines */
 	int				o_format_only;              /* format only flag, 0=no symbol */
 	int				o_debug;					/* debug flag */
 	coco_path_id		fd_object;					/* object file's file descriptor*/
 	int				object_output;
 	char				object_name[FNAMESIZE];
 	char				_crc[3];
-	unsigned int			do_module_crc;
+	u_int			do_module_crc;
 	int				ignore_errors;
 	int				tabbed;
 #define	CONDSTACKLEN	256
-	unsigned int			conditional_stack_index;
+	u_int			conditional_stack_index;
 	char				conditional_stack[CONDSTACKLEN];
 	int				o_do_parsing;
 	int				o_cpuclass;
-	unsigned int			code_bytes;					/* number of emitted code bytes */
+	u_int			code_bytes;					/* number of emitted code bytes */
 #define NAMLEN 64
 #define TTLLEN NAMLEN
-	char				name_header[NAMLEN];
-	char				title_header[TTLLEN];
+	u_char				name_header[NAMLEN];
+	u_char				title_header[TTLLEN];
 	struct nlist		*bucket;					/* root node of the tree */
 	struct psect		psect[256];
 	int			current_psect;
 	int				code_segment_start;
-	unsigned int			decb_exec_address;
+	u_int			decb_exec_address;
 	int					newstyle;
 	int					pseudoUppercase;
 } assembler;
@@ -386,8 +386,8 @@ int alphan(char c);
 int any(char c, char *str);
 int delim(char c);
 int eol(char c);
-void decb_header_emit(assembler *as, unsigned int start, unsigned int size);
-void decb_trailer_emit(assembler *as, unsigned int exec);
+void decb_header_emit(assembler *as, u_int start, u_int size);
+void decb_trailer_emit(assembler *as, u_int exec);
 void emit(assembler *as, int byte);
 void error(assembler *as, char *str);
 void eword(assembler *as, int wd);
@@ -398,7 +398,7 @@ void finish_outfile(assembler *as);
 int head(char *str1, char *str2);
 int hiword(int i);
 int loword(int i);
-int hibyte(int i);
+u_int hibyte(int i);
 int lobyte(int i);
 char mapdn(char c);
 char *skip_white(char *ptr);

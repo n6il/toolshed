@@ -24,7 +24,7 @@
 
 void print_line(assembler *as, int override, char infochar, int counter)
 {
-	int i = 0;
+	u_int i = 0;
 	char Tmp_buff[512];
 	char Line_buff[512];
 
@@ -168,9 +168,9 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	/* New -- make all pseudo opcodes uppercase if wanted */
 	if (as->pseudoUppercase == 1 && as->line.mnemonic.type == OPCODE_PSEUDO)
 	{
-		int i;
-		
-                for (i = 0; i < strlen(as->line.Op); i++)
+		u_int i;
+
+		for (i = 0; i < strlen(as->line.Op); i++)
 		{
 			as->line.Op[i] = toupper(as->line.Op[i]);
 		}
@@ -330,7 +330,7 @@ void print_header(assembler *as)
 	       tm->tm_hour, tm->tm_min, tm->tm_sec,
 	       (unsigned int)as->current_page);
 
-	if (as->name_header[0] != EOS && as->title_header != EOS)
+	if (as->name_header[0] != EOS && as->title_header[0] != EOS)
 	{
 		printf("%s - %s\n", as->name_header, as->title_header);
 	}

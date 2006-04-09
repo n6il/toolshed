@@ -10,7 +10,7 @@
 #include <math.h>
 
 static char *strcatdup( char *orig, char *cat1, char *cat2 );
-static error_code ParseFDSegList( fd_stats *fd, int dd_tot, char *path, unsigned char *secondaryBitmap );
+static error_code ParseFDSegList(fd_stats *fd, u_int dd_tot, char *path, unsigned char *secondaryBitmap );
 static error_code BuildSecondaryAllocationMap( os9_path_id os9_path, int dir_lsn, char *path, unsigned char *secondaryBitmap );
 static error_code CompareAllocationMap( unsigned char *primaryAlloMap, unsigned char *secondaryBitmap, int dd_map, int cluster_size );
 static void PathlistsForQuestionableClusters();
@@ -18,6 +18,8 @@ static void FreeQuestionableMemory();
 static void AddQuestionableCluster( int cluster );
 static void AddPathToBit( int lsn, char *path );
 static int do_dcheck(char **argv, char *p);
+static void PathlistsForQuestionableClusters(void);
+static void FreeQuestionableMemory(void);
 
 
 /* Help message */
@@ -139,7 +141,7 @@ static int do_dcheck(char **argv, char *p)
 	unsigned char  *secondaryBitmap;
 	char		*newName;
 	char os9pathlist[256];
-	float		size;
+	double		size;
 	
 	if( strchr(p, ',') != 0 )
 	{
@@ -210,12 +212,12 @@ static int do_dcheck(char **argv, char *p)
 	
 	/* Allocate primary bitmap sectors in secondary bitmap */
 	
-	size = (float)os9_path->bitmap_bytes / (float)os9_path->bps;
+	size = (double)os9_path->bitmap_bytes / (double)os9_path->bps;
 	
 #ifdef _BORLAND
 	_os9_allbit(secondaryBitmap, 1, size );
 #else
-	_os9_allbit(secondaryBitmap, 1, ceilf(size) );
+	_os9_allbit(secondaryBitmap, 1, ceil(size) );
 #endif
 
 	/* Setup questionable cluster array */
@@ -286,7 +288,7 @@ static error_code BuildSecondaryAllocationMap( os9_path_id os9_path, int dir_lsn
 {
 	error_code 	ec = 0;
 	fd_stats	*dir_fd, *file_fd;
-	int			dd_tot,
+	u_int		dd_tot,
 				fd_siz,
 				count,
 				i, j, k;
@@ -472,12 +474,12 @@ static error_code BuildSecondaryAllocationMap( os9_path_id os9_path, int dir_lsn
 	return(ec);
 }
 
-static error_code ParseFDSegList( fd_stats *fd, int dd_tot, char *path, unsigned char *secondaryBitmap )
+static error_code ParseFDSegList( fd_stats *fd, u_int dd_tot, char *path, unsigned char *secondaryBitmap )
 {
 	error_code	ec = 0;
-	int			i = 0, j, once;
+	u_int  		i = 0, j, once;
 	Fd_seg		theSeg;
-	int			num, curLSN;
+	u_int 		num, curLSN;
 
 	while( int3(fd->fd_seg[i].lsn) != 0 )
 	{
@@ -486,10 +488,10 @@ static error_code ParseFDSegList( fd_stats *fd, int dd_tot, char *path, unsigned
 			i++;
 			break;
 		}
-		
+
 		theSeg = &(fd->fd_seg[i]);
 		num = int2(theSeg->num);
-		
+
 		if( (int3(theSeg->lsn) + num) > dd_tot )
 		{
 			printf("*** Bad FD segment ($%6.6X-$%6.6X) for file: %s (Segement index: %d)\n", int3(theSeg->lsn), int3(theSeg->lsn)+num, path, i );
@@ -497,8 +499,8 @@ static error_code ParseFDSegList( fd_stats *fd, int dd_tot, char *path, unsigned
 			i++;
 			continue;
 		}
-		
-		for( j=0; j<num; j++ )
+
+		for(j = 0; j < num; j++)
 		{
 			once = 0;
 			curLSN = int3(theSeg->lsn)+j;
@@ -581,7 +583,7 @@ static error_code CompareAllocationMap( unsigned char *primaryAlloMap, unsigned 
 	return(ec);
 }
 
-static void PathlistsForQuestionableClusters()
+static void PathlistsForQuestionableClusters(void)
 {
 	qCluster_t	*tmp;
 	qBitPath_t	*bitpath, *tmpBP;
@@ -614,7 +616,7 @@ static void PathlistsForQuestionableClusters()
 	}
 }
 
-static void FreeQuestionableMemory()
+static void FreeQuestionableMemory(void)
 {
 	qCluster_t	*tmp;
 	qBitPath_t	*tmpBP;

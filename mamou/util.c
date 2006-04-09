@@ -358,7 +358,7 @@ void decb_trailer_emit(assembler *as, unsigned int exec)
 
 void f_record(assembler *as)
 {
-	int i, chksum;
+	u_int i, chksum;
 
 
 	/* 1. Pass 2 only. */
@@ -397,13 +397,13 @@ void f_record(assembler *as)
 
 	if (as->output_type == OUTPUT_BINARY && as->object_output == 1)
 	{
-		int		size = as->E_total;
+		u_int		size = as->E_total;
 			
 		_coco_write(as->fd_object, as->E_bytes, &size);
 	}
 	else if (as->object_output == 1)
 	{
-		int size;
+		u_int size;
 			
 		if (as->output_type == OUTPUT_HEX && as->object_output == 1)
 		{
@@ -474,7 +474,7 @@ void hexout(assembler *as, int byte)
 {
 	if (as->object_output == 1)
 	{
-		int size = 2;
+		u_int size = 2;
 		char tmp[8];
 		
 		byte = lobyte(byte);
@@ -514,7 +514,7 @@ void imageinit(void)
 
 void finish_outfile(assembler *as)
 {
-	int size;
+	u_int size;
 	
 	
 	if (as->object_output == 0)
@@ -605,7 +605,7 @@ int lobyte(int i)
 	@param i Integer to process
  */
 
-int hibyte(int i)
+u_int hibyte(int i)
 {
 	return((i >> 8) & 0xFF);
 }

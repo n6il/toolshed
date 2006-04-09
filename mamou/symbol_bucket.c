@@ -11,6 +11,7 @@
 #include "mamou.h"
 #include "h6309.h"
 #include "pseudo.h"
+#include "util.h"
 
 
 /*!

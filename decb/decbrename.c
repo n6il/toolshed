@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#ifndef _BORLAND
+#ifndef BDS
 #include <unistd.h>
 #endif
 #include <cocotypes.h>

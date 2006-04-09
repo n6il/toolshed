@@ -1520,7 +1520,7 @@ int _use(assembler *as)
 	{
 		struct filestack use_file, *prev_file;
 		char		path[FNAMESIZE];
-		int			i = 0;
+		u_int		i = 0;
 		
 		
 		/* Set up the structure. */

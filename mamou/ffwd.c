@@ -68,7 +68,7 @@ void fwd_deinit(assembler *as)
 
 void fwd_reinit(assembler *as)
 {
-	int			size;
+	u_int			size;
 	
 	
 	as->F_ref   = 0;
@@ -103,7 +103,7 @@ void fwd_reinit(assembler *as)
 
 void fwd_mark(assembler *as)
 {
-	int		size;
+	u_int		size;
 	
 	
 	size = sizeof(as->current_filename_index);	
@@ -126,7 +126,7 @@ void fwd_mark(assembler *as)
  
 void fwd_next(assembler *as)
 {
-	int size;
+	u_int size;
 	
 
 	size = sizeof(as->Ffn);
