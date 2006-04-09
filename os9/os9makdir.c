@@ -16,7 +16,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#ifndef _BORLAND
+#ifndef BDS
 #include <unistd.h>
 #include <sys/stat.h>
 #endif

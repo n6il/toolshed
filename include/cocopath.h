@@ -78,12 +78,12 @@ typedef struct coco_dir_entry
 	union
 	{
 #ifdef __MINGW32__
-		struct _finddata_t  *native;
+		struct _finddata_t  native;
 #else
-		struct dirent		*native;
+		struct dirent		native;
 #endif
-		os9_dir_entry			*os9;
-		decb_dir_entry			*decb;
+		os9_dir_entry			os9;
+		decb_dir_entry			decb;
 	} dentry;
 } coco_dir_entry;
 
@@ -103,12 +103,12 @@ typedef struct coco_file_stat
 error_code _coco_open(coco_path_id *, char *, int);
 error_code _coco_create(coco_path_id *, char *, int, int);
 error_code _coco_open_parent_directory(coco_path_id *path, char *pathlist, int mode, char *filename);
-error_code _coco_read(coco_path_id, void *, int *);
+error_code _coco_read(coco_path_id, void *, u_int *);
 error_code _coco_readdir(coco_path_id, coco_dir_entry *);
 error_code _coco_seek(coco_path_id, int, int);
-error_code _coco_readln(coco_path_id, void *, int *);
-error_code _coco_write(coco_path_id, void *, int *);
-error_code _coco_writeln(coco_path_id, char *, int *);
+error_code _coco_readln(coco_path_id, void *, u_int *);
+error_code _coco_write(coco_path_id, void *, u_int *);
+error_code _coco_writeln(coco_path_id, char *, u_int *);
 error_code _coco_makdir(char *pathlist);
 error_code _coco_delete(char *pathlist);
 error_code _coco_rename(char *pathlist, char *new_name);

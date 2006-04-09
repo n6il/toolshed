@@ -5,7 +5,7 @@
  ********************************************************************/
 #include <stdlib.h>
 #include <string.h>
-#ifndef _BORLAND
+#ifndef BDS
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
@@ -14,6 +14,7 @@
 #include "cocotypes.h"
 #include "os9path.h"
 #include "cococonv.h"
+#include "util.h"
 
 
 u_char DecrementLinkCount(os9_path_id path, int fd_lsn);

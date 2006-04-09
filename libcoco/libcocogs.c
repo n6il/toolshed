@@ -106,7 +106,7 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 			if (native_stat.st_mode & S_IRUSR) { statbuf->attributes |= FAP_READ; }
 			if (native_stat.st_mode & S_IWUSR) { statbuf->attributes |= FAP_WRITE; }
 			if (native_stat.st_mode & S_IXUSR) { statbuf->attributes |= FAP_EXEC; }
-#if !defined(__MINGW32__) && !defined(_BORLAND)
+#if !defined(__MINGW32__) && !defined(BDS)
 			if (native_stat.st_mode & S_IROTH) { statbuf->attributes |= FAP_PREAD; }
 			if (native_stat.st_mode & S_IWOTH) { statbuf->attributes |= FAP_PWRITE; }
 			if (native_stat.st_mode & S_IXOTH) { statbuf->attributes |= FAP_PEXEC; }
@@ -114,7 +114,7 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 			if (native_stat.st_mode & S_IFDIR) { statbuf->attributes |= FAP_DIR; }
 			statbuf->user_id = native_stat.st_uid;
 			statbuf->group_id = native_stat.st_gid;
-#if !defined(__MINGW32__) && !defined(_BORLAND)
+#if !defined(__MINGW32__) && !defined(BDS)
 #if defined __APPLE__
 			statbuf->create_time = native_stat.st_ctimespec.tv_sec;
 			statbuf->last_modified_time = native_stat.st_mtimespec.tv_sec;

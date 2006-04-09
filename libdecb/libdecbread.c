@@ -11,13 +11,13 @@
 #include "decbpath.h"
 
 
-error_code _decb_read(decb_path_id path, void *buffer, int *size)
+error_code _decb_read(decb_path_id path, void *buffer, u_int *size)
 {
 	error_code		ec = 0;
     int				curr_granule, last_granule;
-    int				accum_size = 0;
+	u_int 			accum_size = 0;
     int				bytes_left;
-    unsigned int	filesize;
+	u_int			filesize;
 
 
 	/* 1. Check the mode. */
@@ -149,7 +149,7 @@ error_code _decb_read(decb_path_id path, void *buffer, int *size)
 
 		bytes_left -= read_size;
 		path->filepos += read_size;
-#ifdef _BORLAND
+#ifdef BDS
 		(char *)buffer += read_size;
 #else
 		buffer += read_size;
@@ -162,13 +162,13 @@ error_code _decb_read(decb_path_id path, void *buffer, int *size)
 
 
 
-error_code _decb_readln(decb_path_id path, void *buffer, int *size)
+error_code _decb_readln(decb_path_id path, void *buffer, u_int *size)
 {
 	error_code		ec = 0;
-    int				curr_granule, last_granule;
-    int				accum_size = 0;
-    int				bytes_left;
-    unsigned int	filesize;
+	int				curr_granule, last_granule;
+	u_int			accum_size = 0;
+	u_int			bytes_left;
+	u_int			filesize;
 	
 	
 	/* 1. Check the mode. */
@@ -270,7 +270,7 @@ error_code _decb_readln(decb_path_id path, void *buffer, int *size)
     {
 		char *buf_ptr = buffer;
 		char granule_buffer[2304], *z;
-		int read_size, offset_in_granule;
+		u_int read_size, offset_in_granule;
 		int bytes_in_last_granule = 2304;
 		
 		
@@ -315,7 +315,7 @@ error_code _decb_readln(decb_path_id path, void *buffer, int *size)
 		
 		bytes_left -= read_size;
 		path->filepos += read_size;
-#ifdef _BORLAND
+#ifdef BDS
 		(char *)buffer += read_size;
 #else
 		buffer += read_size;

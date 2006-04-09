@@ -10,12 +10,12 @@
 #include "decbpath.h"
 
 
-static error_code _raw_write(decb_path_id path, void *buffer, int *size);
+static error_code _raw_write(decb_path_id path, void *buffer, u_int *size);
 static error_code extend_fat_chain(decb_path_id path, int current_size, int new_size);
 error_code find_free_granule(decb_path_id path, int *granule, int next_to);
 
 
-error_code _decb_write(decb_path_id path, void *buffer, int *size)
+error_code _decb_write(decb_path_id path, void *buffer, u_int *size)
 {
     error_code	ec = EOS_WRITE;
 	u_int current_size = 0, accum_size = 0, curr_granule, bytes_left;
@@ -103,10 +103,10 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
     while (bytes_left > 0)
     {
 		char granule_buffer[2304];
-		int write_size, offset_in_granule;
+		u_int write_size, offset_in_granule;
 		int bytes_in_last_granule = 2304;
 		
-		
+
 		_decb_gs_granule(path, curr_granule, granule_buffer);
 		
 		if (path->FAT[curr_granule] >= 0xC0)
@@ -131,7 +131,7 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 		
 		bytes_left -= write_size;
 		path->filepos += write_size;
-#ifdef _BORLAND
+#ifdef BDS
 		(char *)buffer += write_size;
 #else
 		buffer += write_size;
@@ -155,7 +155,7 @@ error_code _decb_write(decb_path_id path, void *buffer, int *size)
 
 
 
-static error_code _raw_write(decb_path_id path, void *buffer, int *size)
+static error_code _raw_write(decb_path_id path, void *buffer, u_int *size)
 {
     error_code	ec = 0;
     size_t ret_size;

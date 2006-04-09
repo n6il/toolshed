@@ -11,17 +11,17 @@
 #include "os9path.h"
 
 
-error_code _os9_read(os9_path_id path, void *buffer, int *size)
+error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
 {
 	error_code		ec = 0;
     fd_stats		fd_sector;
     Fd_seg			segptr;
     int				i;
-    int				accum_size = 0;
-    int				bytes_left;
-    char			*buf_ptr = buffer;
-    int				seg_size_bytes, read_size;
-    unsigned int	filesize;
+	u_int				accum_size = 0;
+	int				bytes_left;
+	char			*buf_ptr = buffer;
+	int				seg_size_bytes, read_size;
+	u_int			filesize;
 
 
 	/* 1. Check the mode. */
@@ -190,7 +190,7 @@ error_code _os9_readdir(os9_path_id path, os9_dir_entry *dirent)
     }
 	else
     {
-        int size = sizeof(os9_dir_entry);
+        u_int size = sizeof(os9_dir_entry);
 		int temp_mode = path->mode;
 
 		/* 1. Temporarily turn off FAM_DIR so that read won't fail. */

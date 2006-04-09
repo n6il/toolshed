@@ -11,6 +11,7 @@
 #include <os9path.h>
 #include <cococonv.h>
 #include <cocosys.h>
+#include <util.h>
 
 
 error_code _os9_rename( char *pathlist, char *new_name )

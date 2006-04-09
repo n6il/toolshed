@@ -11,17 +11,17 @@
 #include "os9path.h"
 
 
-error_code _os9_readln(os9_path_id path, void *buffer, int *size)
+error_code _os9_readln(os9_path_id path, void *buffer, u_int *size)
 {
 	error_code		ec = 0;
     fd_stats		fd_sector;
     Fd_seg			segptr;
     int				i;
-    int				accum_size = 0;
+    u_int 			accum_size = 0;
     int				bytes_left;
     char			*buf_ptr = buffer;
     int				seg_size_bytes, read_size;
-    int				filesize;
+	u_int 			filesize;
 
 
 	/* 1. Check the mode. */
@@ -83,7 +83,7 @@ error_code _os9_readln(os9_path_id path, void *buffer, int *size)
     {
         accum_size += int2(segptr[i].num) * path->bps;
 
-        if (accum_size > path->filepos)
+		if (accum_size > path->filepos)
         {
             /* 1. This is the sector! */
 

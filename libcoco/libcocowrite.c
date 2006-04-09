@@ -10,7 +10,7 @@
 #include "cocopath.h"
 
 
-error_code _coco_write(coco_path_id path, void *buffer, int *size)
+error_code _coco_write(coco_path_id path, void *buffer, u_int *size)
 {
 	error_code		ec = 0;
 	

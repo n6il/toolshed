@@ -11,11 +11,11 @@
 #include "nativepath.h"
 
 
-error_code _native_readln(native_path_id path, void *buffer, int *size)
+error_code _native_readln(native_path_id path, void *buffer, u_int *size)
 {
 	error_code		ec = 0;
-    int i;
-	char *buf_ptr = buffer;
+	u_int 			i;
+	char 			*buf_ptr = buffer;
 	
 
 	for (i = 0; i < *size; i++)

@@ -11,7 +11,6 @@
 #include <time.h>
 #include <cocotypes.h>
 
-
 char *UnixToOS9Time(time_t currentTime, char *os9time);
 u_char *StringToOS9Name(u_char *f);
 int OS9NameLen(u_char *f);

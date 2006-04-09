@@ -81,7 +81,6 @@ u_char *OS9NameToString(u_char *f)
 }
 
 
-
 /* Converts a Disk BASIC filename to a regular C string.
  */
 void DECBNameToString(u_char *filename, u_char *ext, u_char *string)

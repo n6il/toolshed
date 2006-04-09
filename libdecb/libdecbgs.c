@@ -96,18 +96,19 @@ error_code _decb_gs_pos(decb_path_id path, u_int *pos)
 error_code _decb_gs_sector(decb_path_id path, int track, int sector, char *buffer)
 {
 	error_code	ec = 0;
-	size_t		size;
+//	size_t		size;
 
 
 	/* 1. Seek to the track and sector. */
-	
+
 	_decb_seeksector(path, track, sector);
 
 
 	/* 2. Get the sector into the buffer. */
-	
-	size = fread(buffer, 1, 256, path->fd);
-	
+
+//	size = fread(buffer, 1, 256, path->fd);
+	fread(buffer, 1, 256, path->fd);
+
 //	assert( size == 256 );
 
 	/* 3. Return status. */

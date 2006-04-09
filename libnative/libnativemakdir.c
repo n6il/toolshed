@@ -9,6 +9,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
+#ifdef BDS
+#include <dir.h>
+#endif
 
 #include "cocotypes.h"
 #include "cococonv.h"

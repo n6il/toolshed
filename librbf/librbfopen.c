@@ -16,6 +16,7 @@
 #include "os9path.h"
 #include "cococonv.h"
 #include "cocosys.h"
+#include "util.h"
 
 
 static int init_pd(os9_path_id *path, int mode);
@@ -63,7 +64,7 @@ error_code _os9_create(os9_path_id *path, char *pathlist, int mode, int perms)
 
     /* 3. Determine if disk is being open in raw mode. */
 	
-    if (pathlist[strlen(pathlist) - 1] == '@')
+	if (pathlist[strlen(pathlist) - 1] == '@')
     {
         /* 1. Yes, raw mode. */
 		
@@ -80,7 +81,7 @@ error_code _os9_create(os9_path_id *path, char *pathlist, int mode, int perms)
     {
         fd_stats	newFD;
         time_t		now;
-        struct tm 	*tm;
+//        struct tm 	*tm;
         int		newLSN;
         char		filename[32];
         os9_path_id 	parent_path;
@@ -131,14 +132,14 @@ aa:
         }
 
         if (ec != 0)
-        {
+		{
             _os9_close(parent_path);
 
             return ec;
         }
 			
         now = time(NULL);
-        tm = localtime(&now);
+//        tm = localtime(&now);
 
 		
         /* 3. Populate file descriptor. */
@@ -199,7 +200,7 @@ aa:
 			
 			
 			/* 1. Set up path temporarily as a directory so _os9_readdir won't fail. */
-			
+
 			parent_path->mode |= FAM_DIR;
 	
             ec = _os9_readdir(parent_path, &dentry);
@@ -233,10 +234,10 @@ aa:
         if (ec != 0) { /* Error */ }
 		
         return(_os9_open(path, pathlist, mode));
-    }
+	}
 
 
-    return ec;
+//    return ec;
 }
 
 
@@ -260,7 +261,7 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 {
     error_code	ec = 0;
     char		*p;
-    char		*tmppathlist;
+	char		*tmppathlist;
 
 
     /* 1. Strip off FAM_NOCREATE if passed -- irrelavent to _os9_open. */
@@ -272,7 +273,7 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 	
     ec = init_pd(path, mode);
 
-    if (ec != 0)
+	if (ec != 0)
     {
         return ec;
     }
@@ -402,7 +403,7 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 			
             strcpy(q, (char *)diskent.name);
 
-            if (strcasecmp((char *)p, (char *)OS9NameToString((u_char *)q)) == 0)
+			if (strcasecmp((char *)p, (char *)OS9NameToString((u_char *)q)) == 0)
             {
                 (*path)->pl_fd_lsn = int3(diskent.lsn);
                 (*path)->filepos = 0;
@@ -451,8 +452,8 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 		
         andresult = mode & (fd_sector.fd_att & (FAM_DIR | FAM_READ | FAM_WRITE));
 
-        if (andresult != mode || (fd_sector.fd_att & FAM_DIR != mode & FAM_DIR))
-        {
+		if (andresult != mode || ((fd_sector.fd_att & FAM_DIR) != (mode & FAM_DIR)))
+		{
             free(tmppathlist);
 
             fclose((*path)->fd);

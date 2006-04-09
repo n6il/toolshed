@@ -96,9 +96,9 @@ typedef struct
 error_code _decb_open(decb_path_id *, char *, int);
 error_code _decb_close(decb_path_id);
 error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_type, int data_type);
-error_code _decb_read(decb_path_id path, void *buffer, int *size);
-error_code _decb_readln(decb_path_id path, void *buffer, int *size);
-error_code _decb_write(decb_path_id path, void *buffer, int *size);
+error_code _decb_read(decb_path_id path, void *buffer, u_int *size);
+error_code _decb_readln(decb_path_id path, void *buffer, u_int *size);
+error_code _decb_write(decb_path_id path, void *buffer, u_int *size);
 error_code _decb_kill(char *filename);
 error_code _decb_seek(decb_path_id, int, int);
 error_code _decb_readdir(decb_path_id path, decb_dir_entry *de);

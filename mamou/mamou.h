@@ -12,7 +12,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#ifndef BDS
 #include <unistd.h>
+#endif
 #include <ctype.h>
 #include <sys/types.h>
 

@@ -33,14 +33,14 @@ typedef struct dirent		native_dir_entry;
 
 error_code _native_open(native_path_id *, char *, int);
 error_code _native_create(native_path_id *, char *, int, int);
-error_code _native_read(native_path_id, void *, int *);
+error_code _native_read(native_path_id, void *, u_int *);
 error_code _native_readdir(native_path_id, native_dir_entry *);
 error_code _native_seek(native_path_id, int, int);
 error_code _native_allbit(u_char *bitmap, int firstbit, int numbits);
 error_code _native_delbit(u_char *bitmap, int firstbit, int numbits);
-error_code _native_readln(native_path_id, void *, int *);
-error_code _native_write(native_path_id, void *, int *);
-error_code _native_writeln(native_path_id, char *, int *);
+error_code _native_readln(native_path_id, void *, u_int *);
+error_code _native_write(native_path_id, void *, u_int *);
+error_code _native_writeln(native_path_id, char *, u_int *);
 error_code _native_makdir(char *pathlist);
 error_code _native_delete(char *pathlist);
 error_code _native_rename(char *pathlist, char *new_name);

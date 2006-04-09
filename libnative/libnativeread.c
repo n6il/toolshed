@@ -11,7 +11,7 @@
 #include "nativepath.h"
 
 
-error_code _native_read(native_path_id path, void *buffer, int *size)
+error_code _native_read(native_path_id path, void *buffer, u_int *size)
 {
     error_code	ec = 0;
     size_t ret_size;

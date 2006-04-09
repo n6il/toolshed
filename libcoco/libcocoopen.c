@@ -188,7 +188,7 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 		
 		*type = NATIVE;
 		
-        return 0;
+		return ec;
     }
 	
 	
@@ -276,6 +276,6 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
     free(tmppathlist);
 	
 	
-    return 0;
+    return ec;
 }
 

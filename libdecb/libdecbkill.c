@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifndef _BORLAND
+#ifndef BDS
 #include <unistd.h>
 #endif
 #include <sys/stat.h>

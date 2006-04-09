@@ -13,6 +13,7 @@
 #include "cocosys.h"
 #include "decbpath.h"
 #include "cococonv.h"
+#include "util.h"
 
 
 error_code _decb_rename(char *pathlist, char *new_name)

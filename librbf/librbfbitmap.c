@@ -131,7 +131,7 @@ error_code _os9_getSASSegment(os9_path_id path, int *cluster, int *size)
 {
     unsigned int	pd_sas = int1(path->lsn0->pd_sas);
     unsigned int	pd_tot = int3(path->lsn0->dd_tot);
-    int		i, count;
+	u_int			i, count;
 
 	
     /* Sanity check pd_sas */
@@ -157,7 +157,7 @@ error_code _os9_getSASSegment(os9_path_id path, int *cluster, int *size)
 
     while (count < (pd_sas / path->spc))
     {
-        if (i > pd_tot)
+		if (i > pd_tot)
 		{
 			return -1;
 		}

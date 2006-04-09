@@ -13,7 +13,7 @@
 #include "decbpath.h"
 #include "errno.h"
 #include "dirent.h"
-
+#include "util.h"
 
 
 static int init_pd(decb_path_id *path, int mode);
@@ -454,38 +454,6 @@ static int _decb_cmp(decb_dir_entry *entry, char *name)
 }
 
 
-int strcasecmp(char *s1, char *s2)
-{
-	while (*s1 != '\0' && *s2 != '\0')
-	{
-		if (*s1 == *s2)
-		{
-			s1++;
-			s2++;
-			continue;
-		}
-		if (*s1 > *s2)
-		{
-			return -1;
-		}
-		if (*s1 < *s2)
-		{
-			return 1;
-		}
-	}
-
-	if (*s1 == '\0' && *s2 == '0')
-	{
-		return 0;
-	}
-	if (*s1 == '\0')
-	{
-		return -1;
-	}
-
-	return 1;
-}
-
 /*
  * validate_pathlist()
  *
@@ -504,24 +472,25 @@ int strcasecmp(char *s1, char *s2)
 static int validate_pathlist(decb_path_id *path, char *pathlist)
 {
 	error_code  ec = 0;
-	char		*comma;
+//	char		*comma;
 	int			count;
 
-	
+
 	/* 1. Validate the pathlist. */
-	
-    if ((comma = strchr(pathlist, ',')) == NULL)
-    {
-        /* 1. No native/RS-DOS delimiter in pathlist, return error. */
+
+//	if ((comma = strchr(pathlist, ',')) == NULL)
+	if (strchr(pathlist, ',') == NULL)
+	{
+		/* 1. No native/RS-DOS delimiter in pathlist, return error. */
 
 		ec = EOS_BPNAM;
-    }
+	}
 	else
 	{
 		/* 1. Extract information out of pathlist. */
-	
+
 		count = sscanf(pathlist, "%512[^,]%*c%64[^:]%*c%d", (*path)->imgfile, (*path)->filename, &((*path)->drive));
-	
+
 		if (count < 2)
 		{
 			count = sscanf(pathlist, "%512[^,]%*c%*c%d", (*path)->imgfile, &((*path)->drive));
@@ -530,8 +499,8 @@ static int validate_pathlist(decb_path_id *path, char *pathlist)
 
 
 	/* 2. Return. */
-	
-    return ec;
+
+	return ec;
 }
 
 

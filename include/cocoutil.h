@@ -3,6 +3,8 @@
  *
  * $Id$
  ********************************************************************/
+extern "C"
+{
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -12,7 +14,7 @@
 #include <errno.h>
 #include <time.h>
 #include <cocotypes.h>
-
+};
 
 /* Function prototypes for supported CoCo commands are here */
 

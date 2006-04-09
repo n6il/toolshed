@@ -11,11 +11,11 @@
 #include "os9path.h"
 
 
-static error_code _raw_write(os9_path_id path, void *buffer, int *size);
+static error_code _raw_write(os9_path_id path, void *buffer, u_int *size);
 int _os9_extendSegList( os9_path_id path, Fd_seg segptr, int *delta );
 
 
-error_code _os9_write(os9_path_id path, void *buffer, int *size)
+error_code _os9_write(os9_path_id path, void *buffer, u_int *size)
 {
     error_code	ec = 0;
 
@@ -39,11 +39,11 @@ error_code _os9_write(os9_path_id path, void *buffer, int *size)
         fd_stats fd_sector;
         Fd_seg segptr;
         int i;
-        int accum_size = 0;
+		u_int accum_size = 0;
         int bytes_left;
         char *buf_ptr = buffer;
         int seg_size_bytes, write_size;
-        int filesize;
+        u_int filesize;
 
         /* 1. Seek to FD LSN of pathlist */
 
@@ -112,7 +112,7 @@ error_code _os9_write(os9_path_id path, void *buffer, int *size)
         for (i = 0; i < NUM_SEGS && int3(segptr[i].lsn) != 0; i++)
         {
             accum_size += int2(segptr[i].num) * path->bps;
-            if (accum_size > path->filepos)
+			if (accum_size > path->filepos)
             {
                 /* this is the sector! */
                 accum_size -= int2(segptr[i].num) * path->bps;
@@ -233,7 +233,7 @@ int _os9_extendSegList(os9_path_id path, Fd_seg segptr, int *delta)
             /* Calculate LSN for new sector */
             newLSN = int3(segptr[i].lsn) + newNum - 1;
 			
-            /* Is it allocated? */
+			/* Is it allocated? */
             if (!_os9_ckbit(path->bitmap, (newLSN / path->spc)))
             {
                 /* Hey we got our extra cluster! */
@@ -266,12 +266,12 @@ int _os9_extendSegList(os9_path_id path, Fd_seg segptr, int *delta)
         *delta = path->bps * size;
         return(0);
     }
-    else
-    {
-        return(EOS_SF);
-    }
-	
-    return(EOS_DF);
+	else
+	{
+		return(EOS_SF);
+	}
+
+//	return(EOS_DF);
 }
 
 
@@ -289,14 +289,14 @@ error_code _os9_writedir(os9_path_id path, os9_dir_entry *dirent)
     }
 	else
     {
-        int size = sizeof(os9_dir_entry);
+        u_int size = sizeof(os9_dir_entry);
 
 
 		/* 1. Temporarily turn off FAM_DIR so that read won't fail. */
 		
 		path->mode &= ~FAM_DIR;
 		
-        ec = _os9_write(path, dirent, &size);
+		ec = _os9_write(path, dirent, &size);
 
 		path->mode |= FAM_DIR;
     }
@@ -307,7 +307,7 @@ error_code _os9_writedir(os9_path_id path, os9_dir_entry *dirent)
 
 
 
-static error_code _raw_write(os9_path_id path, void *buffer, int *size)
+static error_code _raw_write(os9_path_id path, void *buffer, u_int *size)
 {
     error_code	ec = 0;
     size_t ret_size;
