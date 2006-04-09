@@ -746,7 +746,7 @@ int _nam(assembler *as)
 	
 	/* Copy the name into our global space for later use. */
 	
-	strncpy(as->name_header, as->line.optr, NAMLEN-1);
+	strncpy((char *)as->name_header, as->line.optr, NAMLEN-1);
 
 	print_line(as, 0, ' ', 0);
 
@@ -792,7 +792,7 @@ int _ttl(assembler *as)
 	
 	/* Copy the title into our global space for later use. */
 
-	strncpy(as->title_header, as->line.optr, TTLLEN - 1);
+	strncpy((char *)as->title_header, as->line.optr, TTLLEN - 1);
 	
 	print_line(as, 0, ' ', 0);
 
