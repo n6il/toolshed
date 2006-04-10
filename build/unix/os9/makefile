@@ -2,7 +2,7 @@
 
 vpath %.c ../../../os9
 
-CFLAGS	+= -I../../../include
+CFLAGS	+= -I../../../include -Wall
 LDFLAGS	+= -L../libcoco -L../libnative -L../libdecb -L../libmisc -L../librbf -L../libsys -lcoco -lnative -ldecb -lmisc -lrbf -lsys -lm
 
 os9:	os9copy.o os9dsave.o os9gen.o os9modbust.o os9dcheck.o os9dump.o \

@@ -2,7 +2,7 @@
 
 vpath %.c ../../../librbf
 
-CFLAGS	+= -I../../../include
+CFLAGS	+= -I../../../include -Wall
 
 %.a:
 	ar -r $@ $^
