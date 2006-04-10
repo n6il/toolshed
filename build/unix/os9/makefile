@@ -8,7 +8,7 @@ LDFLAGS	+= -L../libcoco -L../libnative -L../libdecb -L../libmisc -L../librbf -L.
 os9:	os9copy.o os9dsave.o os9gen.o os9modbust.o os9dcheck.o os9dump.o \
 	os9id.o os9padrom.o os9.o os9del.o os9format.o os9ident.o \
 	os9rename.o os9attr.o os9deldir.o os9free.o os9list.o os9cmp.o \
-	os9dir.o os9fstat.o os9makdir.o os9rdump.o
+	os9dir.o os9fstat.o os9makdir.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
