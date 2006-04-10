@@ -281,7 +281,7 @@ error_code _os9_writedir(os9_path_id path, os9_dir_entry *dirent)
     error_code	ec = 0;
 
 
-    if (path->mode & FAM_DIR == 0)
+    if ((path->mode & FAM_DIR) == 0)
     {
         /* 1. Must be a directory. */
 		

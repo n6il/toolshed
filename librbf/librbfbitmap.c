@@ -34,7 +34,7 @@ int _os9_allbit(u_char *bitmap, int firstbit, int numbits)
             startbyte++;	/* and increase byte counter */
         }
 
-        bitmap[startbyte] |= (1 << 7 - startbit++);
+        bitmap[startbyte] |= (1 << (7 - startbit++));
     }
 
     return(ec);
@@ -65,7 +65,7 @@ int _os9_delbit(u_char *bitmap, int firstbit, int numbits)
             startbyte++;	/* and increase byte counter */
         }
         
-        bitmap[startbyte] &= ~(1 << 7 - startbit++);
+        bitmap[startbyte] &= ~(1 << (7 - startbit++));
     }
 
 	
@@ -89,7 +89,7 @@ int _os9_ckbit(u_char *bitmap, int bitnumber)
     startbit = bitnumber % 8;
 	
 
-    return bitmap[startbyte] & (1 << 7 - startbit);
+    return bitmap[startbyte] & (1 << (7 - startbit));
 }
 
 

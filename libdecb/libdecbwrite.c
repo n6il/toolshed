@@ -23,7 +23,7 @@ error_code _decb_write(decb_path_id path, void *buffer, u_int *size)
 
 	/* 1. Check the mode. */
 	
-	if (path->mode & FAM_WRITE == 0)
+	if ((path->mode & FAM_WRITE) == 0)
     {
         /* 1. Must be writable. */
 
@@ -180,7 +180,7 @@ error_code _decb_writedir(decb_path_id path, decb_dir_entry *dirent)
 
 	/* 1. Check the mode. */
 	
-	if (path->mode & FAM_WRITE == 0)
+	if ((path->mode & FAM_WRITE) == 0)
     {
         return EOS_BMODE;
     }

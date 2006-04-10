@@ -20,7 +20,7 @@ error_code _native_write(native_path_id path, void *buffer, u_int *size)
 
 	/* 1. Check the mode. */
 	
-	if (path->mode & FAM_DIR || path->mode & FAM_WRITE == 0)
+	if ((path->mode & FAM_DIR) != 0 || (path->mode & FAM_WRITE) == 0)
     {
         /* 1. Must be a directory. */
 

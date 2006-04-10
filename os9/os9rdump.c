@@ -218,7 +218,7 @@ void showhead(void)
 	
 	puts("\nModule name: ");
 
-	while(c=getc(in))
+	while((c = getc(in)))
 	{
 		putchar(c);
 	}
@@ -271,7 +271,7 @@ void showglobs(void)
 
 void getname(char *s)
 {
-	while (*s++ = getc(in));
+	while ((*s++ = getc(in)));
 	*s = '\0';
 	if(ferror(in)) ferr(fname);
 

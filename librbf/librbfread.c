@@ -26,7 +26,7 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
 
 	/* 1. Check the mode. */
 	
-    if (path->mode & FAM_DIR || path->mode & FAM_READ == 0)
+    if ((path->mode & FAM_DIR) != 0 || (path->mode & FAM_READ) == 0)
     {
         /* 1. Must use _os9_readdir. */
 		

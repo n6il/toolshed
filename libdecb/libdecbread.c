@@ -22,7 +22,7 @@ error_code _decb_read(decb_path_id path, void *buffer, u_int *size)
 
 	/* 1. Check the mode. */
 	
-    if (path->mode & FAM_READ == 0)
+    if ((path->mode & FAM_READ) == 0)
     {
         return EOS_FNA;
     }
@@ -173,7 +173,7 @@ error_code _decb_readln(decb_path_id path, void *buffer, u_int *size)
 	
 	/* 1. Check the mode. */
 	
-    if (path->mode & FAM_READ == 0)
+    if ((path->mode & FAM_READ) == 0)
     {
         return EOS_FNA;
     }
@@ -338,7 +338,7 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 
 	/* 1. Check the mode. */
 	
-	if (path->mode & FAM_READ == 0)
+	if ((path->mode & FAM_READ) == 0)
     {
         /* 1. Must be a directory. */
 
