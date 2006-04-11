@@ -12,6 +12,7 @@
 #include <io.h>
 #else
 #include <sys/time.h>
+#include <utime.h>
 #endif
 #include <sys/stat.h>
 
@@ -45,36 +46,31 @@ error_code _native_ss_attr(native_path_id path, int perms)
 error_code _native_ss_fd(native_path_id path, struct stat *statbuf)
 {
     error_code	ec = 0;
-#ifdef BDS
-	struct utimbuf tbuff;
+#if defined(__APPLE__) || defined(__MIGW32__)
+	struct timeval tbuff;
 #else
-	struct timeval tarray[2];
+	struct utimbuf tbuff;
 #endif
 
 	
 #if defined(__APPLE__)
-	tarray[0].tv_sec = statbuf->st_ctimespec.tv_sec;
-	tarray[1].tv_sec = statbuf->st_mtimespec.tv_sec;
+	tbuff[0].tv_sec = statbuf->st_ctimespec.tv_sec;
+	tbuff[1].tv_sec = statbuf->st_mtimespec.tv_sec;
 #elif defined(__MINGW32__)
-	tarray[0].tv_sec = statbuf->st_ctime;
-	tarray[1].tv_sec = statbuf->st_mtime;
-#elif defined(BDS)
+	tbuff[0].tv_sec = statbuf->st_ctime;
+	tbuff[1].tv_sec = statbuf->st_mtime;
+#else
 	tbuff.actime = statbuf->st_ctime;
 	tbuff.modtime = statbuf->st_mtime;
-#else
-	tarray[0].tv_sec = statbuf->st_ctim.tv_sec;
-	tarray[1].tv_sec = statbuf->st_mtim.tv_sec;
 #endif
 
 
 	/* 1. Update times. */
 
-#if defined(__APPLE__)
-	utimes(path->pathlist, tarray);
-#elif defined(BDS)
-	utime(path->pathlist, &tbuff);
+#if defined(__APPLE__) || defined(__MINGW__)
+	utimes(path->pathlist, tbuff);
 #else
-	utime(path->pathlist, tarray[0]);
+	utime(path->pathlist, &tbuff);
 #endif
 
 

@@ -24,6 +24,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.3  2006/04/11 01:32:45  boisy
+ * Fixed warnings under Linux
+ *
  * Revision 1.2  1996/07/20 22:31:13  cc
  * Merged in pwz's unixification (Sunos).
  *
@@ -34,11 +37,7 @@ static char *id = "$Id$";
  */
 
 # include "o2u.h"
-#ifndef SYSV
 # include <time.h>
-#else 
-# include <sys/time.h>
-#endif 
 
 # define YEAR_LENGTH(Y) (((Y) & 3) ? 365 : 366)
 

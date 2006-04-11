@@ -175,7 +175,7 @@ static int compare(u_char *buffer1, u_char *buffer2, size_t num_bytes, size_t to
                 different = 1;
                 show_header();
             }
-            printf("%08lx  %02x %02x\n", total_bytes + i, buffer1[i], buffer2[i]);
+            printf("%08x  %02x %02x\n", total_bytes + i, buffer1[i], buffer2[i]);
             dc++;
         }
     }

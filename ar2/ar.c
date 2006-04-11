@@ -24,6 +24,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.4  2006/04/11 01:32:45  boisy
+ * Fixed warnings under Linux
+ *
  * Revision 1.3  2005/09/16 23:46:35  boisy
  * ar2 now makes under OS X
  *
@@ -109,12 +112,12 @@ int		zflag = FALSE;			/* true if names come from stdin	*/
 
 char	*emalloc();
 
-main(argc, argv)
+int main(argc, argv)
 int		argc;
 char	**argv;
 	{
 	char	command, *p, *emalloc();
-	int		n, updating;
+	int		n;
 	FILE	*afp;
 
 #ifdef SYSV
@@ -165,13 +168,15 @@ char	**argv;
 			}
 
 	proc_cmd(command, afp);				/* process a command			*/
+
+	return 0;
 	}
 /*page*/
 /*
  * process command modifiers
  */
 
-proc_opt(p)
+int proc_opt(p)
 char	*p;
 	{
 	int		n;
@@ -532,7 +537,7 @@ int		updating;						/* TRUE if command is update	*/
 			}
 
 	if (zflag)
-		while (gets(buf))
+		while (fgets(buf, 80, stdin))
 			if (buf[0] != '\0')
 				found += stash_name(buf);
 

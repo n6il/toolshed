@@ -24,6 +24,9 @@ static char *id1 = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.3  2006/04/11 01:32:45  boisy
+ * Fixed warnings under Linux
+ *
  * Revision 1.2  1996/07/20 22:15:58  cc
  * Merged in pwz's unixification (Sunos).
  *
@@ -42,7 +45,9 @@ static char *id1 = "$Id$";
 # define  strucmp strcmp
 #endif
 
-extern int   errno;
+#include <errno.h>
+
+/* extern int   errno; */
 
 #include "arerrs.h"
 
