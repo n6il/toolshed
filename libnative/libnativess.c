@@ -46,17 +46,14 @@ error_code _native_ss_attr(native_path_id path, int perms)
 error_code _native_ss_fd(native_path_id path, struct stat *statbuf)
 {
     error_code	ec = 0;
-#if defined(__APPLE__) || defined(__MIGW32__)
+#if defined(__MIGW32__)
 	struct timeval tbuff;
 #else
 	struct utimbuf tbuff;
 #endif
 
 	
-#if defined(__APPLE__)
-	tbuff[0].tv_sec = statbuf->st_ctimespec.tv_sec;
-	tbuff[1].tv_sec = statbuf->st_mtimespec.tv_sec;
-#elif defined(__MINGW32__)
+#if defined(__MINGW32__)
 	tbuff[0].tv_sec = statbuf->st_ctime;
 	tbuff[1].tv_sec = statbuf->st_mtime;
 #else
@@ -67,7 +64,7 @@ error_code _native_ss_fd(native_path_id path, struct stat *statbuf)
 
 	/* 1. Update times. */
 
-#if defined(__APPLE__) || defined(__MINGW__)
+#if defined(__MINGW__)
 	utimes(path->pathlist, tbuff);
 #else
 	utime(path->pathlist, &tbuff);
@@ -76,7 +73,7 @@ error_code _native_ss_fd(native_path_id path, struct stat *statbuf)
 
 	/* 2. Update permissions. */
 
-#if defined(__APPLE__) || defined(__MINGW32__)
+#if defined(__MINGW32__)
 	chmod(path->pathlist, statbuf->st_mode);
 #else
 	chmod(path->pathlist, statbuf->st_mode);

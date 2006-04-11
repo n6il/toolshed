@@ -175,8 +175,12 @@ static int compare(u_char *buffer1, u_char *buffer2, size_t num_bytes, size_t to
                 different = 1;
                 show_header();
             }
-            printf("%08x  %02x %02x\n", total_bytes + i, buffer1[i], buffer2[i]);
-            dc++;
+#ifdef __APPLE__
+			printf("%08lx  %02x %02x\n", total_bytes + i, buffer1[i], buffer2[i]);
+#else
+			printf("%08x  %02x %02x\n", total_bytes + i, buffer1[i], buffer2[i]);
+#endif
+			dc++;
         }
     }
 
