@@ -937,3 +937,4 @@ char *get_external_ref( int pc, unsigned char flag_on, unsigned char flag_off, u
 
 	return strcpy( symbols[pointer], "" );
 }
+

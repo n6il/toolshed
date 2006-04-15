@@ -580,14 +580,14 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 
 			/* Create '..' */
 			strcpy((char *)d->name, "..");
-			StringToOS9Name(d->name);
+			CStringToOS9String(d->name);
 			_int3(int3(s0.dd_dir), d->lsn);
 
 			/* Create '.' */
 			d++;
 
 			strcpy((char *)d->name, ".");
-			StringToOS9Name(d->name);
+			CStringToOS9String(d->name);
 			_int3(int3(s0.dd_dir), d->lsn);
 		}
 

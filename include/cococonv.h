@@ -12,13 +12,13 @@
 #include <cocotypes.h>
 
 char *UnixToOS9Time(time_t currentTime, char *os9time);
-u_char *StringToOS9Name(u_char *f);
-int OS9NameLen(u_char *f);
-u_char *OS9NameToString(u_char *f);
+u_char *CStringToOS9String(u_char *f);
+int OS9Strlen(u_char *f);
+u_char *OS9StringToCString(u_char *f);
 int UnixToCoCoError(int ec);
-
-void DECBNameToString(u_char *filename, u_char *ext, u_char *string);
+void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize);
 void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize);
+void DECBStringToCString(u_char *filename, u_char *ext, u_char *string);
 
 typedef enum _EOL_Type
 {
@@ -26,3 +26,4 @@ typedef enum _EOL_Type
 } EOL_Type;
 
 #endif
+

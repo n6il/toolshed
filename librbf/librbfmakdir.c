@@ -54,7 +54,7 @@ error_code _os9_makdir( char *pathlist )
 				memset(&newEntry, 0, sizeof(os9_dir_entry));
 	
 				strcpy((char *)newEntry.name, "..");
-				StringToOS9Name(newEntry.name);
+				CStringToOS9String(newEntry.name);
 				_int3(parentLSN, newEntry.lsn);
 	
 				ec = _os9_writedir(dir_path, &newEntry);
@@ -66,7 +66,7 @@ error_code _os9_makdir( char *pathlist )
 					memset(&newEntry, 0, sizeof(os9_dir_entry));
 	
 					strcpy((char *)newEntry.name, ".") ;
-					StringToOS9Name( newEntry.name);
+					CStringToOS9String( newEntry.name);
 					_int3(dir_path->pl_fd_lsn, newEntry.lsn);
 
 					ec = _os9_writedir(dir_path, &newEntry);

@@ -152,8 +152,8 @@ static int do_modbust(char **argv, char *filename)
 				size -= 4;
 				ec = _os9_read(path, &module[4], &size);
 				nameoffset = int2(&module[4]);
-				memcpy(name, &module[nameoffset], OS9NameLen(&module[nameoffset]));
-				OS9NameToString((u_char *)name);
+				memcpy(name, &module[nameoffset], OS9Strlen(&module[nameoffset]));
+				OS9StringToCString((u_char *)name);
 				printf("Busting module %s...\n", name);
 
 				ec = _os9_create(&path2, name, FAM_WRITE, FAP_READ | FAP_WRITE);

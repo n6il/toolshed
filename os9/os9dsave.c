@@ -162,7 +162,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 		os9_path_id	filePath;
 		int		isdir = 1;
 
-		OS9NameToString(dirent.name);
+		OS9StringToCString(dirent.name);
 
 		sprintf(sourcePathList, "%s/%s", source, dirent.name);
 

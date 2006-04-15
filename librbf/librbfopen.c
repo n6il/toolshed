@@ -185,7 +185,7 @@ aa:
 		
         memset( &newDEntry, 0, sizeof( os9_dir_entry ) );
         strcpy( (char *)&(newDEntry.name), filename );
-        StringToOS9Name( (u_char *)&(newDEntry.name) );
+        CStringToOS9String( (u_char *)&(newDEntry.name) );
         _int3( newLSN, newDEntry.lsn );
 
         _os9_seek( parent_path, 0, SEEK_SET );
@@ -403,7 +403,7 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 			
             strcpy(q, (char *)diskent.name);
 
-			if (strcasecmp((char *)p, (char *)OS9NameToString((u_char *)q)) == 0)
+			if (strcasecmp((char *)p, (char *)OS9StringToCString((u_char *)q)) == 0)
             {
                 (*path)->pl_fd_lsn = int3(diskent.lsn);
                 (*path)->filepos = 0;
@@ -754,7 +754,7 @@ error_code _os9_file_exists( os9_path_id folder_path, char *filename )
 		}
 		
 
-        if (strcasecmp(filename, (char *)OS9NameToString(dentry.name)) == 0)
+        if (strcasecmp(filename, (char *)OS9StringToCString(dentry.name)) == 0)
 		{
             return EOS_FAE;
 		}

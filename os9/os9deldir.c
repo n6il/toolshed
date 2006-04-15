@@ -155,7 +155,7 @@ static int do_deldir(char **argv, char *path, int interaction)
         if (ec != 0)
             break;
 
-        OS9NameToString(dentry.name);
+        OS9StringToCString(dentry.name);
 		
         /* Skip over dot directories and empty entries. */
         if (dentry.name[0] == '\0' )

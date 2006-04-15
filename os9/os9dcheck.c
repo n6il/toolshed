@@ -173,7 +173,7 @@ static int do_dcheck(char **argv, char *p)
 		return(ec);
 	}
 
-	OS9NameToString( os9_path->lsn0->dd_nam );
+	OS9StringToCString( os9_path->lsn0->dd_nam );
 	printf("Volume - '%s' in file: %s\n", os9_path->lsn0->dd_nam, p );
 	printf("$%4.4X bytes in allocation map\n", int2(os9_path->lsn0->dd_map) );
 	
@@ -405,7 +405,7 @@ static error_code BuildSecondaryAllocationMap( os9_path_id os9_path, int dir_lsn
 						continue;
 					}
 
-					OS9NameToString(dEnt[k].name);
+					OS9StringToCString(dEnt[k].name);
 					
 					if (strcmp((char *)dEnt[k].name, ".") == 0)
 					{

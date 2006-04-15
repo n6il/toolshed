@@ -69,14 +69,14 @@ error_code _os9_rename( char *pathlist, char *new_name )
 		
         strncpy(fname, (char *)dentry.name, 29);
 		
-        OS9NameToString((u_char *)fname);
+        OS9StringToCString((u_char *)fname);
 		
         if( !strcasecmp( fname, filename ) )
         {
             /* Found the source, rename it */
 			
             strncpy((char *)dentry.name, new_name, 29 );
-            StringToOS9Name( dentry.name );
+            OS9StringToCString( dentry.name );
 			
             /* Back up file pointer in preparation of updating directory entry */
             _os9_seek( parent_path, -(int)sizeof(dentry), SEEK_CUR );
