@@ -196,6 +196,7 @@ error_code _os9_readdir(os9_path_id path, os9_dir_entry *dirent)
 		/* 1. Temporarily turn off FAM_DIR so that read won't fail. */
 		
 		path->mode &= ~FAM_DIR;
+		path->mode |= FAM_READ;
 		
         ec = _os9_read(path, dirent, &size);
 
