@@ -76,7 +76,7 @@ error_code _os9_rename( char *pathlist, char *new_name )
             /* Found the source, rename it */
 			
             strncpy((char *)dentry.name, new_name, 29 );
-            OS9StringToCString( dentry.name );
+            CStringToOS9String( dentry.name );
 			
             /* Back up file pointer in preparation of updating directory entry */
             _os9_seek( parent_path, -(int)sizeof(dentry), SEEK_CUR );
