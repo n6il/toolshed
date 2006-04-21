@@ -201,7 +201,7 @@ aa:
 			
 			/* 1. Set up path temporarily as a directory so _os9_readdir won't fail. */
 
-			parent_path->mode |= FAM_DIR;
+			parent_path->mode |= FAM_DIR | FAM_READ;
 	
             ec = _os9_readdir(parent_path, &dentry);
 			
@@ -387,7 +387,7 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 			
 			/* 1. Set up path temporarily as a directory so _os9_readdir won't fail. */
 			
-			(*path)->mode |= FAM_DIR;
+			(*path)->mode |= FAM_DIR | FAM_READ;
 	
             ec = _os9_readdir(*path, &diskent);
 			
@@ -746,8 +746,12 @@ error_code _os9_file_exists( os9_path_id folder_path, char *filename )
 	
     while (_os9_gs_eof(folder_path) == 0)
     {
-        ec = _os9_readdir(folder_path, &dentry);
+		int mode = folder_path->mode;
 
+		folder_path->mode |= FAM_DIR | FAM_READ;		
+        ec = _os9_readdir(folder_path, &dentry);
+		folder_path->mode = mode;
+		
         if (ec != 0)
 		{
             return ec;

@@ -11,8 +11,7 @@
 #include "os9path.h"
 
 
-static error_code _raw_write(os9_path_id path, void *buffer, u_int *size);
-int _os9_extendSegList( os9_path_id path, Fd_seg segptr, int *delta );
+static int _os9_extendSegList(os9_path_id path, Fd_seg segptr, int *delta);
 
 
 error_code _os9_write(os9_path_id path, void *buffer, u_int *size)
@@ -32,7 +31,7 @@ error_code _os9_write(os9_path_id path, void *buffer, u_int *size)
 	
     if (path->israw == 1)
     {
-        ec = _raw_write(path, buffer, size);
+		*size = fwrite(buffer, 1, *size, path->fd);
     }
     else
     {
@@ -186,7 +185,7 @@ error_code _os9_write(os9_path_id path, void *buffer, u_int *size)
 	
 	
         /* 11. TODO - Update modification date/time */
-	
+		
 			
         /* 12. Write updated file descriptor back to image file */
 
@@ -194,15 +193,14 @@ error_code _os9_write(os9_path_id path, void *buffer, u_int *size)
         fwrite(&fd_sector, 1, sizeof(fd_stats), path->fd);
     }
 
-
     return ec;
 }
 
 
 
-int _os9_extendSegList(os9_path_id path, Fd_seg segptr, int *delta)
+static int _os9_extendSegList(os9_path_id path, Fd_seg segptr, int *delta)
 {
-    error_code	ec;
+    error_code	ec = 0;
     int		i=0, newNum, newLSN;
 	
     /* Is segment list empty */
@@ -221,7 +219,7 @@ int _os9_extendSegList(os9_path_id path, Fd_seg segptr, int *delta)
 
         if (i == NUM_SEGS)
         {
-            return(EOS_SF);
+            return EOS_SF;
         }
 			
         /* Add a cluster to segment length */
@@ -241,7 +239,7 @@ int _os9_extendSegList(os9_path_id path, Fd_seg segptr, int *delta)
                 _int2(newNum, segptr[i].num);
 
                 *delta = path->cs;
-                return(0);
+                return 0;
             }
         }
 
@@ -256,22 +254,23 @@ int _os9_extendSegList(os9_path_id path, Fd_seg segptr, int *delta)
 		
         /* Get new segment. Function will also allocate the sector */
         ec =  _os9_getSASSegment(path, &cluster, &size);
-        if (ec != 0)
+        if (ec == 0)
         {
-            return(EOS_DF);
+	        _int3(cluster, segptr[i].lsn);
+    	    _int2(size, segptr[i].num);
+        	*delta = path->bps * size;
         }
-			
-        _int3(cluster, segptr[i].lsn);
-        _int2(size, segptr[i].num);
-        *delta = path->bps * size;
-        return(0);
+		else
+		{
+			ec = EOS_DF;
+		}
     }
 	else
 	{
-		return(EOS_SF);
+		ec = EOS_SF;
 	}
 
-//	return(EOS_DF);
+	return ec;
 }
 
 
@@ -280,40 +279,20 @@ error_code _os9_writedir(os9_path_id path, os9_dir_entry *dirent)
 {
     error_code	ec = 0;
 
-
     if ((path->mode & FAM_DIR) == 0)
     {
         /* 1. Must be a directory. */
-		
         ec = EOS_BMODE;
     }
 	else
     {
         u_int size = sizeof(os9_dir_entry);
 
-
 		/* 1. Temporarily turn off FAM_DIR so that read won't fail. */
-		
 		path->mode &= ~FAM_DIR;
-		
 		ec = _os9_write(path, dirent, &size);
-
 		path->mode |= FAM_DIR;
     }
-	
 
     return ec;
-}
-
-
-
-static error_code _raw_write(os9_path_id path, void *buffer, u_int *size)
-{
-    error_code	ec = 0;
-    size_t ret_size;
-
-    ret_size = fwrite(buffer, 1, *size, path->fd);
-    *size = ret_size;
-
-    return(ec);
 }
