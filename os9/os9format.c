@@ -331,7 +331,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	/* so we have to place the root directory beyond this */
 	if(isDragon)
 	{
-		_int3(18,s0.dd_dir);
+		_int3(19,s0.dd_dir);
 	}
 	else
 	{
