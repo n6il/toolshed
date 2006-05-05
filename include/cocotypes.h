@@ -7,7 +7,7 @@
 #define	_COCOTYPES_H
 
 
-#ifndef CYGWIN
+#if !defined(CYGWIN) && !defined(sun)
 #include <stdint.h>
 #endif
 
@@ -18,7 +18,7 @@
 typedef unsigned char u_char;
 typedef unsigned int u_int;
 #else
-#if !defined(__u_char_defined) && !defined(__APPLE__)
+#if !defined(__u_char_defined) && !defined(__APPLE__) && !defined(sun)
 typedef unsigned char u_char;
 typedef unsigned int u_int;
 #endif
