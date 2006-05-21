@@ -562,7 +562,18 @@ static void NativeToCoCo(char *buffer, int size, char **newBuffer, u_int *newSiz
             break;
 
         default:
-            return;
+            /* No eols, binary copy */
+
+            *newBuffer = (char *)malloc(size);
+            if (*newBuffer == NULL)
+            {
+                return;
+            }
+
+            memcpy(*newBuffer, buffer, size);
+
+            *newSize = size;
+
     }
     
     

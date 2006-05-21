@@ -488,7 +488,17 @@ static void NativeToOS9(char *buffer, int size, char **newBuffer, int *newSize)
             break;
 
         default:
-            return;
+            /* No eols, binary copy */
+
+            *newBuffer = (char *)malloc(size);
+            if (*newBuffer == NULL)
+            {
+                return;
+            }
+            
+            memcpy(*newBuffer, buffer, size);
+            
+            *newSize = size;
     }
     
     
