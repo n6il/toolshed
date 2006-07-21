@@ -1,16 +1,99 @@
-/*
- *  tocgen.c
- *  
+/********************************************************************
+ * tocgen.c - Sierra table of contents generator
  *
- *  Created by Boisy Pitre on 7/21/06.
- *  Copyright 2006 __MyCompanyName__. All rights reserved.
- *
- */
-
+ * $Id$
+ ********************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <cocopath.h>
+#include <util.h>
+
+
+static int do_tocgen(char *infile, char *outfile, int quiet);
+
+/* Help message */
+static char *helpMessage[] =
+{
+    "Syntax: tocgen {[<opts>]} {<infile>} {[<outfile>]} {[<opts>]}\n",
+    "Usage:  Table of contents generator for Sierra AGI games.\n",
+    "Options:\n",
+    "     -q        quiet mode (suppress output)\n",
+    NULL
+};
+
+
+int main(int argc, char *argv[])
+{
+    char *infile = NULL, *outfile = NULL, *p;
+    int i;
+    int quiet = 0;
+
+    /* walk command line for options */
+    for (i = 1; i < argc; i++)
+    {
+        if (argv[i][0] == '-')
+        {
+            for (p = &argv[i][1]; *p != '\0'; p++)
+            {
+                switch (*p)
+                {
+                    case 'q':
+                        quiet = 1;
+                        break;
+                    case 'h':
+                        case '?':
+                        show_help(helpMessage);
+                        return(0);
+                    default:
+                        fprintf(stderr, "%s: unknown option '%c'\n", argv[0], *p);
+                        return(0);
+                }
+            }
+        }
+    }
+
+    /* walk command line for pathnames */
+    for (i = 1; i < argc; i++)
+    {
+        if (argv[i][0] == '-')
+        {
+            continue;
+        }
+        else
+        {
+			if (infile == NULL)
+			{
+				infile = argv[i];
+			}
+			else if (outfile == NULL)
+			{
+				outfile = argv[i];
+			}
+			else
+			{
+				show_help(helpMessage);
+				return(0);
+			}
+
+
+        }
+    }
+
+    if (infile == NULL)
+    {
+        show_help(helpMessage);
+        return(0);
+    }
+	
+	if (outfile == NULL)
+	{
+		outfile = "tOC";
+	}
+
+	return do_tocgen(infile, outfile, quiet);
+
+}
 
 
 struct volLine
@@ -22,7 +105,7 @@ struct volLine
 };
 
 
-int get_num(char **line)
+static int get_num(char **line)
 {
 	char tchar;
 	int num;
@@ -42,7 +125,7 @@ int get_num(char **line)
 }
 
 
-char *skipspace(char *line)
+static char *skipspace(char *line)
 {
 	while (isspace(*line)) line++;
 	
@@ -50,7 +133,7 @@ char *skipspace(char *line)
 }
 
 
-int getVol(char **line)
+static int getVol(char **line)
 {
 	if (tolower(**line) != 'v')
 	{
@@ -62,7 +145,7 @@ int getVol(char **line)
 }
 
 
-int parse_line(char *line, struct volLine *v)
+static int parse_line(char *line, struct volLine *v)
 {
 	v->vcount = 0;
 	
@@ -91,7 +174,7 @@ int parse_line(char *line, struct volLine *v)
 }
 
 
-int createToc(char *outfile, struct volLine *volArray, int volCount)
+static int createToc(char *outfile, struct volLine *volArray, int volCount, int quiet)
 {	
 	int i, j;
 	coco_path_id fp;
@@ -124,7 +207,11 @@ int createToc(char *outfile, struct volLine *volArray, int volCount)
 	
 	for (i = 0; i < volCount; i++)
 	{
-		printf("Disk %d, Side %d, ", volArray->disk, volArray->side);
+		if (quiet == 0)
+		{
+			printf("Disk %d, Side %d, ", volArray->disk, volArray->side);
+		}
+		
 		c = volArray->disk;
 		_coco_write(fp, &c, &writesize);
 		c = volArray->side;
@@ -132,7 +219,11 @@ int createToc(char *outfile, struct volLine *volArray, int volCount)
 		
 		for (j = 0; j < volArray->vcount; j++)
 		{
-			printf("[%d] ", volArray->vols[j]);
+			if (quiet == 0)
+			{
+				printf("[%d] ", volArray->vols[j]);
+			}
+			
 			if (j == volArray->vcount - 1)
 			{
 				volArray->vols[j] += 128;
@@ -140,8 +231,11 @@ int createToc(char *outfile, struct volLine *volArray, int volCount)
 			c = volArray->vols[j];
 			_coco_write(fp, &c, &writesize);
 		}
-		printf("\n");
-		
+		if (quiet == 0)
+		{
+			printf("\n");
+		}
+
 		volArray++;
 	}
 	
@@ -151,7 +245,7 @@ int createToc(char *outfile, struct volLine *volArray, int volCount)
 }
 
 
-int main(int argc, char **argv)
+static int do_tocgen(char *infile, char *outfile, int quiet)
 {
     coco_path_id fp;
 	char line[256];
@@ -160,17 +254,11 @@ int main(int argc, char **argv)
 	int linecount = 0, ec;
 	unsigned int size;
 	
-	if (argc < 3)
-	{
-		fprintf(stderr, "Usage: tocgen <infile> <outfile>\n");
-		return 1;
-	}
-	
-	ec = _coco_open(&fp, argv[1], FAM_READ);
+	ec = _coco_open(&fp, infile, FAM_READ);
 	
 	if (ec != 0)
 	{
-		fprintf(stderr, "error opening %s\n", argv[1]);
+		fprintf(stderr, "error opening %s\n", infile);
 		return 1;
 	}
 
@@ -194,11 +282,11 @@ int main(int argc, char **argv)
 
 	
 	/* create tOC file */
-	if (createToc(argv[2], volArray, linecount) == -1)
+	if (createToc(outfile, volArray, linecount, quiet) == -1)
 	{
 		fprintf(stderr, "tOC not created due to error\n");
 	}
-	else
+	else if (quiet == 0)
 	{
 		printf("tOC created successfully!\n");
 	}
