@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <cocopath.h>
 
 
 struct volLine
@@ -80,7 +81,7 @@ int parse_line(char *line, struct volLine *v)
 	line++;
 	v->side = get_num(&line);
 	
-	while (*line != '\n')
+	while (*line != '\n' && *line != '\r')
 	{
 		line = skipspace(line);
 		v->vols[v->vcount++] = getVol(&line);
@@ -90,29 +91,33 @@ int parse_line(char *line, struct volLine *v)
 }
 
 
-int createToc(struct volLine *volArray, int volCount)
+int createToc(char *outfile, struct volLine *volArray, int volCount)
 {	
 	int i, j;
-	FILE *fp;
+	coco_path_id fp;
 	struct volLine *v = &volArray[0];
-	int size = 0;
+	int size = 0, ec;
+	unsigned int writesize = 1;
+	char c;
 	
-	fp = fopen("tOC", "w+");
-	
-	if (fp == NULL)
+	ec = _coco_create(&fp, outfile, FAM_WRITE, FAP_PREAD | FAP_READ | FAP_WRITE);
+	if (ec != 0)
 	{
 		return -1;
 	}
 
 	// Write out header
-	fputc(volCount, fp);
+	c = volCount;
+	_coco_write(fp, &c, &writesize);
 	
 	size = (volCount * 2);
 	
 	for (i = 0; i < volCount; i++)
 	{
-		fputc(0, fp);
-		fputc(size, fp);
+		c = '\0';
+		_coco_write(fp, &c, &writesize);
+		c = size;
+		_coco_write(fp, &c, &writesize);
 		size += v->vcount + 2;
 		v++;
 	}
@@ -120,8 +125,10 @@ int createToc(struct volLine *volArray, int volCount)
 	for (i = 0; i < volCount; i++)
 	{
 		printf("Disk %d, Side %d, ", volArray->disk, volArray->side);
-		fputc(volArray->disk, fp);
-		fputc(volArray->side, fp);
+		c = volArray->disk;
+		_coco_write(fp, &c, &writesize);
+		c = volArray->side;
+		_coco_write(fp, &c, &writesize);
 		
 		for (j = 0; j < volArray->vcount; j++)
 		{
@@ -130,14 +137,15 @@ int createToc(struct volLine *volArray, int volCount)
 			{
 				volArray->vols[j] += 128;
 			}
-			fputc(volArray->vols[j], fp);
+			c = volArray->vols[j];
+			_coco_write(fp, &c, &writesize);
 		}
 		printf("\n");
 		
 		volArray++;
 	}
 	
-	fclose(fp);
+	_coco_close(fp);
 
 	return 0;
 }
@@ -145,29 +153,32 @@ int createToc(struct volLine *volArray, int volCount)
 
 int main(int argc, char **argv)
 {
-	FILE *fp;
+    coco_path_id fp;
 	char line[256];
 	struct volLine volArray[256];
 	struct volLine *v = &volArray[0];
-	int linecount = 0;
+	int linecount = 0, ec;
+	unsigned int size;
 	
-	if (argc < 2)
+	if (argc < 3)
 	{
-		fprintf(stderr, "Usage: tocgen <filename>\n");
+		fprintf(stderr, "Usage: tocgen <infile> <outfile>\n");
 		return 1;
 	}
 	
-	fp = fopen(argv[1], "r");
+	ec = _coco_open(&fp, argv[1], FAM_READ);
 	
-	if (fp == NULL)
+	if (ec != 0)
 	{
 		fprintf(stderr, "error opening %s\n", argv[1]);
 		return 1;
 	}
-	
 
-	while (fgets(line, 255, fp) != 0)
+
+	size = 256;
+	while (_coco_readln(fp, line, &size) == 0)
 	{
+		size = 256;
 		linecount++;
 		
 		if (parse_line(line, v) == -1)
@@ -179,10 +190,11 @@ int main(int argc, char **argv)
 		v++;
 	}
 
-	fclose(fp);
+	_coco_close(fp);
+
 	
 	/* create tOC file */
-	if (createToc(volArray, linecount) == -1)
+	if (createToc(argv[2], volArray, linecount) == -1)
 	{
 		fprintf(stderr, "tOC not created due to error\n");
 	}
