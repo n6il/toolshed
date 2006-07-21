@@ -157,8 +157,10 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 	_os9_readdir(sourcePath, &dirent);
 	_os9_readdir(sourcePath, &dirent);
 	
-	while (_os9_readdir(sourcePath, &dirent) == 0 && dirent.name[0] != '\0')
+	while (_os9_readdir(sourcePath, &dirent) == 0)
 	{
+		if (dirent.name[0] != '\0')
+		{
 		os9_path_id	filePath;
 		int		isdir = 1;
 
@@ -246,6 +248,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				DoFunc(os9copy, command);
 			}
 		}
+	}
 	}
 
 	_os9_close(sourcePath);
