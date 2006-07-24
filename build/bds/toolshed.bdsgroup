@@ -8,17 +8,7 @@
 			<Option Name="GUID">{37E2C52F-8402-4CAA-A184-D59AF28F45B5}</Option>
 		</Option>
 	</PersonalityInfo>
-	<Default.Personality>  
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <Projects>
+	<Default.Personality>  <Projects>
       <Projects Name="libdecb.lib">libdecb.bdsproj</Projects>
       <Projects Name="librbf.lib">librbf.bdsproj</Projects>
       <Projects Name="libcoco.lib">libcoco.bdsproj</Projects>
@@ -35,6 +25,22 @@
     </Projects>
     <Dependencies>
       <Dependency GUID="{17A05C05-D1ED-4748-8536-73CA637F813A}">
+        <Dependency GUID="{3938B61F-A6F2-4D3C-9C8C-3C0260F6FA31}"/>
+        <Dependency GUID="{8462F2F1-FD42-4F8A-B203-4E6671D07C05}"/>
+        <Dependency GUID="{48DB889B-44E7-415D-B9A6-A4C229494C33}"/>
+        <Dependency GUID="{E1E5E50E-4811-4015-9A8B-2A285A307C4A}"/>
+        <Dependency GUID="{7018AA1E-BA16-4A6A-9F15-4E395D597D76}"/>
+        <Dependency GUID="{B6AEE58C-65C0-4529-BA33-542B2184C6BF}"/>
+      </Dependency>
+      <Dependency GUID="{4CF5BCDB-030F-4B90-8307-9C185A79BE78}">
+        <Dependency GUID="{3938B61F-A6F2-4D3C-9C8C-3C0260F6FA31}"/>
+        <Dependency GUID="{8462F2F1-FD42-4F8A-B203-4E6671D07C05}"/>
+        <Dependency GUID="{48DB889B-44E7-415D-B9A6-A4C229494C33}"/>
+        <Dependency GUID="{E1E5E50E-4811-4015-9A8B-2A285A307C4A}"/>
+        <Dependency GUID="{7018AA1E-BA16-4A6A-9F15-4E395D597D76}"/>
+        <Dependency GUID="{B6AEE58C-65C0-4529-BA33-542B2184C6BF}"/>
+      </Dependency>
+      <Dependency GUID="{19C4813A-19B4-4280-8521-00313178AF03}">
         <Dependency GUID="{3938B61F-A6F2-4D3C-9C8C-3C0260F6FA31}"/>
         <Dependency GUID="{8462F2F1-FD42-4F8A-B203-4E6671D07C05}"/>
         <Dependency GUID="{48DB889B-44E7-415D-B9A6-A4C229494C33}"/>
