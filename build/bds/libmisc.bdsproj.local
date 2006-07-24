@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2006/05/27 20:38:10.161.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\Project1.bdsproj=C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\misc.bdsproj</Transaction>
+    <Transaction>2006/05/27 20:42:59.484.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\misc.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\misc.bdsproj</Transaction>
+    <Transaction>2006/05/27 22:52:44.011.bdsproj,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\misc.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\libmisc.bdsproj</Transaction>
+  </Transactions>
+</BorlandProject>

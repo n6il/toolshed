@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2006/05/27 20:35:18.543.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\Project1.bdsproj=C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\coco.bdsproj</Transaction>
+    <Transaction>2006/05/27 20:43:43.060.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\coco.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\coco.bdsproj</Transaction>
+    <Transaction>2006/05/27 22:52:25.935.bdsproj,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\coco.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\libcoco.bdsproj</Transaction>
+  </Transactions>
+</BorlandProject>

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2006/07/24 09:19:33.286.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\Project2.bdsproj=C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\rlinkcli.bdsproj</Transaction>
+    <Transaction>2006/07/24 09:19:52.454.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\rlinkcli.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\rlinkcli.bdsproj</Transaction>
+    <Transaction>2006/07/24 09:25:16.993.lib,C:\Program Files\Borland\BDS\4.0\lib\ws2_32.lib=</Transaction>
+  </Transactions>
+</BorlandProject>
