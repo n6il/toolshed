@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{37E2C52F-8402-4CAA-A184-D59AF28F45B5}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <Projects>
+      <Projects Name="libdecb.lib">libdecb.bdsproj</Projects>
+      <Projects Name="librbf.lib">librbf.bdsproj</Projects>
+      <Projects Name="libcoco.lib">libcoco.bdsproj</Projects>
+      <Projects Name="libnative.lib">libnative.bdsproj</Projects>
+      <Projects Name="libmisc.lib">libmisc.bdsproj</Projects>
+      <Projects Name="libsys.lib">libsys.bdsproj</Projects>
+      <Projects Name="decbcli.exe">decbcli.bdsproj</Projects>
+      <Projects Name="os9cli.exe">os9cli.bdsproj</Projects>
+      <Projects Name="mamoucli.exe">mamoucli.bdsproj</Projects>
+      <Projects Name="ar2.exe">ar2.bdsproj</Projects>
+      <Projects Name="rlinkcli.exe">rlinkcli.bdsproj</Projects>
+      <Projects Name="rmacli.exe">rmacli.bdsproj</Projects>
+      <Projects Name="Targets">libdecb.lib librbf.lib libcoco.lib libnative.lib libmisc.lib libsys.lib decbcli.exe os9cli.exe mamoucli.exe ar2.exe rlinkcli.exe rmacli.exe</Projects>
+    </Projects>
+    <Dependencies>
+      <Dependency GUID="{17A05C05-D1ED-4748-8536-73CA637F813A}">
+        <Dependency GUID="{3938B61F-A6F2-4D3C-9C8C-3C0260F6FA31}"/>
+        <Dependency GUID="{8462F2F1-FD42-4F8A-B203-4E6671D07C05}"/>
+        <Dependency GUID="{48DB889B-44E7-415D-B9A6-A4C229494C33}"/>
+        <Dependency GUID="{E1E5E50E-4811-4015-9A8B-2A285A307C4A}"/>
+        <Dependency GUID="{7018AA1E-BA16-4A6A-9F15-4E395D597D76}"/>
+        <Dependency GUID="{B6AEE58C-65C0-4529-BA33-542B2184C6BF}"/>
+      </Dependency>
+    </Dependencies>
+  </Default.Personality>
+	<StarTeamAssociation></StarTeamAssociation>
+	<StarTeamNonRelativeFiles></StarTeamNonRelativeFiles>
+</BorlandProject>

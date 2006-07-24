@@ -12,7 +12,7 @@
 
 #define BUFFSIZ	256
 
-static int dumpchunk;
+static u_int dumpchunk;
 
 static void dump(u_char *buffer, size_t num_bytes, int format);
 static void dump_line(u_char *buffer, int count, int format);

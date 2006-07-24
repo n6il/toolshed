@@ -27,9 +27,22 @@ extern unsigned t_code,
                 t_udpd,
                 t_stac,
                 t_dt,
-                t_dd;
+				t_dd;
 extern int      dup_fnd,
                 dupfnd;
+
+#ifdef BDS
+unsigned short int htons(unsigned short int host)
+{
+	return ((host & 0xff00) >> 8) + ((host & 0x00ff) << 8);
+}
+
+unsigned short int ntohs(unsigned short int host)
+{
+	return ((host & 0xff00) >> 8) + ((host & 0x00ff) << 8);
+}
+#endif
+
 
 int             pass1a(ob_start, rfiles, rfile_count, B09EntPt)
 	struct ob_files **ob_start;
@@ -235,3 +248,4 @@ int             pass1a(ob_start, rfiles, rfile_count, B09EntPt)
 
 	return 0;
 }
+
