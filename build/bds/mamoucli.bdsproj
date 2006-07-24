@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-  <PersonalityInfo>
-    <Option>
-      <Option Name="Personality">CPlusPlusBuilder.Personality</Option>
-      <Option Name="ProjectType">CppConsoleApplication</Option>
-      <Option Name="Version">1.0</Option>
-      <Option Name="GUID">{19C4813A-19B4-4280-8521-00313178AF03}</Option>
-    </Option>
-  </PersonalityInfo>
-  <CPlusPlusBuilder.Personality>
-    <Source>
-      <Source Name="MainSource">mamoucli.bpf</Source>
-    </Source>
-    <BCBPROJECT>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">CPlusPlusBuilder.Personality</Option>
+			<Option Name="ProjectType">CppConsoleApplication</Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{19C4813A-19B4-4280-8521-00313178AF03}</Option>
+		</Option>
+	</PersonalityInfo>
+	<CPlusPlusBuilder.Personality>
+		<Source>
+			<Source Name="MainSource">mamoucli.bpf</Source>
+		</Source>
+		<BCBPROJECT>
       <project version="10.0">
         <property category="build.config" name="active" value="0"/>
         <property category="build.config" name="count" value="1"/>
@@ -230,12 +230,11 @@
         </Linker>
       </IDEOPTIONS>
     </BCBPROJECT>
-    <buildevents>
+		<buildevents>
       <buildevent file="mamoucli.bdsproj">
-        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">echo $(OUTPUTDIR)
-echo $(OUTPUTPATH)
+        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" "$(OUTPUTDIR)..\mamou.exe
 </postcompile>
       </buildevent>
     </buildevents>
-  </CPlusPlusBuilder.Personality>
+	</CPlusPlusBuilder.Personality>
 </BorlandProject>

@@ -279,6 +279,11 @@
         </Linker>
       </IDEOPTIONS>
     </BCBPROJECT>
-		<buildevents/>
+		<buildevents>
+      <buildevent file="decbcli.bdsproj">
+        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" "$(OUTPUTDIR)..\decb.exe
+</postcompile>
+      </buildevent>
+    </buildevents>
 	</CPlusPlusBuilder.Personality>
 </BorlandProject>

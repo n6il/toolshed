@@ -299,7 +299,7 @@ void
 				while (OptBPtr > d0791)
 				{
 					--OptBPtr;
-					RefCreat(reg, OptBPtr->ETyp, OptBPtr->RAddr);
+					RefCreat(reg, OptBPtr->ETyp, (int)OptBPtr->RAddr);
 				}
 			}
 		}
