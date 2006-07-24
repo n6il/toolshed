@@ -170,7 +170,7 @@ error_code _coco_close(coco_path_id path)
 
 
 /*
- * _get_pathtype()
+ * _coco_identify_image()
  *
  * Determines if the passed <image,path> pathlist is native, OS-9 or Disk BASIC.
  */
