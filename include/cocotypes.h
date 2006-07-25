@@ -7,6 +7,10 @@
 #define	_COCOTYPES_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if !defined(CYGWIN) && !defined(sun)
 #include <stdint.h>
 #endif
@@ -37,5 +41,9 @@ void _int4(unsigned int a, u_char *b);
 void _int3(unsigned int a, u_char *b);
 void _int2(unsigned int a, u_char *b);
 void _int1(unsigned int a, u_char *b);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _COCOTYPES_H */

@@ -6,6 +6,10 @@
 #ifndef	_COCOPATH_H
 #define	_COCOPATH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>
@@ -128,6 +132,10 @@ error_code _coco_ss_fd(coco_path_id, coco_file_stat *);
 error_code _coco_ss_size(coco_path_id path, int size);
 
 error_code _coco_identify_image(char *pathlist, _path_type *type);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _COCOPATH_H */
 

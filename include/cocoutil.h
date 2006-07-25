@@ -3,8 +3,10 @@
  *
  * $Id$
  ********************************************************************/
-extern "C"
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -14,7 +16,6 @@ extern "C"
 #include <errno.h>
 #include <time.h>
 #include <cocotypes.h>
-};
 
 /* Function prototypes for supported CoCo commands are here */
 
@@ -41,3 +42,7 @@ int cocorename(int, char **);
 
 int StrToInt(char *s);
 void show_help(char **helpMessage);
+
+#ifdef __cplusplus
+}
+#endif

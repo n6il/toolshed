@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Symbol definition/reference type/location
  */
@@ -129,3 +133,6 @@ typedef struct
 #endif
 } def_ref;
 
+#ifdef __cplusplus
+}
+#endif

@@ -7,6 +7,10 @@
 #ifndef	_OS9MODULE_H
 #define	_OS9MODULE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <cocotypes.h>
 
 typedef struct osk_module_t  {
@@ -15,7 +19,7 @@ typedef struct osk_module_t  {
 	u_char size[4];
 	u_char owner[4];
 	u_char name[4];
-    u_char accs[2];
+	u_char accs[2];
 	u_char type;
 	u_char lang;
 	u_char attr;
@@ -91,8 +95,8 @@ typedef struct os9_module_t
 	u_char parity;
 	union
 	{
-	    u_char data[1];		/* plain modules */
-   		struct
+		u_char data[1];		/* plain modules */
+		struct
 		{
 			u_char exec[2];
 			u_char data[1];
@@ -135,10 +139,10 @@ typedef struct os9_module_t
 typedef enum os9_type_t
 {
 	NULL_TYPE = 0,
-	Prgrm, 
-	Sbtrn, 
-	Multi, 
-	Data,  
+	Prgrm,
+	Sbtrn,
+	Multi,
+	Data,
 	SSbtrn,
 	TYPE_6,
 	TYPE_7,
@@ -146,10 +150,10 @@ typedef enum os9_type_t
 	TYPE_9,
 	TYPE_A,
 	Traplib,
-	Systm, 
+	Systm,
 	FlMgr,
 	Drivr,
-	Devic  
+	Devic
 } OS9_TYPE_t;
 
 #define LANG_MASK 0x0F
@@ -191,4 +195,9 @@ u_char  _os9_header(OS9_MODULE_t *mod);
 error_code _osk_crc(OSK_MODULE_t *mod);
 u_short _osk_header(OSK_MODULE_t *mod);
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* _OS9MODULE_H */
+

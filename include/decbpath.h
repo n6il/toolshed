@@ -6,6 +6,10 @@
 #ifndef	_DECBPATH_H
 #define	_DECBPATH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <sys/stat.h>
 #include <cocotypes.h>
@@ -126,6 +130,10 @@ error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size );
 #define EOS_SN		257		/* Syntax error */
 
 #include <cocopath.h>
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _DECBPATH_H */
 

@@ -6,6 +6,10 @@
 #ifndef	_COCOCONV_H
 #define	_COCOCONV_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -22,8 +26,12 @@ void DECBStringToCString(u_char *filename, u_char *ext, u_char *string);
 
 typedef enum _EOL_Type
 {
-    EOL_OS9 = 0, EOL_DECB, EOL_UNIX, EOL_DOS
+	EOL_OS9 = 0, EOL_DECB, EOL_UNIX, EOL_DOS
 } EOL_Type;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

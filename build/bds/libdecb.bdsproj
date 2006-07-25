@@ -158,16 +158,15 @@
       </project>
       <FILELIST>
         <FILE FILENAME="libdecb.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecb" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\gs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="gs" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\kill.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="kill" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\open.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="open" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\read.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="read" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\rename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rename" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\seek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="seek" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\ss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ss" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\tokenize.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="tokenize" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\write.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="write" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="decbcli.bdsproj" CONTAINERID="" LOCALCOMMAND=""/>
+        <FILE FILENAME="..\..\libdecb\decbwrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbwrite" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\decbgs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbgs" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\decbkill.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbkill" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\decbopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbopen" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\decbread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbread" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\decbrename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbrename" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\decbseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbseek" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\decbss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbss" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\decbtokenize.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbtokenize" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -217,6 +216,11 @@
           <Parameters Name="LoadAllSymbols">True</Parameters>
           <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
         </Parameters>
+        <Language>
+          <Language Name="ActiveLang"></Language>
+          <Language Name="ProjectLang">$00000000</Language>
+          <Language Name="RootDir"></Language>
+        </Language>
         <Linker>
           <Linker Name="LibPrefix"></Linker>
           <Linker Name="LibSuffix"></Linker>

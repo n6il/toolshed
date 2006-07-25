@@ -158,16 +158,16 @@
       </project>
       <FILELIST>
         <FILE FILENAME="libnative.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnative" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\write.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="write" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\delete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="delete" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\gs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="gs" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\makdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="makdir" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\open.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="open" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\read.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="read" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\readln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="readln" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\rename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rename" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\seek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="seek" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\ss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ss" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativewrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativewrite" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativedelete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativedelete" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativegs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativegs" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativemakdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativemakdir" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativeopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativeopen" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativeread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativeread" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativereadln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativereadln" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativerename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativerename" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativeseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativeseek" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\nativess.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativess" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -217,6 +217,11 @@
           <Parameters Name="LoadAllSymbols">True</Parameters>
           <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
         </Parameters>
+        <Language>
+          <Language Name="ActiveLang"></Language>
+          <Language Name="ProjectLang">$00000000</Language>
+          <Language Name="RootDir"></Language>
+        </Language>
         <Linker>
           <Linker Name="LibPrefix"></Linker>
           <Linker Name="LibSuffix"></Linker>

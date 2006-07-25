@@ -3,6 +3,14 @@
  *
  * $Id$
  ********************************************************************/
+
+#ifndef _UTIL_H
+#define _UTIL_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -55,3 +63,9 @@ int decblist(int, char **);
 int decbrename(int, char **);
 int decbdump(int, char **);
 int decbhdbconv(int, char **);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif	/* _UTIL_H */

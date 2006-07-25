@@ -3,6 +3,14 @@
  *
  * $Id$
  ********************************************************************/
+
+#ifndef _DECBUTIL_H
+#define _DECBUTIL_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -37,3 +45,9 @@ int decbmodbust(int, char **);
 int decbpadrom(int, char **);
 int decbrename(int, char **);
 int decbdump(int, char**);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif	/* _DECBUTIL_H */

@@ -6,6 +6,10 @@
 #ifndef	_NATIVEPATH_H
 #define	_NATIVEPATH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <sys/stat.h>
 #include <cocotypes.h>
@@ -59,6 +63,10 @@ error_code _native_ss_fd(native_path_id, struct stat *);
 error_code _native_ss_size(native_path_id path, int size);
 
 #include "cocopath.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _NATIVEPATH_H */
 

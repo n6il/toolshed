@@ -3,6 +3,14 @@
  *
  * $Id$
  ********************************************************************/
+
+#ifndef _OS9UTIL_H
+#define _OS9UTIL_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -39,3 +47,9 @@ int os9rename(int, char **);
 
 int StrToInt(char *s);
 void show_help(char **helpMessage);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  /* _OS9UTIL_H */

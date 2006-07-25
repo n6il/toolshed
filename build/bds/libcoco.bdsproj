@@ -158,16 +158,16 @@
       </project>
       <FILELIST>
         <FILE FILENAME="libcoco.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcoco" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\write.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="write" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\delete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="delete" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\gs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="gs" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\makdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="makdir" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\open.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="open" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\read.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="read" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\readln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="readln" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\rename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rename" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\seek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="seek" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\ss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ss" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocowrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocowrite" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocodelete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocodelete" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocogs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocogs" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocomakdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocomakdir" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocoopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoopen" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocoread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoread" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocoreadln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoreadln" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocorename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocorename" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocoseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoseek" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\cocoss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoss" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -217,6 +217,11 @@
           <Parameters Name="LoadAllSymbols">True</Parameters>
           <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
         </Parameters>
+        <Language>
+          <Language Name="ActiveLang"></Language>
+          <Language Name="ProjectLang">$00000000</Language>
+          <Language Name="RootDir"></Language>
+        </Language>
         <Linker>
           <Linker Name="LibPrefix"></Linker>
           <Linker Name="LibSuffix"></Linker>
