@@ -113,7 +113,8 @@ void DECBStringToCString(u_char *filename, u_char *ext, u_char *string)
 			*(string++) = *(ext++);
 		}
 	}
-	
+
+	*(string) = '\0';
 	
 	return;
 }
