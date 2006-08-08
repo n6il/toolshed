@@ -17,7 +17,7 @@
 
 #define DragonBootSize	16	/* Size of Dragon boot area in sectors */
 
-static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int bytesPerSector, int formatEntire, int isDragon);
+static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int formatEntire, int isDragon);
 
 /* Help message */
 static char *helpMessage[] =
@@ -245,7 +245,7 @@ int os9format(int argc, char **argv)
 		}
 		else
 		{
-			do_format(argv, argv[i], os968k, quiet, tracks, sectorsPerTrack, heads, bytesPerSector, clusterSize, diskName, sectorAllocationSize, tpi, density, bytesPerSector, formatEntire, isDragon);
+			do_format(argv, argv[i], os968k, quiet, tracks, sectorsPerTrack, heads, bytesPerSector, clusterSize, diskName, sectorAllocationSize, tpi, density, formatEntire, isDragon);
 		}
 	}
 
@@ -254,7 +254,7 @@ int os9format(int argc, char **argv)
 
 
 
-static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int bytesPerSector, int formatEntire, int isDragon)
+static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int formatEntire, int isDragon)
 {
 	error_code	ec = 0;
 	native_path_id path;
@@ -289,7 +289,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	totalSectors = tracks * sectorsPerTrack * heads;
 	_int3(totalSectors, s0.dd_tot);
 
-	totalBytes = totalSectors * bytesPerSector;
+	totalBytes = totalSectors * sectorSize;
 	
 	/* Determine appropriate cluster size */
 	if (clusterSize == 0)
@@ -431,7 +431,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	}
 
 	/* put bytes per sector */
-	_int1( bytesPerSector / 256, s0.dd_lsnsize);
+	_int1(sectorSize / 256, s0.dd_lsnsize);
 
 	/***** Write LSN0 *****/
 	{
@@ -631,7 +631,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 		printf("      Cylinders: %d\n", tracks);
 		printf("          Heads: %d\n", heads);
 		printf("  Sectors/track: %d\n", sectorsPerTrack);
-		printf("    Sector size: %d\n", bytesPerSector);
+		printf("    Sector size: %d\n", sectorSize);
 		printf("\nLogical Data:\n");
 		printf("  Total sectors: %d\n", totalSectors);
 		printf("  Size in bytes: %d\n", totalBytes);

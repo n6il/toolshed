@@ -18,49 +18,57 @@
 
 error_code _decb_rename(char *pathlist, char *new_name)
 {
-    error_code	ec = 0;
+	decb_dir_entry dirent;
+
+	return _decb_rename_ex(pathlist, new_name, &dirent);
+}
+
+
+
+error_code _decb_rename_ex(char *pathlist, char *new_name, decb_dir_entry *dirent)
+{
+	error_code	ec = 0;
     char filename[33];
 	decb_path_id path;
-	decb_dir_entry dirent;
-	
 
-    /* 1. Test if path is native. */
+
+	/* 1. Test if path is native. */
 	
-    if (strchr(pathlist, ',') == NULL)
+	if (strchr(pathlist, ',') == NULL)
     {
         return EOS_BPNAM;
-    }
+	}
 	
 
     ec = _decb_open(&path, pathlist, FAM_READ| FAM_WRITE);
 
     if (ec != 0)
 	{
-        return ec;
+		return ec;
 	}
 
 
     /* 2. Start reading directory file and search for match */
 
 	_decb_seekdir(path, 0);
-	
-    while (_decb_readdir(path, &dirent) == 0)
-    {
+
+	while (_decb_readdir(path, dirent) == 0)
+	{
         char fname[32];
 
 
         if (!strcasecmp(fname, filename))
         {
-            /* 1. Found the source, rename it. */
+			/* 1. Found the source, rename it. */
 			
             /* 2. Write the directory entry back to the image. */
 
-			_decb_writedir(path, &dirent);
+			_decb_writedir(path, dirent);
 			
-            break;			
+			break;
         }
     }
-	
+
 	_decb_close(path);
 
 

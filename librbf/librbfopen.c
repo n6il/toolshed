@@ -373,7 +373,10 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 
     tmppathlist = strdup((*path)->pathlist);
     p = strtok(tmppathlist, "/");
-
+	if (p == NULL)
+	{
+    	p = ".";
+	}
     do
     {
         os9_dir_entry diskent;

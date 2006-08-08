@@ -39,24 +39,27 @@ u_char *CStringToOS9String(u_char *f)
     u_char *p;
     int len = strlen((char *)f);
 
-    p = f + len - 1;
-    *p |= 0x80;
+	if (len > 0)
+	{
+		p = f + len - 1;
+		*p |= 0x80;
+	}
 
-    return(f);
+	return(f);
 }
 
 
 int OS9Strlen(u_char *f)
 {
-    int count = 0;
+	int count = 0;
 
-    do
-    {
-        count++;
-    }
-    while (!(*f++ & 0x80));
+	do
+	{
+		count++;
+	}
+	while (!(*f++ & 0x80));
 
-    return(count);
+	return(count);
 }
 
 
@@ -66,20 +69,20 @@ int OS9Strlen(u_char *f)
  */
 u_char *OS9StringToCString(u_char *f)
 {
-    u_char *p;
+	u_char *p;
 
-    p = f;
-    while (*p != '\0')
-    {
-        if (*p & 0x80)
-        {
-            *p &= ~0x80;
-            *(p + 1) = '\0';
-        }
-        p++;
-    }
+	p = f;
+	while (*p != '\0')
+	{
+		if (*p & 0x80)
+		{
+			*p &= ~0x80;
+			*(p + 1) = '\0';
+		}
+		p++;
+	}
 
-    return(f);
+	return(f);
 }
 
 
@@ -297,7 +300,7 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
         default:
             return;
     }
-    
+
     
     return;
 }
@@ -378,5 +381,6 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 #endif
 
 
-    return;
+	return;
 }
+

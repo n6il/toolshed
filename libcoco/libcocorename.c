@@ -14,9 +14,46 @@
 #include "cocosys.h"
 
 
+error_code _coco_rename_ex(char *pathlist, char *new_name, coco_dir_entry *dentry)
+{
+	error_code		ec = 0;
+	_path_type		type;
+
+	/* 1. Call appropriate function. */
+
+	ec = _coco_identify_image(pathlist, &type);
+
+	if (ec != 0)
+	{
+		return ec;
+	}
+
+	switch (type)
+	{
+		case NATIVE:
+			ec = _native_rename(pathlist, new_name);
+			break;
+
+		case OS9:
+			ec = _os9_rename_ex(pathlist, new_name, &dentry->dentry.os9);
+			break;
+
+		case DECB:
+			ec = _decb_rename_ex(pathlist, new_name, &dentry->dentry.decb);
+			break;
+	}
+
+	return ec;
+}
+
+
 error_code _coco_rename(char *pathlist, char *new_name)
 {
-    error_code	ec = 0;
+	error_code		ec = 0;
+	_path_type		type;
+	coco_dir_entry	dentry;
 
-    return ec;
+	return _coco_rename_ex(pathlist, new_name, &dentry);
 }
+
+

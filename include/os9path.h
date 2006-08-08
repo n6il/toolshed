@@ -134,6 +134,7 @@ error_code _os9_writedir(os9_path_id, os9_dir_entry *);
 error_code _os9_makdir( char *pathlist );
 error_code _os9_delete( char *pathlist );
 error_code _os9_rename( char *pathlist, char *new_name );
+error_code _os9_rename_ex(char *pathlist, char *new_name, os9_dir_entry *dentry);
 error_code _os9_close(os9_path_id);
 
 /* gs.c */

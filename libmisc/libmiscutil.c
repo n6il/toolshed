@@ -85,17 +85,17 @@ int strcasecmp(char *s1, char *s2)
 {
 	while (*s1 != '\0' && *s2 != '\0')
 	{
-		if (*s1 == *s2)
+		if (tolower(*s1) == tolower(*s2))
 		{
 			s1++;
 			s2++;
 			continue;
 		}
-		if (*s1 > *s2)
+		if (tolower(*s1) > tolower(*s2))
 		{
 			return -1;
 		}
-		if (*s1 < *s2)
+		if (tolower(*s1) < tolower(*s2))
 		{
 			return 1;
 		}
@@ -117,7 +117,7 @@ int strcasecmp(char *s1, char *s2)
 
 void show_help(char **helpMessage)
 {
-    char **p = helpMessage;
+	char **p = helpMessage;
 
     while (*p)
     {
