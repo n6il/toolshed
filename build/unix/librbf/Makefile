@@ -8,8 +8,8 @@ CFLAGS	+= -I../../../include -Wall -g
 	ar -r $@ $^
 	ranlib $@
 
-librbf.a:	bitmap.o makdir.o read.o rename.o ss.o delete.o \
-		gs.o open.o readln.o seek.o write.o
+librbf.a:	rbfbitmap.o rbfmakdir.o rbfread.o rbfrename.o rbfss.o rbfdelete.o \
+		rbfgs.o rbfopen.o rbfreadln.o rbfseek.o rbfwrite.o
 
 clean:
 	rm *.o *.a

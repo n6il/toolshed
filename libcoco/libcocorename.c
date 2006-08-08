@@ -49,8 +49,6 @@ error_code _coco_rename_ex(char *pathlist, char *new_name, coco_dir_entry *dentr
 
 error_code _coco_rename(char *pathlist, char *new_name)
 {
-	error_code		ec = 0;
-	_path_type		type;
 	coco_dir_entry	dentry;
 
 	return _coco_rename_ex(pathlist, new_name, &dentry);

@@ -8,8 +8,8 @@ CFLAGS	+= -g -I../../../include -Wall
 	ar -r $@ $^
 	ranlib $@
 
-libcoco.a:	gs.o delete.o open.o read.o rename.o seek.o ss.o read.o write.o \
-	readln.o
+libcoco.a:	cocogs.o cocodelete.o cocoopen.o cocoread.o cocorename.o cocoseek.o cocoss.o cocoread.o cocowrite.o \
+	cocoreadln.o
 
 clean:
 	rm *.o *.a
