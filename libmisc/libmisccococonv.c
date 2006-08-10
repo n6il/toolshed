@@ -86,6 +86,39 @@ u_char *OS9StringToCString(u_char *f)
 }
 
 
+/* Converts a C string to a Disk BASIC filename padded with spaces.
+   NOTE: We presume that the passed string is in 8.3 format
+ */
+void CStringToDECBString(u_char *filename, u_char *ext, u_char *string)
+{
+	char *fp, *fpp;
+
+	memset(filename, 32, 8);
+	memset(ext, 32, 3);
+
+	fp = string;
+	fpp = filename;
+	while (*fp != '.' && *fp != '\0')
+	{
+		*fpp = *fp;
+		fp++;
+		fpp++;
+	}
+
+	if (*fp == '.')
+	{
+		fpp = ext;
+		fp++;
+		while (*fp != '\0')
+		{
+			*fpp = *fp;
+			fp++;
+			fpp++;
+		}
+	}
+}
+
+
 /* Converts a Disk BASIC filename to a regular C string.
  */
 void DECBStringToCString(u_char *filename, u_char *ext, u_char *string)
@@ -384,3 +417,26 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 	return;
 }
 
+/*
+ * OS9AttrToString()
+ *
+ * Returns textual representation of file attributes to standard output
+ */
+void OS9AttrToString(int attr_byte, char *string)
+{
+	int i;
+	char *attrs = "dsewrewr";
+
+	/* print attributes */
+	for (i = 0; i < 8; i++)
+	{
+		if (attr_byte & (1 << (7- i)))
+		{
+			string[i] = attrs[i];
+		}
+		else
+		{
+			string[i] = '-';
+		}
+	}
+}

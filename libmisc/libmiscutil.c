@@ -112,6 +112,30 @@ int strcasecmp(char *s1, char *s2)
 
 	return 1;
 }
+
+
+int strncasecmp(char *s1, char *s2, int len)
+{
+	while (*s1 != '\0' && *s2 != '\0' && len-- > 0)
+	{
+		if (tolower(*s1) == tolower(*s2))
+		{
+			s1++;
+			s2++;
+			continue;
+		}
+		if (tolower(*s1) > tolower(*s2))
+		{
+			return -1;
+		}
+		if (tolower(*s1) < tolower(*s2))
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
 #endif
 
 

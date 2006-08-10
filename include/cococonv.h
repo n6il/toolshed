@@ -22,7 +22,9 @@ u_char *OS9StringToCString(u_char *f);
 int UnixToCoCoError(int ec);
 void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize);
 void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize);
+void CStringToDECBString(u_char *filename, u_char *ext, u_char *string);
 void DECBStringToCString(u_char *filename, u_char *ext, u_char *string);
+void OS9AttrToString(int attr_byte, char *string);
 
 typedef enum _EOL_Type
 {

@@ -48,6 +48,7 @@ int os9rdump(int, char **);
 int StrToInt(char *s);
 #ifdef BDS
 int strcasecmp(char *s1, char *s2);
+int strncasecmp(char *s1, char *s2, int len);
 #endif
 void show_help(char **helpMessage);
 

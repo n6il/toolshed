@@ -46,28 +46,33 @@ error_code _os9_prsnam( char *filename )
 error_code _decb_prsnam(char *filename)
 {
 	error_code  ec = 0;
-
+	char *dot;
 
 	/* 1. Check if length is > 8.3. */
 	
-	if (strlen(filename) > 12)
+	dot = strchr(filename, '.');
+
+	if (dot != NULL)
 	{
-		ec = EOS_BPNAM;
+		*dot = 0;
+		if (strlen(filename) > 8 || strlen(dot + 1) > 3)
+		{
+			ec = EOS_BPNAM;
+		}
+
+		*dot = '.';
 	}
 	else
 	{
-		/* 1. Check if '.' exists, and if so, if extension is > 3 chars. */
-		
-		char *p = strchr(filename, '.');
-		
-		if (p != NULL && strlen(p + 1) > 3)
+		/* Filename with no extension */
+
+		if (strlen(filename) > 8)
 		{
 			ec = EOS_BPNAM;
 		}
 	}
-	
 
-    return ec;
+	return ec;
 }
 
 

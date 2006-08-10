@@ -20,12 +20,12 @@ extern "C" {
 typedef struct _decb_dir_entry
 {
 	u_char	filename[8];
-		/* Left Justified, zero filled
+		/* Left Justified, space filled
 		   If first byte is 00 then that means the directory entry is free
 		   If first byte is FF then this entry and all that remain are unused
 		*/
 	u_char	file_extension[3];
-		/* Left justified, zero filled */
+		/* Left justified, space filled */
 	u_char	file_type;
 		/* 00 - BASIC
 		   01 - BASIC Data
