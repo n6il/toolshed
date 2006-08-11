@@ -362,7 +362,7 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 	}
 	
 	
-	ec = _decb_gs_sector(path, 17, 3 + sector, buffer);
+	ec = _decb_gs_sector(path, 17, 3 + sector, (char *)buffer);
 
 	if (ec == 0)
 	{

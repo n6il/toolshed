@@ -91,7 +91,7 @@ u_char *OS9StringToCString(u_char *f)
  */
 void CStringToDECBString(u_char *filename, u_char *ext, u_char *string)
 {
-	char *fp, *fpp;
+	unsigned char *fp, *fpp;
 
 	memset(filename, 32, 8);
 	memset(ext, 32, 3);
