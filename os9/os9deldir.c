@@ -123,14 +123,16 @@ static int do_deldir(char **argv, char *path, int interaction)
 						 argv[2] = NULL;
 
 						 os9dir(2, argv);
-                    }
-                    break;
-                case 'd':
-                    break;
-                case 'q':
-                    return( 1 );
-                    break;
-                default:
+					}
+					break;
+
+				case 'd':
+					break;
+
+				case 'q':
+					return 1;
+
+				default:
                     c[0] = 'l'; /* Force the user to type l, d, or q */
                     break;
             }

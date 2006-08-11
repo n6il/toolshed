@@ -158,16 +158,16 @@
       </project>
       <FILELIST>
         <FILE FILENAME="libnative.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnative" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativewrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativewrite" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativedelete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativedelete" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativegs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativegs" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativemakdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativemakdir" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativeopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativeopen" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativeread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativeread" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativereadln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativereadln" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativerename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativerename" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativeseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativeseek" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libnative\nativess.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="nativess" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativewrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativewrite" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativedelete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativedelete" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativegs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativegs" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativemakdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativemakdir" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativeopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativeopen" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativeread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativeread" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativereadln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativereadln" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativerename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativerename" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativeseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativeseek" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libnative\libnativess.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libnativess" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

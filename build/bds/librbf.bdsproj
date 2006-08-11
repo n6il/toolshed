@@ -93,13 +93,14 @@
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\librbf"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\librbf"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="..\..\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include\dinkumware"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.7" value="$(BDS)\include\vcl"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\libdecb"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\Desktop\toolshed\librbf"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="..\..\librbf"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="..\..\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.7" value="$(BDS)\include\dinkumware"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.8" value="$(BDS)\include\vcl"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.b.enabled" value="0"/>
@@ -111,34 +112,39 @@
           <property category="win32.*.win32b.bcc32" name="option.tWC.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWD.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWM.enabled" value="1"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\librbf"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.3" value="..\..\librbf"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\libdecb"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.3" value="..\..\Desktop\toolshed\librbf"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.4" value="..\..\librbf"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.I.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\Desktop\toolshed\librbf"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.3" value="..\..\librbf"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\libdecb"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.3" value="..\..\Desktop\toolshed\librbf"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.4" value="..\..\librbf"/>
           <property category="win32.*.win32b.dcc32" name="option.O.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.O.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\Desktop\toolshed\librbf"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.3" value="..\..\librbf"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\libdecb"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.3" value="..\..\Desktop\toolshed\librbf"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.4" value="..\..\librbf"/>
           <property category="win32.*.win32b.dcc32" name="option.R.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.R.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\Desktop\toolshed\librbf"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="..\..\librbf"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="..\..\..\..\My Documents\Borland Studio Projects"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="$(BDS)\lib"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.6" value="$(BDS)\lib\obj"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\libdecb"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="..\..\Desktop\toolshed\librbf"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="..\..\librbf"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="..\..\..\..\My Documents\Borland Studio Projects"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.6" value="$(BDS)\lib"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.7" value="$(BDS)\lib\obj"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.U.enabled" value="1"/>
           <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\librbf"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\Desktop\toolshed\build\bds"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.3" value="..\..\Desktop\toolshed\librbf"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.4" value="..\Desktop\toolshed\librbf"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\libdecb"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\librbf"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.3" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.4" value="..\..\Desktop\toolshed\librbf"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.5" value="..\Desktop\toolshed\librbf"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.Gi.enabled" value="0"/>
@@ -158,17 +164,17 @@
       </project>
       <FILELIST>
         <FILE FILENAME="librbf.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbf" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfwrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfwrite" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfbitmap.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfbitmap" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfdelete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfdelete" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfgs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfgs" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfmakdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfmakdir" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfopen" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfread" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfreadln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfreadln" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfrename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfrename" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfseek" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\librbf\rbfss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rbfss" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfwrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfwrite" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfbitmap.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfbitmap" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfdelete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfdelete" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfgs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfgs" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfmakdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfmakdir" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfopen" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfread" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfreadln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfreadln" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfrename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfrename" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfseek" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\librbf\librbfss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="librbfss" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

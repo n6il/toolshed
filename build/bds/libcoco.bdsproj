@@ -158,16 +158,16 @@
       </project>
       <FILELIST>
         <FILE FILENAME="libcoco.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcoco" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocowrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocowrite" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocodelete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocodelete" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocogs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocogs" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocomakdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocomakdir" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocoopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoopen" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocoread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoread" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocoreadln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoreadln" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocorename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocorename" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocoseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoseek" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libcoco\cocoss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cocoss" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocowrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocowrite" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocodelete.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocodelete" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocogs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocogs" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocomakdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocomakdir" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocoopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocoopen" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocoread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocoread" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocoreadln.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocoreadln" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocorename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocorename" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocoseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocoseek" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libcoco\libcocoss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libcocoss" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

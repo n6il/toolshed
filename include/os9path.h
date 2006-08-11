@@ -127,6 +127,7 @@ int _os9_ckbit( u_char *bitmap, int LSN );
 int _os9_getfreebit( u_char *bitmap, int bitmap_bytes );
 int _os9_maximum_file_size( fd_stats fd_sector, int cluster_size );
 error_code _os9_getSASSegment( os9_path_id path, int *cluster, int *size );
+int read_lsn(os9_path_id path, int lsn, void *buffer);
 error_code _os9_readln(os9_path_id, void *, u_int *);
 error_code _os9_write(os9_path_id, void *, u_int *);
 error_code _os9_writeln(os9_path_id, char *, u_int *);
@@ -150,10 +151,6 @@ error_code _os9_ss_fd(os9_path_id, int, fd_stats *);
 error_code _os9_ss_size(os9_path_id path, int size);
 
 unsigned int NextHighestMultiple(unsigned int value, unsigned int multiple);
-
-/* os9diskfuncs.c prototypes */
-int read_lsn(os9_path_id path, int lsn, void *buffer );
-void show_attrs(int attr_byte);
 
 
 /* ERROR CODES */

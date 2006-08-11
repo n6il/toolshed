@@ -105,7 +105,12 @@ static int do_fstat(char **argv, char *p)
 
 		printf("File Information for %s\n", p);
 		printf("  Attributes         : ");
-		show_attrs(fdbuf.fd_att);
+		{
+			char attrs[9];
+
+			OS9AttrToString(fdbuf.fd_att, attrs);
+			printf("%s", attrs);
+		}
 		printf("\n");
 		printf("  Owner              : %d.%-3d\n", fdbuf.fd_own[0], fdbuf.fd_own[1]);
 		printf("  Last modified date : %02d/%02d/%4d %02d:%02d\n",

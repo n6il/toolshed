@@ -118,7 +118,12 @@ static int do_id(char **argv, char *p)
 		printf("  Root dir sector :   %d\n", int3(buffer.dd_dir));
 		printf("  Disk owner      :   %d.%-3d\n", buffer.dd_own[0], buffer.dd_own[1]);
 		printf("  Disk attributes :   ");
-		show_attrs(buffer.dd_att[0]);
+		{
+			char attrs[9];
+
+			OS9AttrToString(fdbuf.fd_att, attrs);
+			printf("%s", attrs);
+		}
 		printf("\n");
 		printf("  Disk ID         :   $%X\n", int2(buffer.dd_dsk));
 		/* Build disk format string */

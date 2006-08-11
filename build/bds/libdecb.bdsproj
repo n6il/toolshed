@@ -158,15 +158,15 @@
       </project>
       <FILELIST>
         <FILE FILENAME="libdecb.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecb" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbwrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbwrite" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbgs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbgs" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbkill.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbkill" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbopen" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbread" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbrename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbrename" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbseek" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbss" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libdecb\decbtokenize.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbtokenize" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbwrite.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbwrite" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbgs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbgs" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbkill.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbkill" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbopen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbopen" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbread.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbread" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbrename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbrename" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbseek" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbss" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbtokenize.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbtokenize" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

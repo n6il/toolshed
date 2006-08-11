@@ -392,7 +392,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	UnixToOS9Time(time(NULL), (char *)s0.dd_dat);
 
 	{
-		int i;
+		u_int i;
 
 		for (i = 0; i < strlen(diskName) - 1; i++)
 		{

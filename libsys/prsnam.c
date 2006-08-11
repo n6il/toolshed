@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <sys/types.h>
+
 #include <cocopath.h>
 #include <cocotypes.h>
 #include <os9module.h>

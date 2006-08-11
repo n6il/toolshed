@@ -239,8 +239,13 @@ retry:
 					fdbuf.fd_dat[4]);
 		
 				/* print attributes */
-				show_attrs(fdbuf.fd_att);
-	
+				{
+					char attrs[9];
+
+					OS9AttrToString(fdbuf.fd_att, attrs);
+					printf("%s", attrs);
+				}
+
 				/* print fd sector, file size, filename */
 				printf("%8X  %8d %s\n",
 					int3(dentry.lsn),

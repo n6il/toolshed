@@ -158,11 +158,10 @@
       </project>
       <FILELIST>
         <FILE FILENAME="libmisc.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libmisc" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libmisc\util.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="util" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libmisc\cococonv.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="cococonv" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libmisc\endian.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="endian" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libmisc\os9diskfuncs.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9diskfuncs" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\libmisc\queue.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="queue" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libmisc\libmiscutil.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libmiscutil" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libmisc\libmisccococonv.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libmisccococonv" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libmisc\libmiscendian.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libmiscendian" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libmisc\libmiscqueue.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libmiscqueue" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -212,6 +211,11 @@
           <Parameters Name="LoadAllSymbols">True</Parameters>
           <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
         </Parameters>
+        <Language>
+          <Language Name="ActiveLang"></Language>
+          <Language Name="ProjectLang">$00000000</Language>
+          <Language Name="RootDir"></Language>
+        </Language>
         <Linker>
           <Linker Name="LibPrefix"></Linker>
           <Linker Name="LibSuffix"></Linker>

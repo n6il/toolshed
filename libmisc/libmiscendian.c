@@ -3,8 +3,7 @@
  *
  * Endian functions.
  ********************************************************************/
-
- #include <cocopath.h>
+#include <cocopath.h>
 
 
 unsigned int int4(u_char *a)

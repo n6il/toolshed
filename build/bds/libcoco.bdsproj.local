@@ -4,5 +4,15 @@
     <Transaction>2006/05/27 20:35:18.543.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\Project1.bdsproj=C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\coco.bdsproj</Transaction>
     <Transaction>2006/05/27 20:43:43.060.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\coco.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\coco.bdsproj</Transaction>
     <Transaction>2006/05/27 22:52:25.935.bdsproj,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\coco.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\libcoco.bdsproj</Transaction>
+    <Transaction>2006/08/11 16:41:59.519.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocowrite.c=</Transaction>
+    <Transaction>2006/08/11 16:42:00.300.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocodelete.c=</Transaction>
+    <Transaction>2006/08/11 16:42:01.612.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocogs.c=</Transaction>
+    <Transaction>2006/08/11 16:42:02.483.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocomakdir.c=</Transaction>
+    <Transaction>2006/08/11 16:42:03.214.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocoopen.c=</Transaction>
+    <Transaction>2006/08/11 16:42:03.935.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocoread.c=</Transaction>
+    <Transaction>2006/08/11 16:42:04.586.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocoreadln.c=</Transaction>
+    <Transaction>2006/08/11 16:42:05.297.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocorename.c=</Transaction>
+    <Transaction>2006/08/11 16:42:05.898.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocoseek.c=</Transaction>
+    <Transaction>2006/08/11 16:42:06.439.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libcoco\cocoss.c=</Transaction>
   </Transactions>
 </BorlandProject>

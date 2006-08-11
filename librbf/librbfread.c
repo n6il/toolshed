@@ -7,8 +7,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cocotypes.h"
-#include "os9path.h"
+#include <cocotypes.h>
+#include <os9path.h>
+
+
+/*
+ * Read the passed logical sector number.
+ */
+int read_lsn(os9_path_id path, int lsn, void *buffer)
+{
+	fseek(path->fd, lsn * path->bps, SEEK_SET);
+
+	return fread(buffer, 1, path->bps, path->fd);
+}
 
 
 error_code _os9_read(os9_path_id path, void *buffer, u_int *size)

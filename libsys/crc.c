@@ -1,10 +1,11 @@
 /********************************************************************
- * crc.c - OS-9 CRC computation algorithm
- *
  * $Id$
+ *
+ * CRC computation functions for OS-9/6809 and OS-9/68K
  ********************************************************************/
 #include <stdio.h>
 #include <sys/types.h>
+
 #include <cocopath.h>
 #include <cocotypes.h>
 #include <os9module.h>
@@ -12,43 +13,40 @@
 
 error_code _os9_crc_compute(u_char *ptr, u_int sz, u_char *crc)
 {
-    error_code	ec = 0;
-    u_char  a;
-    u_int   i;
+	error_code	ec = 0;
+	u_char  a;
+	u_int   i;
 
+	for (i = 0; i < sz; i++)
+	{
+		a = *(ptr++);
 
-    for (i = 0; i < sz; i++)
-    {
-        a = *(ptr++);
+		a ^= crc[0];
+		crc[0] = crc[1];
+		crc[1] = crc[2];
+		crc[1] ^= (a >> 7);
+		crc[2] = (a << 1);
+		crc[1] ^= (a >> 2);
+		crc[2] ^= (a << 6);
+		a ^= (a << 1);
+		a ^= (a << 2);
+		a ^= (a << 4);
 
-        a ^= crc[0];
-        crc[0] = crc[1];
-        crc[1] = crc[2];
-        crc[1] ^= (a >> 7);
-        crc[2] = (a << 1);
-        crc[1] ^= (a >> 2);
-        crc[2] ^= (a << 6);
-        a ^= (a << 1);
-        a ^= (a << 2);
-        a ^= (a << 4);
+		if (a & 0x80)
+		{
+			crc[0] ^= 0x80;
+			crc[2] ^= 0x21;
+		}
+	}
 
-        if (a & 0x80)
-        {
-            crc[0] ^= 0x80;
-            crc[2] ^= 0x21;
-        }
-    }
-    
+	if ((crc[0] == OS9_CRC0) &&
+		(crc[1] == OS9_CRC1) &&
+		(crc[2] == OS9_CRC2))
+	{
+		ec = 1;
+	}
 
-    if ((crc[0] == OS9_CRC0) &&
-        (crc[1] == OS9_CRC1) &&
-        (crc[2] == OS9_CRC2))
-    {
-        ec = 1;
-    }
-
-
-    return ec;
+	return ec;
 }
 
 
@@ -57,9 +55,9 @@ error_code _os9_crc_compute(u_char *ptr, u_int sz, u_char *crc)
 
 error_code _os9_crc(OS9_MODULE_t *mod)
 {
-    u_char  crc[3] = {0xff, 0xff, 0xff};
+	u_char  crc[3] = {0xff, 0xff, 0xff};
 
-    return(_os9_crc_compute((u_char *) mod, INT(mod->size), crc));
+	return(_os9_crc_compute((u_char *)mod, INT(mod->size), crc));
 }
 
 
@@ -68,9 +66,9 @@ error_code _os9_crc(OS9_MODULE_t *mod)
 
 error_code _osk_crc(OSK_MODULE_t *mod)
 {
-    u_char  crc[3] = {0xff, 0xff, 0xff};
-	
-    return(_os9_crc_compute((u_char *) mod, int4(mod->size), crc));
+	u_char  crc[3] = {0xff, 0xff, 0xff};
+
+	return(_os9_crc_compute((u_char *) mod, int4(mod->size), crc));
 }
 
 
@@ -79,18 +77,16 @@ error_code _osk_crc(OSK_MODULE_t *mod)
 
 u_char _os9_header(OS9_MODULE_t *mod)
 {
-    u_char tmp = 0x00;
-    u_char *ptr = (u_char *)mod;
-    int i;
-  
+	u_char tmp = 0x00;
+	u_char *ptr = (u_char *)mod;
+	int i;
 
-    for (i = 0; i < OS9_HEADER_SIZE; i++)
-    {
-        tmp ^= *(ptr++);
-    }
+	for (i = 0; i < OS9_HEADER_SIZE; i++)
+	{
+		tmp ^= *(ptr++);
+	}
 
-  
-    return tmp;
+	return tmp;
 }
 
 
@@ -103,13 +99,11 @@ u_short _osk_header(OSK_MODULE_t *mod)
     u_char   *ptr = (u_char *)mod;
     int      i;
 
+	for (i = 0; i < OSK_HEADER_SIZE / 2; i++)
+	{
+		tmp ^= int2(ptr);
+		ptr += 2;
+	}
 
-    for (i = 0; i < OSK_HEADER_SIZE/2; i++)
-    {
-        tmp ^= int2(ptr);
-        ptr+=2;
-    }
-
-
-    return tmp;
+	return tmp;
 }

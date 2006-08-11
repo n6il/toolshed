@@ -183,8 +183,13 @@ static int do_getattr(char **argv, char *p)
 
         _os9_gs_fd(path, size, &fdbuf);
 
-        show_attrs(fdbuf.fd_att);
-    }
+		{
+			char attrs[9];
+
+			OS9AttrToString(fdbuf.fd_att, attrs);
+			printf("%s", attrs);
+		}
+	}
 
     _os9_close(path);
 
@@ -224,8 +229,11 @@ static int do_setattr(char **argv, char *p, int attrSetMask, int attrResetMask, 
 
         if (quiet == 0)
         {
-            show_attrs(fdbuf.fd_att);
-        }
+			char attrs[9];
+
+			OS9AttrToString(fdbuf.fd_att, attrs);
+			printf("%s", attrs);
+		}
     }
 
     _os9_close(path);
