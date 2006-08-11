@@ -29,6 +29,7 @@ error_code _decb_rename_ex(char *pathlist, char *new_name, decb_dir_entry *diren
 {
 	error_code	ec = 0;
 	char filename[8], extension[3];
+	char nfilename[8], nextension[3];
 	decb_path_id path;
 	char *old_name;
 
@@ -39,7 +40,13 @@ error_code _decb_rename_ex(char *pathlist, char *new_name, decb_dir_entry *diren
 	}
 	old_name++;
 
-	/* 2. Validate new name */
+	/* 2. Validate old and new name */
+	ec = _decb_prsnam(old_name);
+	if (ec != 0)
+	{
+		return ec;
+	}
+
 	ec = _decb_prsnam(new_name);
 	if (ec != 0)
 	{
@@ -48,6 +55,7 @@ error_code _decb_rename_ex(char *pathlist, char *new_name, decb_dir_entry *diren
 
 	/* 3. Convert filename to format required by dentry */
 	CStringToDECBString(filename, extension, old_name);
+	CStringToDECBString(nfilename, nextension, new_name);
 
 	/* 4. Open a path to the file */
 	ec = _decb_open(&path, pathlist, FAM_READ| FAM_WRITE);
@@ -58,22 +66,43 @@ error_code _decb_rename_ex(char *pathlist, char *new_name, decb_dir_entry *diren
 	}
 
 	/* 5. Start reading directory file and search for match */
-	_decb_seekdir(path, 0);
+	_decb_seekdir(path, 0, SEEK_SET);
 
 	/* Presume error for now */
 	ec = EOS_BPNAM;
 
+	/* See if another file in this directory has the same name as our destination */
 	while (_decb_readdir(path, dirent) == 0)
 	{
-		if (!strncasecmp(dirent->filename, filename, 8) && !strncasecmp(dirent->file_extension, extension, 3))
+		if (!strncmp(dirent->filename, nfilename, 8) && !strncmp(dirent->file_extension, nextension, 3))
+		{
+			ec = EOS_FAE;
+
+			break;
+		}
+	}
+
+	if (ec == EOS_FAE)
+	{
+		_decb_close(path);
+
+		return ec;
+	}
+
+	_decb_seekdir(path, 0, SEEK_SET);
+
+	/* Start reading directory file and search for match */
+
+	while (_decb_readdir(path, dirent) == 0)
+	{
+		if (!strncmp(dirent->filename, filename, 8) && !strncmp(dirent->file_extension, extension, 3))
 		{
 			/* 1. Found the source, rename it. */
-			CStringToDECBString(filename, extension, new_name);
-			memcpy(dirent->filename, filename, 8);
-			memcpy(dirent->file_extension, extension, 3);
+			memcpy(dirent->filename, nfilename, 8);
+			memcpy(dirent->file_extension, nextension, 3);
 
 			/* 2. Write the directory entry back to the image. */
-
+			_decb_seekdir(path, -1, SEEK_CUR);
 			ec = _decb_writedir(path, dirent);
 
 			break;

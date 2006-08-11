@@ -102,7 +102,7 @@ static int do_rename(char **argv, char *p, char *new_name)
 {
     error_code	ec = 0;
 
-//    ec = _decb_rename(p, new_name);
+    ec = _decb_rename(p, new_name);
 
 	
     return ec;

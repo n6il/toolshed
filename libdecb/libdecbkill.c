@@ -38,7 +38,7 @@ error_code _decb_kill(char *pathlist)
 	
 	path->dir_entry.filename[0] = '\0';
 
-	_decb_seekdir(path, path->this_directory_entry_index);
+	_decb_seekdir(path, path->this_directory_entry_index, SEEK_SET);
 	
 	_decb_writedir(path, &path->dir_entry);
 

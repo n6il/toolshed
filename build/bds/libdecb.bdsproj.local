@@ -5,5 +5,14 @@
     <Transaction>2006/05/27 20:44:18.775.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\decb.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\decb.bdsproj</Transaction>
     <Transaction>2006/05/27 22:52:12.897.bdsproj,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\decb.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\libdecb.bdsproj</Transaction>
     <Transaction>2006/07/24 17:59:43.986.bdsproj,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\decbcli.bdsproj=</Transaction>
+    <Transaction>2006/08/11 16:20:49.083.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbwrite.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbwrite.c</Transaction>
+    <Transaction>2006/08/11 16:20:54.170.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbgs.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbgs.c</Transaction>
+    <Transaction>2006/08/11 16:20:59.087.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbkill.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbkill.c</Transaction>
+    <Transaction>2006/08/11 16:21:03.714.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbopen.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbopen.c</Transaction>
+    <Transaction>2006/08/11 16:21:08.160.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbread.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbread.c</Transaction>
+    <Transaction>2006/08/11 16:21:13.107.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbrename.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbrename.c</Transaction>
+    <Transaction>2006/08/11 16:21:17.764.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbseek.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbseek.c</Transaction>
+    <Transaction>2006/08/11 16:21:21.990.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbss.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbss.c</Transaction>
+    <Transaction>2006/08/11 16:21:25.811.c,C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\decbtokenize.c=C:\Documents and Settings\Boisy\Desktop\toolshed\libdecb\libdecbtokenize.c</Transaction>
   </Transactions>
 </BorlandProject>

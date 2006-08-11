@@ -22,7 +22,7 @@ error_code _decb_ss_fd(decb_path_id path, decb_file_stat *stat)
 	path->dir_entry.file_type = stat->file_type;
 	path->dir_entry.ascii_flag = stat->data_type;
 		
-	_decb_seekdir(path, path->this_directory_entry_index);
+	_decb_seekdir(path, path->this_directory_entry_index, SEEK_SET);
 	_decb_writedir(path, &path->dir_entry);
 
 

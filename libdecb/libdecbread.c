@@ -331,7 +331,7 @@ error_code _decb_readln(decb_path_id path, void *buffer, u_int *size)
 error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 {
     error_code	ec = 0;
-	char buffer[256];
+	unsigned char buffer[256];
 	int sector;
 	int entry_in_sector;
 	
@@ -366,7 +366,14 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 
 	if (ec == 0)
 	{
-		memcpy(dirent, buffer + entry_in_sector, sizeof(decb_dir_entry));
+		if (buffer[0] == 255)
+		{
+			ec = EOS_EOF;
+		}
+		else
+		{
+			memcpy(dirent, buffer + entry_in_sector, sizeof(decb_dir_entry));
+    	}
 	}
 
 

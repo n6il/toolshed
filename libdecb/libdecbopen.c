@@ -174,7 +174,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 		
 		/* 1. Find an empty dir (and check for duplicate entry too) */
 
-		_decb_seekdir(*path, 0);
+		_decb_seekdir(*path, 0, SEEK_SET);
 		
 		while (_decb_readdir(*path, &de) == 0)
 		{
@@ -236,7 +236,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 
 	/* 9. Write the new directory entry. */	
 	
-	_decb_seekdir(*path, empty_entry);
+	_decb_seekdir(*path, empty_entry, SEEK_SET);
 	
 	(*path)->this_directory_entry_index = empty_entry;
 	
@@ -349,7 +349,7 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 	{
 		/* 1. Seek to the first directory entry. */
 
-		_decb_seekdir(*path, 0);
+		_decb_seekdir(*path, 0, SEEK_SET);
 		
 		
 		/* 2. Check each entry until we find a match. */

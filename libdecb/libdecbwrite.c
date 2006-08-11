@@ -145,7 +145,7 @@ error_code _decb_write(decb_path_id path, void *buffer, u_int *size)
 	
 	/* 9. Write updated file descriptor back to image file. */
 
-	_decb_seekdir(path, path->this_directory_entry_index);
+	_decb_seekdir(path, path->this_directory_entry_index, SEEK_SET);
 
 	_decb_writedir(path, &path->dir_entry);
 	

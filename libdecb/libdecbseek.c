@@ -13,30 +13,30 @@
 
 error_code _decb_seek(decb_path_id path, int pos, int mode)
 {
-    error_code	ec = 0;
+	error_code	ec = 0;
 
 
-    if (path->israw == 1)
-    {
-        fseek(path->fd, pos, mode);
-    }
-    else
-    {
-        switch(mode)
-        {
-            case SEEK_SET:
-                path->filepos = pos;
-                break;
+	if (path->israw == 1)
+	{
+		fseek(path->fd, pos, mode);
+	}
+	else
+	{
+		switch(mode)
+		{
+			case SEEK_SET:
+				path->filepos = pos;
+				break;
 
-            case SEEK_CUR:
-                path->filepos = path->filepos + pos;
-                break;
+			case SEEK_CUR:
+				path->filepos = path->filepos + pos;
+				break;
 
-            case SEEK_END:
-                fprintf(stderr, "_decb_seek(): SEEK_END not implemented.\n");
-                break;
-        }
-    }
+			case SEEK_END:
+				fprintf(stderr, "_decb_seek(): SEEK_END not implemented.\n");
+				break;
+		}
+	}
 
 
     return ec;
@@ -44,22 +44,34 @@ error_code _decb_seek(decb_path_id path, int pos, int mode)
 
 
 
-error_code _decb_seekdir(decb_path_id path, int entry)
+error_code _decb_seekdir(decb_path_id path, int entry, int mode)
 {
 	error_code  ec = 0;
-	
-	
-	if (entry > 72)
+
+	/* 1. Determine the seek type. */
+	switch (mode)
+	{
+		case SEEK_SET:
+			break;
+
+		case SEEK_CUR:
+			entry += path->directory_entry_index;
+			break;
+
+		case SEEK_END:
+			break;
+	}
+
+	if (entry < 0 || entry > 72)
 	{
 		/* 1. Illegal entry number -- return error. */
-		
+
 		ec = EOS_EOF;
 	}
 
 	path->directory_entry_index = entry;
-	
 
-    return ec;
+	return ec;
 }
 
 
@@ -68,21 +80,21 @@ error_code _decb_seekdir(decb_path_id path, int entry)
 error_code _decb_seeksector(decb_path_id path, int track, int sector)
 {
 	long	offset;
-	
+
 //	assert( (track>= 0) && (track<35) );
 //	assert( (sector>0) && (sector<19) );
-	
+
 	/* 1. Compute offset. */
-	
+
 	offset = (track * 18) + (sector - 1);
 	offset *= 256;
 	offset += path->disk_offset;
-	
+
 
 	/* 2. Seek to offset. */
-	
+
 	fseek(path->fd, offset, SEEK_SET);
-	
+
 	
 	return 0;
 }
