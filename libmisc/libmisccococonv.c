@@ -1,7 +1,9 @@
 /********************************************************************
- * os9conv.c - Functions to facilitate host<->OS-9 transfers
- *
  * $Id$
+ *
+ * Functions to facilitate line-ending, error number, string and
+ * time conversions between platforms.
+ *
  ********************************************************************/
 #include <stdio.h>
 #include <stdlib.h>

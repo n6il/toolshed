@@ -1,7 +1,7 @@
 /********************************************************************
- * prsnam.c - CoCo filename parsing
- *
  * $Id$
+ *
+ * Parses the passed filename to see if it is legal.
  ********************************************************************/
 #include <stdio.h>
 #include <ctype.h>
@@ -12,29 +12,22 @@
 #include <os9module.h>
 
 
-error_code _os9_prsnam( char *filename )
+error_code _os9_prsnam(char *filename)
 {
-    char	*a = filename;
-    int	length = 0;	
+    char  *a = filename;
+    int	  length = 0;	
 
-    while( *a != 0 )
+    while (*a != 0)
     {
         length++;
-        if (length > 28)
+        if (length > D_NAMELEN)
         {
             return(EOS_BPNAM);
         }
-        if( isalnum( *a ) )
-        {}
-        else if ( *a == '_' )
-        {}
-        else if ( *a == '.' )
-        {}
-        else if ( *a == '-' )
-        {}
-        else
-            return(EOS_BPNAM);
-		
+        if (! (isalnum(*a) || *a == '_' || *a == '.' || *a == '-') )
+	{
+            return EOS_BPNAM;
+	}
         a++;
     }
 
@@ -48,8 +41,7 @@ error_code _decb_prsnam(char *filename)
 	error_code  ec = 0;
 	char *dot;
 
-	/* 1. Check if length is > 8.3. */
-	
+	/* 1. Check if filename contains a dot */
 	dot = strchr(filename, '.');
 
 	if (dot != NULL)
@@ -64,8 +56,7 @@ error_code _decb_prsnam(char *filename)
 	}
 	else
 	{
-		/* Filename with no extension */
-
+		/* Filename with no extension - just check filename length */
 		if (strlen(filename) > 8)
 		{
 			ec = EOS_BPNAM;
