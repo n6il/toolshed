@@ -8,7 +8,7 @@ CFLAGS	+= -g -I../../../include -Wall
 	ar -r $@ $^
 	ranlib $@
 
-libdecb.a:	decbgs.o decbkill.o decbopen.o decbread.o decbrename.o decbseek.o decbss.o decbread.o decbwrite.o decbtokenize.o
+libdecb.a:	libdecbgs.o libdecbkill.o libdecbopen.o libdecbread.o libdecbrename.o libdecbseek.o libdecbss.o libdecbread.o libdecbwrite.o libdecbtokenize.o
 
 clean:
 	rm *.o *.a
