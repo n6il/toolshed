@@ -1,13 +1,14 @@
 /********************************************************************
- * util.c - Functions common to all utilities
- *
  * $Id$
+ *
+ * Functions common to all utilities
  ********************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include <math.h>
+
 #include <util.h>
 #include <cococonv.h>
 #include <cocopath.h>
@@ -16,12 +17,12 @@
 
 int StrToInt(char *s)
 {
-    int accum = 0;
-    int i, t, power;
+	int accum = 0;
+	int i, t, power;
 
-    switch (*s)
-    {
-        case '$':	/* Hex conversion */
+	switch (*s)
+	{
+		case '$':	/* Hex conversion */
             s++;
             t = strlen(s);
             for (i = 0; i < t; i++)
@@ -67,7 +68,7 @@ int StrToInt(char *s)
 
                 power = pow(8, t - i - 1);	
                 accum += c * power;
-            }
+			}
             break;
 
 

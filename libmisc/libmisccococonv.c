@@ -3,16 +3,17 @@
  *
  * Functions to facilitate line-ending, error number, string and
  * time conversions between platforms.
- *
  ********************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include <errno.h>
+
 #include <cococonv.h>
 #include <cocopath.h>
 #include <cocotypes.h>
+
 
 static EOL_Type DetermineEOLType(char *buffer, int size);
 
@@ -65,7 +66,8 @@ int OS9Strlen(u_char *f)
 }
 
 
-/* Converts an OS-9 string to a regular C string.
+/*
+ * Converts an OS-9 string to a regular C string.
  * OS-9 stores filename with the last character in the name as with bit 7
  * set. This is also used in LSN0 for the disk name.
  */
@@ -93,7 +95,7 @@ u_char *OS9StringToCString(u_char *f)
  */
 void CStringToDECBString(u_char *filename, u_char *ext, u_char *string)
 {
-	unsigned char *fp, *fpp;
+	u_char *fp, *fpp;
 
 	memset(filename, 32, 8);
 	memset(ext, 32, 3);
@@ -121,7 +123,8 @@ void CStringToDECBString(u_char *filename, u_char *ext, u_char *string)
 }
 
 
-/* Converts a Disk BASIC filename to a regular C string.
+/*
+ * Converts a Disk BASIC filename to a regular C string.
  */
 void DECBStringToCString(u_char *filename, u_char *ext, u_char *string)
 {
@@ -153,10 +156,9 @@ void DECBStringToCString(u_char *filename, u_char *ext, u_char *string)
 	}
 
 	*(string) = '\0';
-	
+
 	return;
 }
-
 
 
 int UnixToCoCoError(int ec)
@@ -164,7 +166,7 @@ int UnixToCoCoError(int ec)
     switch (ec)
     {
 	case ENOTDIR:
-        case EPERM:
+		case EPERM:
         case EACCES:
             return(EOS_FNA);
 
@@ -185,7 +187,7 @@ int UnixToCoCoError(int ec)
             return(EOS_PTHFUL);
 
         case ENOSPC:
-            return(EOS_DF);
+			return(EOS_DF);
 
         case EROFS:
             return(EOS_BMODE);
@@ -199,7 +201,6 @@ int UnixToCoCoError(int ec)
 }
 
 
-
 /*
  * Scan a buffer to determine the type of end-of-line termination it has.
  *
@@ -211,39 +212,38 @@ static EOL_Type DetermineEOLType(char *buffer, int size)
     int i;
     
     
-    /* Scan to determine EOL ending type */
-    
-    for (i = 0; i < size; i++)
-    {
-        if (i < size - 1 && (buffer[i] == 0x0D && buffer[i + 1] == 0x0A))
-        {
-            /* We have DOS/Windows line endings (0D0A)... */
-            eol = EOL_DOS;
+	/* Scan to determine EOL ending type */
 
-            break;
-        }
+	for (i = 0; i < size; i++)
+	{
+		if (i < size - 1 && (buffer[i] == 0x0D && buffer[i + 1] == 0x0A))
+		{
+			/* We have DOS/Windows line endings (0D0A)... */
+			eol = EOL_DOS;
 
-        if (buffer[i] == 0x0A)
-        {
-            /* We have unix line endings. */
-            eol = EOL_UNIX;
+			break;
+		}
 
-            break;
-        }
-        
-        if (buffer[i] == 0x0D)
-        {
-            /* We have OS-9 line endings. */
-            eol = EOL_OS9;
-            
-            break;
-        }
-    }
+		if (buffer[i] == 0x0A)
+		{
+			/* We have unix line endings. */
+			eol = EOL_UNIX;
+
+			break;
+		}
+
+		if (buffer[i] == 0x0D)
+		{
+			/* We have OS-9 line endings. */
+			eol = EOL_OS9;
+
+			break;
+		}
+	}
 
 
-    return eol;
+	return eol;
 }
-
 
 
 /*
@@ -258,7 +258,7 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
     int		i;
 
 
-    eolMethod = DetermineEOLType(buffer, size);
+	eolMethod = DetermineEOLType(buffer, size);
     
     switch (eolMethod)
     {
@@ -277,7 +277,7 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
             {
                 return;
             }
-            
+
             memcpy(*newBuffer, buffer, size);
             
             *newSize = size;
@@ -323,11 +323,11 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
                 
                 for (i = 0; i < size; i++)
                 {
-                    if (buffer[i] != 0x0A)
+					if (buffer[i] != 0x0A)
                     {
                         *newP = buffer[i];
                         newP++;
-                    }
+					}
                 }
             }
             break;
@@ -350,7 +350,7 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 
 
     /* Things are a bit more involved here. */
-            
+
     /* We will add 0x0As after all 0x0Ds. */
             
 
@@ -369,11 +369,11 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
         'dosEOLCount' bytes.
     */
     
-    *newSize = size + dosEOLCount;
+	*newSize = size + dosEOLCount;
     *newBuffer = (char *)malloc(*newSize);
                 
     if (*newBuffer == NULL)
-    {
+	{
         return;
     }
 
@@ -396,7 +396,7 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 
     /* Change all occurences of 0x0D to 0x0A */
             
-    for(i = 0; i < size; i++)
+	for(i = 0; i < size; i++)
     {
         if (buffer[i] == 0x0D)
         {
@@ -419,12 +419,13 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 	return;
 }
 
+
 /*
  * OS9AttrToString()
  *
  * Returns textual representation of file attributes to standard output
  */
-void OS9AttrToString(int attr_byte, char *string)
+void OS9AttrToString(int attr_byte, char string[9])
 {
 	int i;
 	char *attrs = "dsewrewr";
@@ -441,4 +442,6 @@ void OS9AttrToString(int attr_byte, char *string)
 			string[i] = '-';
 		}
 	}
+
+	string[i] = '\0';
 }
