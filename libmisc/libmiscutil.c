@@ -94,11 +94,11 @@ int strcasecmp(char *s1, char *s2)
 		}
 		if (tolower(*s1) > tolower(*s2))
 		{
-			return -1;
+			return 1;
 		}
 		if (tolower(*s1) < tolower(*s2))
 		{
-			return 1;
+			return -1;
 		}
 	}
 
