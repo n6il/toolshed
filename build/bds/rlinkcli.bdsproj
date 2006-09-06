@@ -90,9 +90,10 @@
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\rlink"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\rlink"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="$(BDS)\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include\dinkumware"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\vcl"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\dinkumware"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include\vcl"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Ve.enabled" value="0"/>
@@ -214,11 +215,6 @@
           <Parameters Name="LoadAllSymbols">True</Parameters>
           <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
         </Parameters>
-        <Language>
-          <Language Name="ActiveLang"></Language>
-          <Language Name="ProjectLang">$00000000</Language>
-          <Language Name="RootDir"></Language>
-        </Language>
         <Linker>
           <Linker Name="LibPrefix"></Linker>
           <Linker Name="LibSuffix"></Linker>
