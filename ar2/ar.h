@@ -24,6 +24,9 @@ static char *id1 = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.4  2006/09/09 01:59:03  boisy
+ * Changes to accomodate compiling under Turbo C++
+ *
  * Revision 1.3  2006/04/11 01:32:45  boisy
  * Fixed warnings under Linux
  *
@@ -70,9 +73,11 @@ static char *id1 = "$Id$";
 # define SEEK_CUR	1
 #endif
 
+#ifndef BDS
 #define FALSE	(0)
 #define TRUE	(FALSE == 0)
 #define ERROR	(-1)
+#endif
 #define HID		"+AR0.0+"
 #define HIDSIZ	7
 #define SUF		".ar"

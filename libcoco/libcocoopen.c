@@ -240,14 +240,18 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 			/* Then, check out the dir sector for .. and . entries. */
 			
 			dir_sector_offset = (int3(os9_sector->dd_dir) + 1) * bps;
-			
+
 			fseek(fp, dir_sector_offset, SEEK_SET);
-			
+
+#ifdef BDS
+			fread(sector_buffer, 1, 256, fp);
+#else
 			if (fread(sector_buffer, 1, 256, fp) < 256)
 			{
 				*type = DECB;
 			}
 			else
+#endif
 			{
 				if (sector_buffer[0] == 0x2E && sector_buffer[1] == 0xAE &&
 					sector_buffer[32] == 0xAE)

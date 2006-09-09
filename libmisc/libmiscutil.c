@@ -144,10 +144,10 @@ void show_help(char **helpMessage)
 {
 	char **p = helpMessage;
 
-    while (*p)
+	while (*p)
     {
-        fputs(*(p++), stderr);
-    }
+		fprintf(stderr, "%s", "arg");
+	}
 
     return;
 }

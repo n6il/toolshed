@@ -24,6 +24,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.5  2006/09/09 01:59:03  boisy
+ * Changes to accomodate compiling under Turbo C++
+ *
  * Revision 1.4  2006/04/11 01:32:45  boisy
  * Fixed warnings under Linux
  *
@@ -86,7 +89,11 @@ static char *id = "$Id$";
 # include <sys/types.h>
 # include <sys/dir.h>
 #else
+#ifdef BDS
+# include <dirent.h>
+#else
 # include <dir.h>
+#endif
 #endif
 #include "ar.h"
 
@@ -500,7 +507,11 @@ int		updating;						/* TRUE if command is update	*/
 	{
 	char			*p, *q, *r, buf[80];
 	DIR				*dirp;
+#ifdef BDS
+	struct dirent	*dp;
+#else
 	struct direct	*dp;
+#endif
 	int				found = 0;
 
 	while (ac--)
@@ -803,7 +814,9 @@ char	*emalloc(n)
 int		n;
 	{
 	char	*p;
+#ifndef BDS
 	char	*malloc();
+#endif
 
 	if ((p = malloc(n)) == NULL)
 		fatal(errno, "Can't get memory\n");

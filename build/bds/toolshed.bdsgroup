@@ -8,7 +8,9 @@
 			<Option Name="GUID">{37E2C52F-8402-4CAA-A184-D59AF28F45B5}</Option>
 		</Option>
 	</PersonalityInfo>
-	<Default.Personality>  <Projects>
+	<Default.Personality>  
+    
+    <Projects>
       <Projects Name="libdecb.lib">libdecb.bdsproj</Projects>
       <Projects Name="librbf.lib">librbf.bdsproj</Projects>
       <Projects Name="libcoco.lib">libcoco.bdsproj</Projects>
@@ -18,10 +20,10 @@
       <Projects Name="decbcli.exe">decbcli.bdsproj</Projects>
       <Projects Name="os9cli.exe">os9cli.bdsproj</Projects>
       <Projects Name="mamoucli.exe">mamoucli.bdsproj</Projects>
-      <Projects Name="ar2.exe">ar2.bdsproj</Projects>
       <Projects Name="rlinkcli.exe">rlinkcli.bdsproj</Projects>
       <Projects Name="rmacli.exe">rmacli.bdsproj</Projects>
-      <Projects Name="Targets">libdecb.lib librbf.lib libcoco.lib libnative.lib libmisc.lib libsys.lib decbcli.exe os9cli.exe mamoucli.exe ar2.exe rlinkcli.exe rmacli.exe</Projects>
+      <Projects Name="tocgencli.exe">tocgencli.bdsproj</Projects>
+      <Projects Name="Targets">libdecb.lib librbf.lib libcoco.lib libnative.lib libmisc.lib libsys.lib decbcli.exe os9cli.exe mamoucli.exe rlinkcli.exe rmacli.exe tocgencli.exe</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{17A05C05-D1ED-4748-8536-73CA637F813A}">

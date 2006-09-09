@@ -23,6 +23,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.5  2006/09/09 01:59:03  boisy
+ * Changes to accomodate compiling under Turbo C++
+ *
  * Revision 1.4  2005/09/18 21:45:14  boisy
  * Testing indent
  *
@@ -45,12 +48,19 @@ static char *id = "$Id$";
  *  Microware's.
  */
 
+#ifdef BDS
+#define SYSV
+#endif
+
 #ifdef SYSV
 # include "o2u.h"
+#ifndef BDS
 # include <sys/time.h>
 # include <pwd.h>
+#endif
+# include "o2u.h"
 #else ~SYSV
-# ifndef  OSK
+# ifdef  OSK
 #  include <os9.h>
 # endif
 #endif SYSV
@@ -177,6 +187,7 @@ int		pn;
 #endif
 FILDES	*fs;
 	{
+#ifndef BDS
 #ifdef SYSV
 	char			*p = fs->fd_own;
 	short			s;
@@ -208,6 +219,7 @@ FILDES	*fs;
 #  endif CKLIB
 # endif OSK
 #endif SYSV
+#endif
 	}
 /*page*/
 /*
@@ -218,6 +230,11 @@ long	get_fsize(pn)
 int		pn;
 	{
 #ifdef SYSV
+	struct stat	stbuf;
+
+	fstat(pn, &stbuf);
+	return(stbuf.st_size);
+#elif defined(BDS)
 	struct stat	stbuf;
 
 	fstat(pn, &stbuf);

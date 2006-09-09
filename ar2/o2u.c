@@ -24,6 +24,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.4  2006/09/09 01:59:03  boisy
+ * Changes to accomodate compiling under Turbo C++
+ *
  * Revision 1.3  2006/04/11 01:32:45  boisy
  * Fixed warnings under Linux
  *
@@ -91,7 +94,7 @@ char	*buf;
 	long			result;
 	extern long		time();
 
-#ifdef NEEC_TIMEZONE
+#ifdef BDS
 	int				timezone = 5*60*60;   /* I'm in the Eastern Time zone GMT + 5 */
 #endif
 
@@ -185,7 +188,9 @@ short	flags;
 	char			os9Flag = 0;
 	register int	i;
 
+#ifndef BDS
 	flags &= ~NON_OS9_FLAGS;
+#endif
 	for (i = 0; i < (sizeof modeMap / sizeof(MODE_MAP)); i++)
 		if (flags & modeMap[i].unixFlag)
 			{

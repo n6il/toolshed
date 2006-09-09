@@ -24,6 +24,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.3  2006/09/09 01:59:03  boisy
+ * Changes to accomodate compiling under Turbo C++
+ *
  * Revision 1.2  1996/07/20 22:24:34  cc
  * Merged in pwz's unixification (Sunos).
  *
@@ -34,10 +37,12 @@ static char *id = "$Id$";
  */
 
 #include <stdio.h>
+#ifndef BDS
 #ifdef SYSV
 # include <sys/types.h>
-#else 
+#else
 # include <types.h>
+#endif
 #endif
 #include "arerrs.h"
 #include "lz1.h"

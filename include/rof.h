@@ -44,11 +44,7 @@ typedef struct
 	 * from the psect line of the module.  Only meaningful on
 	 * a root psect.
 	 */
-#ifdef UNIX
 	unsigned short	h_tylan;
-#else
-	unsigned h_tylan;
-#endif
 
 	/* Assembly valid, used to prevent the linker from linking
 	 * erroneous modules.  It is non-zero if assembly errors
@@ -73,11 +69,7 @@ typedef struct
 	 * for the module.  The size is determined by the total size
 	 * of all rmb directives in the vsects.
 	 */
-#ifdef UNIX
 	unsigned short	h_glbl,
-#else
-	unsigned h_glbl,
-#endif
 
 	/* Size of direct page global storage.  This value informs the
 	 * linker of the amount of static direct page data storage to
@@ -106,11 +98,7 @@ typedef struct
 	 * amountfost ack space the module requires.  This value is obtained
 	 * directly from the psect directive.
 	 */
-#ifdef unix
 	unsigned short	h_stack,
-#else
-	unsigned h_stack,
-#endif
 
 	/* Offset to entry point in the object code, relative to the start
 	 * of the module.  This value is obtained directly from the psect
@@ -126,11 +114,7 @@ typedef struct
 typedef struct
 {        
 	char		r_flag;		/* type/location flag */
-#ifdef unix
 	unsigned short	r_offset;	/* reference offset */
-#else
-	unsigned r_offset;
-#endif
 } def_ref;
 
 #ifdef __cplusplus

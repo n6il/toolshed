@@ -104,7 +104,10 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 			ec = _native_gs_fd(path->path.native, &native_stat);
 			statbuf->attributes = 0;
 			if (native_stat.st_mode & S_IRUSR) { statbuf->attributes |= FAP_READ; }
-			if (native_stat.st_mode & S_IWUSR) { statbuf->attributes |= FAP_WRITE; }
+#if !defined(BDS)
+			if (native_stat.st_mode & S_IWUSR)
+#endif
+			{ statbuf->attributes |= FAP_WRITE; }
 			if (native_stat.st_mode & S_IXUSR) { statbuf->attributes |= FAP_EXEC; }
 #if !defined(__MINGW32__) && !defined(BDS)
 			if (native_stat.st_mode & S_IROTH) { statbuf->attributes |= FAP_PREAD; }

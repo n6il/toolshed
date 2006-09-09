@@ -1,6 +1,6 @@
 
 #ifndef lint
-static char *id6 = "$Id$";
+/* static char *id6 = "$Id$"; */
 #endif
 
 /*
@@ -24,6 +24,9 @@ static char *id6 = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.2  2006/09/09 01:59:03  boisy
+ * Changes to accomodate compiling under Turbo C++
+ *
  * Revision 1.1  1996/07/20 17:10:43  cc
  * Initial revision
  *
