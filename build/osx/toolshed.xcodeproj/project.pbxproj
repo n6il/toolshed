@@ -148,6 +148,54 @@
 		684E54740AC24A41004DAB23 /* rma.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E54670AC24A41004DAB23 /* rma.c */; };
 		684E54930AC24A9E004DAB23 /* tocgen.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E54920AC24A9E004DAB23 /* tocgen.c */; };
 		684E555E0AC24FDA004DAB23 /* os9dump.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E534B0AC2487D004DAB23 /* os9dump.c */; };
+		684E55D00AC254B0004DAB23 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		684E55D10AC254B0004DAB23 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		684E55D20AC254B0004DAB23 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		684E55D30AC254B0004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		684E55D40AC254B0004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		684E55D50AC254B0004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		684E55D60AC254B9004DAB23 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		684E55D70AC254B9004DAB23 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		684E55D80AC254B9004DAB23 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		684E55D90AC254B9004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		684E55DA0AC254B9004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		684E55DB0AC254B9004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		684E55DC0AC254C2004DAB23 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		684E55DD0AC254C2004DAB23 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		684E55DE0AC254C2004DAB23 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		684E55DF0AC254C2004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		684E55E00AC254C2004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		684E55E10AC254C2004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		684E55E20AC254C8004DAB23 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		684E55E30AC254C8004DAB23 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		684E55E40AC254C8004DAB23 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		684E55E50AC254C8004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		684E55E60AC254C8004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		684E55E70AC254C8004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		684E55E80AC254D6004DAB23 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		684E55E90AC254D6004DAB23 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		684E55EA0AC254D6004DAB23 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		684E55EB0AC254D6004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		684E55EC0AC254D6004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		684E55ED0AC254D6004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		684E55EE0AC254DD004DAB23 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		684E55EF0AC254DD004DAB23 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		684E55F00AC254DD004DAB23 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		684E55F10AC254DD004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		684E55F20AC254DD004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		684E55F30AC254DD004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		684E55F40AC254E4004DAB23 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		684E55F50AC254E4004DAB23 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		684E55F60AC254E4004DAB23 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		684E55F70AC254E4004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		684E55F80AC254E4004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		684E55F90AC254E4004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		684E55FA0AC254EC004DAB23 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		684E55FB0AC254EC004DAB23 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		684E55FC0AC254EC004DAB23 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		684E55FD0AC254EC004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		684E55FE0AC254EC004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		684E55FF0AC254EC004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -557,7 +605,7 @@
 		684E527C0AC24638004DAB23 /* librbfseek.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = librbfseek.c; path = ../../librbf/librbfseek.c; sourceTree = SOURCE_ROOT; };
 		684E527D0AC24638004DAB23 /* librbfss.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = librbfss.c; path = ../../librbf/librbfss.c; sourceTree = SOURCE_ROOT; };
 		684E527E0AC24638004DAB23 /* librbfwrite.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = librbfwrite.c; path = ../../librbf/librbfwrite.c; sourceTree = SOURCE_ROOT; };
-		684E52830AC24644004DAB23 /* liblibdecb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibdecb.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E52830AC24644004DAB23 /* librbf.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librbf.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E52A60AC246D4004DAB23 /* libdecbgs.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbgs.c; path = ../../libdecb/libdecbgs.c; sourceTree = SOURCE_ROOT; };
 		684E52A70AC246D4004DAB23 /* libdecbkill.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbkill.c; path = ../../libdecb/libdecbkill.c; sourceTree = SOURCE_ROOT; };
 		684E52A80AC246D4004DAB23 /* libdecbopen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbopen.c; path = ../../libdecb/libdecbopen.c; sourceTree = SOURCE_ROOT; };
@@ -567,8 +615,8 @@
 		684E52AC0AC246D4004DAB23 /* libdecbss.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbss.c; path = ../../libdecb/libdecbss.c; sourceTree = SOURCE_ROOT; };
 		684E52AD0AC246D4004DAB23 /* libdecbtokenize.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbtokenize.c; path = ../../libdecb/libdecbtokenize.c; sourceTree = SOURCE_ROOT; };
 		684E52AE0AC246D4004DAB23 /* libdecbwrite.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbwrite.c; path = ../../libdecb/libdecbwrite.c; sourceTree = SOURCE_ROOT; };
-		684E52BC0AC246EA004DAB23 /* liblibdecb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibdecb.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		684E52D00AC24728004DAB23 /* liblibcoco.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibcoco.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E52BC0AC246EA004DAB23 /* libdecb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libdecb.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E52D00AC24728004DAB23 /* libcoco.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcoco.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E52D10AC24743004DAB23 /* libcocodelete.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libcocodelete.c; path = ../../libcoco/libcocodelete.c; sourceTree = SOURCE_ROOT; };
 		684E52D20AC24743004DAB23 /* libcocogs.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libcocogs.c; path = ../../libcoco/libcocogs.c; sourceTree = SOURCE_ROOT; };
 		684E52D30AC24743004DAB23 /* libcocomakdir.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libcocomakdir.c; path = ../../libcoco/libcocomakdir.c; sourceTree = SOURCE_ROOT; };
@@ -579,12 +627,12 @@
 		684E52D80AC24743004DAB23 /* libcocoseek.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libcocoseek.c; path = ../../libcoco/libcocoseek.c; sourceTree = SOURCE_ROOT; };
 		684E52D90AC24743004DAB23 /* libcocoss.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libcocoss.c; path = ../../libcoco/libcocoss.c; sourceTree = SOURCE_ROOT; };
 		684E52DA0AC24743004DAB23 /* libcocowrite.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libcocowrite.c; path = ../../libcoco/libcocowrite.c; sourceTree = SOURCE_ROOT; };
-		684E52F00AC24767004DAB23 /* liblibmisc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibmisc.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E52F00AC24767004DAB23 /* libmisc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmisc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E52F30AC2477C004DAB23 /* libmisccococonv.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libmisccococonv.c; path = ../../libmisc/libmisccococonv.c; sourceTree = SOURCE_ROOT; };
 		684E52F40AC2477C004DAB23 /* libmiscendian.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libmiscendian.c; path = ../../libmisc/libmiscendian.c; sourceTree = SOURCE_ROOT; };
 		684E52F50AC2477C004DAB23 /* libmiscqueue.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libmiscqueue.c; path = ../../libmisc/libmiscqueue.c; sourceTree = SOURCE_ROOT; };
 		684E52F60AC2477C004DAB23 /* libmiscutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libmiscutil.c; path = ../../libmisc/libmiscutil.c; sourceTree = SOURCE_ROOT; };
-		684E53060AC247A2004DAB23 /* liblibnativer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibnativer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E53060AC247A2004DAB23 /* libnative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnative.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E53090AC247BD004DAB23 /* libnativedelete.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libnativedelete.c; path = ../../libnative/libnativedelete.c; sourceTree = SOURCE_ROOT; };
 		684E530A0AC247BD004DAB23 /* libnativegs.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libnativegs.c; path = ../../libnative/libnativegs.c; sourceTree = SOURCE_ROOT; };
 		684E530B0AC247BD004DAB23 /* libnativemakdir.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libnativemakdir.c; path = ../../libnative/libnativemakdir.c; sourceTree = SOURCE_ROOT; };
@@ -595,7 +643,7 @@
 		684E53100AC247BD004DAB23 /* libnativeseek.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libnativeseek.c; path = ../../libnative/libnativeseek.c; sourceTree = SOURCE_ROOT; };
 		684E53110AC247BD004DAB23 /* libnativess.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libnativess.c; path = ../../libnative/libnativess.c; sourceTree = SOURCE_ROOT; };
 		684E53120AC247BD004DAB23 /* libnativewrite.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libnativewrite.c; path = ../../libnative/libnativewrite.c; sourceTree = SOURCE_ROOT; };
-		684E532C0AC247F9004DAB23 /* liblibsys.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibsys.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E532C0AC247F9004DAB23 /* libsys.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsys.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E532F0AC24815004DAB23 /* crc.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = crc.c; path = ../../libsys/crc.c; sourceTree = SOURCE_ROOT; };
 		684E53300AC24815004DAB23 /* prsnam.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = prsnam.c; path = ../../libsys/prsnam.c; sourceTree = SOURCE_ROOT; };
 		684E533A0AC24836004DAB23 /* os9 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = os9; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -738,6 +786,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684E55FA0AC254EC004DAB23 /* librbf.a in Frameworks */,
+				684E55FB0AC254EC004DAB23 /* libdecb.a in Frameworks */,
+				684E55FC0AC254EC004DAB23 /* libcoco.a in Frameworks */,
+				684E55FD0AC254EC004DAB23 /* libmisc.a in Frameworks */,
+				684E55FE0AC254EC004DAB23 /* libnative.a in Frameworks */,
+				684E55FF0AC254EC004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -745,6 +799,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684E55F40AC254E4004DAB23 /* librbf.a in Frameworks */,
+				684E55F50AC254E4004DAB23 /* libdecb.a in Frameworks */,
+				684E55F60AC254E4004DAB23 /* libcoco.a in Frameworks */,
+				684E55F70AC254E4004DAB23 /* libmisc.a in Frameworks */,
+				684E55F80AC254E4004DAB23 /* libnative.a in Frameworks */,
+				684E55F90AC254E4004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -752,6 +812,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684E55EE0AC254DD004DAB23 /* librbf.a in Frameworks */,
+				684E55EF0AC254DD004DAB23 /* libdecb.a in Frameworks */,
+				684E55F00AC254DD004DAB23 /* libcoco.a in Frameworks */,
+				684E55F10AC254DD004DAB23 /* libmisc.a in Frameworks */,
+				684E55F20AC254DD004DAB23 /* libnative.a in Frameworks */,
+				684E55F30AC254DD004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,6 +825,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684E55E80AC254D6004DAB23 /* librbf.a in Frameworks */,
+				684E55E90AC254D6004DAB23 /* libdecb.a in Frameworks */,
+				684E55EA0AC254D6004DAB23 /* libcoco.a in Frameworks */,
+				684E55EB0AC254D6004DAB23 /* libmisc.a in Frameworks */,
+				684E55EC0AC254D6004DAB23 /* libnative.a in Frameworks */,
+				684E55ED0AC254D6004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -766,6 +838,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684E55E20AC254C8004DAB23 /* librbf.a in Frameworks */,
+				684E55E30AC254C8004DAB23 /* libdecb.a in Frameworks */,
+				684E55E40AC254C8004DAB23 /* libcoco.a in Frameworks */,
+				684E55E50AC254C8004DAB23 /* libmisc.a in Frameworks */,
+				684E55E60AC254C8004DAB23 /* libnative.a in Frameworks */,
+				684E55E70AC254C8004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -773,6 +851,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684E55DC0AC254C2004DAB23 /* librbf.a in Frameworks */,
+				684E55DD0AC254C2004DAB23 /* libdecb.a in Frameworks */,
+				684E55DE0AC254C2004DAB23 /* libcoco.a in Frameworks */,
+				684E55DF0AC254C2004DAB23 /* libmisc.a in Frameworks */,
+				684E55E00AC254C2004DAB23 /* libnative.a in Frameworks */,
+				684E55E10AC254C2004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -780,6 +864,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684E55D60AC254B9004DAB23 /* librbf.a in Frameworks */,
+				684E55D70AC254B9004DAB23 /* libdecb.a in Frameworks */,
+				684E55D80AC254B9004DAB23 /* libcoco.a in Frameworks */,
+				684E55D90AC254B9004DAB23 /* libmisc.a in Frameworks */,
+				684E55DA0AC254B9004DAB23 /* libnative.a in Frameworks */,
+				684E55DB0AC254B9004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -787,6 +877,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				684E55D00AC254B0004DAB23 /* librbf.a in Frameworks */,
+				684E55D10AC254B0004DAB23 /* libdecb.a in Frameworks */,
+				684E55D20AC254B0004DAB23 /* libcoco.a in Frameworks */,
+				684E55D30AC254B0004DAB23 /* libmisc.a in Frameworks */,
+				684E55D40AC254B0004DAB23 /* libnative.a in Frameworks */,
+				684E55D50AC254B0004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -825,12 +921,12 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				684E52830AC24644004DAB23 /* liblibdecb.a */,
-				684E52BC0AC246EA004DAB23 /* liblibdecb.a */,
-				684E52D00AC24728004DAB23 /* liblibcoco.a */,
-				684E52F00AC24767004DAB23 /* liblibmisc.a */,
-				684E53060AC247A2004DAB23 /* liblibnativer.a */,
-				684E532C0AC247F9004DAB23 /* liblibsys.a */,
+				684E52830AC24644004DAB23 /* librbf.a */,
+				684E52BC0AC246EA004DAB23 /* libdecb.a */,
+				684E52D00AC24728004DAB23 /* libcoco.a */,
+				684E52F00AC24767004DAB23 /* libmisc.a */,
+				684E53060AC247A2004DAB23 /* libnative.a */,
+				684E532C0AC247F9004DAB23 /* libsys.a */,
 				684E533A0AC24836004DAB23 /* os9 */,
 				684E53820AC248B5004DAB23 /* decb */,
 				684E53B00AC24901004DAB23 /* mamou */,
@@ -1149,7 +1245,7 @@
 			);
 			name = librbf;
 			productName = libdecb;
-			productReference = 684E52830AC24644004DAB23 /* liblibdecb.a */;
+			productReference = 684E52830AC24644004DAB23 /* librbf.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		684E52BB0AC246EA004DAB23 /* libdecb */ = {
@@ -1166,7 +1262,7 @@
 			);
 			name = libdecb;
 			productName = libdecb;
-			productReference = 684E52BC0AC246EA004DAB23 /* liblibdecb.a */;
+			productReference = 684E52BC0AC246EA004DAB23 /* libdecb.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		684E52CF0AC24728004DAB23 /* libcoco */ = {
@@ -1183,7 +1279,7 @@
 			);
 			name = libcoco;
 			productName = libcoco;
-			productReference = 684E52D00AC24728004DAB23 /* liblibcoco.a */;
+			productReference = 684E52D00AC24728004DAB23 /* libcoco.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		684E52EF0AC24767004DAB23 /* libmisc */ = {
@@ -1200,7 +1296,7 @@
 			);
 			name = libmisc;
 			productName = libmisc;
-			productReference = 684E52F00AC24767004DAB23 /* liblibmisc.a */;
+			productReference = 684E52F00AC24767004DAB23 /* libmisc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		684E53050AC247A2004DAB23 /* libnative */ = {
@@ -1217,7 +1313,7 @@
 			);
 			name = libnative;
 			productName = libnativer;
-			productReference = 684E53060AC247A2004DAB23 /* liblibnativer.a */;
+			productReference = 684E53060AC247A2004DAB23 /* libnative.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		684E532B0AC247F9004DAB23 /* libsys */ = {
@@ -1234,7 +1330,7 @@
 			);
 			name = libsys;
 			productName = libsys;
-			productReference = 684E532C0AC247F9004DAB23 /* liblibsys.a */;
+			productReference = 684E532C0AC247F9004DAB23 /* libsys.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		684E53390AC24836004DAB23 /* os9 */ = {
@@ -1988,7 +2084,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libdecb;
+				PRODUCT_NAME = rbf;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2002,7 +2098,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libdecb;
+				PRODUCT_NAME = rbf;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2018,7 +2114,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libdecb;
+				PRODUCT_NAME = decb;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2032,7 +2128,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libdecb;
+				PRODUCT_NAME = decb;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2048,7 +2144,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libcoco;
+				PRODUCT_NAME = coco;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2062,7 +2158,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libcoco;
+				PRODUCT_NAME = coco;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2078,7 +2174,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libmisc;
+				PRODUCT_NAME = misc;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2092,7 +2188,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libmisc;
+				PRODUCT_NAME = misc;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2108,7 +2204,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libnativer;
+				PRODUCT_NAME = native;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2122,7 +2218,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libnativer;
+				PRODUCT_NAME = native;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2138,7 +2234,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libsys;
+				PRODUCT_NAME = sys;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2152,7 +2248,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
-				PRODUCT_NAME = libsys;
+				PRODUCT_NAME = sys;
 				ZERO_LINK = NO;
 			};
 			name = Release;
