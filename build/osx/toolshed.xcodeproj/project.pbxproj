@@ -71,7 +71,6 @@
 		684E52F90AC2477C004DAB23 /* libmiscendian.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E52F40AC2477C004DAB23 /* libmiscendian.c */; };
 		684E52FA0AC2477C004DAB23 /* libmiscqueue.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E52F50AC2477C004DAB23 /* libmiscqueue.c */; };
 		684E52FB0AC2477C004DAB23 /* libmiscutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E52F60AC2477C004DAB23 /* libmiscutil.c */; };
-		684E52FC0AC2477C004DAB23 /* os9diskfuncs.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E52F70AC2477C004DAB23 /* os9diskfuncs.c */; };
 		684E53130AC247BD004DAB23 /* libnativedelete.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53090AC247BD004DAB23 /* libnativedelete.c */; };
 		684E53140AC247BD004DAB23 /* libnativegs.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E530A0AC247BD004DAB23 /* libnativegs.c */; };
 		684E53150AC247BD004DAB23 /* libnativemakdir.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E530B0AC247BD004DAB23 /* libnativemakdir.c */; };
@@ -149,6 +148,7 @@
 		684E54730AC24A41004DAB23 /* part9.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E54650AC24A41004DAB23 /* part9.c */; };
 		684E54740AC24A41004DAB23 /* rma.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E54670AC24A41004DAB23 /* rma.c */; };
 		684E54930AC24A9E004DAB23 /* tocgen.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E54920AC24A9E004DAB23 /* tocgen.c */; };
+		684E555E0AC24FDA004DAB23 /* os9dump.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E534B0AC2487D004DAB23 /* os9dump.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -585,7 +585,6 @@
 		684E52F40AC2477C004DAB23 /* libmiscendian.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libmiscendian.c; path = ../../libmisc/libmiscendian.c; sourceTree = SOURCE_ROOT; };
 		684E52F50AC2477C004DAB23 /* libmiscqueue.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libmiscqueue.c; path = ../../libmisc/libmiscqueue.c; sourceTree = SOURCE_ROOT; };
 		684E52F60AC2477C004DAB23 /* libmiscutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libmiscutil.c; path = ../../libmisc/libmiscutil.c; sourceTree = SOURCE_ROOT; };
-		684E52F70AC2477C004DAB23 /* os9diskfuncs.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9diskfuncs.c; path = ../../libmisc/os9diskfuncs.c; sourceTree = SOURCE_ROOT; };
 		684E53060AC247A2004DAB23 /* liblibnativer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibnativer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E53090AC247BD004DAB23 /* libnativedelete.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libnativedelete.c; path = ../../libnative/libnativedelete.c; sourceTree = SOURCE_ROOT; };
 		684E530A0AC247BD004DAB23 /* libnativegs.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libnativegs.c; path = ../../libnative/libnativegs.c; sourceTree = SOURCE_ROOT; };
@@ -690,7 +689,7 @@
 		684E54680AC24A41004DAB23 /* rma.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rma.h; path = ../../rma/rma.h; sourceTree = SOURCE_ROOT; };
 		684E54690AC24A41004DAB23 /* rstruct.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rstruct.h; path = ../../rma/rstruct.h; sourceTree = SOURCE_ROOT; };
 		684E546A0AC24A41004DAB23 /* rtables.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rtables.h; path = ../../rma/rtables.h; sourceTree = SOURCE_ROOT; };
-		684E54840AC24A76004DAB23 /* tocgen */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tocgen; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E54840AC24A76004DAB23 /* tocgen */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = tocgen; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E54920AC24A9E004DAB23 /* tocgen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = tocgen.c; path = ../../tocgen/tocgen.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -799,7 +798,6 @@
 		08FB7794FE84155DC02AAC07 /* osx */ = {
 			isa = PBXGroup;
 			children = (
-				684E54920AC24A9E004DAB23 /* tocgen.c */,
 				684E53400AC2484C004DAB23 /* Executables */,
 				684E533C0AC2483C004DAB23 /* Libraries */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
@@ -887,7 +885,6 @@
 				684E52F40AC2477C004DAB23 /* libmiscendian.c */,
 				684E52F50AC2477C004DAB23 /* libmiscqueue.c */,
 				684E52F60AC2477C004DAB23 /* libmiscutil.c */,
-				684E52F70AC2477C004DAB23 /* os9diskfuncs.c */,
 			);
 			name = libmisc;
 			sourceTree = "<group>";
@@ -1081,6 +1078,7 @@
 		684E547E0AC24A66004DAB23 /* tocgen */ = {
 			isa = PBXGroup;
 			children = (
+				684E54920AC24A9E004DAB23 /* tocgen.c */,
 			);
 			name = tocgen;
 			sourceTree = "<group>";
@@ -1409,9 +1407,9 @@
 				684E54870AC24A7A004DAB23 /* PBXTargetDependency */,
 				684E54890AC24A7D004DAB23 /* PBXTargetDependency */,
 				684E548B0AC24A80004DAB23 /* PBXTargetDependency */,
-				684E548D0AC24A83004DAB23 /* PBXTargetDependency */,
 				684E548F0AC24A86004DAB23 /* PBXTargetDependency */,
 				684E54910AC24A88004DAB23 /* PBXTargetDependency */,
+				684E548D0AC24A83004DAB23 /* PBXTargetDependency */,
 			);
 			name = tocgen;
 			productName = tocgen;
@@ -1516,7 +1514,6 @@
 				684E52F90AC2477C004DAB23 /* libmiscendian.c in Sources */,
 				684E52FA0AC2477C004DAB23 /* libmiscqueue.c in Sources */,
 				684E52FB0AC2477C004DAB23 /* libmiscutil.c in Sources */,
-				684E52FC0AC2477C004DAB23 /* os9diskfuncs.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1590,6 +1587,7 @@
 				684E53A90AC248E9004DAB23 /* decbkill.c in Sources */,
 				684E53AA0AC248E9004DAB23 /* decblist.c in Sources */,
 				684E53AB0AC248E9004DAB23 /* decbrename.c in Sources */,
+				684E555E0AC24FDA004DAB23 /* os9dump.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
