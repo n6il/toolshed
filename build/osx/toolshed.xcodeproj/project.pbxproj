@@ -117,7 +117,6 @@
 		684E53AA0AC248E9004DAB23 /* decblist.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E539F0AC248E9004DAB23 /* decblist.c */; };
 		684E53AB0AC248E9004DAB23 /* decbrename.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53A00AC248E9004DAB23 /* decbrename.c */; };
 		684E53CE0AC24938004DAB23 /* evaluator.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53C20AC24938004DAB23 /* evaluator.c */; };
-		684E53CF0AC24938004DAB23 /* expression.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53C30AC24938004DAB23 /* expression.c */; };
 		684E53D00AC24938004DAB23 /* ffwd.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53C40AC24938004DAB23 /* ffwd.c */; };
 		684E53D10AC24938004DAB23 /* h6309.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53C50AC24938004DAB23 /* h6309.c */; };
 		684E53D20AC24938004DAB23 /* mamou.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53C70AC24938004DAB23 /* mamou.c */; };
@@ -636,7 +635,6 @@
 		684E53A00AC248E9004DAB23 /* decbrename.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = decbrename.c; path = ../../decb/decbrename.c; sourceTree = SOURCE_ROOT; };
 		684E53B00AC24901004DAB23 /* mamou */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mamou; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E53C20AC24938004DAB23 /* evaluator.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = evaluator.c; path = ../../mamou/evaluator.c; sourceTree = SOURCE_ROOT; };
-		684E53C30AC24938004DAB23 /* expression.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = expression.c; path = ../../mamou/expression.c; sourceTree = SOURCE_ROOT; };
 		684E53C40AC24938004DAB23 /* ffwd.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = ffwd.c; path = ../../mamou/ffwd.c; sourceTree = SOURCE_ROOT; };
 		684E53C50AC24938004DAB23 /* h6309.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = h6309.c; path = ../../mamou/h6309.c; sourceTree = SOURCE_ROOT; };
 		684E53C60AC24938004DAB23 /* h6309.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = h6309.h; path = ../../mamou/h6309.h; sourceTree = SOURCE_ROOT; };
@@ -689,7 +687,7 @@
 		684E54680AC24A41004DAB23 /* rma.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rma.h; path = ../../rma/rma.h; sourceTree = SOURCE_ROOT; };
 		684E54690AC24A41004DAB23 /* rstruct.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rstruct.h; path = ../../rma/rstruct.h; sourceTree = SOURCE_ROOT; };
 		684E546A0AC24A41004DAB23 /* rtables.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rtables.h; path = ../../rma/rtables.h; sourceTree = SOURCE_ROOT; };
-		684E54840AC24A76004DAB23 /* tocgen */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = tocgen; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E54840AC24A76004DAB23 /* tocgen */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tocgen; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E54920AC24A9E004DAB23 /* tocgen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = tocgen.c; path = ../../tocgen/tocgen.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -994,7 +992,6 @@
 			isa = PBXGroup;
 			children = (
 				684E53C20AC24938004DAB23 /* evaluator.c */,
-				684E53C30AC24938004DAB23 /* expression.c */,
 				684E53C40AC24938004DAB23 /* ffwd.c */,
 				684E53C50AC24938004DAB23 /* h6309.c */,
 				684E53C60AC24938004DAB23 /* h6309.h */,
@@ -1596,7 +1593,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				684E53CE0AC24938004DAB23 /* evaluator.c in Sources */,
-				684E53CF0AC24938004DAB23 /* expression.c in Sources */,
 				684E53D00AC24938004DAB23 /* ffwd.c in Sources */,
 				684E53D10AC24938004DAB23 /* h6309.c in Sources */,
 				684E53D20AC24938004DAB23 /* mamou.c in Sources */,
