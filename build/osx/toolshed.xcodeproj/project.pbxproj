@@ -103,7 +103,6 @@
 		684E53690AC2487D004DAB23 /* os9makdir.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53530AC2487D004DAB23 /* os9makdir.c */; };
 		684E536A0AC2487D004DAB23 /* os9modbust.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53540AC2487D004DAB23 /* os9modbust.c */; };
 		684E536B0AC2487D004DAB23 /* os9padrom.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53550AC2487D004DAB23 /* os9padrom.c */; };
-		684E536C0AC2487D004DAB23 /* os9rdump.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53560AC2487D004DAB23 /* os9rdump.c */; };
 		684E536D0AC2487D004DAB23 /* os9rename.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53570AC2487D004DAB23 /* os9rename.c */; };
 		684E53A10AC248E9004DAB23 /* decb.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53960AC248E9004DAB23 /* decb.c */; };
 		684E53A20AC248E9004DAB23 /* decbattr.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E53970AC248E9004DAB23 /* decbattr.c */; };
@@ -196,6 +195,11 @@
 		684E55FD0AC254EC004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
 		684E55FE0AC254EC004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
 		684E55FF0AC254EC004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		68E3F24B0AC37F1300E1DFE0 /* libtoolshed.c in Sources */ = {isa = PBXBuildFile; fileRef = 68E3F24A0AC37F1300E1DFE0 /* libtoolshed.c */; };
+		68E3F3660AC414AE00E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
+		68E3F38F0AC41A2C00E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
+		68E3F3910AC41A4700E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
+		68E3F3970AC41A9500E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -591,6 +595,62 @@
 			remoteGlobalIDString = 684E54240AC249D8004DAB23;
 			remoteInfo = ar2;
 		};
+		68E3F24E0AC37F2100E1DFE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
+		68E3F2520AC37F2700E1DFE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
+		68E3F2560AC37F2C00E1DFE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
+		68E3F25A0AC37F3300E1DFE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
+		68E3F25E0AC37F3900E1DFE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
+		68E3F2620AC37F3F00E1DFE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
+		68E3F2660AC37F4400E1DFE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
+		68E3F26A0AC37F4900E1DFE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -667,7 +727,6 @@
 		684E53530AC2487D004DAB23 /* os9makdir.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9makdir.c; path = ../../os9/os9makdir.c; sourceTree = SOURCE_ROOT; };
 		684E53540AC2487D004DAB23 /* os9modbust.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9modbust.c; path = ../../os9/os9modbust.c; sourceTree = SOURCE_ROOT; };
 		684E53550AC2487D004DAB23 /* os9padrom.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9padrom.c; path = ../../os9/os9padrom.c; sourceTree = SOURCE_ROOT; };
-		684E53560AC2487D004DAB23 /* os9rdump.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9rdump.c; path = ../../os9/os9rdump.c; sourceTree = SOURCE_ROOT; };
 		684E53570AC2487D004DAB23 /* os9rename.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9rename.c; path = ../../os9/os9rename.c; sourceTree = SOURCE_ROOT; };
 		684E53820AC248B5004DAB23 /* decb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = decb; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E53960AC248E9004DAB23 /* decb.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = decb.c; path = ../../decb/decb.c; sourceTree = SOURCE_ROOT; };
@@ -737,6 +796,8 @@
 		684E546A0AC24A41004DAB23 /* rtables.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rtables.h; path = ../../rma/rtables.h; sourceTree = SOURCE_ROOT; };
 		684E54840AC24A76004DAB23 /* tocgen */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tocgen; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E54920AC24A9E004DAB23 /* tocgen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = tocgen.c; path = ../../tocgen/tocgen.c; sourceTree = SOURCE_ROOT; };
+		68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtoolshed.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		68E3F24A0AC37F1300E1DFE0 /* libtoolshed.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libtoolshed.c; path = ../../libtoolshed/libtoolshed.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -786,11 +847,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68E3F3660AC414AE00E1DFE0 /* libtoolshed.a in Frameworks */,
+				684E55FC0AC254EC004DAB23 /* libcoco.a in Frameworks */,
 				684E55FA0AC254EC004DAB23 /* librbf.a in Frameworks */,
 				684E55FB0AC254EC004DAB23 /* libdecb.a in Frameworks */,
-				684E55FC0AC254EC004DAB23 /* libcoco.a in Frameworks */,
-				684E55FD0AC254EC004DAB23 /* libmisc.a in Frameworks */,
 				684E55FE0AC254EC004DAB23 /* libnative.a in Frameworks */,
+				684E55FD0AC254EC004DAB23 /* libmisc.a in Frameworks */,
 				684E55FF0AC254EC004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -799,11 +861,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68E3F38F0AC41A2C00E1DFE0 /* libtoolshed.a in Frameworks */,
+				684E55F60AC254E4004DAB23 /* libcoco.a in Frameworks */,
 				684E55F40AC254E4004DAB23 /* librbf.a in Frameworks */,
 				684E55F50AC254E4004DAB23 /* libdecb.a in Frameworks */,
-				684E55F60AC254E4004DAB23 /* libcoco.a in Frameworks */,
-				684E55F70AC254E4004DAB23 /* libmisc.a in Frameworks */,
 				684E55F80AC254E4004DAB23 /* libnative.a in Frameworks */,
+				684E55F70AC254E4004DAB23 /* libmisc.a in Frameworks */,
 				684E55F90AC254E4004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -812,11 +875,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68E3F3910AC41A4700E1DFE0 /* libtoolshed.a in Frameworks */,
+				684E55F00AC254DD004DAB23 /* libcoco.a in Frameworks */,
 				684E55EE0AC254DD004DAB23 /* librbf.a in Frameworks */,
 				684E55EF0AC254DD004DAB23 /* libdecb.a in Frameworks */,
-				684E55F00AC254DD004DAB23 /* libcoco.a in Frameworks */,
-				684E55F10AC254DD004DAB23 /* libmisc.a in Frameworks */,
 				684E55F20AC254DD004DAB23 /* libnative.a in Frameworks */,
+				684E55F10AC254DD004DAB23 /* libmisc.a in Frameworks */,
 				684E55F30AC254DD004DAB23 /* libsys.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -877,12 +941,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68E3F3970AC41A9500E1DFE0 /* libtoolshed.a in Frameworks */,
+				684E55D20AC254B0004DAB23 /* libcoco.a in Frameworks */,
 				684E55D00AC254B0004DAB23 /* librbf.a in Frameworks */,
 				684E55D10AC254B0004DAB23 /* libdecb.a in Frameworks */,
-				684E55D20AC254B0004DAB23 /* libcoco.a in Frameworks */,
-				684E55D30AC254B0004DAB23 /* libmisc.a in Frameworks */,
 				684E55D40AC254B0004DAB23 /* libnative.a in Frameworks */,
+				684E55D30AC254B0004DAB23 /* libmisc.a in Frameworks */,
 				684E55D50AC254B0004DAB23 /* libsys.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		68E3F2420AC37ED200E1DFE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -927,6 +999,7 @@
 				684E52F00AC24767004DAB23 /* libmisc.a */,
 				684E53060AC247A2004DAB23 /* libnative.a */,
 				684E532C0AC247F9004DAB23 /* libsys.a */,
+				68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */,
 				684E533A0AC24836004DAB23 /* os9 */,
 				684E53820AC248B5004DAB23 /* decb */,
 				684E53B00AC24901004DAB23 /* mamou */,
@@ -1012,6 +1085,7 @@
 		684E533C0AC2483C004DAB23 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				68E3F23E0AC37EB900E1DFE0 /* libtoolshed */,
 				08FB7795FE84155DC02AAC07 /* librbf */,
 				684E52A40AC246BF004DAB23 /* libdecb */,
 				684E52C80AC24715004DAB23 /* libcoco */,
@@ -1060,7 +1134,6 @@
 				684E53530AC2487D004DAB23 /* os9makdir.c */,
 				684E53540AC2487D004DAB23 /* os9modbust.c */,
 				684E53550AC2487D004DAB23 /* os9padrom.c */,
-				684E53560AC2487D004DAB23 /* os9rdump.c */,
 				684E53570AC2487D004DAB23 /* os9rename.c */,
 			);
 			name = os9;
@@ -1176,6 +1249,14 @@
 			name = tocgen;
 			sourceTree = "<group>";
 		};
+		68E3F23E0AC37EB900E1DFE0 /* libtoolshed */ = {
+			isa = PBXGroup;
+			children = (
+				68E3F24A0AC37F1300E1DFE0 /* libtoolshed.c */,
+			);
+			name = libtoolshed;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1222,6 +1303,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		684E53280AC247F9004DAB23 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		68E3F2400AC37ED200E1DFE0 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1349,6 +1437,7 @@
 				684E53770AC24896004DAB23 /* PBXTargetDependency */,
 				684E53790AC24899004DAB23 /* PBXTargetDependency */,
 				684E537B0AC2489C004DAB23 /* PBXTargetDependency */,
+				68E3F24F0AC37F2100E1DFE0 /* PBXTargetDependency */,
 			);
 			name = os9;
 			productName = os9;
@@ -1371,6 +1460,7 @@
 				684E538B0AC248C3004DAB23 /* PBXTargetDependency */,
 				684E538D0AC248C6004DAB23 /* PBXTargetDependency */,
 				684E538F0AC248C9004DAB23 /* PBXTargetDependency */,
+				68E3F2530AC37F2700E1DFE0 /* PBXTargetDependency */,
 			);
 			name = decb;
 			productName = decb;
@@ -1393,6 +1483,7 @@
 				684E53B90AC2490C004DAB23 /* PBXTargetDependency */,
 				684E53BB0AC2490F004DAB23 /* PBXTargetDependency */,
 				684E53BD0AC24911004DAB23 /* PBXTargetDependency */,
+				68E3F2570AC37F2C00E1DFE0 /* PBXTargetDependency */,
 			);
 			name = mamou;
 			productName = mamou;
@@ -1415,6 +1506,7 @@
 				684E53E50AC2495E004DAB23 /* PBXTargetDependency */,
 				684E53E70AC24961004DAB23 /* PBXTargetDependency */,
 				684E53E90AC24964004DAB23 /* PBXTargetDependency */,
+				68E3F25B0AC37F3300E1DFE0 /* PBXTargetDependency */,
 			);
 			name = rdump;
 			productName = rdump;
@@ -1437,6 +1529,7 @@
 				684E54080AC249B1004DAB23 /* PBXTargetDependency */,
 				684E540A0AC249B5004DAB23 /* PBXTargetDependency */,
 				684E540C0AC249B8004DAB23 /* PBXTargetDependency */,
+				68E3F25F0AC37F3900E1DFE0 /* PBXTargetDependency */,
 			);
 			name = rma;
 			productName = rma;
@@ -1459,6 +1552,7 @@
 				684E541B0AC249CC004DAB23 /* PBXTargetDependency */,
 				684E541D0AC249CE004DAB23 /* PBXTargetDependency */,
 				684E541F0AC249D1004DAB23 /* PBXTargetDependency */,
+				68E3F2630AC37F3F00E1DFE0 /* PBXTargetDependency */,
 			);
 			name = rlink;
 			productName = rlink;
@@ -1481,6 +1575,7 @@
 				684E542E0AC249E4004DAB23 /* PBXTargetDependency */,
 				684E54300AC249E7004DAB23 /* PBXTargetDependency */,
 				684E54320AC249EA004DAB23 /* PBXTargetDependency */,
+				68E3F2670AC37F4400E1DFE0 /* PBXTargetDependency */,
 			);
 			name = ar2;
 			productName = ar2;
@@ -1503,11 +1598,29 @@
 				684E548F0AC24A86004DAB23 /* PBXTargetDependency */,
 				684E54910AC24A88004DAB23 /* PBXTargetDependency */,
 				684E548D0AC24A83004DAB23 /* PBXTargetDependency */,
+				68E3F26B0AC37F4900E1DFE0 /* PBXTargetDependency */,
 			);
 			name = tocgen;
 			productName = tocgen;
 			productReference = 684E54840AC24A76004DAB23 /* tocgen */;
 			productType = "com.apple.product-type.tool";
+		};
+		68E3F2430AC37ED200E1DFE0 /* libtoolshed */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 68E3F2470AC37EF900E1DFE0 /* Build configuration list for PBXNativeTarget "libtoolshed" */;
+			buildPhases = (
+				68E3F2400AC37ED200E1DFE0 /* Headers */,
+				68E3F2410AC37ED200E1DFE0 /* Sources */,
+				68E3F2420AC37ED200E1DFE0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libtoolshed;
+			productName = libtoolshed;
+			productReference = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -1534,6 +1647,7 @@
 				684E54240AC249D8004DAB23 /* ar2 */,
 				684E54830AC24A76004DAB23 /* tocgen */,
 				684E549A0AC24AD8004DAB23 /* All */,
+				68E3F2430AC37ED200E1DFE0 /* libtoolshed */,
 			);
 		};
 /* End PBXProject section */
@@ -1660,7 +1774,6 @@
 				684E53690AC2487D004DAB23 /* os9makdir.c in Sources */,
 				684E536A0AC2487D004DAB23 /* os9modbust.c in Sources */,
 				684E536B0AC2487D004DAB23 /* os9padrom.c in Sources */,
-				684E536C0AC2487D004DAB23 /* os9rdump.c in Sources */,
 				684E536D0AC2487D004DAB23 /* os9rename.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1754,6 +1867,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				684E54930AC24A9E004DAB23 /* tocgen.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		68E3F2410AC37ED200E1DFE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				68E3F24B0AC37F1300E1DFE0 /* libtoolshed.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2040,6 +2161,46 @@
 			target = 684E54240AC249D8004DAB23 /* ar2 */;
 			targetProxy = 684E54AC0AC24B07004DAB23 /* PBXContainerItemProxy */;
 		};
+		68E3F24F0AC37F2100E1DFE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68E3F24E0AC37F2100E1DFE0 /* PBXContainerItemProxy */;
+		};
+		68E3F2530AC37F2700E1DFE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68E3F2520AC37F2700E1DFE0 /* PBXContainerItemProxy */;
+		};
+		68E3F2570AC37F2C00E1DFE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68E3F2560AC37F2C00E1DFE0 /* PBXContainerItemProxy */;
+		};
+		68E3F25B0AC37F3300E1DFE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68E3F25A0AC37F3300E1DFE0 /* PBXContainerItemProxy */;
+		};
+		68E3F25F0AC37F3900E1DFE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68E3F25E0AC37F3900E1DFE0 /* PBXContainerItemProxy */;
+		};
+		68E3F2630AC37F3F00E1DFE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68E3F2620AC37F3F00E1DFE0 /* PBXContainerItemProxy */;
+		};
+		68E3F2670AC37F4400E1DFE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68E3F2660AC37F4400E1DFE0 /* PBXContainerItemProxy */;
+		};
+		68E3F26B0AC37F4900E1DFE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68E3F26A0AC37F4900E1DFE0 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -2050,6 +2211,8 @@
 					i386,
 					ppc,
 				);
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = /;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
@@ -2065,6 +2228,8 @@
 					i386,
 					ppc,
 				);
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = /;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
@@ -2517,6 +2682,36 @@
 			};
 			name = Release;
 		};
+		68E3F2480AC37EF900E1DFE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = toolshed;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		68E3F2490AC37EF900E1DFE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = toolshed;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2660,6 +2855,15 @@
 			buildConfigurations = (
 				684E549C0AC24ADA004DAB23 /* Debug */,
 				684E549D0AC24ADA004DAB23 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		68E3F2470AC37EF900E1DFE0 /* Build configuration list for PBXNativeTarget "libtoolshed" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				68E3F2480AC37EF900E1DFE0 /* Debug */,
+				68E3F2490AC37EF900E1DFE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
