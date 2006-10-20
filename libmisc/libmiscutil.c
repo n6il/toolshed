@@ -146,7 +146,7 @@ void show_help(char **helpMessage)
 
 	while (*p)
     {
-		fprintf(stderr, "%s", "arg");
+		fprintf(stderr, "%s", *(p++));
 	}
 
     return;
