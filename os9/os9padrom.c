@@ -7,12 +7,9 @@
 #include <string.h>
 #include <cocopath.h>
 #include <cocotypes.h>
-
+#include <toolshed.h>
 
 #define BUFFSIZ	256
-
-static int do_padrom(char **argv, char *file, int padSize, char padChar);
-// static int pow(int x, int p);
 
 
 /* Help message */
@@ -106,65 +103,21 @@ int os9padrom(int argc, char **argv)
             }
             else
             {
+				error_code tse;
+				
                 file = argv[i];
-                do_padrom(argv, file, padSize, padChar);
+                tse = TSPadROM(file, padSize, padChar);
+				if (tse != 0)
+				{
+					char errorstr[TS_MAXSTR];
+
+					TSReportError(tse, errorstr);
+					fprintf(stderr, "%s: %s\n", argv[0], errorstr);
+				}
             }
         }
     }
 
 
     return ec;
-}
-
-
-
-static int do_padrom(char **argv, char *file, int padSize, char padChar)
-{
-    error_code	ec = 0;
-    coco_path_id path;
-    int j;
-    u_int fileSize;
-
-
-    ec = _coco_open(&path, file, FAM_WRITE);
-
-    if (ec != 0)
-    {
-        fprintf(stderr, "%s: failed to open '%s'\n", argv[0], file);
-
-        return ec;
-    }
-
-
-    ec = _coco_gs_size(path, &fileSize);
-
-    if (ec != 0)
-    {
-        fprintf(stderr, "%s: cannot get file size of '%s'\n", argv[0], file);
-        _coco_close(path);
-
-        return ec;
-    }
-
-    if (padSize <= fileSize)
-    {
-        fprintf(stderr, "%s: padrom size insufficient\n", argv[0]);
-        _coco_close(path);
-
-        return 1;
-    }
-
-    _coco_seek(path, fileSize, SEEK_SET);
-
-    for (j = 0; j < padSize - fileSize; j++)
-    {
-        u_int size = 1;
-
-        _coco_write(path, &padChar, &size);
-    }
-
-    _coco_close(path);
-
-
-    return 0;
 }

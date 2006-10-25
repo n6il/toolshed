@@ -3,8 +3,8 @@
  *
  * $Id$
  ********************************************************************/
-#ifndef	_os9PATH_H
-#define	_os9PATH_H
+#ifndef	_OS9PATH_H
+#define	_OS9PATH_H
 
 #include <stdio.h>
 #include <sys/stat.h>
@@ -186,5 +186,5 @@ unsigned int NextHighestMultiple(unsigned int value, unsigned int multiple);
 #define FAP_SINGLE	0x40
 #define FAP_DIR		0x80
 
-#endif	/* _os9PATH_H */
+#endif	/* _OS9PATH_H */
 

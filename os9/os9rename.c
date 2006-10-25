@@ -25,8 +25,6 @@ static char *helpMessage[] =
 };
 
 
-static int do_rename(char **argv, char *p, char *new_name);
-
 int os9rename(int argc, char *argv[])
 {
     error_code	ec = 0;
@@ -82,7 +80,7 @@ int os9rename(int argc, char *argv[])
 		
         if( (p != NULL) && (new_name != NULL) )
         {
-            ec = do_rename(argv, p, new_name);
+            ec = TSRBFRename(p, new_name);
 		
             if (ec != 0)
             {
@@ -100,15 +98,4 @@ int os9rename(int argc, char *argv[])
 
 
     return 0;
-}
-
-
-
-static int do_rename(char **argv, char *p, char *new_name)
-{
-    error_code	ec = 0;
-
-    ec = _os9_rename(p, new_name);
-	
-    return ec;
 }

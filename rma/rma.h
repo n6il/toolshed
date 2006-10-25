@@ -160,17 +160,17 @@ GLOBAL char     TmpNam[30]
 = "rma.tmp"
 #endif
                ;
-GLOBAL char     AltLbl[10],
-                LabelName[10];
-GLOBAL char     cmntlen[10];	/* To hold " %1.xs val for comment length */
-GLOBAL char     d0587[10],
+GLOBAL char     AltLbl[SYMLEN],
+                LabelName[SYMLEN];
+GLOBAL char     cmntlen[SYMLEN];	/* To hold " %1.xs val for comment length */
+GLOBAL char     d0587[SYMLEN],
                 _nam[128],
                 _ttl[128];
-GLOBAL char     d0681[10];
+GLOBAL char     d0681[SYMLEN];
 GLOBAL long     reptFpos;
 GLOBAL struct symblstr *d068f[128],
                *d078f;
-GLOBAL struct ref_ent d0791[10],
+GLOBAL struct ref_ent d0791[SYMLEN],
                *OptBPtr;
 GLOBAL struct symblstr **d07b1;
 

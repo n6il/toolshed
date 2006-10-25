@@ -79,7 +79,7 @@ do_band()
 #endif
 {
 	char            bitpchr,
-	                namhold[10],
+	                namhold[SYMLEN],
 	               *sr_tmp;
 	unsigned        bitpos;
 	int             count;
@@ -126,7 +126,7 @@ do_band()
 						++SrcChar;
 					}
 					count = 0;
-					while ((count < 9) && (namhold[count] = *(SrcChar++)) &&
+					while ((count < SYMLEN - 1) && (namhold[count] = *(SrcChar++)) &&
 					       (namhold[count] != '.'))
 					{
 						++count;

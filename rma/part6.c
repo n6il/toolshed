@@ -41,7 +41,7 @@ MoveLabel(destpos)
 
 	if (isalpha(*SrcChar))
 	{
-		count = 9;
+		count = SYMLEN - 1;
 		while ((count-- > 0) && (_ischar(*SrcChar)))
 		{
 			*(destpos++) = *(SrcChar++);

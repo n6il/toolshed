@@ -599,56 +599,56 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 		68E3F2520AC37F2700E1DFE0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 		68E3F2560AC37F2C00E1DFE0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 		68E3F25A0AC37F3300E1DFE0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 		68E3F25E0AC37F3900E1DFE0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 		68E3F2620AC37F3F00E1DFE0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 		68E3F2660AC37F4400E1DFE0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 		68E3F26A0AC37F4900E1DFE0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 /* End PBXContainerItemProxy section */
@@ -2215,8 +2215,10 @@
 				DSTROOT = /;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "$(HOME)/bin";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SKIP_INSTALL = NO;
 				USER_HEADER_SEARCH_PATHS = ../../include;
 			};
 			name = Debug;
@@ -2232,8 +2234,10 @@
 				DSTROOT = /;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "$(HOME)/bin";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SKIP_INSTALL = NO;
 				USER_HEADER_SEARCH_PATHS = ../../include;
 			};
 			name = Release;

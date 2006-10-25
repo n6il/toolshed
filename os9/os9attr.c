@@ -15,9 +15,6 @@
 #include <os9path.h>
 
 
-static int do_getattr(char **argv, char *p);
-static int do_setattr(char **argv, char *p, int attrSetMask, int attrResetMask, int quiet);
-
 /* Help message */
 static char *helpMessage[] =
 {
@@ -141,13 +138,34 @@ int os9attr(int argc, char *argv[])
             
             if (attrSetMask == 0 && attrResetMask == 0)
             {
+				error_code ec;
+				char attrs[9], attr;
+				
                 /* No attribute options were specified */
-                do_getattr(argv, p);
+                if ((ec = TSRBFAttrGet(p, attr, attrs)) != 0)
+				{
+					fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, p);
+				}
+				else
+				{
+					printf("%s\n", attrs);
+				}
             }
             else
             {
+				error_code ec;
+				char attr, attrs[9];
+				
                 /* Attributes were specified */
-                do_setattr(argv, p, attrSetMask, attrResetMask, quiet);
+                if ((ec = TSRBFAttrSet(p, attrSetMask, attrResetMask, attr, attrs)) != 0)
+				{
+					fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, p);
+				}
+				else
+				if (quiet == 0)
+				{
+					printf("%s\n", attrs);
+				}
             }
             if (quiet == 0)
             {
@@ -161,84 +179,6 @@ int os9attr(int argc, char *argv[])
         show_help(helpMessage);
         return(0);
     }
-
-    return(0);
-}
-	
-
-static int do_getattr(char **argv, char *p)
-{
-    error_code	ec = 0;
-    os9_path_id path;
-	
-    /* open a path to the device */
-    ec = _os9_open(&path, p, FAM_READ);
-    if (ec != 0)
-    {
-        fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, p);
-        return(ec);
-    }
-	
-    {
-        fd_stats fdbuf;
-        int size = sizeof(fdbuf);
-
-        _os9_gs_fd(path, size, &fdbuf);
-
-		{
-			char attrs[9];
-
-			OS9AttrToString(fdbuf.fd_att, attrs);
-			printf("%s", attrs);
-		}
-	}
-
-    _os9_close(path);
-
-    return(0);
-}
-
-
-static int do_setattr(char **argv, char *p, int attrSetMask, int attrResetMask, int quiet)
-{
-    error_code	ec = 0;
-    os9_path_id path;
-	
-    /* open a path to the device */
-    ec = _os9_open(&path, p, FAM_WRITE);
-    if (ec != 0)
-    {
-        fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, p);
-        return(ec);
-    }
-	
-    {
-        fd_stats fdbuf;
-        int size = sizeof(fdbuf);
-
-        ec = _os9_gs_fd(path, size, &fdbuf);
-        
-        if (attrSetMask != 0)
-        {
-            fdbuf.fd_att |= attrSetMask;
-        }
-        if (attrResetMask != 0)
-        {
-            fdbuf.fd_att &= ~attrResetMask;
-        }
-        
-        ec = _os9_ss_fd(path, size, &fdbuf);
-
-        if (quiet == 0)
-        {
-			char attrs[9];
-
-			OS9AttrToString(fdbuf.fd_att, attrs);
-			printf("%s", attrs);
-		}
-    }
-
-    _os9_close(path);
 
     return(0);
 }

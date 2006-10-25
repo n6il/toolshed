@@ -1,5 +1,7 @@
 /* rstruct.h : Structure definitions for rma */
 
+#define SYMLEN 64
+
 /* some helpful defines */
 #define PASS1 !Pass2
 #define endof(s) &(s[sizeof(s)/sizeof(s[0])])
@@ -53,7 +55,6 @@ typedef struct asm_cod
 typedef int     (*JMPTBL) (void);
 
 /* Structure definitions   */
-
 struct optns
 {
 	char            optn;
@@ -74,7 +75,7 @@ struct symblstr
 	struct symblstr *left,
 	               *right;
 	struct ref_str *wrd;
-	char            symblnam[10];	/* Symbol Name */
+	char            symblnam[SYMLEN];	/* Symbol Name */
 };
 
 /*

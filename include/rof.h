@@ -29,7 +29,8 @@ extern "C" {
 #else
 #define ROFSYNC		0x8723CD62 /* Reverse for Big-Endian system */
 #endif
-#define SYMLEN		9         /* maximum symbol length */
+//#define SYMLEN		9         /* maximum symbol length */
+#define SYMLEN		64        /* maximum symbol length */
 #define MAXNAME		16        /* maximum "module" name length */
 
 

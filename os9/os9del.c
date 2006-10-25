@@ -15,6 +15,12 @@
 #include <cocopath.h>
 
 
+error_code RBFDelete(char *file)
+{
+	return _os9_delete(file);
+}
+
+
 /* Help message */
 static char *helpMessage[] =
 {
@@ -65,7 +71,7 @@ int os9del(int argc, char *argv[])
             p = argv[i];
         }
 
-        ec = _os9_delete(p);
+        ec = RBFDelete(p);
 
         if (ec != 0)
         {
