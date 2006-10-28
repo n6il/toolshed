@@ -205,6 +205,16 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
         return EOS_BPNAM;
     }
 	
+	/* 2a. Check for a colon. */
+	
+	if (strchr(pathlist, ':') != NULL)
+	{
+		/* 2a. There is a colon; it is a DECB image */
+		
+		*type = DECB;
+		
+		return ec;
+	}
 	
     /* 3. Determine if this is an OS-9 or DECB image. */
 	

@@ -335,18 +335,9 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 	char buffer[256];
 	int sector;
 	int entry_in_sector;
+
+	/* 1. Calculate sector and sector offset */
 	
-
-	/* 1. Check the mode. */
-	
-	if ((path->mode & FAM_READ) == 0)
-    {
-        /* 1. Must be a directory. */
-
-        return EOS_BMODE;
-    }
-
-
 	sector = (path->directory_entry_index * sizeof(decb_dir_entry)) / 256;
 	entry_in_sector = (path->directory_entry_index++ * sizeof(decb_dir_entry)) % 256;
 
@@ -367,14 +358,7 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
 
 	if (ec == 0)
 	{
-		if (buffer[0] == 255)
-		{
-			ec = EOS_EOF;
-		}
-		else
-		{
-			memcpy(dirent, buffer + entry_in_sector, sizeof(decb_dir_entry));
-    	}
+		memcpy(dirent, buffer + entry_in_sector, sizeof(decb_dir_entry));
 	}
 
 
