@@ -20,6 +20,7 @@ u_char *CStringToOS9String(u_char *f);
 int OS9Strlen(u_char *f);
 u_char *OS9StringToCString(u_char *f);
 int UnixToCoCoError(int ec);
+int CoCoToUnixError(int ec);
 void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize);
 void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize);
 void CStringToDECBString(u_char *filename, u_char *ext, u_char *string);

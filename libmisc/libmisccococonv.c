@@ -201,6 +201,37 @@ int UnixToCoCoError(int ec)
 }
 
 
+int CoCoToUnixError(int ec)
+{
+    switch (ec)
+    {
+	case EOS_FNA:
+            return(EACCES);
+
+        case EOS_PNNF:
+            return(ENOENT);
+
+        case EOS_BMODE:
+            return(EBADF);
+
+        case EOS_FAE:
+            return(EEXIST);
+
+        case EOS_PTHFUL:
+            return(ENFILE);
+
+        case EOS_DF:
+	    return(ENOSPC);
+
+        case EOS_BPNAM:
+            return(ENAMETOOLONG);
+
+        default:
+            return -1;
+    }
+}
+
+
 /*
  * Scan a buffer to determine the type of end-of-line termination it has.
  *

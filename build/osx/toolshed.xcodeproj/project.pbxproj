@@ -21,6 +21,7 @@
 				684E54A90AC24AFF004DAB23 /* PBXTargetDependency */,
 				684E54AB0AC24B04004DAB23 /* PBXTargetDependency */,
 				684E54AD0AC24B07004DAB23 /* PBXTargetDependency */,
+				68F937040B8DAF3E00DF9944 /* PBXTargetDependency */,
 			);
 			name = All;
 			productName = All;
@@ -200,6 +201,14 @@
 		68E3F38F0AC41A2C00E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		68E3F3910AC41A4700E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		68E3F3970AC41A9500E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
+		68F936DE0B8DAEED00DF9944 /* cocofuse.c in Sources */ = {isa = PBXBuildFile; fileRef = 68F936DD0B8DAEED00DF9944 /* cocofuse.c */; };
+		68F937260B8DB00500DF9944 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		68F9372D0B8DB02100DF9944 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		68F9372E0B8DB02100DF9944 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		68F9372F0B8DB02100DF9944 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		68F937300B8DB02100DF9944 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		68F937310B8DB02100DF9944 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		68F937320B8DB02100DF9944 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -651,6 +660,62 @@
 			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
+		68F936F10B8DAF2900DF9944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 684E532B0AC247F9004DAB23 /* libsys */;
+			remoteInfo = libsys;
+		};
+		68F936F30B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 684E53050AC247A2004DAB23 /* libnative */;
+			remoteInfo = libnative;
+		};
+		68F936F50B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 684E52EF0AC24767004DAB23 /* libmisc */;
+			remoteInfo = libmisc;
+		};
+		68F936F70B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 684E52CF0AC24728004DAB23 /* libcoco */;
+			remoteInfo = libcoco;
+		};
+		68F936F90B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 684E52BB0AC246EA004DAB23 /* libdecb */;
+			remoteInfo = libdecb;
+		};
+		68F936FB0B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 684E52820AC24644004DAB23 /* librbf */;
+			remoteInfo = librbf;
+		};
+		68F937030B8DAF3E00DF9944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68F936D60B8DAEBE00DF9944 /* cocofuse */;
+			remoteInfo = cocofuse;
+		};
+		68F937050B8DAF5300DF9944 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteInfo = libtoolshed;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -706,7 +771,7 @@
 		684E532C0AC247F9004DAB23 /* libsys.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsys.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E532F0AC24815004DAB23 /* crc.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = crc.c; path = ../../libsys/crc.c; sourceTree = SOURCE_ROOT; };
 		684E53300AC24815004DAB23 /* prsnam.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = prsnam.c; path = ../../libsys/prsnam.c; sourceTree = SOURCE_ROOT; };
-		684E533A0AC24836004DAB23 /* os9 */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = os9; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E533A0AC24836004DAB23 /* os9 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = os9; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E53420AC2487D004DAB23 /* os9.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9.c; path = ../../os9/os9.c; sourceTree = SOURCE_ROOT; };
 		684E53430AC2487D004DAB23 /* os9attr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9attr.c; path = ../../os9/os9attr.c; sourceTree = SOURCE_ROOT; };
 		684E53440AC2487D004DAB23 /* os9cmp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9cmp.c; path = ../../os9/os9cmp.c; sourceTree = SOURCE_ROOT; };
@@ -798,6 +863,8 @@
 		684E54920AC24A9E004DAB23 /* tocgen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = tocgen.c; path = ../../tocgen/tocgen.c; sourceTree = SOURCE_ROOT; };
 		68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtoolshed.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		68E3F24A0AC37F1300E1DFE0 /* libtoolshed.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libtoolshed.c; path = ../../libtoolshed/libtoolshed.c; sourceTree = SOURCE_ROOT; };
+		68F936D70B8DAEBE00DF9944 /* cocofuse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cocofuse; sourceTree = BUILT_PRODUCTS_DIR; };
+		68F936DD0B8DAEED00DF9944 /* cocofuse.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = cocofuse.c; path = ../../cocofuse/cocofuse.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -958,12 +1025,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		68F936D50B8DAEBE00DF9944 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				68F937320B8DB02100DF9944 /* libtoolshed.a in Frameworks */,
+				68F937260B8DB00500DF9944 /* libcoco.a in Frameworks */,
+				68F9372D0B8DB02100DF9944 /* librbf.a in Frameworks */,
+				68F9372E0B8DB02100DF9944 /* libdecb.a in Frameworks */,
+				68F937300B8DB02100DF9944 /* libnative.a in Frameworks */,
+				68F9372F0B8DB02100DF9944 /* libmisc.a in Frameworks */,
+				68F937310B8DB02100DF9944 /* libsys.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		08FB7794FE84155DC02AAC07 /* osx */ = {
 			isa = PBXGroup;
 			children = (
+				68F936DD0B8DAEED00DF9944 /* cocofuse.c */,
 				684E53400AC2484C004DAB23 /* Executables */,
 				684E533C0AC2483C004DAB23 /* Libraries */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
@@ -1008,6 +1090,7 @@
 				684E54120AC249C0004DAB23 /* rlink */,
 				684E54250AC249D8004DAB23 /* ar2 */,
 				684E54840AC24A76004DAB23 /* tocgen */,
+				68F936D70B8DAEBE00DF9944 /* cocofuse */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1622,6 +1705,29 @@
 			productReference = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		68F936D60B8DAEBE00DF9944 /* cocofuse */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 68F936DF0B8DAEED00DF9944 /* Build configuration list for PBXNativeTarget "cocofuse" */;
+			buildPhases = (
+				68F936D40B8DAEBE00DF9944 /* Sources */,
+				68F936D50B8DAEBE00DF9944 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				68F936FC0B8DAF2A00DF9944 /* PBXTargetDependency */,
+				68F936FA0B8DAF2A00DF9944 /* PBXTargetDependency */,
+				68F936F80B8DAF2A00DF9944 /* PBXTargetDependency */,
+				68F936F60B8DAF2A00DF9944 /* PBXTargetDependency */,
+				68F936F40B8DAF2A00DF9944 /* PBXTargetDependency */,
+				68F936F20B8DAF2900DF9944 /* PBXTargetDependency */,
+				68F937060B8DAF5300DF9944 /* PBXTargetDependency */,
+			);
+			name = cocofuse;
+			productName = cocofuse;
+			productReference = 68F936D70B8DAEBE00DF9944 /* cocofuse */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1648,6 +1754,7 @@
 				684E54830AC24A76004DAB23 /* tocgen */,
 				684E549A0AC24AD8004DAB23 /* All */,
 				68E3F2430AC37ED200E1DFE0 /* libtoolshed */,
+				68F936D60B8DAEBE00DF9944 /* cocofuse */,
 			);
 		};
 /* End PBXProject section */
@@ -1875,6 +1982,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				68E3F24B0AC37F1300E1DFE0 /* libtoolshed.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		68F936D40B8DAEBE00DF9944 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				68F936DE0B8DAEED00DF9944 /* cocofuse.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2200,6 +2315,46 @@
 			isa = PBXTargetDependency;
 			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
 			targetProxy = 68E3F26A0AC37F4900E1DFE0 /* PBXContainerItemProxy */;
+		};
+		68F936F20B8DAF2900DF9944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 684E532B0AC247F9004DAB23 /* libsys */;
+			targetProxy = 68F936F10B8DAF2900DF9944 /* PBXContainerItemProxy */;
+		};
+		68F936F40B8DAF2A00DF9944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 684E53050AC247A2004DAB23 /* libnative */;
+			targetProxy = 68F936F30B8DAF2A00DF9944 /* PBXContainerItemProxy */;
+		};
+		68F936F60B8DAF2A00DF9944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 684E52EF0AC24767004DAB23 /* libmisc */;
+			targetProxy = 68F936F50B8DAF2A00DF9944 /* PBXContainerItemProxy */;
+		};
+		68F936F80B8DAF2A00DF9944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 684E52CF0AC24728004DAB23 /* libcoco */;
+			targetProxy = 68F936F70B8DAF2A00DF9944 /* PBXContainerItemProxy */;
+		};
+		68F936FA0B8DAF2A00DF9944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 684E52BB0AC246EA004DAB23 /* libdecb */;
+			targetProxy = 68F936F90B8DAF2A00DF9944 /* PBXContainerItemProxy */;
+		};
+		68F936FC0B8DAF2A00DF9944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 684E52820AC24644004DAB23 /* librbf */;
+			targetProxy = 68F936FB0B8DAF2A00DF9944 /* PBXContainerItemProxy */;
+		};
+		68F937040B8DAF3E00DF9944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68F936D60B8DAEBE00DF9944 /* cocofuse */;
+			targetProxy = 68F937030B8DAF3E00DF9944 /* PBXContainerItemProxy */;
+		};
+		68F937060B8DAF5300DF9944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			targetProxy = 68F937050B8DAF5300DF9944 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2716,6 +2871,42 @@
 			};
 			name = Release;
 		};
+		68F936E00B8DAEED00DF9944 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = "-lfuse";
+				PREBINDING = NO;
+				PRODUCT_NAME = cocofuse;
+				USER_HEADER_SEARCH_PATHS = "../../include /usr/local/include/fuse";
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		68F936E10B8DAEED00DF9944 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = "-lfuse";
+				PREBINDING = NO;
+				PRODUCT_NAME = cocofuse;
+				USER_HEADER_SEARCH_PATHS = "../../include /usr/local/include/fuse";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2868,6 +3059,15 @@
 			buildConfigurations = (
 				68E3F2480AC37EF900E1DFE0 /* Debug */,
 				68E3F2490AC37EF900E1DFE0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		68F936DF0B8DAEED00DF9944 /* Build configuration list for PBXNativeTarget "cocofuse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				68F936E00B8DAEED00DF9944 /* Debug */,
+				68F936E10B8DAEED00DF9944 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
