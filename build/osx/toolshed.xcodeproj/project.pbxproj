@@ -1045,7 +1045,6 @@
 		08FB7794FE84155DC02AAC07 /* osx */ = {
 			isa = PBXGroup;
 			children = (
-				68F936DD0B8DAEED00DF9944 /* cocofuse.c */,
 				684E53400AC2484C004DAB23 /* Executables */,
 				684E533C0AC2483C004DAB23 /* Libraries */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
@@ -1182,6 +1181,7 @@
 		684E53400AC2484C004DAB23 /* Executables */ = {
 			isa = PBXGroup;
 			children = (
+				68F937650B8DB0C900DF9944 /* cocofuse */,
 				684E547E0AC24A66004DAB23 /* tocgen */,
 				684E53FB0AC2499B004DAB23 /* ar2 */,
 				684E53F80AC24992004DAB23 /* rlink */,
@@ -1338,6 +1338,14 @@
 				68E3F24A0AC37F1300E1DFE0 /* libtoolshed.c */,
 			);
 			name = libtoolshed;
+			sourceTree = "<group>";
+		};
+		68F937650B8DB0C900DF9944 /* cocofuse */ = {
+			isa = PBXGroup;
+			children = (
+				68F936DD0B8DAEED00DF9944 /* cocofuse.c */,
+			);
+			name = cocofuse;
 			sourceTree = "<group>";
 		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
