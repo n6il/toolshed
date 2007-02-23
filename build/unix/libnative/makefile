@@ -8,6 +8,6 @@ CFLAGS	+= -g -I../../../include -Wall
 	ar -r $@ $^
 	ranlib $@
 
-libnative.a:	libnativegs.o libnativedelete.o libnativeopen.o libnativeread.o libnativerename.o libnativeseek.o libnativess.o libnativeread.o libnativewrite.o libnativereadln.o
+libnative.a:	libnativegs.o libnativedelete.o libnativeopen.o libnativeread.o libnativerename.o libnativeseek.o libnativess.o libnativeread.o libnativewrite.o libnativereadln.o libnativemakdir.o
 clean:
 	rm *.o *.a

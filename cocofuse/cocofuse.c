@@ -11,6 +11,12 @@
 
 #define _FILE_OFFSET_BITS 64
 #define FUSE_USE_VERSION  26
+
+#ifdef __linux__
+#include <unistd.h>
+#include <sys/types.h>
+#endif
+
 #include <fuse.h>
 
 /* DSK image filename pointer */
@@ -65,8 +71,13 @@ static int coco_getattr(const char *path, struct stat *stbuf)
 				filesize = 0;
 			}
 			stbuf->st_size = int4(filesize);
+			#ifdef __linux__
+			stbuf->st_ctime = fdbuf.create_time;
+			stbuf->st_mtime = fdbuf.last_modified_time;
+			#else
 			stbuf->st_ctimespec.tv_sec = fdbuf.create_time;
 			stbuf->st_mtimespec.tv_sec = fdbuf.last_modified_time;
+			#endif
 			stbuf->st_uid = getuid();
 			stbuf->st_gid = getgid();
 		}	
@@ -403,7 +414,11 @@ static struct fuse_operations coco_filesystem_operations =
 	.create = coco_create,
 	.opendir = coco_opendir,
 	.releasedir = coco_release,
+	#ifdef __linux__
+	.utime = coco_utimens
+	#else
 	.utimens = coco_utimens
+	#endif
 };
 
 
