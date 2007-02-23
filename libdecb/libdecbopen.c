@@ -472,14 +472,12 @@ static int _decb_cmp(decb_dir_entry *entry, char *name)
 static int validate_pathlist(decb_path_id *path, char *pathlist)
 {
 	error_code  ec = 0;
-//	char		*comma;
-	int			count;
+	char		*p;
 
 
 	/* 1. Validate the pathlist. */
 
-//	if ((comma = strchr(pathlist, ',')) == NULL)
-	if (strchr(pathlist, ',') == NULL)
+	if ((p = strchr(pathlist, ',')) == NULL)
 	{
 		/* 1. No native/RS-DOS delimiter in pathlist, return error. */
 
@@ -487,14 +485,37 @@ static int validate_pathlist(decb_path_id *path, char *pathlist)
 	}
 	else
 	{
+		char *q;
+		
+
 		/* 1. Extract information out of pathlist. */
 
+		*p = '\0';
+		strcpy((*path)->imgfile, pathlist);
+		*p = ',';
+		p++;
+		if (*p == '/') p++;
+		q = strchr(p, ':');
+		if (q != NULL)
+		{
+			*q = '\0';
+			strcpy((*path)->filename, p);
+			(*path)->drive = atoi(q + 1);
+			*q = ':';
+		}
+		else
+		{
+			strcpy((*path)->filename, p);			
+		}
+		
+#if 0
 		count = sscanf(pathlist, "%512[^,]%*c%64[^:]%*c%d", (*path)->imgfile, (*path)->filename, &((*path)->drive));
 
 		if (count < 2)
 		{
 			count = sscanf(pathlist, "%512[^,]%*c%*c%d", (*path)->imgfile, &((*path)->drive));
 		}
+#endif
 	}
 
 

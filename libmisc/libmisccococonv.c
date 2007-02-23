@@ -18,6 +18,72 @@
 static EOL_Type DetermineEOLType(char *buffer, int size);
 
 
+int CoCoToUnixPerms(int attrs)			
+{
+	int ret = 0;
+	
+	if (attrs & FAP_READ)
+	{
+		ret |= S_IRUSR;
+	}
+	if (attrs & FAP_WRITE)
+	{
+		ret |= S_IWUSR;
+	}
+	if (attrs & FAP_EXEC)
+	{
+		ret |= S_IXUSR;
+	}
+	if (attrs & FAP_PREAD)
+	{
+		ret |= S_IROTH;
+	}
+	if (attrs & FAP_PWRITE)
+	{
+		ret |= S_IWOTH;
+	}
+	if (attrs & FAP_PEXEC)
+	{
+		ret |= S_IXOTH;
+	}
+			
+	return ret;
+}
+
+
+int UnixToCoCoPerms(int attrs)			
+{
+	int ret = 0;
+	
+	if (attrs & S_IRUSR)
+	{
+		ret |= FAP_READ;
+	}
+	if (attrs & S_IWUSR)
+	{
+		ret |= FAP_WRITE;
+	}
+	if (attrs & S_IXUSR)
+	{
+		ret |= FAP_EXEC;
+	}
+	if (attrs & S_IROTH)
+	{
+		ret |= FAP_PREAD;
+	}
+	if (attrs & S_IWOTH)
+	{
+		ret |= FAP_PWRITE;
+	}
+	if (attrs & S_IXOTH)
+	{
+		ret |= FAP_PEXEC;
+	}
+			
+	return ret;
+}
+
+
 char *UnixToOS9Time(time_t currentTime, char *os9time)
 {
     struct tm *x;
@@ -161,11 +227,14 @@ void DECBStringToCString(u_char *filename, u_char *ext, u_char *string)
 }
 
 
-int UnixToCoCoError(int ec)
+error_code UnixToCoCoError(int ec)
 {
     switch (ec)
     {
-	case ENOTDIR:
+		case 0:
+			return 0;
+			
+		case ENOTDIR:
 		case EPERM:
         case EACCES:
             return(EOS_FNA);
@@ -196,16 +265,19 @@ int UnixToCoCoError(int ec)
             return(EOS_BPNAM);
 
         default:
-            return(ec);
+            return ec;
     }
 }
 
 
-int CoCoToUnixError(int ec)
+int CoCoToUnixError(error_code ec)
 {
     switch (ec)
     {
-	case EOS_FNA:
+		case 0:
+			return 0;
+			
+		case EOS_FNA:
             return(EACCES);
 
         case EOS_PNNF:
@@ -221,7 +293,7 @@ int CoCoToUnixError(int ec)
             return(ENFILE);
 
         case EOS_DF:
-	    return(ENOSPC);
+			return(ENOSPC);
 
         case EOS_BPNAM:
             return(ENAMETOOLONG);

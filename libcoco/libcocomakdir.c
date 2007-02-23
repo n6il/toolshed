@@ -36,7 +36,7 @@ error_code _coco_makdir(char *pathlist)
 			break;
 			
 		case DECB:
-			ec = 1;
+			ec = EOS_FNA;
 			break;
 	}
 	
