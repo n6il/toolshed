@@ -58,6 +58,13 @@ static int coco_getattr(const char *path, struct stat *stbuf)
 			}
 		}
 
+		/* Disk BASIC check -- strip off S_IFDIR from mode */
+		if (p->type == DECB)
+		{
+			stbuf->st_mode &= ~S_IFDIR;
+			stbuf->st_mode = S_IFREG;
+		}
+		
 		if ((ec = -CoCoToUnixError(_coco_gs_fd(p, &fdbuf))) == 0)
 		{
 			u_int filesize;
@@ -372,6 +379,7 @@ static int coco_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off
 				break;
 
 			case DECB:
+				if (e.dentry.decb.filename[0] != 0 && e.dentry.decb.filename[0] != 255 )
 				{
 					u_char cstring[24];
 

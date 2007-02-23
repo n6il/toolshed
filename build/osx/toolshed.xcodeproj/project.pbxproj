@@ -664,56 +664,56 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 684E532B0AC247F9004DAB23 /* libsys */;
+			remoteGlobalIDString = 684E532B0AC247F9004DAB23;
 			remoteInfo = libsys;
 		};
 		68F936F30B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 684E53050AC247A2004DAB23 /* libnative */;
+			remoteGlobalIDString = 684E53050AC247A2004DAB23;
 			remoteInfo = libnative;
 		};
 		68F936F50B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 684E52EF0AC24767004DAB23 /* libmisc */;
+			remoteGlobalIDString = 684E52EF0AC24767004DAB23;
 			remoteInfo = libmisc;
 		};
 		68F936F70B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 684E52CF0AC24728004DAB23 /* libcoco */;
+			remoteGlobalIDString = 684E52CF0AC24728004DAB23;
 			remoteInfo = libcoco;
 		};
 		68F936F90B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 684E52BB0AC246EA004DAB23 /* libdecb */;
+			remoteGlobalIDString = 684E52BB0AC246EA004DAB23;
 			remoteInfo = libdecb;
 		};
 		68F936FB0B8DAF2A00DF9944 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 684E52820AC24644004DAB23 /* librbf */;
+			remoteGlobalIDString = 684E52820AC24644004DAB23;
 			remoteInfo = librbf;
 		};
 		68F937030B8DAF3E00DF9944 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68F936D60B8DAEBE00DF9944 /* cocofuse */;
+			remoteGlobalIDString = 68F936D60B8DAEBE00DF9944;
 			remoteInfo = cocofuse;
 		};
 		68F937050B8DAF5300DF9944 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
+			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
 /* End PBXContainerItemProxy section */
@@ -2890,6 +2890,8 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = "";
 				OTHER_LDFLAGS = "-lfuse";
 				PREBINDING = NO;
 				PRODUCT_NAME = cocofuse;
@@ -2907,6 +2909,8 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = "";
 				OTHER_LDFLAGS = "-lfuse";
 				PREBINDING = NO;
 				PRODUCT_NAME = cocofuse;
