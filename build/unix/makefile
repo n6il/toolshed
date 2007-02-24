@@ -5,13 +5,13 @@ vpath %.c ../../mamou:../../os9
 PACKAGENAME	= toolshed$(RELEASE).tgz
 INSTALLDIR	= $(HOME)/bin
 DIRS		= libtoolshed libnative librbf libcoco libdecb libmisc libsys libdecb \
-		ar2 os9 mamou decb rma rlink rdump tocgen
+		ar2 os9 mamou decb rma rlink rdump tocgen cocofuse
 
 all:
 	$(foreach dir, $(DIRS), (cd $(dir); make);)
 
 install: all
-	cp ar2/ar2 os9/os9 mamou/mamou decb/decb rma/rma rlink/rlink rdump/rdump tocgen/tocgen \
+	cp ar2/ar2 os9/os9 mamou/mamou decb/decb rma/rma rlink/rlink rdump/rdump tocgen/tocgen cocofuse/cocofuse \
 	$(INSTALLDIR)
 #	as6809/as6809 aslink/aslink $(INSTALLDIR)
 

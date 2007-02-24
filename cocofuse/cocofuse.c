@@ -12,6 +12,8 @@
 #define _FILE_OFFSET_BITS 64
 #define FUSE_USE_VERSION  26
 
+#include <toolshed.h>
+
 #ifdef __linux__
 #include <unistd.h>
 #include <sys/types.h>
@@ -19,8 +21,116 @@
 
 #include <fuse.h>
 
+static int coco_open(const char *path, struct fuse_file_info *fi);
+
 /* DSK image filename pointer */
 static char *dsk;
+
+
+/*
+ * coco_statfs - returns status of the file system
+ */
+static int coco_statfs(const char *path, struct statvfs *stbuf)
+{
+	_path_type type;
+	char buff[1024], dname[32];
+	u_int month, day, year, bps, total_sectors, bytes_free, free_sectors;
+	u_int largest_free_block, sectors_per_cluster, largest_count, sector_count;
+	
+	sprintf(buff, "%s,@", dsk, path);
+	_coco_identify_image(buff, &type);
+	/* Here we revert to RBF or Disk BASIC to get details about the disk */
+	switch (type)
+	{
+		case OS9:
+			if (TSRBFFree(buff, dname, &month, &day, &year, &bps, &total_sectors, &bytes_free, &free_sectors, &largest_free_block, &sectors_per_cluster, &largest_count, &sector_count) == 0)
+			{
+				stbuf->f_bsize = stbuf->f_frsize = bps;
+				stbuf->f_blocks = total_sectors;
+				stbuf->f_bfree = free_sectors;
+				stbuf->f_bavail = free_sectors;
+				stbuf->f_files = 1000;
+				stbuf->f_ffree = 1000;
+				stbuf->f_favail = 1000;
+				stbuf->f_fsid = 6809;
+				stbuf->f_namemax = 29;
+			}
+			break;
+			
+		case DECB:
+			{
+				/* TODO: Put values here that make sense */
+				stbuf->f_bsize = stbuf->f_frsize = 256;
+				stbuf->f_blocks = 68;
+				stbuf->f_bfree = 68;
+				stbuf->f_bavail = 68;
+				stbuf->f_files = 1000;
+				stbuf->f_ffree = 1000;
+				stbuf->f_favail = 1000;
+				stbuf->f_fsid = 6809;
+				stbuf->f_namemax = 11;
+			}
+			break;
+	}
+	
+	return 0;
+}
+
+
+/*
+ * coco_fgetattr - returns file attributes
+ *
+ * Notes: code in this routine coverts coco_file_stat values into
+ * values appropriate for the struct stat native to FUSE.
+ */
+static int coco_fgetattr(const char *path, struct stat *stbuf, struct fuse_file_info *fi)
+{
+	error_code ec = 0;
+	coco_path_id p = (coco_path_id)(int32_t)fi->fh;
+	
+    memset(stbuf, 0, sizeof(struct stat));
+
+	coco_file_stat fdbuf;
+
+	/* Disk BASIC check -- strip off S_IFDIR from mode */
+	if (p->type == DECB)
+	{
+		stbuf->st_mode &= ~S_IFDIR;
+		stbuf->st_mode = S_IFREG;
+	}
+		
+	if ((ec = -CoCoToUnixError(_coco_gs_fd(p, &fdbuf))) == 0)
+	{
+		u_int filesize;
+
+		stbuf->st_mode |= CoCoToUnixPerms(fdbuf.attributes);
+
+       	stbuf->st_nlink = 1;
+
+		if (_coco_gs_size(p, &filesize) != 0)
+		{
+			filesize = 0;
+		}
+		stbuf->st_size = int4((u_char *)filesize);
+#ifdef __linux__
+		stbuf->st_ctime = fdbuf.create_time;
+		stbuf->st_mtime = fdbuf.last_modified_time;
+#else
+		stbuf->st_ctimespec.tv_sec = fdbuf.create_time;
+		stbuf->st_mtimespec.tv_sec = fdbuf.last_modified_time;
+#endif
+		stbuf->st_uid = getuid();
+		stbuf->st_gid = getgid();
+    }
+
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_fgetattr(%s) = %d", path, ec);
+#endif
+#endif
+
+    return ec;
+}
 
 
 /*
@@ -31,8 +141,7 @@ static char *dsk;
  */
 static int coco_getattr(const char *path, struct stat *stbuf)
 {
-	error_code ec = 0;
-    memset(stbuf, 0, sizeof(struct stat));
+	int ec = 0;
 
     if (strcmp(path, "/") == 0)
 	{
@@ -42,55 +151,20 @@ static int coco_getattr(const char *path, struct stat *stbuf)
         stbuf->st_nlink = 1;
     }
 	else
-    {
-		coco_path_id p;
-		coco_file_stat fdbuf;
-		char buff[1024];
-
-		sprintf(buff, "%s,%s", dsk, path);
-		stbuf->st_mode = S_IFDIR;
-		if (_coco_open(&p, buff, FAM_READ | FAM_DIR) != 0)
-		{
-			stbuf->st_mode = S_IFREG;
-			if ((ec = -CoCoToUnixError(_coco_open(&p, buff, FAM_READ))) != 0)
-			{
-				return ec;
-			}
-		}
-
-		/* Disk BASIC check -- strip off S_IFDIR from mode */
-		if (p->type == DECB)
-		{
-			stbuf->st_mode &= ~S_IFDIR;
-			stbuf->st_mode = S_IFREG;
-		}
+	{
+		struct fuse_file_info fi;
 		
-		if ((ec = -CoCoToUnixError(_coco_gs_fd(p, &fdbuf))) == 0)
+		if ((ec = coco_open(path, &fi)) == 0)
 		{
-			u_int filesize;
+			ec = coco_fgetattr(path, stbuf, &fi);
+		}
+	}
 
-			stbuf->st_mode |= CoCoToUnixPerms(fdbuf.attributes);
-
-        	stbuf->st_nlink = 1;
-
-			if (_coco_gs_size(p, &filesize) != 0)
-			{
-				filesize = 0;
-			}
-			stbuf->st_size = int4(filesize);
-			#ifdef __linux__
-			stbuf->st_ctime = fdbuf.create_time;
-			stbuf->st_mtime = fdbuf.last_modified_time;
-			#else
-			stbuf->st_ctimespec.tv_sec = fdbuf.create_time;
-			stbuf->st_mtimespec.tv_sec = fdbuf.last_modified_time;
-			#endif
-			stbuf->st_uid = getuid();
-			stbuf->st_gid = getgid();
-		}	
-
-		_coco_close(p);
-    }
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_getattr(%s) = %d", path, ec);
+#endif
+#endif
 
     return ec;
 }
@@ -107,6 +181,12 @@ static int coco_mkdir(const char *path, mode_t mode)
 	sprintf(buff, "%s,%s", dsk, path);
 	ec = -CoCoToUnixError(_coco_makdir(buff));
 
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_makdir(%s) = %d", path, ec);
+#endif
+#endif
+
 	return ec;
 }
 
@@ -122,6 +202,12 @@ static int coco_unlink(const char *path)
 	sprintf(buff, "%s,%s", dsk, path);
 	ec = -CoCoToUnixError(_coco_delete(buff));
 
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_unlink(%s) = %d", path, ec);
+#endif
+#endif
+
 	return ec;
 }
 
@@ -136,6 +222,11 @@ static int coco_rmdir(const char *path)
 
 	sprintf(buff, "%s,%s", dsk, path);
 //	ec = -CoCoToUnixError(_coco_deldir(buff)); //, CoCoToUnixPerm(mode));
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_rmdir(%s) = %d", path, ec);
+#endif
+#endif
 	
 	return ec;
 }
@@ -180,7 +271,12 @@ static int coco_rename(const char *path, const char *newname)
 	sprintf(buff1, "%s,%s", dsk, path);
 	ec = -CoCoToUnixError(_coco_rename(buff1, p2 + 1));
 #endif
-	
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_rename(%s) = %d", path, ec);
+#endif
+#endif
+
 	return ec;
 }
 
@@ -201,6 +297,12 @@ static int coco_chmod(const char *path, mode_t mode)
 		_coco_close(p);
 	}
 	
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_chmod(%s, $%X) = %d", path, mode, ec);
+#endif
+#endif
+
 	return ec;
 }
 
@@ -222,6 +324,12 @@ static int coco_truncate(const char *path, off_t size)
 		_coco_close(p);
 	}
 	
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_truncate(%s, %d) = %d", path, size, ec);
+#endif
+#endif
+
 	return ec;
 }
 
@@ -244,6 +352,12 @@ static int coco_open(const char *path, struct fuse_file_info *fi)
 		fi->fh = (uint32_t)p;
 	}
 
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_open(%s) = %d", path, ec);
+#endif
+#endif
+
 	return ec;
 }
 
@@ -259,6 +373,12 @@ static int coco_read(const char *path, char *buf, size_t size, off_t offset, str
 	{
 		return ec;
 	}
+
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_read(%s, $%X, %d) = %d", path, buf, size, ec);
+#endif
+#endif
 
 	return size;
 }
@@ -276,6 +396,12 @@ static int coco_write(const char *path, const char *buf, size_t size, off_t offs
 		return ec;
 	}
 
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_write(%s, $%X, %d) = %d", path, buf, size, ec);
+#endif
+#endif
+
 	return size;
 }
 
@@ -292,13 +418,19 @@ static int coco_release(const char *path, struct fuse_file_info *fi)
 	
 	ec = -CoCoToUnixError(_coco_close((coco_path_id)(int32_t)fi->fh));
 	
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_release(%s) = %d", path, ec);
+#endif
+#endif
+
 	return ec;
 }
 
 
 static int coco_create(const char *path, mode_t perms, struct fuse_file_info * fi)
 {
-	error_code ec;
+	error_code ec = 0;
 	coco_path_id p;
 	char buff[1024];
 	int mflags = FAM_READ | FAM_WRITE;
@@ -318,7 +450,13 @@ static int coco_create(const char *path, mode_t perms, struct fuse_file_info * f
 
 	fi->fh = (uint32_t)p;
 
-	return 0;
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_create(%s, $%X) = %d", path, perms, ec);
+#endif
+#endif
+
+	return ec;
 }
 
 
@@ -342,12 +480,19 @@ static int coco_opendir(const char *path, struct fuse_file_info *fi)
 		fi->fh = (uint32_t)p;
 	}
 
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_opendir(%s) = %d", path, ec);
+#endif
+#endif
+
 	return ec;
 }
 
 
 static int coco_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi)
 {
+	error_code ec = 0;
 	coco_path_id p;
 	coco_dir_entry e;
 	char buff[1024];
@@ -397,7 +542,13 @@ static int coco_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off
 	_coco_close(p);
 #endif
 
-	return 0;
+#ifdef DEBUG
+#if defined(__APPLE__)
+	NSLog(@"coco_readdir(%s) = %d", path, ec);
+#endif
+#endif
+
+	return ec;
 }
 
 
@@ -406,8 +557,10 @@ static int coco_utimens(const char *path, const struct timespec tv[2])
 	return 0;
 }
 
+#ifndef COCOFUSE_MAC
 static struct fuse_operations coco_filesystem_operations =
 {
+	.statfs = coco_statfs,
 	.getattr = coco_getattr,
 	.mkdir = coco_mkdir,
 	.unlink = coco_unlink,
@@ -422,11 +575,11 @@ static struct fuse_operations coco_filesystem_operations =
 	.create = coco_create,
 	.opendir = coco_opendir,
 	.releasedir = coco_release,
-	#ifdef __linux__
+#ifdef __linux__
 	.utime = coco_utimens
-	#else
+#else
 	.utimens = coco_utimens
-	#endif
+#endif
 };
 
 
@@ -435,3 +588,4 @@ int main(int argc, char **argv)
 	dsk = argv[2];
 	return fuse_main(argc - 1, argv, &coco_filesystem_operations, NULL);
 }
+#endif
