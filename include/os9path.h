@@ -141,6 +141,7 @@ error_code _os9_close(os9_path_id);
 /* gs.c */
 error_code _os9_gs_attr(os9_path_id, int *);
 error_code _os9_gs_eof(os9_path_id path);
+error_code _os9_gs_fd_pathlist(char *pathlist, int count, fd_stats *fdbuf);
 error_code _os9_gs_fd(os9_path_id, int, fd_stats *);
 error_code _os9_gs_size(os9_path_id path, u_int *size);
 error_code _os9_gs_pos(os9_path_id path, u_int *pos);

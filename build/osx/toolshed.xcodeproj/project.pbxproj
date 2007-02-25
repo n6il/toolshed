@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				68F937040B8DAF3E00DF9944 /* PBXTargetDependency */,
 				684E549F0AC24AE2004DAB23 /* PBXTargetDependency */,
 				684E54A10AC24AE5004DAB23 /* PBXTargetDependency */,
 				684E54A30AC24AE7004DAB23 /* PBXTargetDependency */,
@@ -21,7 +22,6 @@
 				684E54A90AC24AFF004DAB23 /* PBXTargetDependency */,
 				684E54AB0AC24B04004DAB23 /* PBXTargetDependency */,
 				684E54AD0AC24B07004DAB23 /* PBXTargetDependency */,
-				68F937040B8DAF3E00DF9944 /* PBXTargetDependency */,
 			);
 			name = All;
 			productName = All;
@@ -1723,13 +1723,13 @@
 			buildRules = (
 			);
 			dependencies = (
+				68F937060B8DAF5300DF9944 /* PBXTargetDependency */,
 				68F936FC0B8DAF2A00DF9944 /* PBXTargetDependency */,
 				68F936FA0B8DAF2A00DF9944 /* PBXTargetDependency */,
 				68F936F80B8DAF2A00DF9944 /* PBXTargetDependency */,
 				68F936F60B8DAF2A00DF9944 /* PBXTargetDependency */,
 				68F936F40B8DAF2A00DF9944 /* PBXTargetDependency */,
 				68F936F20B8DAF2900DF9944 /* PBXTargetDependency */,
-				68F937060B8DAF5300DF9944 /* PBXTargetDependency */,
 			);
 			name = cocofuse;
 			productName = cocofuse;

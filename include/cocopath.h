@@ -123,6 +123,7 @@ error_code _coco_close(coco_path_id);
 error_code _coco_gs_attr(coco_path_id, int *);
 error_code _coco_gs_eof(coco_path_id path);
 error_code _coco_gs_fd(coco_path_id, coco_file_stat *);
+error_code _coco_gs_fd_pathlist(char *pathlist, coco_file_stat *statbuf);
 error_code _coco_gs_pathtype(coco_path_id, _path_type *);
 error_code _coco_gs_size(coco_path_id path, u_int *size);
 error_code _coco_gs_pos(coco_path_id path, u_int *pos);

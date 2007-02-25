@@ -54,6 +54,7 @@ error_code _native_close(native_path_id);
 error_code _native_gs_attr(native_path_id, int *);
 error_code _native_gs_eof(native_path_id path);
 error_code _native_gs_fd(native_path_id, struct stat *);
+error_code _native_gs_fd_pathlist(char *pathlist, struct stat *statbuf);
 error_code _native_gs_size(native_path_id path, u_int *size);
 error_code _native_gs_pos(native_path_id path, u_int *pos);
 

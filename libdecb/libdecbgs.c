@@ -34,6 +34,31 @@ error_code _decb_gs_fd(decb_path_id path, decb_file_stat *stat)
 
 
 
+error_code _decb_gs_fd_pathlist(char *pathlist, decb_file_stat *statbuf)
+{
+    error_code	ec = 0;
+	decb_path_id path;
+	
+	/* Open a path to the pathlist */
+	
+	ec = _decb_open(&path, pathlist, FAM_READ);
+	
+	if (ec != 0)
+	{
+		return ec;
+	}
+	
+	
+	ec = _decb_gs_fd(path, statbuf);
+	
+	_decb_close(path);
+	
+
+    return ec;
+}
+
+
+
 error_code _decb_gs_eof(decb_path_id path)
 {
     error_code		ec = 0;

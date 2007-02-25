@@ -100,6 +100,36 @@ error_code _native_gs_fd(native_path_id path, struct stat *statbuf)
 
 
 
+error_code _native_gs_fd_pathlist(char *pathlist, struct stat *statbuf)
+{
+    error_code	ec = 0;
+	native_path_id path;
+	
+	/* Open a path to the pathlist */
+	
+	ec = _native_open(&path, pathlist, FAM_READ);
+	
+	if (ec != 0)
+	{
+		ec = _native_open(&path, pathlist, FAM_READ | FAM_DIR);
+		
+		if (ec != 0)
+		{
+			return ec;
+		}
+	}
+	
+	
+	ec = _native_gs_fd(path, statbuf);
+	
+	_native_close(path);
+	
+
+    return ec;
+}
+
+
+
 error_code _native_gs_size(native_path_id path, u_int *size)
 {
     error_code	ec = 0;

@@ -141,24 +141,35 @@ static int coco_fgetattr(const char *path, struct stat *stbuf, struct fuse_file_
  */
 static int coco_getattr(const char *path, struct stat *stbuf)
 {
-	int ec = 0;
+	error_code ec = 0;
+	
+    memset(stbuf, 0, sizeof(struct stat));
 
-    if (strcmp(path, "/") == 0)
+	coco_file_stat fdbuf;
+
+	if ((ec = -CoCoToUnixError(_coco_gs_fd_pathlist((char *)path, &fdbuf))) == 0)
 	{
-		/* The root directory of our file system. */
-		/* TODO: We really need to get this info from the root directory */
-        stbuf->st_mode = S_IFDIR | 0755;
-        stbuf->st_nlink = 1;
-    }
-	else
-	{
-		struct fuse_file_info fi;
-		
-		if ((ec = coco_open(path, &fi)) == 0)
+		u_int filesize;
+
+		stbuf->st_mode |= CoCoToUnixPerms(fdbuf.attributes);
+
+       	stbuf->st_nlink = 1;
+
+//		if (_coco_gs_size(p, &filesize) != 0)
 		{
-			ec = coco_fgetattr(path, stbuf, &fi);
+			filesize = 128;
 		}
-	}
+		stbuf->st_size = int4((u_char *)filesize);
+#ifdef __linux__
+		stbuf->st_ctime = fdbuf.create_time;
+		stbuf->st_mtime = fdbuf.last_modified_time;
+#else
+		stbuf->st_ctimespec.tv_sec = fdbuf.create_time;
+		stbuf->st_mtimespec.tv_sec = fdbuf.last_modified_time;
+#endif
+		stbuf->st_uid = getuid();
+		stbuf->st_gid = getgid();
+    }
 
 #ifdef DEBUG
 #if defined(__APPLE__)

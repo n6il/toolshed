@@ -82,6 +82,36 @@ error_code _os9_gs_fd(os9_path_id path, int count, fd_stats *fdbuf)
 
 
 
+error_code _os9_gs_fd_pathlist(char *pathlist, int count, fd_stats *fdbuf)
+{
+    error_code	ec = 0;
+	os9_path_id path;
+	
+	/* Open a path to the pathlist */
+	
+	ec = _os9_open(&path, pathlist, FAM_READ);
+	
+	if (ec != 0)
+	{
+		ec = _os9_open(&path, pathlist, FAM_READ | FAM_DIR);
+		
+		if (ec != 0)
+		{
+			return ec;
+		}
+	}
+	
+	
+	ec = _os9_gs_fd(path, count, fdbuf);
+	
+	_os9_close(path);
+	
+
+    return ec;
+}
+
+
+
 error_code _os9_gs_size(os9_path_id path, u_int *size)
 {
     error_code	ec = 0;

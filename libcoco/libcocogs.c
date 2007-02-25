@@ -172,6 +172,36 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 }
 
 
+error_code _coco_gs_fd_pathlist(char *pathlist, coco_file_stat *statbuf)
+{
+    error_code	ec = 0;
+	coco_path_id path;
+	
+	/* Open a path to the pathlist */
+	
+	ec = _coco_open(&path, pathlist, FAM_READ);
+	
+	if (ec != 0)
+	{
+		ec = _coco_open(&path, pathlist, FAM_READ | FAM_DIR);
+		
+		if (ec != 0)
+		{
+			return ec;
+		}
+	}
+	
+	
+	ec = _coco_gs_fd(path, statbuf);
+	
+	_coco_close(path);
+	
+
+    return ec;
+}
+
+
+
 error_code _coco_gs_size(coco_path_id path, u_int *size)
 {
 	error_code		ec = 0;

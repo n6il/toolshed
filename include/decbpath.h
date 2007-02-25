@@ -117,6 +117,7 @@ error_code _decb_gs_pos(decb_path_id path, u_int *pos);
 error_code _decb_ss_size(decb_path_id path, int size);
 error_code _decb_gs_eof(decb_path_id path);
 error_code _decb_gs_fd(decb_path_id path, decb_file_stat *stat);
+error_code _decb_gs_fd_pathlist(char *pathlist, decb_file_stat *statbuf);
 error_code _decb_ss_fd(decb_path_id path, decb_file_stat *stat);
 error_code _decb_gs_sector(decb_path_id path, int track, int sector, char *buffer);
 error_code _decb_ss_sector(decb_path_id path, int track, int sector, char *buffer);
