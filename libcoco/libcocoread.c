@@ -50,7 +50,7 @@ error_code _coco_readdir(coco_path_id path, coco_dir_entry *e)
 	switch (path->type)
 	{
 		case NATIVE:
-						ec = _native_readdir(path->path.native, &e->dentry.native);
+			ec = _native_readdir(path->path.native, &e->dentry.native);
 			break;
 
 		case OS9:

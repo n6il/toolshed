@@ -21,6 +21,99 @@ u_char DecrementLinkCount(os9_path_id path, int fd_lsn);
 static int _os9_freefile(char *filePath, u_char *bitmap);
 
 
+error_code _os9_delete_directory(char *pathlist)
+{
+	error_code ec;
+	os9_path_id fold_path;
+	fd_stats fdbuf;
+
+    /* open a path to the device */
+    ec = _os9_open(&fold_path, pathlist, FAM_WRITE | FAM_DIR);
+
+    if( ec != 0 )
+    {
+        return ec;
+    }
+	
+    while (_os9_gs_eof(fold_path) == 0)
+    {
+        u_int size, i = 0;
+        os9_dir_entry dentry;
+		char	*dirpath;
+        os9_path_id path2;
+
+        size = sizeof(dentry);
+        ec = _os9_read(fold_path, &dentry, &size);
+        if (ec != 0)
+		{
+            break;
+		}
+
+        OS9StringToCString(dentry.name);
+		
+        /* Skip over dot directories and empty entries. */
+        if (dentry.name[0] == '\0')
+            continue;
+        if (strcmp((char *)dentry.name, ".") == 0)
+            continue;
+        if (strcmp((char *)dentry.name, "..") == 0)
+            continue;
+		
+        dirpath = malloc(strlen((char *)pathlist) + strlen((char *)dentry.name) + 2);
+        if (dirpath == NULL)
+        {
+            return 1;
+        }
+
+        _os9_close(fold_path);
+
+        strcpy(dirpath, pathlist);
+        strcat(dirpath, "/");
+        strcat(dirpath, (char *)dentry.name);
+
+        /* Determine if file is really another directory */
+        ec = _os9_open(&path2, dirpath, FAM_DIR | FAM_READ);
+        if (ec == 0)
+        {
+            /* Yup it is a directory, we need to delete it */
+            _os9_close(path2);
+            ec = _os9_delete_directory(dirpath);
+			
+            if (ec != 0)
+            {
+                /* Error */
+                free(dirpath);
+                return ec;
+            }
+        }
+		
+        /* Delete file */
+        ec = _os9_delete(dirpath);
+        free(dirpath);
+        
+        /* Open orginal directory */
+        ec = _os9_open(&fold_path, pathlist, FAM_WRITE | FAM_DIR);
+        ec = _os9_seek(fold_path, i*sizeof(fd_stats ), SEEK_SET);
+		
+        /* Incement directory entry count */
+        i++;
+    }
+	
+    /* All directory entried have been deleted.
+        Turn off directory attribute, and delete directory file */
+	   
+    _os9_gs_fd(fold_path, sizeof(fd_stats), &fdbuf);
+    fdbuf.fd_att &= ~FAP_DIR;
+    _os9_ss_fd(fold_path, sizeof(fd_stats), &fdbuf);
+
+    ec = _os9_close(fold_path);
+
+    ec = _os9_delete(pathlist);
+
+	return ec;
+}
+
+
 error_code _os9_delete(char *pathlist)
 {
     error_code	ec = 0;

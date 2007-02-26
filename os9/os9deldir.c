@@ -104,7 +104,7 @@ static int do_deldir(char **argv, char *path, int interaction)
 	fd_stats fdbuf;
 	char	c[10];
 
-	if( interaction == 0 )
+	if (interaction == 0)
 	{
 		do
 		{
@@ -136,7 +136,7 @@ static int do_deldir(char **argv, char *path, int interaction)
                     c[0] = 'l'; /* Force the user to type l, d, or q */
                     break;
             }
-        } while( c[0]=='l' );
+        } while (c[0] == 'l');
     }
 
     /* open a path to the device */

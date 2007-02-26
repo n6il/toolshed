@@ -115,6 +115,7 @@ error_code _coco_write(coco_path_id, void *, u_int *);
 error_code _coco_writeln(coco_path_id, char *, u_int *);
 error_code _coco_makdir(char *pathlist);
 error_code _coco_delete(char *pathlist);
+error_code _coco_delete_directory(char *pathlist);
 error_code _coco_rename(char *pathlist, char *new_name);
 error_code _coco_rename_ex(char *pathlist, char *new_name, coco_dir_entry *dentry);
 error_code _coco_close(coco_path_id);

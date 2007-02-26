@@ -31,3 +31,21 @@ error_code _native_delete(char *pathlist)
 	
 	return ec;
 }
+
+
+
+error_code _native_delete_directory(char *pathlist)
+{
+    error_code	ec = 0;
+	
+	
+    ec = rmdir(pathlist);
+	
+    if (ec != 0)
+	{
+		ec = errno;
+	}
+	
+	
+	return ec;
+}

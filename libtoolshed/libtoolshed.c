@@ -701,3 +701,62 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 	return(0);
 }
 
+
+
+error_code TSDECBFree(char *file, char *dname, u_int *bps, u_int *total_granules, u_int *bytes_free, u_int *free_granules, u_int *largest_free_block)
+{
+	error_code	ec = 0;
+	int i, tmp = 0;
+	char decbpathlist[256];
+	decb_path_id path;
+
+	*bps = 256;
+	*total_granules = 68;
+	*bytes_free = 0;
+	*free_granules = 0;
+	*largest_free_block = 0;
+
+	strcpy(decbpathlist, file);
+
+	/* if the user forgot to add the ',', do it for them */
+	if (strchr(decbpathlist, ',') == NULL)
+	{
+		strcat(decbpathlist, ",");
+	}
+
+	/* open a path to the device */
+	ec = _decb_open(&path, decbpathlist, FAM_READ);
+	if (ec != 0)
+	{
+		return(ec);
+	}
+
+	/* Walk the FAT. */
+	for (i = 0; i < *total_granules; i++)
+	{
+		if (path->FAT[i] == 0xFF)
+		{
+			(*free_granules)++;
+			tmp++;
+		}
+		else
+		{
+			if (tmp > *largest_free_block)
+			{
+				*largest_free_block = tmp;
+			}
+		}
+	}
+
+	if (tmp > *largest_free_block)
+	{
+		*largest_free_block = tmp;
+	}
+
+	*bytes_free = *free_granules * 2304;
+	
+	_decb_close(path);
+
+	return 0;
+}
+

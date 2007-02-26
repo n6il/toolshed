@@ -45,3 +45,37 @@ error_code _coco_delete(char *pathlist)
 	
 	return ec;
 }
+
+
+
+error_code _coco_delete_directory(char *pathlist)
+{
+	error_code		ec = 0;
+	_path_type		disk_type;
+	
+	
+	/* 1. Determine the path type. */
+	
+	_coco_identify_image(pathlist, &disk_type);
+	
+	
+    /* 2. Call appropriate function. */
+	
+	switch (disk_type)
+	{
+		case NATIVE:
+			ec = _native_delete_directory(pathlist);
+			break;
+			
+		case OS9:
+			ec = _os9_delete_directory(pathlist);
+			break;
+			
+		case DECB:
+			ec = EOS_BPNAM;
+			break;
+	}
+	
+	
+	return ec;
+}
