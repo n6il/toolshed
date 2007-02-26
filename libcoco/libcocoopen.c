@@ -219,7 +219,7 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
     /* 3. Determine if this is an OS-9 or DECB image. */
 	
 	fp = fopen(tmppathlist, "r");
-	
+
 	if (fp != NULL)
 	{
 		u_char sector_buffer[256];

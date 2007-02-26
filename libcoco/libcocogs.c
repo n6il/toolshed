@@ -230,6 +230,37 @@ error_code _coco_gs_size(coco_path_id path, u_int *size)
 
 
 
+
+error_code _coco_gs_size_pathlist(char *pathlist, u_int *size)
+{
+    error_code	ec = 0;
+	coco_path_id path;
+	
+	/* Open a path to the pathlist */
+	
+	ec = _coco_open(&path, pathlist, FAM_READ);
+	
+	if (ec != 0)
+	{
+		ec = _coco_open(&path, pathlist, FAM_READ | FAM_DIR);
+		
+		if (ec != 0)
+		{
+			return ec;
+		}
+	}
+	
+	
+	ec = _coco_gs_size(path, size);
+	
+	_coco_close(path);
+	
+
+    return ec;
+}
+
+
+
 error_code _coco_gs_pos(coco_path_id path, u_int *pos)
 {
 	error_code		ec = 0;

@@ -134,7 +134,7 @@ error_code _os9_gs_size(os9_path_id path, u_int *size)
         return ec;
     }
 
-    *size = (int)fdbuf.fd_siz;
+    *size = int4(fdbuf.fd_siz);
 
 	
     return ec;

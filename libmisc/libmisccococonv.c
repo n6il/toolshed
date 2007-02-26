@@ -22,6 +22,15 @@ int CoCoToUnixPerms(int attrs)
 {
 	int ret = 0;
 	
+	if (attrs & FAP_DIR)
+	{
+		ret = S_IFDIR;
+	}
+	else
+	{
+		ret = S_IFREG;
+	}
+	
 	if (attrs & FAP_READ)
 	{
 		ret |= S_IRUSR;

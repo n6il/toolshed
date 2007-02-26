@@ -24,7 +24,7 @@
 static int coco_open(const char *path, struct fuse_file_info *fi);
 
 /* DSK image filename pointer */
-static char *dsk;
+static char dsk[1024];
 
 
 /*
@@ -142,12 +142,12 @@ static int coco_fgetattr(const char *path, struct stat *stbuf, struct fuse_file_
 static int coco_getattr(const char *path, struct stat *stbuf)
 {
 	error_code ec = 0;
+	coco_file_stat fdbuf;
+	char buff[1024];
 	
     memset(stbuf, 0, sizeof(struct stat));
-
-	coco_file_stat fdbuf;
-
-	if ((ec = -CoCoToUnixError(_coco_gs_fd_pathlist((char *)path, &fdbuf))) == 0)
+	sprintf(buff, "%s,%s", dsk, path);
+	if ((ec = -CoCoToUnixError(_coco_gs_fd_pathlist(buff, &fdbuf))) == 0)
 	{
 		u_int filesize;
 
@@ -155,11 +155,11 @@ static int coco_getattr(const char *path, struct stat *stbuf)
 
        	stbuf->st_nlink = 1;
 
-//		if (_coco_gs_size(p, &filesize) != 0)
+		if (_coco_gs_size_pathlist(buff, &filesize) == 0)
 		{
-			filesize = 128;
+			stbuf->st_size = filesize;
 		}
-		stbuf->st_size = int4((u_char *)filesize);
+
 #ifdef __linux__
 		stbuf->st_ctime = fdbuf.create_time;
 		stbuf->st_mtime = fdbuf.last_modified_time;
@@ -596,7 +596,7 @@ static struct fuse_operations coco_filesystem_operations =
 
 int main(int argc, char **argv)
 {
-	dsk = argv[2];
+	strcpy(dsk, argv[2]);
 	return fuse_main(argc - 1, argv, &coco_filesystem_operations, NULL);
 }
 #endif

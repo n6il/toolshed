@@ -106,6 +106,31 @@ error_code _decb_gs_size(decb_path_id path, u_int *size)
 
 
 
+error_code _decb_gs_size_pathlist(char *pathlist, u_int *size)
+{
+    error_code	ec = 0;
+	decb_path_id path;
+	
+	/* Open a path to the pathlist */
+	
+	ec = _decb_open(&path, pathlist, FAM_READ);
+	
+	if (ec != 0)
+	{
+		return ec;
+	}
+	
+	
+	ec = _decb_gs_size(path, size);
+	
+	_decb_close(path);
+	
+
+    return ec;
+}
+
+
+
 error_code _decb_gs_pos(decb_path_id path, u_int *pos)
 {
     error_code	ec = 0;

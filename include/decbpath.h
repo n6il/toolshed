@@ -113,6 +113,7 @@ error_code _decb_seekgranule(decb_path_id path, int granule);
 error_code _decb_rename(char *pathlist, char *newname);
 error_code _decb_rename_ex(char *pathlist, char *new_name, decb_dir_entry *dirent);
 error_code _decb_gs_size(decb_path_id path, u_int *size);
+error_code _decb_gs_size_pathlist(char *pathlist, u_int *size);
 error_code _decb_gs_pos(decb_path_id path, u_int *pos);
 error_code _decb_ss_size(decb_path_id path, int size);
 error_code _decb_gs_eof(decb_path_id path);
