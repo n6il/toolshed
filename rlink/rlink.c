@@ -298,7 +298,7 @@ int             help()
 	fprintf(stderr, "   -m             print the linkage map\n");
 	fprintf(stderr, "   -s             print the symbol table\n");
 	fprintf(stderr, "   -b=ept         make callable from BASIC09\n");
-	fprintf(stderr, "   -B             emit Disk BASCIC loadable module\n");
+	fprintf(stderr, "   -B             emit Disk BASIC loadable module\n");
 	fprintf(stderr, "   -t             allow static data to appear in BASIC09 module\n");
 	fprintf(stderr, "   -y             omit C related data\n");
 
