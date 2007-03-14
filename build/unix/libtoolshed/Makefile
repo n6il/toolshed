@@ -5,10 +5,10 @@ vpath %.c ../../../libtoolshed
 CFLAGS	+= -I../../../include -Wall
 
 %.a:
-	ar -r $@ $^
-	ranlib $@
+	ar -r lib$@ $^
+	ranlib lib$@
 
-libtoolshed.a:	libtoolshed.o
+toolshed.a:	toolshed.o
 
 clean:
 	rm *.o *.a
