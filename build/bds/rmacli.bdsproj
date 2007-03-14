@@ -226,10 +226,10 @@
       </IDEOPTIONS>
     </BCBPROJECT>
 		<buildevents>
-      <buildevent file="rmacli.bdsproj">
-        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rma.exe
+			<buildevent file="rmacli.bdsproj">
+				<postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rma.exe
 </postcompile>
-      </buildevent>
-    </buildevents>
+			</buildevent>
+		</buildevents>
 	</CPlusPlusBuilder.Personality>
 </BorlandProject>

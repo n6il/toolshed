@@ -22,8 +22,8 @@
       <Projects Name="mamoucli.exe">mamoucli.bdsproj</Projects>
       <Projects Name="rlinkcli.exe">rlinkcli.bdsproj</Projects>
       <Projects Name="rmacli.exe">rmacli.bdsproj</Projects>
-      <Projects Name="tocgencli.exe">tocgencli.bdsproj</Projects>
-      <Projects Name="Targets">libdecb.lib librbf.lib libcoco.lib libnative.lib libmisc.lib libsys.lib decbcli.exe os9cli.exe mamoucli.exe rlinkcli.exe rmacli.exe tocgencli.exe</Projects>
+      <Projects Name="libtoolshed.lib">libtoolshed.bdsproj</Projects>
+      <Projects Name="Targets">libdecb.lib librbf.lib libcoco.lib libnative.lib libmisc.lib libsys.lib decbcli.exe os9cli.exe mamoucli.exe rlinkcli.exe rmacli.exe libtoolshed.lib</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{17A05C05-D1ED-4748-8536-73CA637F813A}">

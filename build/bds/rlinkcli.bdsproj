@@ -223,10 +223,10 @@
       </IDEOPTIONS>
     </BCBPROJECT>
 		<buildevents>
-      <buildevent file="rlinkcli.bdsproj">
-        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rlink.exe
+			<buildevent file="rlinkcli.bdsproj">
+				<postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rlink.exe
 </postcompile>
-      </buildevent>
-    </buildevents>
+			</buildevent>
+		</buildevents>
 	</CPlusPlusBuilder.Personality>
 </BorlandProject>

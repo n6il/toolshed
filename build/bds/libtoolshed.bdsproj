@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-	<PersonalityInfo>
-		<Option>
-			<Option Name="Personality">CPlusPlusBuilder.Personality</Option>
-			<Option Name="ProjectType">CppConsoleApplication</Option>
-			<Option Name="Version">1.0</Option>
-			<Option Name="GUID">{4CF5BCDB-030F-4B90-8307-9C185A79BE78}</Option>
-		</Option>
-	</PersonalityInfo>
-	<CPlusPlusBuilder.Personality>
-		<Source>
-			<Source Name="MainSource">os9cli.bpf</Source>
-		</Source>
-		<BCBPROJECT>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">CPlusPlusBuilder.Personality</Option>
+      <Option Name="ProjectType">CppStaticLibrary</Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{7164A0EE-2577-409C-B3D6-E6FC51934310}</Option>
+    </Option>
+  </PersonalityInfo>
+  <CPlusPlusBuilder.Personality>
+    <Source>
+      <Source Name="MainSource">libtoolshed.cpp</Source>
+    </Source>
+    <BCBPROJECT>
       <project version="10.0">
         <property category="build.config" name="active" value="0"/>
         <property category="build.config" name="count" value="1"/>
@@ -28,8 +28,9 @@
         <property category="build.config.1" name="settings.win32b" value="default"/>
         <property category="build.config.1" name="type" value="Toolset"/>
         <property category="build.config.1" name="win32.win32b.builddir" value="Release_Build"/>
-        <property category="build.node" name="name" value="os9cli.exe"/>
-        <property category="build.node" name="packages" value="vcl;rtl;vclx;dbrtl;vcldb;adortl;dbxcds;dbexpress;vclib;ibxpress;xmlrtl;vclactnband;inet;IntrawebDB_80_100;Intraweb_80_100;vclie;inetdbbde;inetdbxpress;IndyCore;IndySystem;bcbsmp;soaprtl;dsnap;IndyProtocols;bcbie;bdertl;teeui;teedb;tee;vcldbx;comndOPC10;dOPCDA10;dOPCAE10;fs10;frx10;fsDB10;frxDB10;fsBDE10;frxBDE10;fsADO10;frxADO10;fsIBX10;frxIBX10;frxDBX10;frxe10;fsTee10;frxTee10;sdlbasepack_85D2006;sdlmathpack_85D2006;dclZipForged10;vclZipForged10;fqbADO100;fqbBDE100;fqbIBX100;fqbDBX100;fqb100"/>
+        <property category="build.node" name="name" value="libtoolshed.lib"/>
+        <property category="build.node" name="packages" value="vcl;rtl;vclx;dbrtl;vcldb;adortl;dbxcds;dbexpress;vclib;ibxpress;xmlrtl;vclactnband;inet;IntrawebDB_80_100;Intraweb_80_100;vclie;inetdbbde;inetdbxpress;IndyCore;IndySystem;bcbsmp;soaprtl;dsnap;IndyProtocols;bcbie;bdertl;teeui;teedb;tee;vcldbx;comndOPC10;dOPCDA10;dOPCAE10;sdlbasepack_85D2006;sdlmathpack_85D2006;vclZipForged10;VirtualTreesD10;Package1;dclZipForged10;fs10;frx10;fsDB10;frxDB10;fsBDE10;frxBDE10;fsADO10;frxADO10;fsIBX10;frxIBX10;frxDBX10;frxe10;fsTee10;frxTee10"/>
+        <property category="build.node" name="sparelibs" value="rtl.lib vcl.lib"/>
         <property category="build.node" name="use_packages" value="0"/>
         <property category="build.platform" name="active" value="win32"/>
         <property category="build.platform" name="win32.Debug_Build.toolset" value="win32b"/>
@@ -37,10 +38,6 @@
         <property category="build.platform" name="win32.default" value="win32b"/>
         <property category="build.platform" name="win32.enabled" value="1"/>
         <property category="build.platform" name="win32.win32b.enabled" value="1"/>
-        <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
-        <property category="win32.*.win32b.tasm32" name="param.listfile.merge" value="1"/>
-        <property category="win32.*.win32b.tasm32" name="param.objfile.merge" value="1"/>
-        <property category="win32.*.win32b.tasm32" name="param.xreffile.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.arg.1" value="_DEBUG"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.arg.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.enabled" value="1"/>
@@ -56,9 +53,12 @@
         <property category="win32.Debug_Build.win32b.dcc32" name="option.D.arg.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.dcc32" name="option.D.enabled" value="1"/>
         <property category="win32.Debug_Build.win32b.dcc32" name="option.V.enabled" value="1"/>
+        <property category="win32.Debug_Build.win32b.ilink32" name="option.D.enabled" value="1"/>
+        <property category="win32.Debug_Build.win32b.ilink32" name="option.Gn.enabled" value="1"/>
         <property category="win32.Debug_Build.win32b.ilink32" name="option.L.arg.1" value="$(BDS)\lib\debug"/>
         <property category="win32.Debug_Build.win32b.ilink32" name="option.L.arg.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.ilink32" name="option.L.enabled" value="1"/>
+        <property category="win32.Debug_Build.win32b.ilink32" name="option.v.enabled" value="1"/>
         <property category="win32.Debug_Build.win32b.tasm32" name="option.z.enabled" value="1"/>
         <property category="win32.Debug_Build.win32b.tasm32" name="option.zd.enabled" value="0"/>
         <property category="win32.Debug_Build.win32b.tasm32" name="option.zi.enabled" value="1"/>
@@ -81,113 +81,75 @@
         <property category="win32.Release_Build.win32b.tasm32" name="option.zn.enabled" value="1"/>
         <optionset name="all_configurations">
           <property category="node" name="displayname" value="All Configurations"/>
-          <property category="win32.*.win32b.bcc32" name="option.D.arg.1" value="BDS"/>
-          <property category="win32.*.win32b.bcc32" name="option.D.arg.merge" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.D.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.1" value="$(BDS)\lib\vcl100.csm"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\os9"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="$(BDS)\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include\dinkumware"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\vcl"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\libtoolshed"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\libtoolshed"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\dinkumware"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include\vcl"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.Ve.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.b.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.1" value="_RTLDLL"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.2" value="NO_STRICT"/>
-          <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.3" value="_NO_VCL"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.tW.enabled" value="0"/>
-          <property category="win32.*.win32b.bcc32" name="option.tWC.enabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="option.tW.enabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="option.tWC.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWD.enabled" value="0"/>
-          <property category="win32.*.win32b.bcc32" name="option.tWM.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\os9"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\os9"/>
+          <property category="win32.*.win32b.bcc32" name="option.tWM.enabled" value="1"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\libtoolshed"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.3" value="..\..\libtoolshed"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.I.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\Desktop\toolshed\os9"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\os9"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\Desktop\toolshed\libtoolshed"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.3" value="..\..\libtoolshed"/>
           <property category="win32.*.win32b.dcc32" name="option.O.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.O.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\Desktop\toolshed\os9"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\os9"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\Desktop\toolshed\libtoolshed"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.3" value="..\..\libtoolshed"/>
           <property category="win32.*.win32b.dcc32" name="option.R.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.R.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\Desktop\toolshed\os9"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\os9"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="..\..\..\..\My Documents\Borland Studio Projects"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="$(BDS)\lib"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="$(BDS)\lib\obj"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\Desktop\toolshed\libtoolshed"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="..\..\libtoolshed"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="..\..\..\..\My Documents\Borland Studio Projects"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="$(BDS)\lib"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.6" value="$(BDS)\lib\obj"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.U.enabled" value="1"/>
           <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\Desktop\toolshed\os9"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\os9"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\libtoolshed"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\Desktop\toolshed\build\bds"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.3" value="..\..\Desktop\toolshed\libtoolshed"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.4" value="..\Desktop\toolshed\libtoolshed"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.Gi.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.1" value="..\..\Desktop\toolshed\os9"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.2" value="..\..\os9"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.3" value="$(BDS)\lib"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.4" value="$(BDS)\lib\obj"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.5" value="$(BDS)\lib\psdk"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.1" value="$(BDS)\lib"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.2" value="$(BDS)\lib\obj"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.3" value="$(BDS)\lib\psdk"/>
           <property category="win32.*.win32b.ilink32" name="option.L.arg.merge" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.L.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.Tpd.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="option.Tpe.enabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="option.Tpe.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.Tpp.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.aa.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="option.ap.enabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="option.ap.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="..\..\Desktop\toolshed\os9"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.arg.2" value="..\..\os9"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.arg.merge" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="param.libfiles.1" value="import32.lib"/>
-          <property category="win32.*.win32b.ilink32" name="param.libfiles.2" value="cw32i.lib"/>
-          <property category="win32.*.win32b.ilink32" name="param.libfiles.merge" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="param.objfiles.1" value="c0x32.obj"/>
-          <property category="win32.*.win32b.ilink32" name="param.objfiles.2" value="$(PACKAGES)"/>
-          <property category="win32.*.win32b.ilink32" name="param.objfiles.merge" value="1"/>
+          <property category="win32.*.win32b.tlib" name="option.dynamicrtl.enabled" value="0"/>
         </optionset>
       </project>
       <FILELIST>
-        <FILE FILENAME="os9cli.bpf" CONTAINERID="BPF" LOCALCOMMAND="" UNITNAME="os9cli" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="os9cli.res" CONTAINERID="ResTool" LOCALCOMMAND="" UNITNAME="os9cli.res" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9rename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9rename" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9attr.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9attr" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9cmp.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9cmp" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9copy.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9copy" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9dcheck.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9dcheck" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9del.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9del" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9deldir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9deldir" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9dir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9dir" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9dsave.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9dsave" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9dump.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9dump" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9format.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9format" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9free.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9free" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9fstat.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9fstat" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9gen.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9gen" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9id.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9id" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9ident.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9ident" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9list.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9list" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9makdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9makdir" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9modbust.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9modbust" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9padrom.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9padrom" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\os9\os9rdump.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9rdump" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libsys.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libsys" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libcoco.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libcoco" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libdecb.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libdecb" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libmisc.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libmisc" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libnative.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libnative" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\librbf.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="librbf" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libtoolshed.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libtoolshed" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="libtoolshed.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libtoolshed" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libtoolshed\toolshed.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="toolshed" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -221,9 +183,9 @@
           <Debugging Name="DebugSourceDirs"></Debugging>
         </Debugging>
         <Parameters>
-          <Parameters Name="RunParams">dir</Parameters>
+          <Parameters Name="RunParams"></Parameters>
           <Parameters Name="Launcher"></Parameters>
-          <Parameters Name="UseLauncher">True</Parameters>
+          <Parameters Name="UseLauncher">False</Parameters>
           <Parameters Name="DebugCWD"></Parameters>
           <Parameters Name="HostApplication"></Parameters>
           <Parameters Name="RemoteHost"></Parameters>
@@ -244,11 +206,5 @@
         </Linker>
       </IDEOPTIONS>
     </BCBPROJECT>
-		<buildevents>
-      <buildevent file="os9cli.bdsproj">
-        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\os9.exe
-</postcompile>
-      </buildevent>
-    </buildevents>
-	</CPlusPlusBuilder.Personality>
+  </CPlusPlusBuilder.Personality>
 </BorlandProject>
