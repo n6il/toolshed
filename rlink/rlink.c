@@ -412,7 +412,21 @@ int             link(rfiles, rfile_count, lfiles, lfile_count, ofile, modname, e
 
 	if (omitC == 0)
 	{
-		if (asign_sm(ob_start, "etext", CODENT, 14 + strlen(ofile) + t_code) != 0)
+		/* Fix for -o=blahblahblah/file which would throw off
+		 * the strlen calculation - BGP 04/06/07
+		 */
+		char *oofile = strrchr(ofile, '/');
+
+		if (oofile != NULL)
+		{
+			oofile++;
+		}
+		else
+		{
+			oofile = ofile;
+		}
+
+		if (asign_sm(ob_start, "etext", CODENT, 14 + strlen(oofile) + t_code) != 0)
 			return 1;
 		if (asign_sm(ob_start, "btext", CODENT, 0) != 0)
 			return 1;
