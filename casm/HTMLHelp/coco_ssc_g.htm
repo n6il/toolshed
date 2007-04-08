@@ -1,0 +1,161 @@
+<HTML>
+<HEAD>
+	<TITLE>Color Computer Speech and Sound Cartridge</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.wrap {
+	vertical-align: bottom;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.header {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	background-color: #eeeeee;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+td.center {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>Color Computer Speech and Sound Cartridge - Appendix G</b><br>
+</div>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="border: 0px; white-space: normal; text-align: left;">
+		Sound Effects<br>
+		<br>
+		This program demonstrates how easily the S/SC produces 7 popular
+		game sound effects. Select the number of a sound effect from the
+		menu screen~the Color Computer and the S/SC do the rest. Modify
+		the program's data lines to produce your own sound effects.<br>
+		<br>
+<pre>
+	10 GOTO 40
+	20 IF (PEEK(Y) AND 128)=0 THEN 20
+	30 RETURN
+	40 CLS:W=&amp;HFF7D: X=&amp;HFF00
+	50 Y=&amp;HFF7E: POKE X+1,52
+	60 POKE X+3,63:POKEX+35,60
+	70 POKE W,1: POKE W,0
+	80 DIM A(8,13):FOR A=1 TO 7
+	90 FOR B = 0 TO 13:READ A(A,B):NEXT B,A
+	100 CLS:PRINT TAB(9) "SOUND EFFECTS"
+	110 PRINT:PRINT TAB(7)"&lt;1&gt; WHISTLE"
+	120 PRINT TAB(7)"&lt;2&gt; RACECAR"
+	130 PRINT TAB(7)"&lt;3&gt; LASER"
+	140 PRINT TAB(7)"&lt;4&gt; WHISTLING BOMB"
+	150 PRINT TAB(7)"&lt;5&gt; BOMB WITH EXPLOSIONS"
+	160 PRINT TAB(7)"&lt;6&gt; EXPLOSION"
+	170 PRINT TAB(7)"&lt;7&gt; GUNSHOT"
+	180 PRINT:PRINT TAB(7);
+	190 INPUT "YOUR SELECTION";S
+	200 IF S &lt;1 OR S&gt;7 THEN 100
+	210 POKE Y,175:GOSUB20
+	220 FORA=0 TO 13:POKEY,A:GOSUB 20
+	230 POKE Y,A(S,A):GOSUB 20:NEXT A
+	240 ON S GOSUB 270,360,480,530,530,570,570
+	250 IF S=5 THEN S=6:GOTO 220
+	260 POKE W,1:POKE W,0:GOTO 100
+	270 REM WHISTLE
+	280 FOR A=64 TO 32 STEP -2:POKE Y,0
+	290 GOSUB 20:POKE Y,A:GOSUB 20
+	300 NEXT A:FOR A=1 TO 200:NEXT A
+	310 FOR A=64 TO 48 STEP -2:POKE Y,0
+	320 GOSUB 20:POKE Y,A:GOSUB 20
+	330 NEXT A:FOR A=48 TO 96 STEP 2
+	340 POKE Y,0:GOSUB 20
+	350 POKE Y,A: GOSUB 20: NEXT A: RETURN
+	360 REM RACE CAR
+	370 FOR A = 11 TO 4 STEP -1:POKE Y,1:GOSUB 20
+	380 POKE Y,A: GOSUB 20:GOSUB 450
+	390 NEXT A:FOR A = 9 TO 3 STEP -1
+	400 POKE Y,1:GOSUB 20:POKE Y,A
+	410 GOSUB 20:GOSUB 450:NEXT A
+	420 FOR A=6TO1STEP-1:POKE Y,1
+	430 GOSUB 20:POKE Y,A:GOSUB20
+	440 GOSUB450:NEXT A:RETURN
+	450 FOR B=255 TO 0 STEP -8:POKE Y,0
+	460 GOSUB 20:POKE Y,B:GOSUB 20
+	470 NEXT B:RETURN
+	480 REM LASER
+	490 FOR A=0 TO 10
+	500 FOR B=50 TO 100 STEP 10: POKE Y,0
+	510 GOSUB 20: POKE Y,B: GOSUB 20:NEXT B
+	520 NEXT A :RETURN
+	530 REM WHISTLING BOMB
+	540 FOR B=30 TO 200: POKE Y,0
+	550 GOSUB 20:POKE Y,B:GOSUB 20
+	560 NEXT B: RETURN
+	570 REM EXPLOSION OR GUNSHOT
+	580 POKE Y,13: GOSUB 20: POKE Y,0
+	590 FOR A = 1 TO 1500+1000*(S=7)
+	600 NEXT A: RETURN
+	610 REM WHISTLE
+	620 DATA 0,0,0,0,0,0,1,46,15,9,0,0,0,0
+	630 REM RACE CAR
+	640 DATA 0,0,0,15,0,0,0,60,15,10,0,0,0,0
+	650 REM LASER
+	660 DATA 0,0,0,0,0,0,0,254,15,0,0,0,0,0
+	670 REM WHISTLING BOMB
+	680 DATA 0,0,0,0,0,0,0,254,15,0,0,0,0,0
+	690 REM BOMB WITH EXPLOSION
+	700 DATA 0,0,0,0,0,0,0,254,15,0,0,0,0,0
+	710 REM EXPLOSION
+	720 DATA 0,0,0,0,0,0,0,7,16,16,16,0,56,0
+	730 REM GUNSHOT
+	740 DATA 0,0,0,0,0,0,15,7,16,16,16,0,16,0
+</pre>
+		<br>
+		<br>
+	</td></tr>
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>

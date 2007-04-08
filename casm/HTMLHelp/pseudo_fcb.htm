@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title">
+			<b>FCB - Form Constant Byte</b><br>
+		</div>
+		<br>
+		<pre class="bnf">[<EM>label</EM>]	FCB	<EM>expression</EM>[,<EM>expression</EM>,...,<EM>expression</EM>]</pre>
+		<div class="main">
+			<br>
+			The FCB directive may have one or more operands separated by commas. The value 
+			of each operand is truncated to eight bits, and is stored in a single byte of 
+			the object program. Multiple operands are stored in successive bytes. If a 
+			label is present it will be assigned address of the first byte in the 
+			declaration. The operand may be a numeric constant, a character constant, a 
+			symbol, or an expression. If multiple operands are present, one or more of them 
+			can be null (two adjacent commas), in which case a single byte of zero will be 
+			assigned for that operand. An error will occur if the upper eight bits of the 
+			evaluated operands' values are not all ones or all zeros.
+			<br>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+		<pre class="example">	fcb	$00<br>	fcb	$00,3,44,$33</pre><BR>
+		<br>
+		CASM also supports an additional 
+expression format compatible with the Macro-80C assembler on the Color Computer. 
+This special format allows single or multiple byte blocks to be repeated a 
+specific number of times.<BR>
+		       
+           
+              
+
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+		<pre class="example">
+	fcb	5[$00]		* Repeat byte $00&nbsp;5 times
+	fcb	10[$44,$11]	* Repeat seq. $44,$11 10 times</pre>
+		<br>
+		<br>
+		<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<hr>
+		<div class="section">
+		Compatibility:
+		</div>
+		<div class="main">
+		<table class="compat_info" width="375" ID="Table4">
+			<tr>
+				<td class="compat_info">CASM</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">CCASM</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">OS-9 RMA</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edt/Asm III</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edtasm6309</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Disk Edtasm+</td>
+				<td class="compat_info" align="center"><b>X*</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edtasm+</td>
+				<td class="compat_info" align="center"><b>X*</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Macro-80C</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+		</table>
+		<P><EM>*The stock versions of EDTASM+ and Disk EDTASM+ do not support multiple FCB 
+				expressions on a single line.</EM></P></div>
+	</body>
+</html>

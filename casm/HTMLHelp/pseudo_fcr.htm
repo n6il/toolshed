@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title">
+			<B>FCR - Form 
+constant character string terminated with a carriage return and null bytes</B><BR>
+		</div>
+		<br>
+		<pre class="bnf">[<EM>label</EM>]	FCR	<EM>string</EM></pre>
+		<div class="main">
+			<BR>
+			The&nbsp;FCR directive is used to store carriage return/null terminated ASCII 
+			strings into consecutive bytes of memory. The byte storage begins at the 
+			current program counter. If a label is present it will be assigned address of 
+			the first byte in the string. Any of the printable ASCII characters can be 
+			contained in the string. The string is specified between two identical 
+			delimiters which can be any printable ASCII character. The first non-blank 
+			character after the&nbsp;FCR directive is used as the delimiter. The assembler 
+			will automatically append a carriage return ($0d) and null byte ($00) to the 
+			end of the string.
+			<br>
+			<br>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Examples:
+		</div>
+		<div class="main">
+		<pre class="example">	fcr	"some string here"<BR>	fcr	/some string here/</pre>
+		<br>
+		Additionally CASM supports the ability to include trailing byte declarations 
+		similar to FCB statements to the end of the&nbsp;FCR declaration.
+		<pre class="example">	fcr	"some string here",$03,$04</pre>
+		<br>
+		<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<hr>
+		<div class="section">
+		Compatibility:
+		</div>
+		<div class="main">
+		<table class="compat_info" width="375" ID="Table4">
+			<tr>
+				<td class="compat_info">CASM</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">CCASM</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">OS-9 RMA</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edt/Asm III</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edtasm6309</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Disk Edtasm+</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edtasm+</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Macro-80C</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+		</table></div>
+	</body>
+</html>

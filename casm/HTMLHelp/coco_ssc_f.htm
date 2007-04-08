@@ -1,0 +1,156 @@
+<HTML>
+<HEAD>
+	<TITLE>Color Computer Speech and Sound Cartridge</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.wrap {
+	vertical-align: bottom;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.header {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	background-color: #eeeeee;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+td.center {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>Color Computer Speech and Sound Cartridge - Appendix F</b><br>
+</div>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="border: 0px; white-space: normal; text-align: left;">
+		S/SC Organ<br>
+		<br>
+		This program makes an organ keyboard out of the bottom two rows
+		of your computer keyboard. The organ can play 16 notes, starting
+		with the A above middle C. The following shows how the letters
+		of the keyboard correspond to the white and black keys of the
+		organ keyboard:<br>
+<pre>
+		Z = A
+		S = A sharp/B flat
+		X = B
+		c = c
+		F = C sharp/D flat
+		v = D
+		G = D sharp/E flat
+		B = E
+		N = F
+		J = F sharp/G flat
+		M = G
+		K = G sharp/A flat
+		, = A
+		L = A sharp/B flat
+		. = B
+		/ = C</pre>
+		<br>
+		The notes sound as long as you hold down a key. To play the first
+		strains of the "Star-Spangled Banner," type:<br>
+		<br>
+		<pre>		BFZFB,</pre>
+		<br>
+<pre>
+5 REM RESET SOUND BOARD
+10 CLS:W=&amp;HFF7D:X=&amp;HFF00:Y=&amp;HFF7E
+20 POKE X+1,52:POKEX+3,63:POKE X+35,60
+30 POKE W,1:POKEW,0
+35 REM TONE VALUE ARRAY
+40 DIM T(20)
+50 REM SET SOUND TO IMMEDIATE MODE
+60 POKE Y,175:GOSUB 280
+70 REM SETUP OTHER PARAMETERS
+80 REM ZERO OUT COARSE TONE REGISTER
+90 REM ON TONE CHANNEL A
+100 POKE Y,1:GOSUB280:POKEY,0:GOSUB280
+110 FOR A = 1 TO 8:READ B:POKE Y,B
+120 GOSUB 280: NEXT A
+130 REM READ IN TONE VALUES
+140 FOR A = 2 TO 17: READ T(A):NEXT A
+150 IN$=INKEY$
+160 REM CHECK FOR A VALID KEY
+170 A=INSTR$(" ZSXCFVGBNJMK,L./",IN$)
+175 REM NOT A VALID KEY... TURN OFF SOUND
+180 IF A&lt;2 THEN 260
+185 REM GOING TO PUT SOUND IN REGISTER 0
+190 POKE Y,0:GOSUB 280
+200 POKE Y, T(A):GOSUB280
+210 REM TURN ON CHANNEL A SOUND
+220 POKE Y,8:GOSUB280:POKE Y,16
+240 FOR B=338 TO 345:POKEB, 255:NEXT B:GOTO 150
+250 REM TURN OFF SOUND ON CHANEL A
+260 POKE Y,8:GOSUB280:POKEY,0:GOTO150
+270 REM WAIT IF BOARD ISNT READY
+280 IF (PEEK(Y) AND 128)=0 THEN 280 :ELSE RETURN
+290 REM SELECT IMMEDIATE MODE
+300 REM TURN ON CHANNEL A TONE
+310 DATA 7,254
+320 REM SET FINE &amp; COURSE REPEAT PERIOD
+330 REM CHANGING THE LINE TO 11, 100, 12, 1
+340 REM WILL INCREASE TREMOLO SPEED
+350 REM 11,50,12,3 WILL DECREASE IT
+360 DATA 11,0,12,2
+370 REM SET TYPE OF SOUND (13,...)
+380 REM 8=ATTACK, 10=TREMOLO, 11=CONSTANT
+390 DATA 13,10
+400 REM VALUES FOR TONES
+410 DATA 254,240,226,214,202,190
+420 DATA 180,170,160,151,143,135
+430 DATA 127,120,113,107
+</pre>
+		<br>
+		<br>
+	</td></tr>
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>

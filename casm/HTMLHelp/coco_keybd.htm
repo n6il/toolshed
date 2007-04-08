@@ -1,0 +1,290 @@
+<HTML>
+<HEAD>
+	<TITLE>Checking the keyboard via the PIA</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+
+td.data {
+	vertical-align: top;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: "Courier New", Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+
+td.rheader {
+	color: #000000;
+	background-color: #eeeeee;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+	vertical-align: bottom;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>Checking the keyboard via the PIA</b><br>
+	By <em>Art Flexser</em>
+</div>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="border: 0px; white-space: normal; text-align: left;">
+		<center><h3>Checking the keyboard via the PIA</h2></center>
+		<br>
+		This tutorial will initiate you into the mysteries of how you can read the
+		keyboard by checking the keyboard PIA (Peripheral Interface Adapter) directly,
+		without having to resort to calling the POLCAT routine in the Color Basic ROM
+		via JSR [$A000].  This method is, in fact, what POLCAT itself uses.<br>
+		<br>
+		A reasonable question to consider at this point is WHY, when we have POLCAT,
+		would we ever want to use any other method for getting keyboard input?  There
+		are several answers.<br>
+		<br>
+		There are a number of situations where using POLCAT is much less efficient
+		than need be.  A typical situation is where the program we are designing needs
+		to detect whether a specific key is being held down.  POLCAT will detect only
+		a new keypress, not whether a key detected on a previous call to POLCAT is
+		still being held down.  (This can be gotten around by shoving $FF’s into the
+		keyboard rollover table at $152-159 to make POLCAT “forget” the previous
+		detection of the key, a principle used in many key-repeat routines, but that
+		is another story.)  Further, in many cases, there is no need to determine WHAT
+		particular key is down, but simply whether (say) the left arrow key is down or
+		not.  The method I am about to outline will allow a test for a specific key
+		that involves a great deal less processing time than does the full determination
+		of what key has been pressed.  In addition, the method allows a very fast check
+		of whether or not there is ANY key that is being currently held down.<br>
+		<br>
+		Another limitation of POLCAT that the method of directly checking the keyboard
+		PIA gets around is that POLCAT is useless for determining whether the shift key,
+		by itself, has been pressed.<br>
+		<br>
+		The current topic is one of those where some rudimentary hardware description is
+		helpful.  The CoCo contains a matrix keyboard consisting internally of 8 column
+		and 7 row connections.  Each key has its own unique row/column combination.
+		When the key is pressed, the two wires corresponding to its column and its row
+		are electrically connected to one another.  The 8 columns are connected to a
+		particular 8 pins on the keyboard PIA chip.  This fact causes the voltages applied
+		to the 8 keyboard columns to individually reflect the status of the 8 bits of
+		location $FF02.  If you stick a 1 into a particular bit of $FF02, the corresponding
+		column of the keyboard will be held at +5 volts;  if you put a zero into this bit,
+		the keyboard column will be grounded, that is, held at 0 volts.  Location $FF02 is
+		used here as an output;  that is, it is written to rather than read.<br>
+		<br>
+		Now let us consider the seven keyboard row connections.  These connect with seven
+		other pins on the same PIA that are used as inputs rather than outputs.  These
+		seven input connections correspond to bits 0-6 of location $FF00.  (The remaining
+		bit 7 of $FF00 is used in connection with reading the joysticks, and is not
+		affected by keyboard status.)  These pins are normally kept at +5 volts, (so that
+		the lower 7 bits of $FF00 all normally contain ones) EXCEPT when one of them is
+		connected to ground by virtue of a key on the keyboard having been pressed.  That
+		is, if a keypress connects a row input with a column output that is at 0 volts
+		(because the corresponding bit in $FF02 has been set to zero), the relevant row
+		input bit in $FF00 will also assume a value of 0 instead of its normal value of 1.
+		We now have all the information necessary for seeing how to detect whether a
+		particular key is down, provided we know its row and column positions in the
+		keyboard matrix.  Suppose we wish to check the left arrow key’s status.  This key
+		happens to occupy Column 5 and Row 3 in the matrix.  So, what we have to do is ground
+		Column 5 only (bit 5 of $FF02), and then check whether Row 3 (bit 3 of $FF00) has
+		also become grounded.  If it has, we know the left arrow key is currently down.
+		The code that accomplishes this is the following:<br>
+		<br>
+		<table width="500" style="border: 0px" align="center" ID="Table6"><tr><td style="border: 0px"><pre>
+	LDA	#%11011111	ground Column 5 only
+	STA	$FF02
+	LDA	$FF00
+	ANDA	#%00001000	check bit 3 (Row 3) status
+	BEQ	KEYDWN	branch if arrow key is down</pre></td></tr></table>
+		<br>
+		Note that the percent-sign notation I’ve used here to represent binary quantities
+		is for clarity, and is illegal in the Edtasm+ assembler, though legal in some
+		other assemblers.  Legal Edtasm+ translations of the two illegal instructions
+		would be LDA #$DF and ANDA #8.  Note that the LDA instruction has ones in all
+		bits EXCEPT the one corresponding to the keyboard  column you’re grounding,
+		whereas the ANDA instruction puts a one ONLY in the bit corresponding to the
+		keyboard row you’re  checking.  (Refer to Tutorial A2 if you need a refresher
+		on how the AND instruction works.  ANDA #%00001000 sets all bit positions
+		except bit 3 of the A-register to zero, and leaves bit 3 unchanged from its
+		previous status.  Recall that bits are numbered from 0 to 7, with bit 0 as the
+		rightmost bit.)<br>
+		<br>
+		Here is a table showing the layout of the keyboard matrix:<br>
+		<br>
+
+
+		<table align="center" width="500" class="info" ID="Table2">
+			<tr>
+				<td class="rheader" colspan="10">C O L U M N</td>
+			</tr>
+			<tr>
+				<td class="data">0 ($FE)</td>
+				<td class="data">1 ($FD)</td>
+				<td class="data">2 ($FB)</td>
+				<td class="data">3 ($F7)</td>
+				<td class="data">4 ($EF)</td>
+				<td class="data">5 ($DF)</td>
+				<td class="data">6 ($BF)</td>
+				<td class="data">7 ($7F)</td>
+				<td class="data" colspan="2"></td>
+			</tr>
+
+			<tr>
+				<td class="data">@</td>
+				<td class="data">A</td>
+				<td class="data">B</td>
+				<td class="data">C</td>
+				<td class="data">D</td>
+				<td class="data">E</td>
+				<td class="data">F</td>
+				<td class="data">G</td>
+				<td class="data">0</td>
+				<td class="data">(1)</td>
+			</tr>
+
+			<tr>
+				<td class="data">H</td>
+				<td class="data">I</td>
+				<td class="data">J</td>
+				<td class="data">K</td>
+				<td class="data">L</td>
+				<td class="data">M</td>
+				<td class="data">N</td>
+				<td class="data">O</td>
+				<td class="data">1</td>
+				<td class="data">(2)</td>
+			</tr>
+
+			<tr>
+				<td class="data">P</td>
+				<td class="data">Q</td>
+				<td class="data">R</td>
+				<td class="data">S</td>
+				<td class="data">T</td>
+				<td class="data">U</td>
+				<td class="data">V</td>
+				<td class="data">W</td>
+				<td class="data">2</td>
+				<td class="data">(4)</td>
+			</tr>
+
+			<tr>
+				<td class="data">X</td>
+				<td class="data">Y</td>
+				<td class="data">Z</td>
+				<td class="data">up</td>
+				<td class="data">down</td>
+				<td class="data">left</td>
+				<td class="data">right</td>
+				<td class="data">space</td>
+				<td class="data">3</td>
+				<td class="data">(8)</td>
+			</tr>
+
+			<tr>
+				<td class="data">0</td>
+				<td class="data">1/!</td>
+				<td class="data">2/"</td>
+				<td class="data">3/#</td>
+				<td class="data">4/$</td>
+				<td class="data">5/%</td>
+				<td class="data">6/&</td>
+				<td class="data">7/'</td>
+				<td class="data">4</td>
+				<td class="data">($10)</td>
+			</tr>
+
+			<tr>
+				<td class="data">8/(</td>
+				<td class="data">9/)</td>
+				<td class="data">:/*</td>
+				<td class="data">;/+</td>
+				<td class="data">,/<</td>
+				<td class="data">-/=</td>
+				<td class="data">./></td>
+				<td class="data">//?</td>
+				<td class="data">5</td>
+				<td class="data">($20)</td>
+			</tr>
+
+			<tr>
+				<td class="data">enter</td>
+				<td class="data">clear</td>
+				<td class="data">break</td>
+				<td class="data">alt</td>
+				<td class="data">ctrl</td>
+				<td class="data">F1</td>
+				<td class="data">F2</td>
+				<td class="data">shift</td>
+				<td class="data">6</td>
+				<td class="data">($40)</td>
+			</tr>
+		</table>
+		<br>
+		<br>
+		In parentheses, I’ve added for each column what quantity to put in $FF02,
+		and for each row, what quantity to AND the contents of $FF00 with.  Note
+		that the last row includes the ALT, CTRL, F1, and F2 keys that are on the
+		'$4.95 keyboard' (Model 277-1019) sold by Radio Shack for a time and left
+		over from the aborted 'Deluxe CoCo'.<br>
+		<br>
+		A last topic is how to use the PIA to check very efficiently whether ANY
+		key at all is being currently held down.  To accomplish this, we need to
+		ground ALL the keyboard columns (all bits of $FF02) simultaneously, and
+		check whether there is a zero in ANY of the row bits (the lower 7 bits
+		of $FF00):<br>
+		<br>
+		<br>		
+		<table width="500" style="border: 0px" align="center" ID="Table3"><tr><td style="border: 0px"><pre>
+	CLR	$FF02	ground all column bits
+	LDA	$FF00
+	ANDA	#$7F	strip off unused bit 7 of $FF00
+	CMPA	#$7F	see if all 7 row bits = 1
+	BEQ	NOKEY	branch if no key down</pre></td></tr></table>
+		<br>
+		(A slightly more efficient, though harder to understand, version of the
+		above code uses the instructions COMA, ASLA in place of ANDA #$7F,
+		CMPA #$7F.  This version is used in the fast break key check in the
+		1.2 Color Basic ROM at $A1C1 and is solely responsible for why this
+		ROM runs BASIC programs a bit faster than 1.0 or 1.1 Color Basic.)<br>
+		<br>
+		<br>
+		<br>
+
+	</tr></td>
+	<tr><td style="border: 0px; text-align: right">
+		(c) 1986&nbsp;&nbsp;&nbsp;Arthur J. Flexser&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	</tr></td>
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>

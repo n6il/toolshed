@@ -1,0 +1,470 @@
+<HTML>
+<HEAD>
+	<TITLE>WD1793 Floppy Disk Controller</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.data {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+
+td.rinfo {
+	vertical-align: top;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+
+td.rheader {
+	color: #000000;
+	background-color: #eeeeee;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+	vertical-align: bottom;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>WD1793 Floppy Disk Controller</b><br>
+	From <em><a href="http://www.cocounravelled.com" target="_blank">Disk Basic Unravelled</a></em>
+</div>
+<br>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="border: 0px; white-space: normal; text-align: left;">
+		<center><h3>1793 FLOPPY DISK CONTROLLER DESCRIPTION</h2></center>
+		The 1793 Floppy Disk Controller (FDC) is the heart of the disk controller
+		card, which interfaces the Color Computer to the disk drive. Only the basic
+		knowledge of the FDC in order to understand the operation of Disk Basic is
+		presented here. If further, detailed information concerning the operation of the
+		FDC is required, the reader is referred to the 1793 data sheet published by the
+		Western Digital Corp. Only those functions of the 1793, which may be accessed by
+		software the Color Computer, will be discussed.<br>
+		<br>
+		The FDC is responsible for controlling the transference of data between the
+		computer and the disk drive. There are many different disk drives manufactured by
+		different companies and each drive has its own peculiarities, which require the FDC
+		to be set up or used in a slightly different manner. The Color Computer Disk
+		Controller board (which you plug into the cartridge slot) provides most of the
+		support and set—up functions, which the FDC requires and an eight-bit latch is used
+		to store the FDC functions, which are software programmable, and those disk drive
+		functions, which must be controlled directly by the computer. This control latch is
+		located at $FF40 and is a write only latch, which means that data may only be
+		written into the latch; no provision has been given to read the contents of the
+		latch. For this reason, the DOS has reserved a byte in the Disk RAM (DRGRAM) which
+		is an image of the contents of $FF40 so that the system software will know the
+		status of the control latch at any time. Listed below are the functions, which may
+		be controlled by DSKREG ($FF40).<br>
+		<br>
+		<table align="center" width="300" class="info" ID="Table2">
+			<tr><td class="rheader">bit #</td><td class="rheader">Description</td></tr>
+			<tr><td class="data">0</td><td>Drive select 0</td></tr>
+			<tr><td class="data">1</td><td>Drive select 1</td></tr>
+			<tr><td class="data">2</td><td>Drive select 2</td></tr>
+			<tr><td class="data">3</td><td>Drive motor enable: 0=motors off, 1=motors on</td></tr>
+			<tr><td class="data">4</td><td>Write pre-compensation flag: 0=no pre-comp, 1=pre-comp</td></tr>
+			<tr><td class="data">5</td><td>Density flag: 0=single density, 1=double density</td></tr>
+			<tr><td class="data">6</td><td>Drive select 3</td></tr>
+			<tr><td class="data">7</td><td>Halt flag: 0=halt disabled, 1=halt enabled</td></tr>
+		</table>
+		<br>
+		<br>
+		<center><h3>$FF40 Control Functions</h3></center>
+		The drive select flags directly control which drive will communicate with the
+		computer and the motor enable flag will enable or disable the motors of all of the
+		drives. The density flag indicates to the FDC whether the data will be stored onto
+		the diskette in single or double density. Write pre-compensation is used to correct
+		the problem on a double density formatted disk of certain bit patterns causing a
+		bit to shift from its nominal write position and appear at the read data separator
+		early or late. Write pre-compensation rectifies this problem during disk writes by
+		shifting such a bit from its nominal position in the opposite direction to its
+		known read shift. Write precomp is usually necessary only for data written on the
+		tracks on the inner half of the disk. The tracks on which write pre-compensation
+		should be enabled vary from manufacturer and the number of the track at which write
+		precomp is enabled in the Tandy disk is 22. Write precomp is on for tracks with a
+		number greater than 22. The halt flag is used to enable the FDC board to halt the
+		6809. This is used to enable the Color Computer to operate the disk drives in
+		double density mode at the low (.89 MHz) clock speed at which the Color Computer
+		runs. When the halt flag is high, the DRQ (Data ReQuest) signal from the FDC will
+		be connected to the halt input of the 6809. This will allow the DRQ signal to
+		control the operation of the 6809 to the extent that the 6809 will not process any
+		instructions while the FDC is processing data to or from the 6809. Writing a zero
+		to bit 7 of will clear the halt flag $FF40 or it will be cleared whenever the FDC
+		generates an INTRQ (Interrupt Request) signal, which indicates that the FDC has
+		completed its current command.<br>
+		<br>
+		Data transfer between the computer and the disk drives through the FDC is
+		accomplished through a series of hardware and software ‘tricks’. The slow clock
+		speed of the Color Computer will not allow data to be transferred in the ‘normal’
+		method of getting a byte from the computer, giving it to the FDC and then
+		performing status checks until the FDC is not busy. There is just not enough time
+		for this when operating at double density. Part of the Color Computer’s solution is
+		a hardware trick whereby the disk controller board will allow the FDC to halt the
+		6809 while the FDC is storing or retrieving data. The halt flag will allow the DRQ
+		signal from the FDC to halt the 6809 so that the 6809 will wait while the FDC is
+		processing a data request. This trick will allow the 6809 to pass data to the FDC
+		as fast as the FDC can take it by executing a fast loop of: grab a byte from RAM,
+		give it to the FDC and loop back to get another byte. The analogous loop for
+		getting data will also work. The only problem is how to get out of this loop. This
+		problem is solved with software - when an FDC command such as WRITE SECTOR or READ
+		SECTOR is completed an interrupt (INTRQ) is generated by the FDC. The Color
+		Computer connects this INTFQ signal to the Non Maskable Interrupt (NMI) pin of the
+		6809. This means that whenever an FDC command (except the $D0 FORCE INTERRUPT) is
+		completed, an NMI will be generated. The computer will now be able to tell that an
+		FDC command is over; all that is left is for the computer to know where to go when
+		the command is finished. This is accomplished by storing a jump vector (DNMIVC) in
+		the disk RAM prior to entering the FDC data transfer loop. Another byte in disk RAM
+		is used as a flag (NMIFLG) to indicate that the NMI jump vector should be used. If
+		the NMIFLG is not equal to zero and an NMI is received by the 6809, Disk Basic will
+		cause the NMIFLG to be reset and control will be transferred to the address in
+		DNMIVC. It is exactly this method, which is used to exit from the FDC data transfer
+		routines.<br>
+		<br>
+		The FDC has four registers, which are used to communicate with the computer.
+		Their functions are described below:<br>
+		<br>
+		<table align="center" width="300" class="info" ID="Table3">
+			<tr><td class="rheader">Address</td><td class="rheader">Read</td><td class="rheader">Write</td></tr>
+			<tr><td class="data">$FF48</td><td>Status Register</td><td>Command Register</td></tr>
+			<tr><td class="data">$FF49</td><td>Track Register</td><td>Track Register</td></tr>
+			<tr><td class="data">$FF4a</td><td>Sector Register</td><td>Sector Register</td></tr>
+			<tr><td class="data">$FF4b</td><td>Data Register</td><td>Data Register</td></tr>
+		</table>
+		<br>
+		The track and sector registers are used by the FDC to remember where the disk
+		drive’s head is currently located. The data register is used to pass data to and
+		from the FDC. The command register is used to pass one of the eleven possible
+		commands to the FDC. Each of these commands has several different forms, which are
+		explained in the FDC data sheet. The form used by Disk Basic are listed below:<br>
+		<br>
+		<table align="center" width="300" class="info" ID="Table4">
+			<tr><td class="rheader">Type</td><td class="rheader">Command</td><td class="rheader">Code</td></tr>
+			<tr><td class="data">I</td><td>Restore</td><td class="data">$03</td></tr>
+			<tr><td class="data">I</td><td>Seek</td><td class="data">$17</td></tr>
+			<tr><td class="data">I</td><td>Step</td><td class="data">$23</td></tr>
+			<tr><td class="data">I</td><td>Step In</td><td class="data">$43</td></tr>
+			<tr><td class="data">I</td><td>Step Out</td><td class="data">$53</td></tr>
+			<tr><td class="data">II</td><td>Read Sector</td><td class="data">$80</td></tr>
+			<tr><td class="data">II</td><td>Write Sector</td><td class="data">$A0</td></tr>
+			<tr><td class="data">III</td><td>Read Address</td><td class="data">$C0</td></tr>
+			<tr><td class="data">III</td><td>Read Track</td><td class="data">$E4</td></tr>
+			<tr><td class="data">III</td><td>Write Track</td><td class="data">$F4</td></tr>
+			<tr><td class="data">IV</td><td>Force Interrupt</td><td class="data">$D0</td></tr>
+		</table>
+		<br>
+		The status register is used to reflect the results of an FDC command. The
+		contents of the status register will vary depending upon the TYPE of FDC command,
+		which was executed. Listed below are the contents of the status register for the
+		various TYPEs.<br>
+		<br>
+		<table align="center" width="500" class="info" ID="Table5">
+			<tr>
+				<td class="rheader" colspan="7">Status Register Summary</td>
+			</tr>
+			<tr>
+				<td class="rheader">BIT</td>
+				<td class="rheader">All Type I<br>Commands</td>
+				<td class="rheader">Read<br>Address</td>
+				<td class="rheader">Read<br>Sector</td>
+				<td class="rheader">Read<br>Track</td>
+				<td class="rheader">Write<br>Sector</td>
+				<td class="rheader">Write<br>Track</td>
+			<tr>
+				<td class="data">S7</td>
+				<td class="data">not ready</td>
+				<td class="data">not ready</td>
+				<td class="data">not ready</td>
+				<td class="data">not ready</td>
+				<td class="data">not ready</td>
+				<td class="data">not ready</td>
+			</tr>
+			
+			<tr>
+				<td class="data">S6</td>
+				<td class="data">write protect</td>
+				<td class="data">0</td>
+				<td class="data">0</td>
+				<td class="data">0</td>
+				<td class="data">write protect</td>
+				<td class="data">write protect</td>
+			</tr>
+			
+			<tr>
+				<td class="data">S5</td>
+				<td class="data">head loaded</td>
+				<td class="data">0</td>
+				<td class="data">record type</td>
+				<td class="data">0</td>
+				<td class="data">write fault</td>
+				<td class="data">write fault</td>
+			</tr>
+			
+			<tr>
+				<td class="data">S4</td>
+				<td class="data">Seek Error</td>
+				<td class="data">rnf</td>
+				<td class="data">rnf</td>
+				<td class="data">0</td>
+				<td class="data">rnf</td>
+				<td class="data">0</td>
+			</tr>
+			
+			<tr>
+				<td class="data">S3</td>
+				<td class="data">crc error</td>
+				<td class="data">crc error</td>
+				<td class="data">crc error</td>
+				<td class="data">0</td>
+				<td class="data">crc error</td>
+				<td class="data">0</td>
+			</tr>
+			
+			<tr>
+				<td class="data">S2</td>
+				<td class="data">track 0</td>
+				<td class="data">lost data</td>
+				<td class="data">lost data</td>
+				<td class="data">lost data</td>
+				<td class="data">lost data</td>
+				<td class="data">lost data</td>
+			</tr>
+			
+			<tr>
+				<td class="data">S1</td>
+				<td class="data">index</td>
+				<td class="data">dro</td>
+				<td class="data">dro</td>
+				<td class="data">dro</td>
+				<td class="data">dro</td>
+				<td class="data">dro</td>
+			</tr>
+			
+			<tr>
+				<td class="data">S0</td>
+				<td class="data">busy</td>
+				<td class="data">busy</td>
+				<td class="data">busy</td>
+				<td class="data">busy</td>
+				<td class="data">busy</td>
+				<td class="data">busy</td>
+			</tr>
+		</table>
+		<br>
+		<br>
+		<br>
+		<table align="center" width="500" class="info" ID="Table6">
+			<tr>
+				<td class="rheader" colspan="2">Status for type I commands</td>
+			</tr>
+
+			<tr>
+				<td class="rheader">BIT NAME</td><td class="rheader">MEANING</td>
+			</tr>
+
+			<tr>
+				<td class="data">S7</td>
+				<td class="rinfo">
+					NOT READY This bit when set indicates the drive is not ready.
+					When reset it indicates that the drive is ready. This
+					bit is an inverted copy of the Ready input and
+					logically ‘or’d with MR.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S6</td>
+				<td class="rinfo">
+					PROTECTED When set, indicates Write Protect is activated. This
+					bit is an inverted copy at WRPT input.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S5</td>
+				<td class="rinfo">
+					HEAD LOADED When set, it indicates the head is loaded and engaged.
+					This bit is a logical ‘and’ of HLD and HLT signals.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S4</td>
+				<td class="rinfo">
+					SEEK ERROR When set, the desired track was not verified. This bit
+					is reset to 0 when updated.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S3</td>
+				<td class="rinfo">CRC ERROR CRC encountered in ID field.</td>
+			</tr>
+
+			<tr>
+				<td class="data">S2</td>
+				<td class="rinfo">
+					TRACK 00 When set, indicates Read/Write head is positioned to
+					Track 0. This bit is an inverted copy of the TR00 input.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S1</td>
+				<td class="rinfo">
+					INDEX When set, indicates index mark detected from drive.
+					This bit is an inverted copy of the IP input.
+			</tr>
+
+			<tr>
+				<td class="data">S0</td>
+				<td class="rinfo">
+					BUSY When set, command is in progress. When reset, no command is in progress.
+				</td>
+			</tr>
+		</table>
+		<br>
+		<br>
+		<br>
+
+		<table align="center" width="500" class="info" ID="Table7">
+			<tr>
+				<td class="rheader" colspan="3">Status for type II and III commands</td>
+			</tr>
+
+			<tr>
+				<td class="rheader">Bit</td>
+				<td class="rheader">Name</td>
+				<td class="rheader">Meaning</td>
+			</tr>
+			
+			<tr>
+				<td class="data">S7</td>
+				<td class="data">Not Ready</td>
+				<td class="rinfo">
+					This bit when set indicates the drive is not ready.
+					When reset, it indicates that the drive is ready. This
+					bit is an inverted copy of the Ready input and ‘or’d
+					with MR. The Type II and Ill Commands will not execute
+					unless the drive is ready.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S6</td>
+				<td class="data">Write Protect</td>
+				<td class="rinfo">
+					On Read Record, Not Used. On Read Track, Not Used. On
+					any Write: It indicates a Write Protect. This bit is
+					reset when updated.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S5</td>
+				<td class="data">Record Type<br>Fault/Write<br>Fault</td>
+				<td class="rinfo">
+					On Read Record. It indicates the record type code from
+					data field address mark. 1 = Deleted Data Mark. 0 =
+					Data Mark. On any Write: It indicates a Write Fault.
+					This bit is reset when updated.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S4</td>
+				<td class="data">Record Not<br>Found (RNF)</td>
+				<td class="rinfo">
+					When set, it indicates that the desired track, sector,
+					or side was not found. This bit is reset when updated.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S3</td>
+				<td class="data">CRC Error</td>
+				<td class="rinfo">
+					If S4 is set, an error is found in one or more ID fields:
+					otherwise it indicates error in data field. This bit is
+					reset when updated.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S2</td>
+				<td class="data">Lost Data
+				<td class="rinfo">
+					When set, it indicates the computer did not respond to
+					DRQ in one byte time. This bit is reset to zero when
+					updated.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S1</td>
+				<td class="data">Data Request</td>
+				<td class="rinfo">
+					This bit is a copy of the DRQ output. When set, it
+					indicates the DR is full on a Read Operation or the DR
+					is empty on a Write operation. This bit Is reset to
+					zero when updated.
+				</td>
+			</tr>
+
+			<tr>
+				<td class="data">S0</td>
+				<td class="data">Busy</td>
+				<td class="rinfo">
+					When set, command is under execution. When reset, no
+					command Is under execution.
+				</td>
+			</tr>
+		</table>
+		<br>
+		<br>
+		<br>
+	</td></tr>
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>
+

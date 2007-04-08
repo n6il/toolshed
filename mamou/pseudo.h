@@ -20,7 +20,7 @@
 
 struct pseudo_opcode pseudo[] = {
 	{"absolute",OTHER,  HAS_NO_OPERAND,					_null_op},
-	{"align",   OTHER,  HAS_NO_OPERAND,					_align},
+	{"align",   OTHER,  HAS_OPERAND,					_align},
 	{"bsz",		FC,		HAS_NO_OPERAND,					_zmb},
 	{"code",	OTHER,  HAS_NO_OPERAND,					_null_op},
 	{"cond",	IF,		HAS_OPERAND,					_ifne},

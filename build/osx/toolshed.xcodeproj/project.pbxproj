@@ -196,7 +196,7 @@
 		684E55FD0AC254EC004DAB23 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
 		684E55FE0AC254EC004DAB23 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
 		684E55FF0AC254EC004DAB23 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
-		68E3F24B0AC37F1300E1DFE0 /* libtoolshed.c in Sources */ = {isa = PBXBuildFile; fileRef = 68E3F24A0AC37F1300E1DFE0 /* libtoolshed.c */; };
+		68E3F24B0AC37F1300E1DFE0 /* toolshed.c in Sources */ = {isa = PBXBuildFile; fileRef = 68E3F24A0AC37F1300E1DFE0 /* toolshed.c */; };
 		68E3F3660AC414AE00E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		68E3F38F0AC41A2C00E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		68E3F3910AC41A4700E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
@@ -862,7 +862,7 @@
 		684E54840AC24A76004DAB23 /* tocgen */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tocgen; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E54920AC24A9E004DAB23 /* tocgen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = tocgen.c; path = ../../tocgen/tocgen.c; sourceTree = SOURCE_ROOT; };
 		68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtoolshed.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		68E3F24A0AC37F1300E1DFE0 /* libtoolshed.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libtoolshed.c; path = ../../libtoolshed/libtoolshed.c; sourceTree = SOURCE_ROOT; };
+		68E3F24A0AC37F1300E1DFE0 /* toolshed.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = toolshed.c; path = ../../libtoolshed/toolshed.c; sourceTree = SOURCE_ROOT; };
 		68F936D70B8DAEBE00DF9944 /* cocofuse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cocofuse; sourceTree = BUILT_PRODUCTS_DIR; };
 		68F936DD0B8DAEED00DF9944 /* cocofuse.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = cocofuse.c; path = ../../cocofuse/cocofuse.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -1335,7 +1335,7 @@
 		68E3F23E0AC37EB900E1DFE0 /* libtoolshed */ = {
 			isa = PBXGroup;
 			children = (
-				68E3F24A0AC37F1300E1DFE0 /* libtoolshed.c */,
+				68E3F24A0AC37F1300E1DFE0 /* toolshed.c */,
 			);
 			name = libtoolshed;
 			sourceTree = "<group>";
@@ -1989,7 +1989,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				68E3F24B0AC37F1300E1DFE0 /* libtoolshed.c in Sources */,
+				68E3F24B0AC37F1300E1DFE0 /* toolshed.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

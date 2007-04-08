@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title"><b>IFP2</b>:</div>
+		<br>
+		<pre class="bnf">	IFP2</pre>
+		<div class="main">
+			<br>
+			If the assembler is in pass 2 the code following the statement is assembled 
+			until an 'else', 'endp' or other contional directive is reached. This 
+			conditional must be terminated with 'endp'.
+			<br>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+			<pre class="example">	ifp2<BR>
+	lda	#$11
+	else
+	lda	#$22
+	endif</pre>
+			<br>
+			<br>
+			<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<div class="main">
+		<a href="pseudo_cond.htm">COND</a>,
+		<a href="pseudo_endc.htm">ENDC</a>,
+		<a href="pseudo_ifp1.htm">IFP1</a>,
+		<a href="pseudo_endp.htm">ENDP</a>,
+		<a href="pseudo_ifdef.htm">IFDEF</a>,
+		<a href="pseudo_ifndef.htm">IFNDEF</a>,
+		<a href="pseudo_if.htm">IF</a>,
+		<a href="pseudo_ifn.htm">IFN</a>,
+		<a href="pseudo_ifeq.htm">IFEQ</a>,
+		<a href="pseudo_ifne.htm">IFNE</a>,
+		<a href="pseudo_ifgt.htm">IFGT</a>,
+		<a href="pseudo_ifge.htm">IFGE</a>,
+		<a href="pseudo_iflt.htm">IFLT</a>,
+		<a href="pseudo_ifle.htm">IFLE</a>,
+		<a href="pseudo_else.htm">ELSE</a>,
+		<a href="pseudo_endif.htm">ENDIF</a>
+		</div>
+		<hr>
+		<div class="section">
+		Compatibility:
+		</div>
+		<div class="main">
+			<table class="compat_info" width="375" ID="Table4">
+				<tr>
+					<td class="compat_info">CASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">CCASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">OS-9 RMA</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edt/Asm III</td>
+					<td class="compat_info" align="center"><b>?</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm6309</td>
+					<td class="compat_info" align="center"><b>?</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Disk Edtasm+</td>
+					<td class="compat_info" align="center"><b>?</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm+</td>
+					<td class="compat_info" align="center"><b>?</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Macro-80C</td>
+					<td class="compat_info" align="center"><b>?</b></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

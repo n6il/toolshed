@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta content="http://schemas.microsoft.com/intellisense/ie5" name="vs_targetSchema">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title"><b>OPT - Enable and disable assembler options from source</b><br>
+		</div>
+		<br>
+		<pre class="bnf">	OPT	<EM>option</EM>[,<EM>option</EM>,...,<EM>option</EM>]</pre>
+		<div class="main"><br>
+			The OPT directive is used to control several aspects of the assembler. The 
+			options are specified in the operand field, separated by commas. All options 
+			have a default condition. Some options can be initialized from the command line 
+			that invoked the assembler, however the options contained in the source file 
+			take precedence over any entered on the command line. In the following 
+			descriptions, the parenthetical inserts specify "DEFAULT", if the option is the 
+			default condition. All options must be entered in lower case.<BR>
+			<BR>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+			<pre class="example">	opt	slist,xref</pre>
+			<br>
+			<br>
+			<STRONG>[at this time assembler options have not been finalized. Please refer to 
+				source code for currently available options]</STRONG><br>
+			<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<hr>
+		<div class="section">
+		Compatibility:
+		</div>
+		<div class="main">
+			<table class="compat_info" id="Table4" width="375">
+				<tr>
+					<td class="compat_info">CASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">CCASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">OS-9 RMA</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edt/Asm III</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm6309</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Disk Edtasm+</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm+</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Macro-80C</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

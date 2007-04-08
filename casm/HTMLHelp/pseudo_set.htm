@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title">
+			<b>SET - Set a symbol to a value</b>:<br>
+		</div>
+		<br>
+		<pre class="bnf"><EM>label</EM>	SET	<EM>expression</EM></pre>
+		<div class="main">
+			<br>
+			The SET directive assigns the value of the expression in the operand field to 
+			the label. The label cannot be redefined anywhere else in the program. The 
+			expression cannot contain any forward references or undefined symbols. SET 
+			declarations with forward references are flagged with Phasing Errors.<br>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+			<pre class="example">mode1	set	$10	* Assign a constant value
+mode2	set	mode1	* Assign the value of a label
+mode3	set	mode4	* Invalid! Cannot use forward references
+mode4	set	100	* Assign a constant value</pre>
+			<br>
+			<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<div class="main">
+			<a href="pseudo_equalsym.htm">=</a>,
+			<a href="pseudo_equ.htm">EQU</a>,
+			<a href="pseudo_set.htm">SET</a>
+		</div>
+		<hr>
+		<div class="section">
+		Compatibility:
+		</div>
+		<div class="main">
+			<table class="compat_info" width="375" ID="Table4">
+				<tr>
+					<td class="compat_info">CASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">CCASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">OS-9 RMA</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edt/Asm III</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm6309</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Disk Edtasm+</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm+</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Macro-80C</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

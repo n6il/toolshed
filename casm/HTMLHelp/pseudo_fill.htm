@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title">
+			<b>FILL - Fill Memory</b>:<br>
+		</div>
+		<br>
+		<pre class="bnf">[<EM>label</EM>]	FILL	<EM>expression</EM>,<EM>expression</EM></pre>
+		<div class="main">
+			<br>
+			The FILL directive causes the assembler to initialize an area of memory with a 
+			constant value. If a label is present it is assigned the address of the first 
+			constant value generated. The first expression signifies the one byte value to 
+			be placed in the memory and the second expression indicates the total number of 
+			successive bytes to be initialized. The first expression must evaluate to the 
+			range 0-255. Expressions cannot contain forward references or undefined 
+			symbols.
+			<br>
+			<br>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+			<pre class="example">	fill	10,$44	* Fill 10 bytes with value $44</pre>
+			<br>
+			<br>
+			<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<hr>
+		<div class="section">
+			Compatibility:
+		</div>
+		<div class="main">
+		<table class="compat_info" width="375" ID="Table4">
+			<tr>
+				<td class="compat_info">CASM</td>
+				<td class="compat_info" align="center"><b>X</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">CCASM</td>
+				<td class="compat_info" align="center"><b>&nbsp;</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">OS-9 RMA</td>
+				<td class="compat_info" align="center"><b>&nbsp;</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edt/Asm III</td>
+				<td class="compat_info" align="center"><b>&nbsp;</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edtasm6309</td>
+				<td class="compat_info" align="center"><b>&nbsp;</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Disk Edtasm+</td>
+				<td class="compat_info" align="center"><b>&nbsp;</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Edtasm+</td>
+				<td class="compat_info" align="center"><b>&nbsp;</b></td>
+			</tr>
+			<tr>
+				<td class="compat_info">Macro-80C</td>
+				<td class="compat_info" align="center"><b>&nbsp;</b></td>
+			</tr>
+		</table></div>
+	</body>
+</html>

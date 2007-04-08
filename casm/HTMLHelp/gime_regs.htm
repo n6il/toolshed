@@ -1,0 +1,727 @@
+<HTML>
+<HEAD>
+	<TITLE>GIME Register Reference</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+}
+
+hr {
+	color: #404040;
+}
+
+table.subinfo {
+	border: 0px #000000 solid;
+	border-collapse: collapse;
+}
+
+td.subinfo {
+	white-space: normal;
+	border: 0px #000000 solid;
+}
+
+td.tinfo {
+	white-space: normal;
+	font-face: "Courier New";
+	text-align: center;
+}
+
+td.infoheader {
+	background-color: #eeeeee;
+	font-weight: bold;
+	white-space: normal;
+	text-align: center;
+	vertical-align: bottom;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>GIME Register Reference</b><br>
+	From <em><a href="http://www.cocounravelled.com" target="_blank">Super Extended Basic Unravelled</a></em>
+</div>
+<br>
+<br>
+<br>
+<div class=main>
+	<table id="GIME-INIT0" width=550>
+		<tr><td class=header colSpan=3>$FF90 - INIT0 : Initialization Register 0</td></tr>
+		<tr><td>Bit 7</td><td>COCO</td><td width="100%">1=CoCo 1/2 compatible mode</td></tr>
+		<tr><td>Bit 6</td><td>MMUEN</td><td>1=MMU enabled</td></tr>
+		<tr><td>Bit 5</td><td>IEN</td><td>1=GIME chip IRQ enabled</td></tr>
+		<tr><td>Bit 4</td><td>FEN</td><td>1=GIME chip FIRQ enabled</td></tr>
+		<tr><td>Bit 3</td><td>MC3</td><td>1=RAM at FExx is constant (secondary IRQ vectors)</td></tr>
+		<tr><td>Bit 2</td><td>MC2</td><td>1=standard SCS (spare chip select)</td></tr>
+		<tr><td>Bit 1</td><td>MC1</td><td>ROM Map Control register 1</td></tr>
+		<tr><td>Bit 0</td><td>MC0</td><td>ROM Map Control register 0</td></tr>
+	</table>
+	<br>
+	<table class="subinfo" width=550><tr><td class=subinfo>
+		<b>COCO:</b> This bit is used to toggle the CoCo compatible mode on and off. The
+		term CoCo compatible mode is somewhat of a misnomer as there are some CoCo 2
+		graphics modes, which are not supported by the CoCo 3, and some of the video
+		control registers are active even when the COCO bit is in the CoCo compatible mode.
+		The programmer is best advised to use this bit for exactly what it was intended for
+		- to be set when you are using CoCo 2 graphics modes and to be clear when you are
+		using the new CoCo 3 graphics modes. The descriptions of the CoCo 3 registers given
+		below will explicitly state those instances in which the programmer should use the
+		new registers with the COCO bit set.<br>
+		<br>
+		To use CoCo 3 graphics, the COCO bit must be set to zero.
+		When using CoCo 1/2 rdesolutions, the bit is set to 1. RSDOS
+		typically sets the INIT0 register to 196 in CoCo 2 resolutions
+		and 68 when using CoCo 3 graphics modes.<br>
+		<br>
+		<br>
+		<b>MMUEN</b> : When this bit is set the MMU registers are enabled. If this
+		bit is clear, the MMU registers are inoperable and the 64K,
+		which makes up the logical address space is, the contiguous
+		segment from $70000 - $7FFFF.<br>
+		<br>
+		<br>
+		<b>IEN</b> : When this bit is set, the GIME chip’s IRQ Interrupt structure
+		is enabled. If the bit is clear, the old CoCo 2 PIA IRQ
+		interrupt structure is used.<br>
+		<br>
+		<br>
+		<b>FEN</b> : When this bit is set, the GIME chip’s FIRQ Interrupt structure
+		is enabled. If the bit is clear, the old CoCo 2 PIA FIRQ
+		interrupt structure is used.<br>
+		<br>
+		<br>
+		<b>MC3</b> : When this bit is set, the RAM which occupies the CPU’s address
+		range of $FE00-$FEFF will always be taken from $7FE00-$.7FEFF.
+		If this bit is clear and the MMUEN bit is set the RAM in the
+		CPU’s address range of $FE00-$FEFF will be taken from the
+		block as specified by the MMU register controlling logical
+		block 7.<br>
+		<br>
+		<br>
+		<b>MC2</b> : Spare Chip Select (SCS) control; if 0, then the SCS line (to
+		the expansion slot) will only be active in the $FF50-$FF5F
+		range. If this bit is 1, then the SCS line will be active in
+		the $FF40-$FF5F range.<br>
+		<br>
+		<br>
+		<b>MC1</b> : ROM map control<br>
+		<b>MC0</b> : ROM map control<br>
+<pre>
+	<b>MC1</b> and <b>MC0</b> ROM configuration<br>
+	0 X 16K internal, 16K external
+	1 0 32K internal
+	1 1 32K external (except interrupt vectors)</pre>
+		
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-INIT1" width=550>
+		<tr><td class=header colSpan=3>$FF91 - INIT1 : Initialization Register 1</td></tr>
+		<tr><td>Bit 7</td><td>Unused</td><td width="100%"></td></tr>
+		<tr><td>Bit 6</td><td>?<td>Memory type: 1 = 256K, 0 = 64K chips</td></tr>
+		<tr><td>Bit 5</td><td>TINS <td>Timer clock source: 1 = 279.365 nsec, 0 = 63.695 use</td></tr>
+		<tr><td>Bit 4</td><td>Unused</td><td></td></tr>
+		<tr><td>Bit 2</td><td>Unused</td><td></td></tr>
+		<tr><td>Bit 3</td><td>Unused</td><td></td></tr>
+		<tr><td>Bit 1</td><td>Unused</td><td></td></tr>
+		<tr>
+			<td>Bit 0</td>
+			<td>TR</td>
+			<td>
+				MMU task select<br>
+				1 =
+				enable FFA8-FFAF MMU registers<br>
+				0 = enable FFA0-FFA7 MMU registers
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table class=subinfo width=550><tr><td class=subinfo>
+		<b>TINS</b>: This bit controls the clock input to the 12-bit interval timer. If the
+		bit is set, the input source will be 14.31818 MHz which will produce a clock pulse
+		approximately every 70 nanoseconds. If the bit is clear, the input source will be
+		the horizontal blanking pulse which will produce a clock pulse approximately every
+		63.5 microseconds. The 279 ns clock is useful for interrupt driven sound
+		routines while the 63 us clock is used for a slower timer.<br>
+		<br>
+		<b>TR (Task Register)</b>: The task register selects which set of MMU bank registers to
+		assign to the CPU's 64K workspace. If this bit is set, then $FFA8-$FFAF
+		will be the active MMU registers, if the bit is clear, then $FFA0-$FFA7
+		will be the active MMU registers. The task bit is generally set to zero
+		in DECB.
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-IRQINR" width=550>
+		<tr><td class=header colSpan=3>$FF92 - IRQENR : Interrupt request enable register</td></tr>
+		<tr><td>Bit 7<td></td><td width="100%">Unused</td></tr>
+		<tr><td>Bit 6<td></td><td>Unused</td></tr>
+		<tr><td>Bit 5<td>TMR<td>1 = Enable timer IRQ</td></tr>
+		<tr><td>Bit 4<td>HBORD<td>1 = Enable Horizontal border IRQ</td></tr>
+		<tr><td>Bit 3<td>VBORD<td>1 = Enable Vertical border IRQ</td></tr>
+		<tr><td>Bit 2<td>EI2<td>1 = Enable Serial data IRQ</td></tr>
+		<tr><td>Bit 1<td>EI1<td>1 = Enable Keyboard IRQ</td></tr>
+		<tr><td>Bit 0<td>EI0<td>1 = Enable Cartridge IRQ</td></tr>
+	</table>
+	<br>
+	<table class=subinfo width=550><tr><td class=subinfo>
+		<b>TMR:</b>
+			A timer interrupt is generated whenever the 12-bit interval timer ($FF94-$FF95) counts down to zero.
+			<br><br>
+		<b>HBORD:</b>
+			The horizontal border interrupt is generated on the falling edge of the horizontal sync pulse.
+			<br><br>
+		<b>VBORD:</b>
+			The vertical border interrupt is generated on the falling edge of the vertical sync pulse.
+			<br><br>
+		<b>EI2:</b>
+			The serial data interrupt is generated on the falling edge of a signal on pin 4 of the serial I/O connector (JK 3).
+			<br><br>
+		<b>EI1:</b>
+			The keyboard interrupt will be triggered whenever a zero appears on any one
+			of the PA0-PA6 pins of PIA0. These pins are normally programmed as inputs
+			and are used to read the keyboard. The programmer should be warned that it
+			is not chiseled into tablets of granite that these pins remain inputs -
+			some interesting effects may be had by programming one as an output and
+			using it to generate an interrupt. In their normal condition as inputs, an
+			interrupt will be generated if a key is pressed and the proper keyboard
+			column is strobed by placing a zero in the correct column strobe register
+			($FF00) bit OR if a joystick fire button is pressed. It is Important to
+			note that a keyboard interrupt cannot be generated if there is not at least
+			one zero in the keyboard column strobe register (ignoring joystick fire
+			buttons). Also note that there is no way to mask off the joystick fire
+			buttons - they will always generate a keyboard interrupt.
+			<br><br>
+		<b>EI0:</b>
+			A cartridge interrupt will be generated on the falling edge of a Signal
+			found on pin 8 (CART) of the expansion connector.
+			<br><br>
+		Reading from the register tells you which interrupts came in and acknowledges and resets the interrupt source. 
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-FIRQENR" width=550>
+		<tr><td class=header colSpan=3>$FF93 - FIRQENR : Fast Interrupt request enable register</td></tr>
+		<tr><td>Bit 7</td><td></td><td width="100%">Unused</td></tr>
+		<tr><td>Bit 6</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 5</td><td>TMR <td>1 = Enable timer FIRQ</td></tr>
+		<tr><td>Bit 4</td><td>HBORD</td><td>1 = Enable Horizontal border FIRQ</td></tr>
+		<tr><td>Bit 3</td><td>VBORD</td><td>1 = Enable Vertical border FIRQ</td></tr>
+		<tr><td>Bit 2</td><td>EI2</td><td>1 = Enable Serial data FIRQ</td></tr>
+		<tr><td>Bit 1</td><td>EI1</td><td>1 = Enable Keyboard FIRQ</td></tr>
+		<tr><td>Bit 0</td><td>EI0</td><td>1 = Enable Cartridge FIRQ</td></tr>
+	</table>
+	<br>
+	<table class=subinfo id=Table3 width=550><tr><td class=subinfo>
+		This register works the same as IRQENR except that it generates FIRQ interrupts.<br>
+		<br>
+		Here's a table of the interrupt vectors and where they end up going. You can't change
+		the $FFxx vectors, but you can change the $FExx and $01xx vectors which contain 
+		jmps/lbras to the interrupt routine.
+	</td></tr></table>
+	<br>
+	<table class=subinfo width=550>
+		<tr>
+			<td class=subinfo align=center>
+				<table id=CC3-IRQVEC width=400>
+					<tr>
+						<td class="infoheader">Interrupt</td>
+						<td class="infoheader">Hardware<BR>Vector</td>
+						<td class="infoheader">CoCo III points to</td>
+						<td class="infoheader">which jumps to<br>this routine</td>
+					</tr>
+					<tr><td>SWI3</td><td>$FFF2</td><td>$FEEE</td><td>$0100</td></tr>
+					<tr><td>SWI2</td><td>$FFF4</td><td>$FEF1</td><td>$0103</td></tr>
+					<tr><td>FIRQ</td><td>$FFF6</td><td>$FEF4</td><td>$010F</td></tr>
+					<tr><td>IRQ</td><td>$FFF8</td><td>$FEF7</td><td>$010C</td></tr>
+					<tr><td>SWI</td><td>$FFFA</td><td>$FEFA</td><td>$0106</td></tr>
+					<tr><td>NMI</td><td>$FFFC</td><td>$FEFD</td><td>$0109</td></tr>
+					<tr><td>RESET</td><td>$FFFE</td><td><td>$8C1B</td></tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-TIMER" width=550>
+		<tr><td class=header colSpan=3>$FF94 - TIMRMSB : Timer register MSB</td></tr>
+		<tr><td>Bit 7</td><td></td><td width="100%">Unused</td></tr>
+		<tr><td>Bit 6</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 5</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 4</td><td></td><td>Unused</td></tr>
+		<tr>
+			<td>
+				Bit 3<br>
+				Bit 2<br>
+				Bit 1<br>
+				Bit 0<br>
+			</td>
+			<td>TMRH</td>
+			<td>Timer bits 8-11</td>
+		</tr>
+		<tr><td class=header colSpan=3>$FF95 - TIMRLSB : Timer register LSB</td></tr>
+		<tr>
+			<td>
+				Bit 7<br>
+				Bit 6<br>
+				Bit 5<br>
+				Bit 4<br>
+				Bit 3<br>
+				Bit 2<br>
+				Bit 1<br>
+				Bit 0<br>
+			</td>
+			<td>TMRL</td>
+			<td>Timer bits 0-7</td>
+		</tr>
+	</table>
+	<br>
+	<table class="subinfo" id=Table4 width=550><tr><td class=subinfo>
+		The 12 bit timer can be loaded with any number from 0-4095. The
+		timer resets and restarts counting down as soon as a number is
+		written to FF94. Writing to FF95 does not restart the timer, but
+		the value does save. Reading from either register does not restart
+		the timer. When the timer reaches zero, it automatically restarts
+		and triggers an interrupt (if enabled). The timer also controls the
+		rate of blinking text.<br>
+		<br>
+		Storing a zero to both registers stops the timer from operating.
+		Lastly, the timer works slightly differently on both 1986 and 1987
+		versions of the GIME. Neither can actually run a clock count of 1.
+		That is, if you store a 1 into the timer register, the 1986 GIME
+		actually processes this as a '3' and the 1987 GIME processes it as
+		a '2'. All other values stored are affected the same way:<br>
+		<br>
+		&nbsp;&nbsp;&nbsp;nnn+2 for 1986 GIME<br>
+		&nbsp;&nbsp;&nbsp;nnn+1 for 1987 GIME
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table width="550" id="GIME-VMODE">
+		<tr><td class="header" colspan="3">$FF98 - VMODE : Video mode register</td></tr>
+		<tr><td>Bit 7</td><td>BP</td><td>1=Graphics modes<br>0=Text modes</td></tr>
+		<tr><td>Bit 6</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 5</td><td>BPI</td><td>1=Composite color phase invert</td></tr>
+		<tr><td>Bit 4</td><td>MOCH</td><td>1=Monochrome on Composite video out</td></tr>
+		<tr><td>Bit 3</td><td>H50</td><td>1=50Hz video<br>0=60Hz video</td></tr>
+		<tr>
+			<td>Bits 2-0</td>
+			<td>LPR</td>
+			<td>
+				<font face="courier new">00x</font> = one line per row<br>
+				<font face="courier new">010</font> = two lines per row<br>
+				<font face="courier new">011</font> = eight lines per row<br>
+				<font face="courier new">100</font> = nine lines per row<br>
+				<font face="courier new">101</font> = ten lines per row<br>
+				<font face="courier new">110</font> = eleven lines per row<br>
+				<font face="courier new">111</font> = <i>*infinite lines per row</i>
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table class="subinfo" id=Table5 width=550><tr><td class=subinfo>
+		<b>BP (Bit Plane):</b> Determines whether the computer is to display graphics or
+		text. If this bit is set to 0, the screen is displayed as text. If it is 1,
+		graphics are displayed.<br>
+		<br>
+		<b>BPI:</b> Setting this bit will put you in the alternate color set. Technically, this
+		bit tells the computer to invert the color burst phase going to the TV or
+		composite monitor. Setting this bit will reverse the red and blue colors in
+		the artifacting mode.<br>
+		<br>
+		<b>MOCH:</b> When this bit is set to 1, the composite (including TV) output of the Color
+		Computer 3 is changed to black and white (monochrome). This allows easier
+		reading and better resolution in higher resolution text and graphics modes.
+		This bit will not affect the RGB display.<br>
+		<br>
+		<b>H50:</b> If this bit is set, the power source is 50 Hertz, if the bit is clear; the
+		power source is 60 Hz.<br>
+		<br>
+		<b>LPR (Lines Per character Row):</b> These bits determine the number of vertical
+		lines used for each character in the text display. The one, two and three
+		lines per row settings have little practical value, as the character itself
+		is seven rows high. Changing the setting will not change the size of the
+		character; it will only change the number of rows between characters. These
+		settings only affect the way text is displayed on the screen; it has no
+		effect on the amount of memory used to contain the screen data.<br>
+		<br>
+	
+	
+		*Mostly useless, but it does generate a graphics mode where
+		the whole screen is filled with the same line of graphics -
+		like a 320x1 resolution. This can be used for a very fast
+		oscilloscope type display where the program only updates data
+		in one scan line over time and as the screen refreshes, you
+		get a screen full of samples. I also used it in my Boink
+		bouncing ball demo to take manual control of the vertical
+		resolution of the screen to make the ball appear that it's
+		going up and down (without actually scrolling the whole
+		screen up and down).
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table width="550" id="GIME-VRES">
+		<tr><td colspan="3" class="header">$FF99 - VRES : Video resolution register</td></tr>
+		<tr><td>Bit 7</td><td></td><td>Unused?</td>
+		</tr>
+		<tr>
+			<td>Bits 6-5</td>
+			<td>LPF</td>
+			<td>
+				<font face="courier new">00</font> = 192 scan lines on screen<br>
+				<font face="courier new">01</font> = 200 scan lines on screen<br>
+				<font face="courier new">10</font> = *zero/infinite lines on screen (undefined)<br>
+				<font face="courier new">11</font> = 225 scan lines on screen
+			</td>
+		<tr>
+			<td>Bits 4-2</td>
+			<td>HRES</td>
+			<td>
+				Horizontal resolution using graphics:<br>
+				<font face="courier new">000</font> = 16 bytes per row<br>
+				<font face="courier new">001</font> = 20 bytes per row<br>
+				<font face="courier new">010</font> = 32 bytes per row<br>
+				<font face="courier new">011</font> = 40 bytes per row<br>
+				<font face="courier new">100</font> = 64 bytes per row<br>
+				<font face="courier new">101</font> = 80 bytes per row<br>
+				<font face="courier new">110</font> = 128 bytes per row<br>
+				<font face="courier new">111</font> = 160 bytes per row<br>
+				<br>
+				When using text:<br>
+				<font face="courier new">0x0</font> = 32 characters per row<br>
+				<font face="courier new">0x1</font> = 40 characters per row<br>
+				<font face="courier new">1x0</font> = 64 characters per row<br>
+				<font face="courier new">1x1</font> = 80 characters per row
+			</td>
+		</tr>
+		<tr>
+			<td>Bits 1-0</td>
+			<td>CRES</td>
+			<td>
+				Color Resolution using graphics:<br>
+				<font face="courier new">00</font> = 2 colors (8 pixels per byte)<br>
+				<font face="courier new">01</font> = 4 colors (4 pixels per byte)<br>
+				<font face="courier new">10</font> = 16 colors (2 pixels per byte)<br>
+				<font face="courier new">11</font> = Undefined (would have been 256 colors)<br>
+				<br>
+				When using text:<br>
+				<font face="courier new">x0</font> =No color attributes<br>
+				<font face="courier new">x1</font> =Color attributes enabled
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table class="subinfo" id="Table1" width=550><tr><td class=subinfo>
+		*The zero/infinite scanlines setting will either set the screen
+		to display nothing but border (zero lines) or graphics going all
+		the way up and down out of the screen, never retriggering. It
+		all depends on when you set the register. If you set it while
+		the video raster was drawing the vertical border you get zero
+		lines, and if you set it while video was drawing graphics you
+		get infinite lines. Mostly useless, but it should be possible
+		to coax a vertical overscan mode using this with some tricky
+		timing.
+	</td></tr></table>
+	<br>
+	<table width="550" border="0" class="subinfo"><tr><td align="center" class="subinfo">
+		<table id=Table12 cellSpacing=0 cellPadding=3 border=2>
+			<tr><td>HRES</td><td>CRES</td><td>Commonly used graphics modes</td></tr>
+			<tr><td class="tinfo">111</td><td class="tinfo">01</td><td>640 pixels, 4 colors</td></tr>
+			<tr><td class="tinfo">101</td><td class="tinfo">00</td><td>640 pixels, 2 colors</td></tr>
+			<tr><td class="tinfo">110</td><td class="tinfo">01</td><td>512 pixels, 4 colors</td></tr>
+			<tr><td class="tinfo">100</td><td class="tinfo">00</td><td>512 pixels, 2 colors</td></tr>
+			<tr><td class="tinfo">111</td><td class="tinfo">10</td><td>320 pixels, 16 colors</td></tr>
+			<tr><td class="tinfo">101</td><td class="tinfo">01</td><td>320 pixels, 4 colors</td></tr>
+			<tr><td class="tinfo">011</td><td class="tinfo">00</td><td>320 pixels, 2 colors</td></tr>
+			<tr><td class="tinfo">110</td><td class="tinfo">10</td><td>256 pixels, 16 colors</td></tr>
+			<tr><td class="tinfo">100</td><td class="tinfo">01</td><td>256 pixels, 4 colors</td></tr>
+			<tr><td class="tinfo">010</td><td class="tinfo">00</td><td>256 pixels, 2 colors</td></tr>
+			<tr><td class="tinfo">101</td><td class="tinfo">10</td><td>160 pixels, 16 colors</td></tr>
+			<tr><td class="tinfo">011</td><td class="tinfo">01</td><td>160 pixels, 4 colors</td></tr>
+			<tr><td class="tinfo">001</td><td class="tinfo">00</td><td>160 pixels, 2 colors</td></tr>
+			<tr><td class="tinfo">100</td><td class="tinfo">10</td><td>128 pixels, 16 colors</td></tr>
+			<tr><td class="tinfo">010</td><td class="tinfo">01</td><td>128 pixels, 4 colors</td></tr>
+			<tr><td class="tinfo">000</td><td class="tinfo">00</td><td>128 pixels, 2 colors</td></tr>
+		</table>
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME=BRDR" width="550">
+		<tr><td colspan="3" class="header">$FF9A - BRDR : Border color register</td></tr>
+		<tr><td>Bit 7</td><td></td><td width="100%">Unused</td></tr>
+		<tr><td>Bit 6</td><td></td><td>Unused</td></tr>
+		<tr><td>Bits 5-0</td><td>BRDR<td>Border color</td></tr>
+	</table>
+	<br>
+	<table class="subinfo" id="Table2" width=550><tr><td class=subinfo>
+		This controls the color of the border around the screen. The color
+		bits work the same as the palette registers. This register only
+		controls the border color of CoCo 3 video modes and does not
+		affect Coco 1/2 modes.
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-DISTO" width="550">
+		<tr><td colspan="3" class="header">$FF9B - Reserved</td></tr>
+		<tr><td>Bit 7</td><td></td><td width="100%">Unused</td></tr>
+		<tr><td>Bit 6</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 5</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 4</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 3</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 2</td><td></td><td>Unused</td></tr>
+		<tr>
+			<td>Bits 1-0</td>
+			<td>VBANK</td>
+			<td>Used by Disto 2 Meg upgrades to switch video between 512K banks</td>
+		</tr>
+	</table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-VSC" width="550">
+		<tr><td colspan="3" class="header">$FF9C - VSC : Vertical scroll register</td></tr>
+		<tr><td>Bit 7</td><td></td><td width="100%">Unused</td></tr>
+		<tr><td>Bit 6</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 5</td><td></td><td>Unused</td></tr>
+		<tr><td>Bit 4</td><td></td><td>Unused</td></tr>
+		<tr><td>Bits 3-0</td><td>VSC</td><td>Vertical smooth scroll.</td></tr>
+	</table>
+	<br>
+	<table class="subinfo" id="Table6" width=550><tr><td class=subinfo>
+		The vertical scroll register is 
+	used to allow smooth scrolling in text modes. Consecutive numbers scroll 
+	the screen upwards one scan line at a time in video modes where more than 
+	one scan line makes up a row of text (typically 8 lines per character row) 
+	or graphics (double height+ graphics).</td></TD>
+	</tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-VORMSB" width="550">
+		<tr><td colspan="3" class="header">$FF9D - VORMSB : Vertical offset register MSB</td></tr>
+		<tr><td>Bits 7-0</td><td>Y15-Y8</td><td width="100%">MSB Start of video in RAM (video location * 2048)</td></tr>
+	</table>
+	<br>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-VORLSB" width="550">
+		<tr><td colspan="3" class="header">$FF9E - VORLSB : Vertical offset register LSB</td></tr>
+		<tr><td>Bits 7-0</td><td>Y7-Y0</td><td width="100%">LSB Start of video in RAM<br>(video location * 8)</td></tr>
+	</table>
+	<br>
+	<table class="subinfo" id="Table7" width=550><tr><td class=subinfo>
+		Y15-Y0 is used to set the video mode to start in any memory location
+		in 512K by steps of 8 bytes. On a 128K machine, the memory range is
+		$60000-$7FFFF. There is a bug in some versions of the GIME that causes
+		the computer to crash when you set odd numbered values in $FF9E in some
+		resolutions, so it's safest to limit positioning to steps of 16 bytes.
+		Fortunately, you can use FF9F to make up for it and get steps as small
+		as 2 bytes.
+	</td></tr></table></p>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table width="550" id="GIME-HOR" cellSpacing=0 cellPadding=3 border=2>
+		<tr><td colspan="3" class="header">$FF9F - HOR : Horizontal Offset Register</td></tr>
+		<tr>
+			<td>Bit 7</td>
+			<td>HVEN</td>
+			<td width="100%">
+				1 = Horizontal virtual screen enable (256 bytes per row)<br>
+				0 = Normal horizontal display
+			</td>
+		</tr>
+		<tr>
+			<td>Bits 6-0</td>
+			<td>X6-X0</td>
+			<td>
+				Horizontal offset address<br>
+				(video location * 2)
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table class="subinfo" id="Table8" width=550><tr><td class=subinfo>
+		You can combine the horintal and vertical offsets to get a higher
+		definition video position: Y15-Y4,X6-X0 which gives you 19 bit
+		positioning by steps of 2 bytes.<br>Otherwise, you can use this register
+		to do scrolling effects. The virtual screen mode allows you to set up a
+		256 byte wide graphics or text screen, showing only part of it at a time
+		and allowing you to scroll it vertically.
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<h2></h2>
+	<table id=Table19 width="550">
+		<tr><td colspan="2" class="header">$FFA0 - $FFA7 : MMU Registers [task 0]</td></tr>
+		<tr><td>$FFA0</td><td>Bank at $0000-$1FFF</td>
+		<tr><td>$FFA1</td><td>Bank at $2000-$3FFF</td>
+		<tr><td>$FFA2</td><td>Bank at $4000-$5FFF</td>
+		<tr><td>$FFA3</td><td>Bank at $6000-$7FFF</td>
+		<tr><td>$FFA4</td><td>Bank at $8000-$9FFF</td>
+		<tr><td>$FFA5</td><td>Bank at $A000-$BFFF</td>
+		<tr><td>$FFA6</td><td>Bank at $C000-$DFFF</td>
+		<tr><td>$FFA7</td><td>Bank at $E000-$FFFF (or $E000-$FDFF if secondary vectors are enabled)</td></tr>
+		<tr><td colspan="2" class="header">$FFA8 - $FFAF : MMU Registers [task 1]</td></tr>
+		<tr><td>$FFA8</td><td>Bank at $0000-$1FFF</td></tr>
+		<tr><td>$FFA9</td><td>Bank at $2000-$3FFF</td></tr>
+		<tr><td>$FFAA</td><td>Bank at $4000-$5FFF</td></tr>
+		<tr><td>$FFAB</td><td>Bank at $6000-$7FFF</td></tr>
+		<tr><td>$FFAC</td><td>Bank at $8000-$9FFF</td></tr>
+		<tr><td>$FFAD</td><td>Bank at $A000-$BFFF</td></tr>
+		<tr><td>$FFAE</td><td>Bank at $C000-$DFFF</td></tr>
+		<tr><td>$FFAF</td><td>Bank at $E000-$FFFF<br>(or $E000-$FDFF if secondary vectors enabled)</td></tr>
+	</table>
+	<br>
+	<table class="subinfo" id="Table9" width=550><tr><td class=subinfo>
+		These MMU registers allocate chunks of 8K into the CPU's 64K address space.
+		Valid bank ranges are $38-$3F on 128K machines, $00-$3F on a 512K machine,
+		$00-$7F on a 1 Meg machine and $00-$FF on a 2 Meg machine.<br>
+		<br>
+		These registers can be read, but the upper 2 bits must be masked out as
+		they return bleedover from the bus (sometimes zero, sometimes one). This
+		is okay for machines with 512K or less, but poses a problem for 1Meg and
+		up. Supposedly some memory upgrades fixed this, but most don't so you
+		can't rely on those 2 bits to be there when you read the registers.<br>
+		<br>
+		<STRONG>The "Task 0" MMU registers are enabled when the task bit (FF91) is clear.<br>
+		The "Task 1" MMU registers are enabled when the task bit (FF91) is set.</STRONG>
+	</td></tr></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table id="GIME-PALET" width="550">
+		<tr><td colspan="2" class="header">$FFB0 - $FFBF : Color palette registers</td></tr>
+		<tr><td>$FFB0</td><td width="100%">Color 0</td></tr>
+		<tr><td>$FFB1</td><td>Color 1</td></tr>
+		<tr><td>$FFB2</td><td>Color 2</td></tr>
+		<tr><td>$FFB3</td><td>Color 3</td></tr>
+		<tr><td>$FFB4</td><td>Color 4</td></tr>
+		<tr><td>$FFB5</td><td>Color 5</td></tr>
+		<tr><td>$FFB6</td><td>Color 6</td></tr>
+		<tr><td>$FFB7</td><td>Color 7</td></tr>
+		<tr><td>$FFB8</td><td>Color 8</td></tr>
+		<tr><td>$FFB9</td><td>Color 9</td></tr>
+		<tr><td>$FFBA</td><td>Color 10</td></tr>
+		<tr><td>$FFBB</td><td>Color 11</td></tr>
+		<tr><td>$FFBC</td><td>Color 12</td></tr>
+		<tr><td>$FFBD</td><td>Color 13</td></tr>
+		<tr><td>$FFBE</td><td>Color 14</td></tr>
+		<tr><td>$FFBF</td><td>Color 15</td></tr>
+		<tr><td colspan="2" class="header">RGB Color format</td></tr>
+		<tr><td>Bit 7</td><td>Unused</td></tr>
+		<tr><td>Bit 6</td><td>Unused</td></tr>
+		<tr><td>Bit 5</td><td>High order Red</td></tr>
+		<tr><td>Bit 4</td><td>High order Green</td></tr>
+		<tr><td>Bit 3</td><td>High order Blue</td></tr>
+		<tr><td>Bit 2</td><td>Low order Red</td></tr>
+		<tr><td>Bit 1</td><td>Low order Green</td></tr>
+		<tr><td>Bit 0</td><td>Low order Blue</td></tr>
+		<tr><td colspan="2" class="header">Composite Color format</td></tr>
+		<tr><td>Bit 7</td><td>Unused</td></tr>
+		<tr><td>Bit 6</td><td>Unused</td></tr>
+		<tr><td>Bits 5-4</td><td>Intensity</td></tr>
+		<tr><td>Bits 3-0</td><td>Coloe Hue</td></tr>
+	</table>
+	<br>
+	<table class="subinfo" id="Table10" width=550><tr><td class=subinfo>
+		The color set when using composite monitors is different than above
+		(which applies to RGB monitors). On composite displays, Bits 5-4
+		control 4 levels of intensity, and bits 3-0 control 16 hues of color.<br>
+		<br>
+		These registers can also be read to determine what palettes are set but
+		like the MMU registers, the upper 2 bits must be masked out. Both reading
+		and writing to the palette registers causes a small 'glitch' on the
+		screen. If you want to avoid them, you can change the palettes while the
+		video is in the vertical or horizontal border.<br>
+		<br>
+		On the other hand, you could also generate the glitches on purpose, to
+		superimpose snow on the screen. The glitches appear as the color you set
+		the register to (with a bit of the previous color setting at the
+		beginning) and with precise CPU timing loops you could actually
+		superimpose definable graphics over the screen this way.
+	</tr></td></table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table width="550">
+		<tr><td colspan="3" class="header">$FFD8 and $FFD9 : CPU Clock Rate</td></tr>
+		<tr><td>FFD8</td><td>'Slow poke'</td><td>Any write selects 0.89 Mhz CPU clock</td></tr>
+		<tr><td>FFD9</td><td>'Fast poke'</td><td>Any write selects 1.79 Mhz CPU clock</td></td>
+	</table>
+</div>
+<br>
+<hr>
+<br>
+<div class=main>
+	<table width="550" ID="Table11">
+		<tr><td colspan="3" class="header">$FFDE and $FFDF : ROM/RAM map type</td></tr>
+		<tr><td>FFDE</td><td>ROM mode</td><td>Any write switches system ROMs into memory map</td></tr>
+		<tr><td>FFDF</td><td>RAM mode</td><td>Any write selects all-RAM mode</td></tr>
+	</table>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</HTML>

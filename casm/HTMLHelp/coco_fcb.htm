@@ -1,0 +1,517 @@
+<HTML>
+<HEAD>
+	<TITLE>WD1793 Floppy Disk Controller</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.data {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+
+td.rdata {
+	vertical-align: top;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+
+td.rheader {
+	color: #000000;
+	background-color: #eeeeee;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+	vertical-align: bottom;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>Disk Basic File System</b><br>
+	From <em><a href="http://www.cocounravelled.com" target="_blank">Disk Basic Unravelled</a></em>
+</div>
+<br>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="border: 0px; white-space: normal; text-align: left;">
+		<center><h3>File Control Block Structure</h2></center>
+		
+		
+		The File Control Block (FCB) is used by the DOS to control the transfer of
+		data between the computer’s RAM and the disk. It consists of 25 control bytes and a
+		256-byte data buffer. The 25 control bytes may have different functions if the file
+		is a random/direct, sequential input or sequential output file. The data buffer is
+		used to collect data so that the disk I/O will only be required when there is a
+		full sector (256 bytes) of data to be input or output to the disk. The use of this
+		buffer speeds up the overall disk I/O by cutting down on the number of times that
+		actual disk accesses are required.<br>
+		<br>
+		The number of FCBs allowed is set by the FILES command, which initializes the
+		direct page variable FCBACT (the maximum number of FCBs allowed). The DOS always
+		sets up a system FCB directly above the last allocated FCB, which is reserved for
+		the exclusive use of the DOS and is not accessible to the user through BASIC. The
+		system FCB is used when the system requires an FCB for disk I/O during the
+		execution of such commands as MERGE, COPY, SAVE, LOAD, etc. This FCB may be
+		accessed by the user under machine language but care must be exercised to insure
+		that none of the BASIC commands which utilize the system FCB are used when doing
+		so.<br>
+		<br>
+		The OPEN command is used to initialize the FCB for disk I/O. It keeps track
+		of which byte, sector, track and granule is currently being accessed by the DOS for
+		the file controlled by the FCB. When disk I/O has been completed, the FCB is
+		deactivated with the CLOSE command. When an FCB is closed, it is available for use
+		by another file and once the FCB is used by another file, all of the information
+		used by the previous file is lost. Some of the information must be saved since the
+		user may want to reopen the same file for use later on. Only six bytes from the FCB
+		must be saved in order to be able to reinitialize an FCB. These six bytes are the
+		file type (1), ASCII flag (1), first granule in file (2) and the number of bytes
+		used in the last sector (2) and they are stored in the directory. A two-byte
+		quantity is used to store number of bytes used in the last sector since the number
+		of bytes may be any number from 0 to 256 ($100).<br>
+		<br>		
+		Listed below are those FCB control bytes, which are common to all types of
+		files and their relative offset from the start of the FCB.
+		<br>
+		<br>
+		<table width="500" align="center" width="300" class="info" ID="Table2">
+			<tr>
+				<td class="rheader">Offset</td>
+				<td class="rheader">Name</td>
+				<td class="rheader">Description</td>
+			</tr>
+			
+			<tr>
+				<td class="data">0</td>
+				<td class="rdata">FCBTYP</td>
+				<td class="rdata">
+					Single byte code representing the file type under which
+					the file was opened. It may not have any relationship to the
+					actual type of data stored in the file; a sequential file may be
+					opened as a random file and vice versa. The allowed codes are:
+					$10 = Sequential input, $20 = Sequential output, $40 = random, 0
+					= killed file.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">1</td>
+				<td class="rdata">FCBDRV</td>
+				<td class="rdata">
+					Single byte quantity defining the drive number where the file is located (0 - 3).
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">2</td>
+				<td class="rdata">FCBFGR</td>
+				<td class="rdata">
+					Single byte quantity defining the first granule used by the file.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">3</td>
+				<td class="rdata">FCBCGR</td>
+				<td class="rdata">
+					Single byte quantity defining the current granule being accessed by the FCB.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">4</td>
+				<td class="rdata">FCBSEC</td>
+				<td class="rdata">
+					Single byte quantity defining the current sector being accessed
+					by the FCB (1 - 9).
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">18</td>
+				<td class="rdata">FCBDIR</td>
+				<td class="rdata">
+					Single byte quantity defining the directory entry number for this
+					file (0 - 71).
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">19</td>
+				<td class="rdata">FCBLST</td>
+				<td class="rdata">
+					Double byte quantity containing the number of bytes used by this
+					file in the last sector of the file.
+				</td>
+			</tr>
+
+		</table>
+		<br>
+		<br>
+		Listed below are the definitions of the non-common FCB control bytes as
+		used by random files.
+		<br>
+		<br>
+		<table width="500" align="center" width="300" class="info" ID="Table3">
+			<tr>
+				<td class="rheader">Offset</td>
+				<td class="rheader">Name</td>
+				<td class="rheader">Description</td>
+			</tr>
+			
+			<tr>
+				<td class="data">5</td>
+				<td class="rdata">FCBCPT</td>
+				<td class="rdata">Unused</td>
+			</tr>
+			
+			<tr>
+				<td class="data">6</td>
+				<td class="rdata">FCBPOS</td>
+				<td class="rdata">Print position - always zero</td>
+			</tr>
+			
+			<tr>
+				<td class="data">7</td>
+				<td class="rdata">FCBREC</td>
+				<td class="rdata">Double byte quantity containing the current record number being used by the FCB.</td>
+			</tr>
+			
+			<tr>
+				<td class="data">8</td>
+				<td class="rdata">FCBRLN</td>
+				<td class="rdata">Double byte quantity containing the length of a record</td>
+			</tr>
+			
+			<tr>
+				<td class="data">11</td>
+				<td class="rdata">FCBBUF</td>
+				<td class="rdata">
+					Double byte quantity containing a pointer to the absolute address
+					of the start of random file buffer, which is exactly one record
+					length long.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">13</td>
+				<td class="rdata">FCBSOF</td>
+				<td class="rdata">
+					Double byte quantity containing the sector offset to the current
+					position in the record. These bytes are used to keep track of how
+					many sectors from the beginning of a random file the current data
+					being processed is located. These bytes are used to determine if
+					the data in the FCB data buffer are valid for the current record
+					number being processed. The high order byte is often set to $FF
+					to cause new data to be read into the FCB data buffer.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">15</td>
+				<td class="rdata">FCBFLG</td>
+				<td class="rdata">Single byte ‘GET’/‘PUT’ flag: 0=GET, 1=PUT.</td>
+			</tr>
+			
+			<tr>
+				<td class="data">16</td>
+				<td class="rdata"></td>
+				<td class="rdata">Two unused bytes
+			</tr>
+			
+			<tr>
+				<td class="data">21</td>
+				<td class="rdata">FCBGET</td>
+				<td class="rdata">
+					Double byte quantity containing the number of characters, which
+					have been pulled out of the current record. These bytes are set
+					to zero every time a record is stored in (PUT) or retrieved from
+					(GET) a file.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">23</td>
+				<td class="rdata">FCBPUT</td>
+				<td class="rdata">
+					Double byte quantity containing the number of characters, which
+					have been ‘PUT’ into the current record. These bytes are set to
+					zero every time a record is stored in (PUT) or retrieved from
+					(GET) a file.
+				</td>
+			
+			<tr>
+		</table>
+		<br>
+		<br>
+		<br>
+		<br>
+		Listed below are the definitions of the non—common FCB control bytes as used
+		by sequential files.
+		<br>
+		<br>
+
+		<table width="500" align="center" width="300" class="info" ID="Table4">
+			<tr>
+				<td class="rheader">Offset</td>
+				<td class="rheader">Name</td>
+				<td class="rheader">Description</td>
+			</tr>
+			
+			<tr>
+				<td class="data">5</td>
+				<td class="rdata">FCBCPT</td>
+				<td class="rdata">
+					Single byte quantity pointing to the next character to be
+					processed for input files. When this byte is incremented to zero
+					it indicates that the data buffer needs to be refilled. For
+					output files this byte is used to indicate that 256 bytes of the
+					last sector in the file have been used in case a ‘DISK FULL’
+					error occurs while searching for an unused granule6 FCBPOS
+					Single byte quantity containing the current print position
+					in the file for output files, unused for input files. A carriage
+					return in the output data stream will reset this value to zero.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">7</td>
+				<td class="rdata">FCBREC</td>
+				<td class="rdata">
+					Double byte quantity containing the number of whole sectors which
+					have been input or output to a file.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">9-15</td>
+				<td class="rdata">
+				<td class="rdata">Seven unused bytes.</td>
+			</tr>
+			
+			<tr>
+				<td class="data">16</td>
+				<td class="rdata">FCBCFL</td>
+				<td class="rdata">
+					Single byte cache flag: 00=cache empty, $FF=cache full when
+					inputting data, the DOS treats a CR, LF sequence as a CR.
+					Therefore the DOS must look for a LF after a CR and if it does
+					not find a LF, it must save that character for the next time an
+					input character is needed. The cache flag indicates whether or
+					not an extra character, which needs to be saved (cached), has
+					been pulled out of an input file.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">17</td>
+				<td class="rdata">FCBCDT</td>
+				<td class="rdata">
+					Single byte cache data byte. If the cache flag is set
+					the cache data byte is stored here.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">23</td>
+				<td class="rdata">FCBDFL</td>
+				<td class="rdata">
+					Single byte data left flag for input files: 00=data
+					still left in file, $FF=no data left in file.
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">24</td>
+				<td class="rdata">FCBLFT</td>
+				<td class="rdata">
+					Single byte quantity containing the number of characters left in
+					the data buffer of an input file or the number of characters
+					stored in the data buffer of an output file.
+				</td>
+			</tr>
+			
+		</table>
+		<br>
+		<br>
+		<br>
+		<br>
+		<center><h3>File Allocation Table</h2></center>
+		The file allocation table (FAT) is used to keep track of whether or not a
+		granule has been allocated to a file or if it is free. The FAT is composed of six
+		control bytes followed by 68 data bytes — one byte for each granule. The FAT is
+		stored on sector two of the directory track (17). A RAM image of the FAT is kept in
+		the disk RAM for each of the four possible drives. Keeping an image of the FAT in
+		RAM helps speed up the overall operation of the DOS by eliminating the need for
+		disk I/O every time the DOS modifies the FAT. Saving the FAT to disk is done
+		approximately every 19 times that a new granule is pulled from the free granule
+		reserve. It is written to disk whenever a file is closed and there are some DOS
+		operations, which force the FAT to be written to disk when that DOS operation
+		allocates a free granule.<br>
+		<br>
+		Only the DOS uses two of the six control bytes. The first FAT control byte
+		keeps track of how many FCBs are active on the drive for a particular FAT. This
+		byte is used to preclude the loading in of the FAT from disk when there is any
+		active file currently using the FAT. You can imagine the disaster, which would
+		occur if you were creating a file and had allocated some granules to your new file
+		but had not saved the new FAT to disk when the old FAT was loaded into RAM on top
+		of the new FAT. Your new file would be hopelessly gone. For that reason the DOS
+		must not allow the FAT to be loaded into RAM from disk while an FCB is active for
+		that FAT.<br>
+		<br>
+		The second FAT control byte is used to govern the need to write data from the
+		FAT RAM image to the disk. If the value of this byte is zero it means that the FAT
+		RAM image is an exact copy of what is currently stored on the disk. If the value is
+		non—zero, it indicates that the data in the FAT RAM image has been changed since
+		the last time that the FAT was written to disk. The number stored in this byte is
+		an indicator of how many granules have been removed from the FAT since the last FAT
+		to disk write. Some BASIC commands, such as KILL, cause an immediate FAT RAM image
+		to disk write when granules are either freed or allocated. Other commands, which
+		allocate granules, increment the second FAT control byte. This byte is then
+		compared to the disk variable WFATVL and when the second control byte is >= WFATVL,
+		the FAT is written to disk.<br>
+		<br>
+		The FAT data bytes are used to determine whether or not a granule is free and
+		if it has been allocated they are used to determine to which file the granule
+		belongs. If a data byte is $FF, it means that the granule is free and may be
+		allocated to any file. If a granule has been allocated, it is part of a sector
+		chain, which defines which granules belong to a certain file. The only information
+		required to be able to trace the granule chain is the number of the first granule
+		in the chain. If the first granule of the chain is not known, the chain cannot be
+		traced down backwards.<br>
+		<br>
+		A granule data byte, which has been allocated, will contain a value, which is
+		the number of the next granule in the granule chain for that file. If the two most
+		significant bits (6,7) of a granule data byte are set, then that granule is the
+		last granule in a file’s granule chain. The low order four bits will contain the
+		number of sectors in the last granule, which the file uses. Even though a file may
+		not use all of the sectors in the last granule in the chain, no other file may use
+		the sectors. Disk space is not allocated on a sector basis, it is allocated on a
+		granule basis and the granule may not be broken down. The smallest one-byte file
+		will still require a full granule to be allocated in order to store the file.<br>
+		<br>
+		Granules are allocated in such a manner that will cause them to be relatively
+		uniformly spread around the disk. This will lessen wear on the disk by not always
+		allocating certain granules so that the disk drive head will not pass over certain
+		sections of the disk too often. This is a common method used by a DOS in order to
+		increase the life of a disk by spreading out the wear over as large a surface as
+		possible, which could not be done if the granules were allocated on a strictly next
+		in line numerical basis.<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<center><h3>The Directory</h2></center>
+		The directory is used by the DOS to keep track of how many files are stored
+		on a disk. Track 17 is reserved for the directory and the file allocation table
+		(FAT). The FAT resides on sector 2 and the directory occupies sectors 3-11. The
+		remaining sectors are not used by the DOS in the current or past revisions to the
+		BASIC ROMs. Each directory entry requires 32 bytes; so eight directory entries will
+		fit in one sector for a total of 72 maximum directory entries. However, one full
+		granule is required for each directory entry and there are only 68 granules on a
+		disk so that only 68 directory entries (files) may exist on a disk at any time.<br>
+		<br>
+		The format of the 32-byte directory entry is as follows:
+		<br>
+		<br>
+		<table width="500" align="center" width="300" class="info" ID="Table5">
+			<tr>
+				<td class="rheader">Byte</td>
+				<td class="rheader">Description</td>
+			</tr>
+			
+			<tr>
+				<td class="data">0 - 7</td>
+				<td class="rdata">
+					Filename, which is left justified and blank, filled. If byte 0 is 0,
+					then the file has been ‘KILL’ed and the directory entry is available
+					for use. If byte 0 is $FF, then the entry and all following entries
+					have never been used.
+				</tr>
+			</tr>
+			
+			<tr>
+				<td class="data">8 - 10</td>
+				<td class="rdata">Filename extension</td>
+			</tr>
+			
+			<tr>
+				<td class="data">11</td>
+				<td class="rdata">
+					File type:<br>
+					&nbsp;&nbsp;&nbsp;0 = BASIC<br>
+					&nbsp;&nbsp;&nbsp;1 = BASIC data<br>
+					&nbsp;&nbsp;&nbsp;2 = Binary/Machine language<br>
+					&nbsp;&nbsp;&nbsp;3 = Text<br>
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">12</td>
+				<td class="rdata">
+					ASCII flag:<br>
+					&nbsp;&nbsp;&nbsp;0=binary or crunched BASIC<br>
+					&nbsp;&nbsp;&nbsp;$FF=ASCII
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="data">13</td>
+				<td class="rdata">Number of the first granule in the file</td>
+			</tr>
+			
+			<tr>
+				<td class="data">14 - 15</td>
+				<td class="rdata">Number of bytes used in the last sector of the file</td>
+			</tr>
+			
+			<tr>
+				<td class="data">16 - 31</td>
+				<td class="rdata">Unused (future use)</td>
+			</tr>
+		</table>
+
+	</td></tr>
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>
+

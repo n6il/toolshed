@@ -1,0 +1,792 @@
+<HTML>
+<HEAD>
+	<TITLE>Color Computer Speech and Sound Cartridge</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.wrap {
+	vertical-align: bottom;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.header {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	background-color: #eeeeee;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+td.center {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+div.header {
+	font-weight: bold;
+	font-size : 14pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	text-align: left;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>Color Computer Speech and Sound Cartridge</b><br>
+</div>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="white-space: normal; text-align: left;">
+		<div class="header" id="INTRO">INTRODUCTION</div><br>
+		<br>
+		The value of the Color Computer Speech/Sound.Cartridge (S/SC) speaks for itself.<br>
+		<br>
+		This versatile Color Computer peripheral lets you use your computer to speak words and
+		sentences, generate complex sound effects, and play music in a 9-octave range on 3
+		independent channels. It also opens new dimensions for integrating speech and sound
+		effects into all types of applications--from games to educational programs.<br>
+		<br>
+		This manual contains a great deal of technical information intended primarily for
+		advanced programmers. However, anyone who owns a Color Computer, including the novice
+		and the machine-language programmer, can use the S/SC.<br>
+		<br>
+		Getting your Color Computer to speak is simple.<br>
+		<br>
+		* Plug the S/SC into the Program Pak slot on the right side of your Color Computer.<br>
+		* Type in the program on Page 11 of this manual.<br>
+		* Run the program and then type in anything you want the computer to say.<br>
+		<br>
+		That's it. (Save this program on cassette so you can use it again without retyping
+		it. If you have a Multi-Pak Interface, you can save the program on disk.)<br>
+		<br>
+		Many applications programs will use the S/SC automatically. If these programs are
+		cassette-based, all you have to do is plug the S/SC into the Program Pak slot and
+		then load the cassette program.<br>
+		<br>
+		If a Program Pak applications program uses the S/SC, you need a Multi-Pak Interface.
+		You may use the Speech/Sound Cartridge and Program Pak in any 2 Interface slots.
+		Some Color Computer software and the 0s-9 Operating System expect a Disk Drive
+		Controller in Slot 4 or a Communications package in Slot 1, and these may not function
+		properly with the S/SC in those slots. Slots 2 and 3 of the Interface, however, are
+		always available for the S/SC and Program Paks.<br>
+		<br>
+		If a disk-based applications program uses the S/SC, you need a Multi-Pak Interface.
+		You may use the S/SC and Disk Drive Contoller in any two Interface slots. However,
+		some Color Computer software and the OS-9 Operating System expect the Disk Drive
+		Controller in Slot 4 or a Communications package in Slot 1 and may not function properly
+		with the S/SC in those slots. Slots 2 and 3 are always available for the S/SC. When you
+		run the disk-based program, it automatically uses the S/SC.<br>
+		<br>
+		Although this manual contains much technical information, it also contains many tutorial
+		and demonstration programs. The first 3 programs in the following list are limited in
+		scope and demonstrate basic principles for programming the S/SC. The last 4 programs
+		are more sophisticated, and we include them so that nonprogrammers can explore many
+		of the capabilities of the S/SC.<br>
+		<br>
+		TEXT TO SPEECH PROGRAM	PAGE 11<br>
+		ALLOPHONE TO SPEECH PROGRAM	PAGE 15<br>
+		DIRECT ACCESS (REGISTER) PROGRAM	PAGE 27<br>
+		CARTRIDGE DEMONSTRATION PROGRAM	PAGE 43<br>
+		ORGAN PROGRAM	PAGE 51<br>
+		SOUND EFFECTS	PROGRAM PAGE 53<br>
+		TEXT TO SPEECH	PROGRAM (with editor) PAGE 55<br>
+		<br>
+		To use these programs, just type them in, save them on cassette or disk, and run them
+		whenever you want. They demonstrate many of the various capabilities of the S/SC.<br>
+		<br>
+		If you know how to program in BASIC or in machine language, you can use these programs
+		to gain information quickly about the capabilities of the S/SC. Then you can modify
+		and improve on them to use the S/SC to its greatest advantage.<br>
+		<br>
+		Note: The programs in this manual are written for a Color Computer with Extended Color
+		BASIC, but they may be modified for computers with Non-Extended Color BASIC by deleting
+		the PEEK commands and converting hexidecimal numbers (&amp;Hxxxx) to their decimal
+		equivalents.<br>
+		<br>
+		<br>
+		<br>
+		<div class="header" id="BACKGROUND">BACKGROUND INFORMATION</div><br>
+		<br>
+		An "intelligent" peripheral, the Speech/Sound Cartridge (S/SC) contains an on-board
+		microprocessor that controls both the speech generator and the sound generator and
+		routes an RF signal through the Color Computer and into the television speaker.<br>
+		<br>
+		This processor has 4K ROM and 2K RAM. In addition to providing you with an easier
+		means of programming the cartridge, the S/SC RAM also lets you store as many as eight
+		64-character sentences or eight 64-byte sound effects for later execution. You can
+		activate the sentences or sounds you store in the buffers at any time during program
+		execution by using simple single-byte commands.<br>
+		<br>
+		The S/SC generates speech and sound with separate processors. You may produce speech
+		by two different methods and sound or music by another two methods.<br>
+		<br>
+		Note: The pitch and duration of the sounds listed in this manual are produced by an
+		S/SC used with a Color Computer running at a clock speed of .89 MHz. Since the S/SC
+		internally multiplies the Color Computer clock by a factor of 2, the S/SC operates
+		at a clock frequency of 1.78977 MHz. This is the clock referred to in
+		<a href="coco_ssc_d.htm">Appendix D</a>.<br>
+		<br>
+		<br>
+		<br>
+		<div class="header" id="SPEAK">SPEAKING OF THE S/SC</div><br>
+		<br>
+		You can use the S/SC to produce speech by running a short program to transfer text
+		from the Color Computer keyboard to the cartridge, where English words are directly
+		translated into speech. You can also program the S/SC to create words (English or
+		foreign) by combining small units of speech sounds.<br>
+		<br>
+		Spoken language is the combination of a certain set of small sounds and syllables,
+		called allophones, into recognizable words. The S/SC1s General Instruments SP0256
+		speech processor generates allophones. The on-board microprocessor uses a set of
+		ROM-based phonetic rules to combine allophones so that the English text you enter
+		at the keyboard is converted into speech.<br>
+		<br>
+		When you use this text-to-speech mode, the S/SC'S large set of phonetic rules in
+		ROM lets you produce intelligible speech without special phonetic spellings.
+		However, some English words are pronounced contrary to the usual phonetic rules.
+		In these cases, you may have to "misspell" a word to force correct pronunciation.
+		For example, the S/SC pronounces BOW as BO. That's fine. To say BOW as in "bow to
+		the king," however, you have to spell BOW as BOU.<br>
+		<br>
+		Before you can translate text to speech, however, you must use a short BASIC or
+		machine code program to transfer text data between the microprocessor in the
+		Color Computer and the microprocessor in the s/SC. The following BASIC driver
+		routine illustrates the text-to-speech capabilities of the S/SC:<br>
+		<br>
+		<pre>
+	10 REM INITIALIZE VARIABLES
+	20 X=&amp;HFF00; Y=&amp;HFF7E
+	30 REM SET COCO SOUND MULTIPLEXER TO CARTRIDGE INPUT
+	40 POKE X+1,52;POKE X+3,63
+	50 REM ENABLE SOUND MULTIPLEXER
+	60 POKE X+35,60
+	70 REM INPUT STRING TO BE SPOKEN
+	80 INPUT A$
+	90 GOSUB 120
+	100 GOTO 80
+	110 REM SUBROUTINE TO OUTPUT STRING
+	120 FOR 1=1 TO LEN(A$)
+	130 REM CHECK FOR BUSY*
+	140 IF (PEEK(Y) AND 128)=0 THEN 140
+	150 REM OUTPUT EACH CHARACTER
+	160 POKE Y, ASC(MID$(A$,I,~))
+	170 NEXT I
+	180 IF (PEEK(Y) AND 128)=0 THEN 180
+	190 REM POKE A CARRIAGE RETURN
+	200 POKE Y,13
+	210 RETURN</pre><br>
+
+		Run the program. At ? prompt, type:<br>
+		<br>
+		I CAN TALK &lt;SPACE BAR&gt; &lt;ENTER&gt;<br>
+		<br>
+		It really can.<br>
+		<br>
+		Note: Be sure to end each string of text to be spoken with a space or any punctuation
+		mark except a comma. The S/SC interpets spaces and punctuation marks as pauses, and
+		these "silences" ensure that the speech processor is actually turned off after speaking
+		each typed phrase or sentence.<br>
+		<br>
+		The above program demonstates the straight text-to-speech capabilities of the S/SC. It
+		sends a stream of data bytes, each an ASCII character, to the S/SC for conversion into
+		speech. Speech does not begin, however, until you send a carriage return (hex 0D; decimal
+		13) to the S/SC.<br>
+		<br>
+		You need only use 2 addresses to transfer data between the Color Computer and the S/SC:
+		hex FF7D (decimal 65405) and hex FF7E (decimal 65406). The lower address is a software
+		reset for the S/SC, which you may use to reinitialize the entire cartridge if necessary
+		by POKEing a 1 and then a 0 at that address. The upper address is the address you use
+		to transfer data to the S/SC.<br>
+		<br>
+		Hex FF7E also contains the status of the S/SC. Whenever you read (PEEK) this address,
+		the S/SC returns a status byte to the Color Computer's 6809 processor. All status bits
+		are active low. The most significant bit (bit 7) is called BUSY*, and whenever it
+		returns a 0, the S/SC's microprocessor hasn't yet processed the last byte received
+		from the Color Computer's microprocessor.<br>
+		<br>
+		If you try to transfer data to the S/SC while bit 7 is low, you lose all the data
+		you send until the bit resets. For this reason, you should monitor bit 7 every time
+		you send data to the S/SC.<br>
+		<br>
+		When low, bit 6 of the status byte indicates that the S/SC is currently speaking.
+		The bit returns to a high state when the current phrase is finished.<br>
+		<br>
+		When low, bit 5 of the status byte indicates that a sound effect is in progress.
+		None of the other bits in the status register are used, and they should be
+		ignored.<br>
+		<br>
+		Note: Whenever you write a program to transfer data to the S/SC, you should first
+		monitor the status byte to determine whether or not the S/SC is ready to accept
+		another character. Depending on the intent of your program, you may or may not
+		be required to monitor the other status bits.<br>
+		<br>
+		If the S/SC is not busy (that is, if BUSY* is high), then you may simply write
+		or POKE your data into hex FF7E.<br>
+		<br>
+		Note: Due to the time required for the S/SC's microprocessor to execute a command,
+		the speech and sound status bits are not valid immediately following a speech or
+		sound execution command. The S/SC microprocessor requires different lengths of
+		time to execute a command, depending on the complexity of the command. Speech
+		commands take longer than sound commands. For this reason, you should have, as
+		part of your test routine, a "wait" loop that executes prior to testing status.
+		The duration of the "wait" loop may vary, depending on the time required to
+		execute the previous command.<br>
+		<br>
+		<br>
+		<br>
+		<div class="header" id="STRAIGHT">STRAIGHT TALK</div><br>
+		<br>
+		The most significant bit of each character sent to the S/SC must be cleared,
+		otherwise it initiates a command sequence. Command sequences begin with a
+		character in which the most significant bit is set; therefore, the initial
+		character in a command sequence will be 80 hex (128 decimal) or greater.
+		S/SC commands let you store speech strings and allophone address streams
+		in 1-8 buffers and store sound commands and register strings in another
+		1-8 buffers. Additional commands let you later execute the contents of
+		those buffers singly or in combination. A complete list of individual
+		commands appears in <a href="coco_ssc_a.htm">Appendix A</a>. Thefollowing
+		table briefly outlines the command groupings:<br>
+		<br>
+		<table width="500" align="center" width="300" class="info" ID="Table2">
+			<tr><td class="header">DEC</td><td class="header">HEX</td><td class="header">COMMAND</td>
+			<tr><td>128-135</td><td>80-87</td><td>Loads speech string into consecutive buffers</td></tr>
+			<tr><td>136-142</td><td>88-8E</td><td>Loads sound data into consecutive buffers</td></tr>
+			<tr><td>143</td><td>8F</td><td>Loads timer base value</td></tr>
+			<tr><td>144-151</td><td>90-97</td><td>Loads speech string into individual buffers</td></tr>
+			<tr><td>152-159</td><td>98-9F</td><td>Loads sound data into individual buffers</td></tr>
+			<tr><td>160-167</td><td>A0-A7</td><td>Loads allophone address stream into consecutive buffers</td></tr>
+			<tr><td>168-174</td><td>A8-AE</td><td>Loads register string into consecutive buffers</td></tr>
+			<tr><td>175</td><td>AF</td><td>Allows direct access to sound registers</td></tr>
+			<tr><td>176-183</td><td>B0-B7</td><td>Loads allophone address stream into individual buffers</td></tr>
+			<tr><td>184-191</td><td>B8-BF</td><td>Loads register string into individual buffers</td></tr>
+			<tr><td>192-198</td><td>C0-C6</td><td>Executes speech string from consecutive buffers</td></tr>
+			<tr><td>199</td><td>C7</td><td>Aborts all speech</td></tr>
+			<tr><td>200-206</td><td>C8-CE</td><td>Executes sound command from consecutive buffers</td></tr>
+			<tr><td>207</td><td>CF</td><td>Stops all sound</td></tr>
+			<tr><td>208-215</td><td>D0-D7</td><td>Executes speech string from individual buffers</td></tr>
+			<tr><td>216-223</td><td>D8-DF</td><td>Executes sound data from individual buffers</td></tr>
+			<tr><td>224-231</td><td>E0-E7</td><td>Executes allophone address stream from various combinations of buffers</td></tr>
+			<tr><td>232-239</td><td>E8-EF</td><td>Executes register string from consecutive buffers</td></tr>
+			<tr><td>240-247</td><td>Fg-F7</td><td>Executes allophone address stream from individual buffers</td></tr>
+			<tr><td>248-255</td><td>F8-FF</td><td>Executes register string from individual buffers</td></tr>
+			<tr><td>00</td><td>00</td><td>Stops all sounds, including speech, but does not clear buffers.</td></tr>
+		</table>
+		<br>
+		With the above commands you can load or execute strings from the buffers in RAM. Each buffer
+		stores amaximum of 64 characters. You may, however, store strings longer than 64 characters
+		by loading consecutive buffers. Command 80, for example, lets you store a speech string of a
+		maximum of 512 characters by loading the string into Buffers 0 through 7. Command 8E lets you
+		store a maximum of 128 characters in Buffers 6 and 7.<br>
+		<br>
+		In "Speaking of the S/SC" you produced speech by using the speech-to-text buffer that
+		automatically links allophones and pronounces them according to a series of phonetic
+		rules. The above commands let you generate speech by linking allophones in any manner
+		you choose. You use this method to generate speech when programming in foreign languages
+		that do not follow English phonetic rules. You might also use this method to create more
+		precise (or regionally accented) pronunciations of English words.<br>
+		<br>
+		The following program shows, step-by-step, how to produce speech by poking individual
+		allophones into Buffer 0 and then later executing them.<br>
+		<br>
+		Note: You must end allophone data with a pause (addresses f?-4) to ensure that you
+		silence the speech processor.<br>
+		<br>
+		<pre>
+	10 RESET S/SC
+	20 POKE &amp;HFF7D,l:POKE &amp;HFF7D,0
+	30 REM INITIALIZE VARIABLES
+	40 X=&amp;ff00: Y=&amp;HFF7E
+	50 REM TURN ON S/SC SOUND
+	60 POKE X+1,52: POKE X+3,63: POKE X+35,60
+	70 GOSUB 200
+	80 REM COMMAND B0 --LOAD ALLOPHONES INTO BUFFER 0
+	90 POKE Y,176
+	100 READ ALLOPHONE ADDRESS STREAM TO THE S/SC
+	110 FOR A=l TO 17
+	120 READ D
+	130 GOSUB 200
+	140 POKE Y,D
+	150 NEXT A
+	160 REM COMMAND F0 -- EXECUTE ALLOPHONE ADDRESS STREAM FROM BUFFER 0
+	170 GOSUB 200
+	180 POKE Y,240
+	190 END
+	200 REM CHECK FOR BUSY*
+	210 IF (PEEK(Y) AND 128)=0 THEN 210
+	220 RETURN
+	230 REM ALLOPHONE DATA ENDS WITH A PAUSE AND TERMINATOR
+	240 DATA 8,15,45,51,4,4,4,8,15,16,9,49,31,13,51,4,255
+</pre><br>
+		When you run the program, the computer says, "Color Computer. "<br>
+		<br>
+		The allophones in the data line are:<br>
+		<br>
+		KK3 AX LL ER1 = COLOR<br>
+		PA5 PAS PA5 = 600 MILLISECOND PAUSE<br>
+		KK3 AX MM PP YY1 UW2 TT2 ER1 = COMPUTER<br>
+		PA5 = PAUSE SILENCES SPEECH PROCESSOR<br>
+		<br>
+		<a href="coco_ssc_c.htm">Appendix C</a> contains a complete list of
+		addresses for the 64 allophones that the speech processor produces.<br>
+		<br>
+		<br>
+		<br>
+		<div class="header" id="ADVICE">SOUND ADVICE</div><br>
+		<br>
+		You may program the Speech/Sound Cartridge to generate sound by 2 different
+		methods. You may use the S/SC commands followed by a series of postbytes
+		specifying the channel, amplitude, pitch, and duration of a tone or noise,
+		or you may directly manipulate the sound processor's registers to produce
+		the appropriate sound.<br>
+		<br>
+		Using the S/SC commands to produce sound effects or music is a simple process
+		in which you give a command and follow it with data groups of 3 or 4
+		postbytes~each group defining either a tone, a noise, or an envelope.<br>
+		<br>
+		Poking hex 98 at &amp;HFF7E, for example, lets you load a maximum of 64 bytes
+		of sound data into Buffer 0. Below is a bit-by-bit description of the types of
+		postbyte data that follow sound commands.<br>
+		<br>
+		The first postbyte after a sound command determines the type of operation to
+		be carried out (tone and channel; noise and channel; or envelope) and the amplitude
+		of the tone or noise. The first 3 most significant bits of this postbyte contain
+		the following operation code:<br>
+		<br>
+		<table align="center" width="300" class="info" ID="Table3">
+			<tr><td class="header">Bit 7</td><td class="header">Bit 6</td><td class="header">Bit 5</td><td class="header">Operation</td><td class="header">Postbytes<br>Required</td></tr>
+			<tr><td class="center">0</td><td class="center">0</td><td class="center">0</td><td>Tone A</td><td class="center">4</td></tr>
+			<tr><td class="center">0</td><td class="center">0</td><td class="center">1</td><td>Tone B</td><td class="center">4</td></tr>
+			<tr><td class="center">0</td><td class="center">1</td><td class="center">0</td><td>Tone C</td><td class="center">4</td></tr>
+			<tr><td class="center">0</td><td class="center">1</td><td class="center">1</td><td>Envelope</td><td class="center">4</td></tr>
+			<tr><td class="center">1</td><td class="center">0</td><td class="center">0</td><td>Noise A</td><td class="center">3</td></tr>
+			<tr><td class="center">1</td><td class="center">0</td><td class="center">1</td><td>Noise B</td><td class="center">3</td></tr>
+			<tr><td class="center">1</td><td class="center">1</td><td class="center">0</td><td>Noise C</td><td class="center">3</td></tr>
+			<tr><td class="center">1</td><td class="center">1</td><td class="center">1</td><td>Envelope </td><td class="center">4</td></tr>
+		</table>
+		<br>
+		You must terminate all command sequences with an FF hex (255, and you must send the
+		terminator when the S/SC is expecting a new "first byte." For example, if you send
+		the first byte of a tone event, the s/SC interprets the next 3 bytes as data for the
+		tone. An FF (255) in one of these 3 positions is read as data--not as a terminator.
+		Send the terminator when the S/SC is expecting you to define a specific sound event
+		in the first postbyte.<br>
+		<br>
+		Note: Each measured buffer accommodates 64 bytes of information. Always allow room
+		in the last buffer of a command sequence for a terminator. If the last byte in a
+		buffer is not a terminator, the S/SC processor automatically inserts a terminator
+		in the first byte of the last sound event of the buffer. That last sound event,
+		therefore, is never executed. After the processor inserts the terminator, it
+		automatically reverts to the normal input mode.<br>
+		<br>
+		<br>
+		<br>
+		<div class="header" id="DTONE">DIAL TONE</div><br>
+		<br>
+		If Postbyte 1 specifies a tone (the amplitude of which is either fixed or controlled
+		by an envelope), 3 additional postbytes are needed to complete the description.
+		Postbyte 2 specifies the Coarse Tone Period; Postbyte 3 specifies the Fine Tone
+		Period; and Postbyte 4 determines the duration of the tone.<br>
+		<br>
+		The TONE data group breaks down into the following 4 bytes:<br>
+		<br>
+		<table width="450" align="center" width="300" class="info" ID="Table4">
+			<tr><td class="header" style="text-align: left;" colspan="2">Byte 1</td></tr>
+			<tr><td>Bit 7</td><td>When this bit is low, a tone occurs.</td></tr>
+			<tr>
+				<td style="vertical-align: top">Bits 6-5</td>
+				<td class="wrap">
+					Select which channel the tone uses:<br>
+					&nbsp;&nbsp;&nbsp;00 = Channel A<br>
+					&nbsp;&nbsp;&nbsp;01 = Channel B<br>
+					&nbsp;&nbsp;&nbsp;10 = Channel C<br>
+					If both bits are set, this is an envelope command. (See Envelope below.)
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top">Bit 4</td>
+				<td class="wrap">
+					If this bit is clear, the tone has a fixed amplitude as specified in
+					the next 4 bits. If this bit is set, an envelope controls the amplitude
+					of the tone, and an envelope-creating data group must immediately
+					follow. (See Envelope below.)
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top">Bits 3-0</td>
+				<td class="wrap">
+					When Bit 4 is clear, this value sets a fixed amplitude for the tone in
+					the range 0 (silence) to 15 (maximum amplitude).
+				</td>
+			</tr>
+
+			<tr><td class="header" style="text-align: left;" colspan="2">Byte 2</td></tr>
+			<tr>
+				<td style="vertical-align: top">Bits 7-4</td>
+				<td>Unused</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top">Bits 3-0</td>
+				<td class="wrap">
+					Set the Coarse Tone Period value.  The sound processor requires
+					12 bits  to determine  a period,  and these 4 bits  are the
+					most significant period bits.
+				</td>
+			</tr>
+
+			<tr><td class="header" style="text-align: left;" colspan="2">Byte 3</td></tr>
+			<tr>
+				<td style="vertical-align: top">Bits 7-0</td>
+				<td class="wrap">
+					Set the Fine Tone Period value. These are the least significant bits
+					in the 12-bit period value.  The actual frequency of  the final  tone
+					is 111,860 divided by the 12-bit value. Therefore, the higher the
+					value,  the lower the frequency. Accordingly, the lowest possible
+					S/SC frequency is approximately 27 Hz  (118,860 divided by 4096).
+				</td>
+			</tr>
+			
+
+			<tr><td class="header" style="text-align: left;" colspan="2">Byte 4</td></tr>
+			<tr>
+				<td style="vertical-align: top">Bits 7-0</td>
+				<td class="wrap">
+					Set the duration of the tone. Duration is relative, the shortest
+					being 0 and the longest being 255. Duration is also relative
+					depending on the value in the base time register (accessible
+					by command hex 8F).
+				</td>
+			</tr>
+		</table>
+		<br>
+		Note #1: The listing in <a href="coco_ssc_d.htm">Appendix D</a> shows the specific
+		combinations of coarse and fine period values that produce precise notes within
+		the S/SC's 9-octave range.<br>
+		<br>
+		<br>
+		Note #2: A duration in a buffer's sound sequence is the length of time between
+		"events"--both sounds and silences. Therefore, if the final event in a buffer
+		is not a silence, the previous sound event continues until another command
+		cancels it. Unless you want a sound to continue past the end of the buffer
+		sound sequence, always place a silence (a command with an amplitude of 0)
+		at the end of a buffer.<br>
+		<br>
+		<table width="450" align="center" width="300" class="info" ID="Table5">
+			<tr><td class="header" style="text-align: left;" colspan="9">TONE POSTBYTE TABLE</td></tr>
+			<tr>
+				<td>postbyte #</td>
+				<td colspan="4">MSB</td>
+				<td colspan="4">LSB</td>
+			</tr>
+			<tr><td>1</td><td>O2</td><td>O1</td><td>O0</td><td>M</td><td>A3</td><td>A2</td><td>A1</td><td>A0</td></tr>
+			<tr><td>2</td><td>X</td><td>X</td><td>X</td><td>X</td><td>C3</td><td>C2</td><td>C1</td><td>C0</td></tr>
+			<tr><td>3</td><td>F7</td><td>F6</td><td>F5</td><td>F4</td><td>F3</td><td>F2</td><td>F1</td><td>F0</td></tr>
+			<tr><td>4</td><td>D7</td><td>D6</td><td>D5</td><td>D4</td><td>D3</td><td>D2</td><td>D1</td><td>D0</td></tr>
+			<tr>
+				<td colspan="9">
+					0 = OPERATION CODE<br>
+					M = FIXED/ENVELOPE FLAG BIT<br>
+					X = UNUSED<br>
+					A = AMPLITUDE VALUE (0-15)<br>
+					C = COARSE TONE PERIOD VALUE (0-15)<br>
+					F = FINE TONE PERIOD VALUE (0-255)<br>
+					D = TONE DURATION VALUE (0-255 relative to the value in the<br>
+					base time register--accessible by command hex 8F)
+				</td>
+			</tr>
+		</table>
+		<br>
+		<br>
+		<br>
+		<br>
+		<div class="header" id="NOISE">AS PLAIN AS THE NOISE</div><br>
+		<br>
+		If the first postbyte following a command specifies a noise (and its amplitude),
+		only 2 additional bytes are needed to describe it fully. Postbyte 2 sets the
+		coarse period value, and Postbyte 3 determines the duration.<br>
+		<br>
+		The NOISE data group breaks down into the following three bytes:<br>
+		<br>
+		<table width="450" align="center" width="300" class="info" ID="Table6">
+			<tr><td class="header" style="text-align: left;" colspan="2">Byte 1</td></tr>
+			<tr><td>Bit 7</td><td>When this bit is set, a noise occurs.</td></tr>
+			<tr>
+				<td>Bits 6-5</td>
+				<td class="wrap">Select which channel the noise uses:<br>
+					00 = Channel A<br>
+					01 = Channel B<br>
+					10 = Channel C<br>
+					If both bits are set, this an envelope command.  (See Envelope below.)
+				</td>
+			</tr>
+			<tr>
+				<td>Bit 4</td>
+				<td class="wrap">
+					If this bit is clear, the noise has a fixed amplitude as specified in the
+					next 4 bits. If this bit is set, an envelope controls the amplitude of the
+					noise, and an envelope-creating data group must immediately follow. (See
+					Envelope below.)
+				</td>
+			</tr>
+			<tr>
+				<td>Bits 3-0</td>
+				<td class="wrap">
+					This value sets a fixed amplitude for the noise in the range 0 (silence)
+					to 15 (maximum amplitude). (This value is ignored if Bit 7 of the next
+					byte is low.)
+				</td>
+			</tr>
+
+			<tr><td class="header" style="text-align: left;" colspan="2">Byte 2</td></tr>
+			<tr>
+				<td>Bit 7</td>
+				<td class="wrap">
+					If this bit is low, the last 4 bits of the previous byte determine
+					amplitude of the noise. If this bit is set, however, the amplitude
+					of the preceding data group is used, and the amplitude bits in the
+					first byte are ignored. Notice that when this bit is set in the
+					first sound data group of a new command (that is, without a preceding
+					value), the amplitude is automatically set to 0 (silence).
+				</td>
+			</tr>
+			<tr><td>Bits 6-5</td><td>Unused</td></tr>
+			<tr>
+				<td>Bits 4-0</td>
+				<td class="wrap">
+					This 5-bit noise period value determines the average frequency of
+					the random sound pressures that produce the noise. The larger the
+					value, the lower the noise frequency. is treated as 31 + 1 (321,
+					and produces the lowest frequency.
+				</td>
+			</tr>
+
+			<tr><td class="header" style="text-align: left;" colspan="2">Byte 3</td></tr>
+			<tr>
+				<td>Bit 7-9</td>
+				<td class="wrap">
+					Set the duration of the noise. Duration is relative, the shortest
+					being 0 and the longest being 255. Duration is also relative
+					depending on the value in the base time register (accessible
+					by command hex 8F).
+				</td>
+			</tr>
+		</table>
+
+		<table width="450" align="center" width="300" class="info" ID="Table7">
+			<tr><td colspan="9">NOISE POSTBYTE TABLE</td></tr>
+			<tr><td>Postbyte #</td><td colspan="4">MSB</td><td colspan="4">LSB</td></tr>
+			<tr><td>1</td><td>O2</td><td>O1</td><td>O0</td><td>M</td><td>A3</td><td>A2</td><td>A1</td><td>A0</td></tr>
+			<tr><td>2</td><td>R</td><td>X</td><td>X</td><td>P4</td><td>P3</td><td>P2</td><td>P1</td><td>P0</td></tr>
+			<tr><td>3</td><td>D7</td><td>D6</td><td>D5</td><td>D4</td><td>D3</td><td>D2</td><td>D1</td><td>D0</td></tr>
+			<tr>
+				<td colspan="9">
+					O = OPERATION CODE<br>
+					M = FIXED/ENVELOPE FLAG BIT<br>
+					A = AMPLITUDE VALUE (0-15)<br>
+					R = REPLACE/CONTINUE BIT<br>
+					P = NOISE PERIOD VALUE (0-31)<br>
+					D = NOISE DURATION VALUE (0-255)<br>
+				</td>
+			</tr>
+		</table>
+		<br>
+		<br>
+		<br>
+		<br>
+		<div class="header" id="ENVELOPE">THE ENVELOPE, PLEASE</div><br>
+		<br>
+		The final type of command is the envelope command. This command lets you wrap
+		previously generated tones and noises in an envelope of sound. Only one envelope
+		shape is available to all 3 channels. Each channel may use the envelope
+		independently of the others, or all may share the single shape at one time.<br>
+		<br>
+		If the first postbyte following a command specifies an envelope (and its 4 shape
+		characteristics), 3 additional bytes are required to describe the envelope.
+		Postbyte 2 sets the coarse period value; Postbyte 3 sets the fine period value;
+		and Postbyte 4 sets the duration of the envelope.<br>
+		<br>
+		Envelopes control the amplitude of previously issued tones or noises. For example,
+		you can use an envelope to create a vibrato effect. First, store a tone with the
+		envelope bit set (Bit 4 of Byte 11, and then immediately create a slowly repeating
+		envelope. The 4-byte envelope data group controls the tone or noise of the
+		preceding byte. The ENVELOPE data group breaks down into the following 4 bytes:<br>
+		<br>
+
+		Byte 1
+
+		Bit 7	Unused
+		Bits 6-5	When both are set, an envelope is established
+		Bit 4	Unused
+		Bits 3-0	These bits control the shape of the envelope:
+
+		Bit 3 = the CONTINUE bit. CONTINUE tells the processor whether to play the envelope's sound just once or repeat it. When the bit is set, the tone repeats; when the bit is cleared, the sound occurs once and then quits.
+		Bit 2 = the ATTACK bit. ATTACK determines whether a noise or tone builds from minimum amplitude to maximum or subsides from maximum to minimum. When the bit is set, the sound builds; when the bit is cleared, the sound subsides.
+		Bit 1 = the ALTERNATE bit. ALTERNATE changes the attack with each cycle. When the bit is set, the noise or tone builds, then fades, then builds, and so on. When the bit is cleared, the attack is the same as specified in Bit 2.
+		Bit 0 = the HOLD bit. HOLD maintains the amplitude of a tone or noise at the level reached by the attack~rnaximum or silence.
+
+		The following chart shows how the various envelope shape parameters modulate the amplitude of sounds:
+
+		&lt;chart&gt;
+
+		Byte 2
+
+		Bits 7-0	Set the Coarse Tone Period value of the envelope. The envelope period uses a base frequency of 6991 Hz divided by a 16-bit value contained in this and the following byte. The highest envelope frequency, therefore, is 6991 Hz, and the lowest is approximately .1 Hz (6991 divided by 65536). This slowest frequency provides an attack time of almost 10 seconds.
+
+		Byte 3
+
+		Bits 7-0	Set the Fine Tone Period value of the envelope. It is used with Byte 2 to produce a 16-bit value.
+
+		Byte 4
+
+		Bits 7-0 Set the duration of the envelope. Duration is relative, the shortest being 0 and the longest being 255. Duration is also relative depending on the value in the base time register (accessible by command hex 8F) .
+
+		ENVELOPE POSTBYTE TABLE
+
+		postbyte #	MSB        LSB
+		1	O2 O1 O0  X S3 S2 S1 S0
+		2	C7 C6 C5 C4 C3 C2 C1 C0
+		3	F7 F6 F5 F4 F3 F2 F1 F0
+		4	D7 D6 D5 D4 D3 D2 D1 D0
+
+		O = OPERATION CODE
+		X = UNUSED
+		S = ENVELOPE SHAPE BITS
+		C = COARSE ENVELOPE PERIOD VALUE
+		F = FINE ENVELOPE PERIOD VALUE
+		D = ENVELOPE DURATION VALUE
+
+		SCALING THE SOUND REGISTERS<br>
+		<br>
+		One command--AF--lets you directly accesss the sound processor's 13 registers to
+		create sound effects and music. In other words, you can transfer pairs of bytes
+		directly to the S/SC. The first byte you poke in at hex FF7E is the register
+		number (1-13). The next number you poke in at hex FF7E is a value within the
+		register's parameters.<br>
+		<br>
+		Note: Different registers have different ranges of valid input. Register 0
+		(Channel A tone--Fine Period value), for example, uses data from 0-255; Register
+		1 (Channel A tone--Coarse Period value), however, uses only data from 0-15.<br>
+		<br>
+		The byte pairs you poke in (register # followed by data) are transferred "on the
+		fly" into the sound generator until you send a terminator (FF hex).
+		<br>
+		The following table outlines the S/SC registers, functions, and data ranges.
+		(For a complete discussion of the S/SC, see
+		<a href="coco_ssc_b.htm">Appendix B</a>) .<br>
+		<br>
+		#	FUNCTION	DATA RANGE
+		0	Tone generator--Channel A--Fine  Period	0-255
+		1	Tone generator--Channel  A--Coarse  Period	0-15
+		2	Tone generator--Channel B--Fine  Period	0-255
+		3	Tone generator--Channel B--Coarse  Period	0-15
+		4	Tone generator--Channel C--Fine  Period	0-255
+		5	Tone generator--Channel C--Coarse  Period	0-15
+		6	Noise  generator	0-31
+		7	Mixer Control	0-63
+		8	Amplitude control--Channel A	0-15
+		9	Amplitude control--Channel B	0-15
+		10	Amplitude control--Channel C	0-15
+		11	Envelope Fine Period  Control	0-255
+		12	Envelope Coarse Period  Control	0-255
+		13	Envelope shape control	0-15
+		<br>
+		<br>
+		The following short program lets you manipulate a tone on Channel A by directly
+		controlling the S/SC1s registers:<br>
+		<br>
+<pre>
+	10 REM RESET S/SC
+	20 POKE &amp;HFF7D,1:POKE &amp;HFF7D,0
+	30 REM INITIAL12 E VARIABLES
+	40 X=&amp;HFF00: Y=&amp;HFF7E
+	50 REM TURN ON S/SC SOUND
+	60 POKE X+1,52: POKE X+3,63: POKE X+35,60
+	70 REM PUT S/SC INTO DIRECT ACCESS MODE
+	80 GOSUB 300
+	90 POKE Y,&amp;HAF
+	100 REM POKE A FINE TONE ON CHANNEL A
+	110 GOSUB 300
+	120 POKE Y,0
+	130 INPUT "ENTER A VALUE FOR A TONE ON CHANNEL A" ;T
+	140 GOSUB 300
+	150 POKE Y,T
+	160 REM CALL MIXER REGISTER
+	170 GOSUB 300
+	180 POKE Y,7
+	190 REM SET MIXER TO CHANNEL A TONES ONLY
+	200 GOSUB 300
+	210 POKE Y,62
+	220 REM CALL AMPLITUDE REGISTER FOR CHANNEL A
+	230 GOSUB 300
+	240 POKE Y,8
+	250 REM SET AMPLITUDE AT MAXIMUM--15
+	260 GOSUB 300
+	270 POKE Y,15
+	280 REM GO BACK TO CHANGE TONE ON CHANNEL A
+	290 GOT0 120
+	300REM CHECK FOR BUSY*
+	310 IF (PEEK(Y) AND 128) = 0 THEN 3010
+	320 RETURN
+</pre>
+		<br>
+		To stop the program, press &lt;BREAK&gt; and then type RUN. Line 20
+		resets the S/SC to silence.<br>
+		<br>
+		The above program demonstrates how easy it is to directly manipulate the S/SC.
+		It shows only how to manipulate one tone on one channel, but much more is
+		possible. The "S/SC Organ" program in <a href="coco_ssc_f.htm">Appendix F</a>,
+		for example, turns the bottom two rows of your Color Computer keyboard into an
+		organ keyboard. The "Sound Effects" program in
+		<a href="coco_ssc_g.htm">Appendix G</a> shows how to use the S/SC to create
+		advanced sound effects by directly manipulating the S/SC registers through
+		data statements.<br>
+		<br>
+		With a little practice and a Color Computer Speech/Sound Cartridge, every program
+		you run on the computer can sound like a winner.<br>
+		<br>
+		<br>
+		<br>
+	</td></tr>
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>

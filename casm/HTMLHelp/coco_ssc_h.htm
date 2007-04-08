@@ -1,0 +1,155 @@
+<HTML>
+<HEAD>
+	<TITLE>Color Computer Speech and Sound Cartridge</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.wrap {
+	vertical-align: bottom;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+td.header {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	background-color: #eeeeee;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+td.center {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>Color Computer Speech and Sound Cartridge - Appendix H</b><br>
+</div>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="border: 0px; white-space: normal; text-align: left;">
+		Speech to Text (with screen editor)<br>
+		<br>
+		Like the program on Page 7, this program converts text into speech.
+		Included in this program, however, is a built-in screen editor that
+		lets you type in a line of a maximum of 252 characters, and then
+		alter it by typing only corrections--not the entire line.<br>
+		<br>
+		After you type a line, you can use the following commands to move
+		the cursor and insert and delete characters:<br>
+		<br>
+<pre>
+&lt;left arrow&gt;		moves cursor left (does not erase
+			the character)
+&lt;right arrow&gt;		moves cursor right
+&lt;SHIFT&gt;&lt;left arrow&gt;	deletes character under the cursor
+&lt;SHIFT&gt;&lt;right arrow&gt;	inserts a space at the cursor position
+&lt;up arrow&gt;		moves cursor up 1 line (or to the beginning
+			if used in the top line)
+&lt;down arrow&gt;		moves cursor down 1 line (or to the end if
+			used in the bottom line)
+&lt;SHIFT&gt;&lt;up arrow&gt;	moves cursor to the first
+			character of the line
+&lt;SHIFT&gt;&lt;down arrow&gt;	moves cursor to the last
+			character of the line
+&lt;CLEAR&gt;			erases all characters from the
+			cursor to the end of the line
+</pre>
+		<br>
+		(After you type a line and press &lt;ENTER&gt; to convert it to speech,
+		the cursor always returns to the first character of the line.)<br>
+		<br>
+<pre>
+	10 CLS: CLEAR 2000
+	20 X=&amp;HFF00; Y=&amp;HFF7E: POKE X+1,52
+	30 POKE X+3,63: POKE X+35,60
+	40 POKE (&amp;HFF7D),1: POKE (&amp;HFF7D,0)
+	50 CF$="": FOR X=1 TO 10: READ A
+	60 CF$=CF$ + CHR$(A): NEXT: B=0
+	70 GOSUB 120: Z$=IN$ + " " + CHR$(13)
+	80 FOR Z=1 TO LEN(Z$)
+	90 IF PEEK (Y) AND 128=0 THEN 90
+	100 POKE Y,ASC(MID$(Z$,Z,1))
+	110 NEXT Z: B=0: GOT0 70
+	120 B$=STRING$(254,32)
+	130 MID$(B$,1,253)=IN$ + " "
+	140 C=LEN(IN$)
+	150 PRINT@ 0,B$
+	160 PRINT@ B,CHR$(142);
+	170 A$=INKEY$: IF A$="" THEN 170
+	180 IF C&lt;B THEN C=B
+	190 PRINT@ B,MID$(B$,B+1,1);
+	200 CF=INSTR(CF$,A$): IF CF THEN 250
+	210 D=ASC(A$): IF D&lt;32 OR D&gt;96 THEN 160
+	220 IF B&lt;252 THEN B=B+1 ELSE 160
+	230 PRINT@ B-1,A$;
+	240 MID$(B$,B,1)=A$: GOT0 160
+	250 ON CF GOT0 310,330,350,370
+	260 ON CF-4 GOT0 390,420,460,470
+	270 IF CF=9 THEN 290
+	280 IN$=MID$(B$,1,B): C=B: GOT0 120
+	290 IN$=MID$(B$,1,C)
+	300 IF C&gt;0 THEN RETURN
+	310 IF B&gt;0 THEN B=B-1
+	320 GOT0 160
+	330 IF B&lt;C THEN B=B+1
+	340 GOT0 160
+	350 IF B&gt;31 THEN B=B-32 ELSE B=0
+	360 GOT0 160
+	370 IF B&lt;(C-32) THEN B=B+32 ELSE B=C
+	380 GOT0 160
+	390 MID$(B$,B+1) = MID$(B$,B+2)
+	400 MID$(B$B+1,1) = ""
+	410 C=C-1-(C&lt;1): GOT0 150
+	420 MID$(B$,B+2)=MID$(B$,B+2)
+	430 MID$(B$,B+1,1) = " "
+	440 MID$(B$,253,1) = " "
+	450 C=C+1+(C&gt;251): GOT0 150
+	460 B=0: GOT0 150
+	470 B=C: GOT0 150
+	480 PRINT@ 0,B$: GOT0 160
+	490 DATA 8,9,94,10,21,93,95,91,13,12
+</pre>
+	</td></tr>
+</table>
+</div>
+<br>

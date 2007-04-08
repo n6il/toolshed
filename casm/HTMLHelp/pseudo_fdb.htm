@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title">
+			<b>FDB - Form double byte constant</b>:<br>
+		</div>
+		<br>
+		<pre class="bnf">[<EM>label</EM>]	FDB	<EM>expression</EM>[,<EM>expression</EM>,...,<EM>expression</EM>]</pre>
+		<div class="main">
+			<br>
+			The FDB directive may have one or more operands separated by commas. The 16-bit 
+			value corresponding to each operand is stored into two consecutive bytes of the 
+			object program. The storage begins at the current program counter. If a label 
+			is present it is assigned the address of the first 16-bit value. Multiple 
+			operands are stored in successive bytes. The operand may be a numeric constant, 
+			a character constant, a symbol, or an expression. If multiple operands are 
+			present, one or more of them can be null (two adjacent commas), in which case 
+			two bytes of zeros will be assigned for that operand.
+			<br>
+			<br>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+			<pre class="example">	fdb	$0000<br>	fdb	$0010,$3343,$EDA4</pre>
+			<br>
+			<br>
+			<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<hr>
+		<div class="section">
+		Compatibility:
+		</div>
+		<div class="main">
+			<table class="compat_info" width="375" ID="Table4">
+				<tr>
+					<td class="compat_info">CASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">CCASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">OS-9 RMA</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edt/Asm III</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm6309</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Disk Edtasm+</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm+</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Macro-80C</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

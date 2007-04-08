@@ -1,0 +1,704 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</head>
+
+<body>
+<ul>
+	<li><object type="text/sitemap">
+		<param name="Name" value="CASM Introduction">
+		<param name="Local" value="main_index.htm">
+	</object></li>
+	
+	<li><object type="text/sitemap">
+		<param name="Name" value="CASM Command line options">
+		<param name="Local" value="cmd_line_opts.htm">
+	</object></li>
+
+	<li><object type="text/sitemap">
+		<param name="Name" value="Directives">
+		<param name="Local" value="pseudo_ops.htm">
+	</object></li>
+
+	<ul>
+		<!-- ***********************Section*********************** -->
+		<li><object type="text/sitemap">
+			<param name="Name" value="Code Labels">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+		
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="align">
+				<param name="Local" value="pseudo_align.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="even">
+				<param name="Local" value="pseudo_even.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="odd">
+				<param name="Local" value="pseudo_odd.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="org">
+				<param name="Local" value="pseudo_org.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="end">
+				<param name="Local" value="pseudo_end.htm">
+			</object></li>
+		</ul>
+		
+
+		<!-- ***********************Section*********************** -->
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="Conditional Assembly Control">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="if">
+				<param name="Local" value="pseudo_if.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifn">
+				<param name="Local" value="pseudo_ifn.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifdef">
+				<param name="Local" value="pseudo_ifdef.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifndef">
+				<param name="Local" value="pseudo_ifndef.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifp1">
+				<param name="Local" value="pseudo_ifp1.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifp2">
+				<param name="Local" value="pseudo_ifp2.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifeq">
+				<param name="Local" value="pseudo_ifeq.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifne">
+				<param name="Local" value="pseudo_ifne.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="iflt">
+				<param name="Local" value="pseudo_iflt.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifle">
+				<param name="Local" value="pseudo_ifle.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifgt">
+				<param name="Local" value="pseudo_ifgt.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ifge">
+				<param name="Local" value="pseudo_ifge.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="cond">
+				<param name="Local" value="pseudo_cond.htm">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="else">
+				<param name="Local" value="pseudo_else.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="endc">
+				<param name="Local" value="pseudo_endc.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="endp">
+				<param name="Local" value="pseudo_endp.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="endif">
+				<param name="Local" value="pseudo_endif.htm">
+			</object></li>
+		</ul>
+
+		
+
+		<!-- ***********************Section*********************** -->
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="Data Allocation">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+		
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="align">
+				<param name="Local" value="pseudo_align.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="even">
+				<param name="Local" value="pseudo_even.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="odd">
+				<param name="Local" value="pseudo_odd.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fcb">
+				<param name="Local" value="pseudo_fcb.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fdb">
+				<param name="Local" value="pseudo_fdb.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fqb">
+				<param name="Local" value="pseudo_fqb.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fcc">
+				<param name="Local" value="pseudo_fcc.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fcs">
+				<param name="Local" value="pseudo_fcs.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fcn">
+				<param name="Local" value="pseudo_fcn.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fcr">
+				<param name="Local" value="pseudo_fcr.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="rmb">
+				<param name="Local" value="pseudo_rmb.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="rmd">
+				<param name="Local" value="pseudo_rmd.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="rmq">
+				<param name="Local" value="pseudo_rmq.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fill">
+				<param name="Local" value="pseudo_fill.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="bsz">
+				<param name="Local" value="pseudo_bsz.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fzb">
+				<param name="Local" value="pseudo_fzb.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fzd">
+				<param name="Local" value="pseudo_fzd.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="fzq">
+				<param name="Local" value="pseudo_fzq.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="rzb">
+				<param name="Local" value="pseudo_rzb.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="rzd">
+				<param name="Local" value="pseudo_rzd.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="rzq">
+				<param name="Local" value="pseudo_rzq.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="zmb">
+				<param name="Local" value="pseudo_zmb.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="zmd">
+				<param name="Local" value="pseudo_zmd.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="zmq">
+				<param name="Local" value="pseudo_zmq.htm">
+			</object></li>
+		</ul>
+
+
+		<!-- ***********************Section*********************** -->
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="Equates">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+		
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="=">
+				<param name="Local" value="pseudo_equalsym.htm">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="set">
+				<param name="Local" value="pseudo_set.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="equ">
+				<param name="Local" value="pseudo_equ.htm">
+			</object></li>
+
+		</ul>
+
+
+		<!-- ***********************Section*********************** -->
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="Listing Control">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="ttl">
+				<param name="Local" value="pseudo_ttl.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="title">
+				<param name="Local" value="pseudo_title.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="subttl">
+				<param name="Local" value="pseudo_subttl.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="spc">
+				<param name="Local" value="pseudo_spc.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="pag">
+				<param name="Local" value="pseudo_pag.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="page">
+				<param name="Local" value="pseudo_page.htm">
+			</object></li>
+
+		</ul>
+
+
+		<!-- ***********************Section*********************** -->
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="External file inclusion">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+		
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="use">
+				<param name="Local" value="pseudo_use.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="lib">
+				<param name="Local" value="pseudo_lib.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="incl">
+				<param name="Local" value="pseudo_incl.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="include">
+				<param name="Local" value="pseudo_include.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="raw">
+				<param name="Local" value="pseudo_raw.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="includebin">
+				<param name="Local" value="pseudo_includebin.htm">
+			</object></li>
+
+		</ul>
+
+
+		<!-- ***********************Section*********************** -->
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="Macros">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="macro">
+				<param name="Local" value="pseudo_macro.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="macr">
+				<param name="Local" value="pseudo_macr.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="endm">
+				<param name="Local" value="pseudo_endm.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Macros">
+				<param name="Local" value="pseudo_macros.htm">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="OS-9 Macros">
+				<param name="Local" value="pseudo_macros.htm">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="Macro-80c macros">
+				<param name="Local" value="pseudo_macros.htm">
+			</object></li>
+		</ul>
+
+		
+		<li><object type="text/sitemap">
+			<param name="Name" value="Structures and Unions">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+		
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="struct">
+				<param name="Local" value="pseudo_struct.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="ends">
+				<param name="Local" value="pseudo_ends.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="endstruct">
+				<param name="Local" value="pseudo_endstruct.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="union">
+				<param name="Local" value="pseudo_union.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="endunion">
+				<param name="Local" value="pseudo_union.htm">
+			</object></li>
+
+		</ul>
+
+
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="OS-9 Related Directives">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+		
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="mod">
+				<param name="Local" value="pseudo_mod.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="os9">
+				<param name="Local" value="pseudo_os9.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="psect">
+				<param name="Local" value="pseudo_psect.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="vsect">
+				<param name="Local" value="pseudo_vsect.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="endsect">
+				<param name="Local" value="pseudo_endsect.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="import">
+				<param name="Local" value="pseudo_import.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="export">
+				<param name="Local" value="pseudo_export.htm">
+			</object></li>
+
+		</ul>
+
+
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="Direct Page (DP) directives">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+		
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="setdp">
+				<param name="Local" value="pseudo_setdp.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="pushdp">
+				<param name="Local" value="pseudo_pushdp.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="popdp">
+				<param name="Local" value="pseudo_popdp.htm">
+			</object></li>
+
+		</ul>
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="Miscellaneous">
+			<param name="Local" value="pseudo_moreinfo.htm">
+		</object></li>
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="name">
+				<param name="Local" value="pseudo_name.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="nam">
+				<param name="Local" value="pseudo_nam.htm">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="opt">
+				<param name="Local" value="pseudo_opt.htm">
+			</object></li>
+		</ul>
+
+	</ul>
+	
+	<li><object type="text/sitemap">
+		<param name="Name" value="Assembly Language Reference Guide V2.0">
+		<param name="Local" value="main_index.htm">
+	</object></li>
+	
+	<li><object type="text/sitemap">
+		<param name="Name" value="Color Computer Reference">
+		<param name="Local" value="gime_info.htm">
+	</object></li>
+
+	<ul>
+		<li><object type="text/sitemap">
+			<param name="Name" value="GIME Register Reference">
+			<param name="Local" value="gime_regs.htm">
+		</object></li>
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="GIME MMU Reference">
+			<param name="Local" value="gime_mmu.htm">
+		</object></li>
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="GIME IRQ Reference">
+			<param name="Local" value="gime_irq.htm">
+		</object></li>
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="Deluxe RS-232 Pak">
+			<param name="Local" value="coco_rs232.htm">
+		</object></li>
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="WD1793 Floppy Disk Controller">
+			<param name="Local" value="coco_wd1793.htm">
+		</object></li>
+		
+		<li><object type="text/sitemap">
+			<param name="Name" value="RS-DOS File System">
+			<param name="Local" value="coco_fcb.htm">
+		</object></li>
+		
+		<li><object type="text/sitemap">
+			<param name="Name" value="Checking the keyboard via the PIA">
+			<param name="Local" value="coco_keybd.htm">
+		</object></li>
+
+		<li><object type="text/sitemap">
+			<param name="Name" value="OS-9 Relocatable Object File Format">
+			<param name="Local" value="os9_rof.htm">
+		</object></li>
+		
+		<li><object type="text/sitemap">
+			<param name="Name" value="Speech and Sound Cart.">
+			<param name="Local" value="coco_ssc.htm">
+		</object></li>
+		
+		<ul>
+			<li><object type="text/sitemap">
+				<param name="Name" value="Introduction">
+				<param name="Local" value="coco_ssc.htm#INTRO">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="Background Information">
+				<param name="Local" value="coco_ssc.htm#BACKGROUND">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Speaking of the S/SC">
+				<param name="Local" value="coco_ssc.htm#SPEAK">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="Straight Talk">
+				<param name="Local" value="coco_ssc.htm#STRAIGHT">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="Sound Advice">
+				<param name="Local" value="coco_ssc.htm#ADVICE">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="Dial Tone">
+				<param name="Local" value="coco_ssc.htm#DTONE">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="As Plain As Noise">
+				<param name="Local" value="coco_ssc.htm#NOISE">
+			</object></li>
+			
+			<li><object type="text/sitemap">
+				<param name="Name" value="The Envelope Please">
+				<param name="Local" value="coco_ssc.htm#ENVELOPE">
+			</object></li>
+			
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Appendix A">
+				<param name="Local" value="coco_ssc_a.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Appendix B">
+				<param name="Local" value="coco_ssc_b.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Appendix C">
+				<param name="Local" value="coco_ssc_c.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Appendix D">
+				<param name="Local" value="coco_ssc_d.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Appendix E">
+				<param name="Local" value="coco_ssc_e.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Appendix F">
+				<param name="Local" value="coco_ssc_f.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Appendix G">
+				<param name="Local" value="coco_ssc_g.htm">
+			</object></li>
+
+			<li><object type="text/sitemap">
+				<param name="Name" value="Appendix H">
+				<param name="Local" value="coco_ssc_h.htm">
+			</object></li>
+
+		</ul>
+	</ul>	
+			
+		
+</ul>
+</body>
+</html>

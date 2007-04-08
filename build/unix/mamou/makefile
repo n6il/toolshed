@@ -12,3 +12,6 @@ mamou:		mamou.o evaluator.o pseudo.o h6309.o ffwd.o \
 
 clean:
 	rm *.o mamou
+
+install: mamou
+	cp mamou $(HOME)/bin

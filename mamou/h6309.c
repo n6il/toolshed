@@ -1114,11 +1114,9 @@ int _grp2(assembler *as, int opcode)
 		return 0;
 	}
 
-	
 	/* Evaluate result */
 	
 	evaluate(as, &result, &as->line.optr, 0);
-	
 	
 	/* Check for inconsistency in force mode and DP */
 	
@@ -1195,7 +1193,7 @@ int _sys(assembler *as, int opcode)
 	@param opcode The op-code value to emit
  */
 
-static int do_gen(assembler *as, int op, int mode, int always_word)
+static int do_gen(assembler *as, int opcode, int mode, int always_word)
 {
 	int	result;
 
@@ -1205,7 +1203,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 		/* Immediate addressing mode (i.e. #$123) */
 		
 		as->line.optr++;
-		emit(as, op);
+		emit(as, opcode);
 
 		
 		/* Evaluate the result. */
@@ -1233,7 +1231,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 	{
 		/* Indexed mode (i.e. $5,y) */
 		
-		do_indexed(as, op + 0x20);
+		do_indexed(as, opcode + 0x20);
 
 		return 0;
 	}
@@ -1243,7 +1241,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 		
 		as->line.optr++;
 
-		emit(as, op + 0x20);
+		emit(as, opcode + 0x20);
 		emit(as, IPBYTE);
 
 		
@@ -1270,38 +1268,44 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 	}
 	else if (mode == OTHER)
 	{
-#if 0
+		/* Evaluate result */
+		
 		evaluate(as, &result, &as->line.optr, 0);
-
+		
 		if (as->line.force_byte == 1)
 		{
-			/* Case #1: < has been prepeneded to expression */
+			/* Case #1: < has been prepended to expression */
 			
-			emit(as, op + 0x10);
-
-			if (hibyte(result) != as->DP)
+			/* If we are still in pass 1, ignore DP check as there may
+			 * be a forward reference
+			 */
+			if (as->pass > 1 && hibyte(result) != as->DP)
 			{
-				error(as, "as->DP out of range");
-				return 0;
+				error(as, "DP out of range");
 			}
+			else
+			{
+				emit(as, opcode + 0x10);
+				emit(as, lobyte(result));
 
-			emit(as, lobyte(result));
-
-			as->cumulative_cycles += 2;
-
+				as->cumulative_cycles += 2;
+			}
+			
 			return 0;
 		}
 		else if (as->line.force_word == 1)
 		{
-			/* Case #1: > has been prepeneded to expression */
+			/* Case #2: > has been prepended to expression */
 			
-			if ((hibyte(result) == as->DP))
+			/* If we are still in pass 1, ignore DP check as there may
+			 * be a forward reference
+			 */
+			if (as->pass > 1 && hibyte(result) == as->DP)
 			{
 				as->line.has_warning = 1;
 			}
 			
-			emit(as, op + 0x30);
-
+			emit(as, opcode + 0x30);
 			eword(as, result);
 
 			as->cumulative_cycles += 3;
@@ -1312,10 +1316,9 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 		{
 			/* Case #3: Ambiguous... look to as->DP for guidance. */
 			
-
-			if ((hibyte(result) == as->DP))
+			if (hibyte(result) == as->DP)
 			{
-				emit(as, op + 0x10);
+				emit(as, opcode + 0x10);
 
 				emit(as, lobyte(result));
 				
@@ -1323,7 +1326,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 			}
 			else
 			{
-				emit(as, op + 0x30);
+				emit(as, opcode + 0x30);
 
 				eword(as, result);
 				
@@ -1332,89 +1335,6 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 			
 			return 0;
 		}
-#else
-#if 0
-		evaluate(as, &result, &as->line.optr, 0);
-		
-		if (as->line.force_byte == 1)
-		{
-			emit(as, op + 0x10);
-
-			if (hibyte(result) != as->DP)
-			{
-				error(as, "DP out of range");
-				return 0;
-			}
-
-			emit(as, lobyte(result));
-			
-			as->cumulative_cycles += 2;
-			
-			
-			return 0;
-		}
-		else
-		{
-			if ((hibyte(result) == as->DP))
-			{
-				as->line.has_warning = 1;
-			}
-			
-			emit(as, op + 0x30);
-			eword(as, result);
-			as->cumulative_cycles += 3;
-
-			return 0;
-		}
-#else
-		/* Evaluate result */
-		
-		evaluate(as, &result, &as->line.optr, 0);
-
-		
-		/* Check for inconsistency in force mode and DP */
-		
-		if (as->line.force_byte == 1 && hibyte(result) != as->DP)
-		{
-			error(as, "DP out of range");
-
-			return 0;
-		}
-		
-		
-
-		if (as->line.force_word == 1 || hibyte(result) != as->DP)
-		{
-			if ((hibyte(result) == as->DP))
-			{
-				as->line.has_warning = 1;
-			}
-			
-			emit(as, op + 0x30);
-			eword(as, result);
-			as->cumulative_cycles += 3;
-			
-			return 0;
-		}
-		else
-		{
-			emit(as, op + 0x10);
-			
-			if (hibyte(result) != as->DP)
-			{
-				error(as, "DP out of range");
-				return 0;
-			}
-			
-			emit(as, lobyte(result));
-			
-			as->cumulative_cycles += 2;
-			
-			
-			return 0;
-		}
-#endif
-#endif
 	}
 	else
 	{
@@ -1432,7 +1352,7 @@ static int do_gen(assembler *as, int op, int mode, int always_word)
 	@param opcode The op-code value to emit
  */
 
-static int do_indexed(assembler *as, int op)
+static int do_indexed(assembler *as, int opcode)
 {
 	int     pbyte;
 	int     j,k;
@@ -1444,7 +1364,7 @@ static int do_indexed(assembler *as, int op)
 	predec = 0;
 	pstinc = 0;
 	pbyte = 128;
-	emit(as, op);
+	emit(as, opcode);
 
 	if (*as->line.optr == '[')
 	{
@@ -1686,7 +1606,7 @@ static int do_indexed(assembler *as, int op)
 
 	if (j != 0x100)
 	{
-	  pbyte += j;
+		pbyte += j;
 
 		if (as->line.force_word)
 	    {
@@ -1697,6 +1617,7 @@ static int do_indexed(assembler *as, int op)
 			emit(as, pbyte + 0x09);
 			eword(as, result);
 			as->cumulative_cycles += 4;
+
 			return 0;
 		}
 

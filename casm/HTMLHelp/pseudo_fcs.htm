@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"><html><head>
+		<title>CASM Introduction</title>
+<META http-equiv=Content-Type content="text/html; charset=Windows-1252">
+<meta content=http://schemas.microsoft.com/intellisense/ie5 name=vs_targetSchema><LINK href="styles.css" type=text/css rel=stylesheet ></HEAD>
+<body class=site>
+<P>
+<div class=title><b>FCS - Form 
+constant character command string</B>:<br></DIV><br><pre class=bnf>[<EM>label</EM>]	FCS	<EM>string</EM></PRE>
+<div class=main><br>The FCS directive 
+is used to store ASCII command strings into consecutive bytes of memory. Command 
+strings are special as the assembler will automatically set the high bit of the 
+last character in the string. The byte storage begins at the current program 
+counter. If a label is present it will be assigned address of the first byte in 
+the string. Any of the printable ASCII characters can be contained in the 
+string. The string is specified between two identical delimiters which can be 
+any printable ASCII character. The first non-blank character after the FCS 
+directive is used as the delimiter. <br><br><br></DIV>
+<div class=section>Examples: </DIV>
+<div class=main><pre class=example>	fcs	"some string here"
+	fcs	/another string here/</PRE><br>Additionally CASM 
+supports the ability to include trailing byte declarations similar to FCB 
+statements to the end of the FCS declaration.<br><br><pre class=example>	fcs	"some string here",$03,$04</PRE><br><br></DIV>
+<div class=section>See also: </DIV>
+<hr>
+
+<div class=section>Compatibility: </DIV>
+<div class=main>
+<table class=compat_info id=Table4 width=375>
+  <tr>
+    <td class=compat_info>CASM</TD>
+    <td class=compat_info align=center><b 
+      >X</B></TD></TR>
+  <tr>
+    <td class=compat_info>CCASM</TD>
+    <td class=compat_info align=center><b 
+      >X</B></TD></TR>
+  <tr>
+    <td class=compat_info>OS-9 RMA</TD>
+    <td class=compat_info align=center><b 
+      >X</B></TD></TR>
+  <tr>
+    <td class=compat_info>Edt/Asm III</TD>
+    <td class=compat_info align=center><b 
+      >X</B></TD></TR>
+  <tr>
+    <td class=compat_info>Edtasm6309</TD>
+    <td class=compat_info align=center><b 
+      >X</B></TD></TR>
+  <tr>
+    <td class=compat_info>Disk Edtasm+</TD>
+    <td class=compat_info align=center><b 
+      >X</B></TD></TR>
+  <tr>
+    <td class=compat_info>Edtasm+</TD>
+    <td class=compat_info align=center><b 
+      >X</B></TD></TR>
+  <tr>
+    <td class=compat_info>Macro-80C</TD>
+    <td class=compat_info align=center><b>X</b></TD></TR></TABLE></DIV>
+	</body></HTML>

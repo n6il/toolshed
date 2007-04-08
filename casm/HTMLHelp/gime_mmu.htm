@@ -1,0 +1,223 @@
+<HTML>
+<HEAD>
+	<TITLE>GIME MMU Reference</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>GIME MMU Reference</b><br>
+	From <em><a href="http://www.cocounravelled.com" target="_blank">Super Extended Basic Unravelled</a></em>
+</div>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1"><tr><td style="border: 0px; white-space: normal; text-align: left;">
+<center><font size="+1"><b>MEMORY MANAGEMENT</b></font></center>
+<br>
+The 6809 microprocessor can only address 64K of memory. In order to address
+more than 64K, a method must be found which will allow the user to switch
+different blocks of memory into the CPU’s address space. The ability to perform
+this function is generally referred to as ‘memory management'. There are as many
+different ways to implement a memory management scheme as there are different
+computers in the world, and each method will have its own strong points and
+limitations. In the Color Computer 3, the GIME chip performs the Memory
+Management Unit (MMU) function.<br>
+<br>
+The GIME chip will allow 512K of RAM to be accessed by the CoCo 3. This 512K
+address range is called the physical address space. The physical address space
+is broken down into 64 blocks of 8K each. The six high order bits of any address
+($00000-$7FFFF) are the block number. In a 128K machine that means that there
+will be 16 blocks which will actually have RAM in them, and the other 48 blocks
+will be treated as three sets of 16 blocks all three of which are mirrors of
+the high order 16 blocks. A 512K machine will, of course, have 64 blocks of
+RAM. The GIME chip determines this configuration and there is no known way at
+this time to trick, fool, or otherwise cajole the chip into allowing you to
+hang more RAM on the system without adding hardware to the computer. From
+this pool of 64 8K blocks you may select any eight to fill the CPU’s memory
+space of 64K. The 64K range, which comprises the address range of the CPU,
+is referred to as the logical address space. In order to simplify the task
+of understanding how this is done, it is best for the reader to discard the
+concept of the fixed memory map of the computer’s memory. From the point of
+view of the CPU, the Color Computer 3’s RAM is not one large contiguous
+block from $00000 - $7FFFF. This will undoubtedly cause a certain amount of
+confusion because the video display section of the Color Computer 3 does
+consider the RAM as one large contiguous block.<br>
+<br>
+Now, you may ask, if the memory is to be considered as 64 blocks of 8K, how
+does the CPU know where its memory is. That job is performed by the MMU
+registers which are located at $FFA0. The eight blocks, which you select as
+the CPU’s memory, are mapped into the CPU’s address space by the MMU
+registers as shown in Figure 1.
+<br>
+<br>
+<br>
+<table width="400" align="center" ID="Table2">
+	<tr bgcolor="#eeeeee"><td>MMU Register</td><td>CPU Address Space</td><td>Logical block number</tr>
+	<tr><td>$FFA7</td><td>$E000-$FDFF</td><td>7</td></tr>
+	<tr><td>$FFA6</td><td>$C000-$DFFF</td><td>6</td></tr>
+	<tr><td>$FFA5</td><td>$A000-$BFFF</td><td>5</td></tr>
+	<tr><td>$FFA4</td><td>$8000-$9FFF</td><td>4</td></tr>
+	<tr><td>$FFA3</td><td>$6000-$7FFF</td><td>3</td></tr>
+	<tr><td>$FFA2</td><td>$4000-$5FFF</td><td>2</td></tr>
+	<tr><td>$FFA1</td><td>$2000-$3FFF</td><td>1</td></tr>
+	<tr><td>$FFA0</td><td>$0000-$1FFF</td><td>0</td></tr>
+</table>
+<center><div style="font-size: 9pt">Figure 1 - Memory Management Unit Registers</div></center>
+<br>
+<br>
+It is important to thoroughly understand the concept of memory blocks. The physical
+address space is composed of 64 physical blocks (they will be referred to simply as
+blocks). The logical address space is the range of $0-$FFFF which can be addressed
+by the CPU. The logical address space should be considered as composed of eight 8K
+blocks of RAM. The MMU registers determine which eight of the 64 blocks from the
+physical address space will compose the logical address space. As a natural
+extension, the logical address space may be thought of as being composed of eight
+logical blocks. The logical blocks are numbered from 0-7 as described in Figure 1
+above. The logical blocks are not really actual memory (the physical blocks are
+actual memory), they are an 8K address space in the address range of the CPU and
+their position relative to one another may not change in the eyes of the CPU.<br>
+<br>
+The MMU registers have no effect whatsoever on the manner in which the GIME chip
+displays graphic or text information. For the purpose of graphics, the 512K is
+considered as one large contiguous super chunk of RAM. In order to make this easier
+to understand since we are in a "block" frame of mind, just consider the video
+display memory as 64 contiguous 8K blocks. In other words, the video display memory
+is just the physical address space and there is no way to move the blocks relative
+to one another.<br>
+<br>
+The process of setting up the CPUs memory space requires that you select eight
+blocks, which will comprise the logical address space. Then you must program the
+MMU registers with the block numbers selected. For example, if you wanted block 56
+($38) to occupy the CPU addresses $0000 - $1FFF (logical block 0), you must store
+the value $38 into address $FFA0. If you wanted the high 64K of RAM of either a
+128K or 512K machine to occupy the logical address space as one contiguous 64K
+segment, you just load the values $38 - $3F consecutively into the consecutive
+addresses $FFA0 - $FFA7. This is how Basic sets up the CPU’s memory space.<br>
+<br>
+It is important to realize that there is no prohibition against using the same
+block in more than one block of the logical address space. If you put the same
+block number in all of the MMU registers, then the same 8K block of RAM would
+be mapped into all eight of the logical blocks.<br>
+<br>
+As an example of the power and flexibility which this system of memory management
+offers, we will consider the logical address space arrangement used by Basic to
+manipulate super hi-res graphic screens. It is not possible to read data from or
+write data into the Color Computer 3’s memory unless the memory is in the logical
+address space. For example, if you wanted to read address $4F859, you would not
+be able to unless block 39 had been mapped into a logical block by an MMU register.
+Or, put another way, the value 39 must be in one of the MMU registers
+($FFA0 - $FFA7). Basic allocates 32K of memory for its super hi-res graphics screen.
+In order to manipulate the screen, the 32K screen must be in the logical address
+space. The bottom 32K of memory in a 128K system ($60000 - $67FFF) is used for the
+super hi-res screen by Basic. In order to access the screen, this memory is mapped
+into logical block 1 as shown in Figure 2. Block numbers 48-51 are the super hi-res
+graphics screen. Block 56 must remain in logical block 0 because it contains all of
+Basic’s system variables and interrupt vectors, and block 63 must remain in logical
+block 7 because it contains the Basic program code, which manipulates the super
+hi-res graphics screen. Block 53 is moved into logical block 6 (overlaying Disk
+Basic) and is used as the HPUT/HGET buffer.<br>
+<br>
+<table width="400" align="center" ID="Table3">
+	<tr bgcolor="#eeeeee">
+		<td valign="bottom">MMU<br>Register</td>
+		<td valign="bottom">Block<br>Number</td> 
+		<td valign="bottom">Logical<br>Block Number</td>
+		<td valign="bottom">Physical<br>Address</td>
+		<td></td>
+	</tr>
+
+	<tr><td>$FFA7</td><td>63</td><td>7</td><td>$7E000-$7FFFF</td><td style="text-align: left">Program</td></tr>
+	<tr><td>$FFA6</td><td>53</td><td>6</td><td>$6A000-$6BFFF</td><td style="text-align: left">HGET Buffer</td></tr>
+	<tr><td>$FFA5</td><td>61</td><td>5</td><td>$7A000-$7BFFF</td><td style="text-align: left">Program</td></tr>
+	<tr><td>$FFA4</td><td>51</td><td>4</td><td>$66000-$67FFF</td><td style="text-align: left">Screen</td></tr>
+	<tr><td>$FFA3</td><td>50</td><td>3</td><td>$64000-$65FFF</td><td style="text-align: left">Screen</td></tr>
+	<tr><td>$FFA2</td><td>49</td><td>2</td><td>$62000-$63FFF</td><td style="text-align: left">Screen</td></tr>
+	<tr><td>$FFA1</td><td>48</td><td>1</td><td>$60000-$61FFF</td><td style="text-align: left">Screen</td></tr>
+	<tr><td>$FFA0</td><td>56</td><td>0</td><td>$70000-$71FFF</td><td style="text-align: left">System DP</td></tr>
+</table>
+<center><div style="font-size: 9pt">Figure 2 - Super Hi-Res Graphics Memory Configuration</div></center>
+<br>
+There is one final aspect of the Color Computer 3’s memory management system, which
+must be addressed. The Color Computer 3 has two sets of MMU registers. The first
+set of eight registers located at $FFA0 should be very familiar to you by now. The
+second set of eight registers is located at $FFA8 and their function is identical
+to that of the first set in every aspect. Bit 0 of initialization register 1
+($FF91) is used to determine which one of the sets of registers is determining the
+makeup of the logical address space. If bit 0 if $FF91 is set to zero, then the
+eight MMU registers at $FFA0 (task register 0) control the makeup of the logical
+address space. If bit 0 of $FF91 is set, then the eight MMU registers at $FFA8
+(task register 1) control the makeup of the logical address space (see Figure 3).
+The theory behind the two sets of registers is that each set of registers may be
+allowed to control a different task by allocating two independent segments of 64K
+to each task and then simply selecting the desired set of registers in order to
+enable the desired task. This will work fine but you must be careful to remember
+that switching between the task registers will do nothing to preserve the status
+of the CPU registers, nor will it protect you from disasters if you should be
+interrupted during the transition. Whenever new memory is switched into a logical
+address space, be sure it isn’t where the program counter, stack, or interrupt
+service routine is located. Major problems may happen it is:<br>
+<br>
+<table width="400" align="center" ID="Table4">
+	<tr bgcolor="#eeeeee">
+		<td style="border: 0px #000000 solid" colspan="4">If the MMU registers have<br>the data below in them</td>
+		<td style="border: 0px #000000 solid"></td>
+		<td style="border: 0px #000000 solid" colspan="3">Then the following blocks<br>compose the logical address space</td>
+	</tr>
+	<tr>
+		<td style="border: 0px #000000 solid" colspan="6"></td>
+		<td style="border: 0px #000000 solid" >$FF91<br>bit0=0</td>
+		<td style="border: 0px #000000 solid" >$FF91<br>bit0=1</td>
+	</tr>
+	<tr><td>$FFA0</td><td>24</td><td>$FFA8</td><td>34</td><td>&nbsp;</td><td>$0000</td><td>24</td><td>34</td></tr>
+	<tr><td>$FFA1</td><td>26</td><td>$FFA9</td><td>56</td><td>&nbsp;</td><td>$2000</td><td>26</td><td>56</td></tr>
+	<tr><td>$FFA2</td><td>15</td><td>$FFAA</td><td>43</td><td>&nbsp;</td><td>$4000</td><td>15</td><td>43</td></tr>
+	<tr><td>$FFA3</td><td>56</td><td>$FFAB</td><td>34</td><td>&nbsp;</td><td>$6000</td><td>56</td><td>34</td></tr>
+	<tr><td>$FFA4</td><td>41</td><td>$FFAC</td><td>35</td><td>&nbsp;</td><td>$8000</td><td>41</td><td>35</td></tr>
+	<tr><td>$FFAS</td><td>42</td><td>$FFAD</td><td>08</td><td>&nbsp;</td><td>$A000</td><td>42</td><td>08</td></tr>
+	<tr><td>$FFA6</td><td>62</td><td>$FFAE</td><td>36</td><td>&nbsp;</td><td>$C000</td><td>62</td><td>36</td></tr>
+	<tr><td>$FFA7</td><td>61</td><td>$FFAF</td><td>00</td><td>&nbsp;</td><td>$E000</td><td>61</td><td>00</td></tr>
+</table>
+<center><div style="font-size: 9pt">Figure 3 - MMU task registers</div></center>
+<br>
+Special notes:<br>
+<br>
+1) All of the MMU registers may be read from as well as written to. However, only
+the lower 6 bits of data are accurate. The top two bits should be masked off after
+they are read. Also, in order to enable the MMU registers, bit 6 of $FF90 must be
+set.<br>
+<br>
+2) The CoCo enable bit (bit 7, $FF90) does not have any effect upon the operation
+of the MMU registers. The MMU enable bit (bit 6, $FF90) must be set in order for
+the MMU registers to be operable.<br>
+<br>
+3) The area from $FF00 - $FFFF is used for system input/output and is never
+affected by the MMU registers. The area from $FE00 - $FEFF is a special page (256
+bytes) of RAM and may be affected by the MMU registers if MC3 (bit 3, $FF90) is
+clear.
+</td></tr></table>
+</div>
+<br>
+<br>
+<br>
+<br>

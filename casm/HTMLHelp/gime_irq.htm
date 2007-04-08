@@ -1,0 +1,198 @@
+<HTML>
+<HEAD>
+	<TITLE>GIME IRQ Reference</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>GIME IRQ Reference</b><br>
+	From <em><a href="http://www.cocounravelled.com" target="_blank">Super Extended Basic Unravelled</a></em>
+</div>
+<div class="main">
+<table width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="border: 0px; white-space: normal; text-align: left;">
+		<center><b>INTERRUPTS</b></center>
+		<br>
+		A new system of interrupts has been added with the advent of the Color
+		Computer 3. This section will discuss the two new interrupt sources (keyboard and
+		timer), enabling the interrupts, and processing individual interrupts. There will
+		be no discussion of the CoCo 2 PIA based interrupts.<br>
+		<br>
+		The new interrupt features are enabled by setting bits 4 (FIRQ) and 5 (IRQ)
+		of $FF90. If these bits are clear, interrupts are handled as they were in the
+		original Color Computer. Setting these bits allows you to use the new interrupt
+		system. The new system of interrupts is based entirely upon the GIME chip and makes
+		no use whatsoever of the PIA interrupt structure which was the basis of the old
+		(CoCo 2) system of interrupts.<br>
+		<br>
+		The IRQ Enable/Status Register and FIRQ Enable/Status Register are located at
+		$FF92 and $FF93 respectively. These registers are functionally identical, and are
+		defined according to Figure 14.<br>
+		<br>
+		<table align="center" width="300" class="info">
+			<tr><td>Bit 7</td><td>Undefined</td></tr>
+			<tr><td>Bit 6</td><td>Undefined</td></tr>
+			<tr><td>Bit 5</td><td>TMR Timer</td></tr>
+			<tr><td>Bit 4</td><td>HBORD Horizontal Border</td></tr>
+			<tr><td>Bit 3</td><td>VBORD Vertical Border</td></tr>
+			<tr><td>Bit 2</td><td>EI2 Serial Data</td></tr>
+			<tr><td>Bit 1</td><td>EI1 Keyboard</td></tr>
+			<tr><td>Bit 0</td><td>EI0 Cartridge</td></tr>
+		</table>
+		<center><div style="font-size: 9pt">Figure 14 - Interrupt Enable/Status Register</div></center>
+		<br>		
+		To enable a specific interrupt, simply set the bit in the appropriate enable
+		register. For example, in order to enable the timer to trigger an IRQ interrupt,
+		simply store a $20 in $FF92. It is up to the interrupt servicing routine to
+		determine what caused the interrupt, which is done by reading the appropriate
+		status register. For example, if we have set up the interrupts to trigger an FIRQ
+		interrupt when a key is pressed, the service routine should contain the following
+		code to make sure the keyboard generated the interrupt:<br>
+		<br>
+		<table style="border: 0px" align="center"><tr><td style="text-align:left">
+		<pre>LDA	$FF93	READ INTERRUPT STATUS REGISTER
+BITA	#2	CHECK FOR KEYBOARD INTERRUPT
+BEQ		SOMWHR	BRANCH IF NOT KEY</pre>
+		</td></tr></table>
+		<br>
+		In addition to determining the source of the interrupt, reading the status
+		register resets the interrupt flags (those same flags that told you where the
+		interrupt originated). The programmer must preserve the contents of the status
+		register if you wish to make use of their contents after the status register has
+		been read.<br>
+		<br>
+		The GIME chip interrupts are triggered on the high to low transition of the
+		interrupt source when the enable line is high. The design of the interrupt input
+		circuitry also causes an interrupt to occur if the interrupt source is high when
+		the enable line is brought low. This will cause a spurious interrupt, which your
+		interrupt handling routines must detect and reject. A current anomaly in the
+		interrupt circuitry causes the interrupt status register to be cleared when a zero
+		is written to the interrupt enable bit.<br>
+		<br>
+		<br>
+		<center><b>The Keyboard Interrupt</b></center>
+		<br>
+		One of the exciting new interrupts included in the Color Computer 3 is the
+		keyboard interrupt. When set up properly, the user program can continue execution
+		without continually checking to see if a key is down. When a key is pressed, an
+		interrupt is generated. At this point, the interrupt servicing routine can
+		determine which key was pressed and process it.<br>
+		<br>
+		To set up the keyboard interrupt, several things must be done. First of all,
+		the interrupt enable/status registers must be turned on by setting the appropriate
+		bits in $FF90 (as discussed above). Then, the keyboard interrupt itself must be
+		enabled by setting bit 1 of the appropriate interrupt enable register. Lastly, the
+		keyboard strobe lines must be reset by storing a 0 at $FF02. Once this has been
+		done, pressing a key on the keyboard or pressing a joystick button will generate an
+		interrupt.<br>
+		<br>
+		<br>
+		<center><b>The Timer Interrupt</b></center>
+		<br>
+		The timer is a 12-bit interval timer located at $FF94-$FF95. When a value is
+		loaded into the most significant byte ($FF94), the count is automatically started.
+		The input clock is set to either 14 MHz or horizontal sync, as selected by setting
+		or clearing bit 5 of $FF91. As the count falls through zero, an interrupt is
+		generated (if enabled), and the count is automatically reloaded. Setting bit 5 of
+		the appropriate interrupt enable register enables the timer interrupt.<br>
+		<br>
+		<br>
+		<center><b>The HBORD, VBORD, EI2, and EI0 Interrupts</b></center>
+		<br>
+		The other interrupts are similar to their counterparts in the Color Computer
+		2. HBORD causes an interrupt at the falling edge of the horizontal sync (the Color
+		Computer 2 actually generated this interrupt at the blanking pulse — a subtle
+		difference). The VBORD interrupt is generated at the falling edge of the vertical
+		sync. The EI2 interrupt is connected to the status line of the RS-232C serial
+		connector (printer port), and the EI0 interrupt is connected to the expansion (ROM
+		PAK) port.<br>
+		<br>
+		Lastly, as an example, let’s set up the computer to generate an IRQ interrupt
+		when a key is pressed on the keyboard. The following assembly code would produce
+		this result:<br>
+		<br>
+		<table align="center" style="border: 0px" ID="Table2"><tr><td style="text-align:left">
+		<pre>* First enable the IRO interrupt
+	LDA	#$20	CODE TO ENABLE IRQ INTERRUPT
+	STA	$FF90	TURN ON INTERRUPT
+* Now enable the Keyboard Interrupt at $FF92
+	LDA	#2	CODE TO ENABLE KEYBOARD INTERRUPT
+	STA	$FF92	ENABLE KEYBOARD IRQ
+	CLR	$FF02	CLEAR KEYBOARD STROBE LINES</pre></td></tr></table>
+		<br>
+		The service routine, of course, would read $FF92 and check to make sure the
+		keyboard interrupt was responsible for the interrupt.<br>
+		<br>
+		<br>
+		<center><b>Interrupt Vectors</b></center>
+		When an interrupt occurs, the computer must know where to go to process the
+		interrupt. To find this information, the computer looks into the $FF02 - $FFFF
+		range, which is defined as follows:<br>
+		<br>
+		<table align="center" width="300" class="info" ID="Table3">
+			<tr><td>Address</td><td>Interrupt</td><td>CoCo 2 Vector</td><td>CoCo 3 Vector</td></tr>
+			<tr><td>$FFF2</td><td>SWI3</td><td>$100</td><td>$FEEE</td></tr>
+			<tr><td>$FFF4</td><td>SWI2</td><td>$103</td><td>$FEF1</td></tr>
+			<tr><td>$FFF6</td><td>FIRQ</td><td>$10F</td><td>$FEF4</td></tr>
+			<tr><td>$FEF8</td><td>IRQ</td><td>$10C</td><td>$FEF7</td></tr>
+			<tr><td>$FFFA</td><td>SWI</td><td>$106</td><td>$FEFA</td></tr>
+			<tr><td>$FFFC</td><td>NMI</td><td>$109</td><td>$FEFD</td></tr>
+			<tr><td>$FFFE</td><td>RESET</td><td>$A027</td><td>$8C1B</td></tr>
+		</table>
+		<center><div style="font-size: 9pt">Figure 15 - Interrupt Vectors</div></center>
+		<br>
+		When an interrupt such as IRQ interrupt occurs, control is transferred to the
+		interrupt vector table ($FFF0-$FFFF) as shown in Figure 15. The GIME chip (and the
+		SAM chip in the older CoCos) redirect the CPU’s address request from the $FFF0-
+		$FFFF range to $BFF0-$BFFF so that the interrupt vectors can be stored in the Basic
+		ROM. In the original Color Computer, control would then be sent to $10C. At this
+		address was (and still is) a jump table which redirects control to the desired IRQ
+		routine. Since this jump table is in RAM, it may be modified by Extended Basic,
+		Disk Basic, or any user program.<br>
+		<br>
+		In the Color Computer 3, there is no guarantee that Basic or the Basic jump
+		table is in memory (because of the MMU). For this reason, an intermediate jump
+		table was made in RAM in the $FEEE range, which can be forced to be in the logical
+		address space at all times. This jump table, when Basic is running, contains LBRAs
+		to the appropriate address in Basic’s interrupt jump table ($100). This also means
+		that when a user program wants to replace the memory at $100 - $111, it should deal
+		with the interrupts at the intermediate jump table at $FEEE. For example, if a user
+		program wishes to replace the IRQ vector, the following code could be used:<br>
+		<br>
+		<table align="center" style="border: 0px" ID="Table4"><tr><td style="text-align:left">
+		<pre>	ORCC	#$50	TURN OFF INTERRUPTS DURING CHANGE
+	LDA	#$7E	OP CODE FOR JMP INSTRUCTION
+	STA	$FEF7	REPLACE LBRA WITH JMP
+	LDX	#SERVIC	POINT X TO SERVICE ROUTINE
+	STX	$FEF8	PLACE ADDRESS AFTER JMP ADDRESS
+	ANDCC	#$AF	TURN INTERRUPTS BACK ON</pre></td></tr></table><br>
+	</td></tr>
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>

@@ -1,0 +1,31 @@
+[OPTIONS]
+Auto Index=Yes
+Compatibility=1.1 or later
+Compiled file=casm.chm
+Contents file=casm.hhc
+Index file=casm.hhk
+Default topic=main_index.htm
+Display compile progress=No
+Full-text search=Yes
+Language=0x0409 English (United States)
+
+
+[FILES]
+main_index.htm
+main_about.htm
+cmd_line_opts.htm
+pseudo_ops.htm
+pseudo_macros.htm
+
+
+[ALIAS]
+main_index			= main_index.htm
+
+[MAP]
+#include HTMLDefines.h
+; #include ../resource.h
+
+[TEXT POPUPS]
+HTMLDefines.h
+
+[INFOTYPES]

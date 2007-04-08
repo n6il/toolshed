@@ -1,0 +1,196 @@
+<HTML>
+<HEAD>
+	<TITLE>Color Computer Speech and Sound Cartridge</TITLE>
+	<LINK href="styles.css" type=text/css rel=stylesheet >
+</HEAD>
+<style type=text/css>
+
+table {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse; 
+}
+
+td {
+	vertical-align: top;
+	white-space: normal;
+	font-size : 10pt;
+	color : #000000;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+
+
+td.header {
+	vertical-align: bottom;
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	background-color: #eeeeee;
+	border: 1px #c0c0c0 solid;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 5px;
+	text-align: center;
+}
+
+
+
+</style>
+
+<body class=site>
+<div class="title">
+	<b>Color Computer Speech and Sound Cartridge- Appendix A</b>
+</div>
+<div class="main">
+<table class="info" width="550" style="border: 0px #000000 solid;" ID="Table1">
+	<tr><td style="border: 0px; white-space: normal; text-align: left;">
+		<br>
+		Commands<br>
+		<br>
+		<table width="550" align="center" width="300" class="info" ID="Table8">
+			<tr><td colspan="2"  class="header" >INSTRUCTION MAP</td></tr>
+			<tr><td>80</td><td>Load speech string into Buffers 0-7 for later execution. Terminator is 0D.</td></tr>
+			<tr><td>81</td><td>Load speech string into Buffers 1-7.</td></tr>
+			<tr><td>82</td><td>Load speech string into Buffers 2-7.</td></tr>
+			<tr><td>83</td><td>Load speech string into Buffers 3-7.</td></tr>
+			<tr><td>84</td><td>Load speech string into Buffers 4-7.</td></tr>
+			<tr><td>85</td><td>Load speech string into Buffers 5-7.</td></tr>
+			<tr><td>86</td><td>Load speech string into Buffers 6-7.</td></tr>
+			<tr><td>87</td><td>Load speech string into Buffer 7.</td></tr>
+			<tr><td>88</td><td>Load sound data into Buffers 0-7 for later execution. Terminator is FF.</td></tr>
+			<tr><td>89</td><td>Load sound data into Buffers 1-7.</td></tr>
+			<tr><td>8A</td><td>Load sound data into Buffers 2-7.</td></tr>
+			<tr><td>8B</td><td>Load sound data into Buffers 3-7.</td></tr>
+			<tr><td>8C</td><td>Load sound data into Buffers 4-7.</td></tr>
+			<tr><td>8D</td><td>Load sound data into Buffers 5-7.</td></tr>
+			<tr><td>8E</td><td>Load sound data into Buffers 6-7.</td></tr>
+			<tr><td>8F</td><td>Load timer base value. This command requires one postbyte of data (in the range of 0-255) to be loaded into the timer register. 255 produces the longest duration; 0 produces the shortest duration.</td></tr>
+			<tr><td>90</td><td>Load speech string into Buffer 0 for later execution. Terminator is 0D.</td></tr>
+			<tr><td>91</td><td>Load speech string into Buffer 1.</td></tr>
+			<tr><td>92</td><td>Load speech string into Buffer 2.</td></tr>
+			<tr><td>93</td><td>Load speech string into Buffer 3.</td></tr>
+			<tr><td>94</td><td>Load speech string into Buffer 4.</td></tr>
+			<tr><td>95</td><td>Load speech string into Buffer 5.</td></tr>
+			<tr><td>96</td><td>Load speech string into Buffer 6.</td></tr>
+			<tr><td>97</td><td>Load speech string into Buffer 7.</td></tr>
+			<tr><td>98</td><td>Load sound data into Buffer 0 for later execution. Terminator is FF.</td></tr>
+			<tr><td>99</td><td>Load sound data into Buffer 1.</td></tr>
+			<tr><td>9A</td><td>Load sound data into Buffer 2.</td></tr>
+			<tr><td>9B</td><td>Load sound data into Buffer 3.</td></tr>
+			<tr><td>9C</td><td>Load sound data into Buffer 4.</td></tr>
+			<tr><td>9D</td><td>Load sound data into Buffer 5.</td></tr>
+			<tr><td>9E</td><td>Load sound data into Buffer 6.</td></tr>
+			<tr><td>9F</td><td>Load sound data into Buffer 7.</td></tr>
+			<tr><td>A0</td><td>Load allophone address stream into Buffers 0-7 for later execution. Terminator is FF.</td></tr>
+			<tr><td>A1</td><td>Load allophone address stream into Buffers 1-7.</td></tr>
+			<tr><td>A2</td><td>Load allophone address stream into Buffers 2-7.</td></tr>
+			<tr><td>A3</td><td>Load allophone address stream into Buffers 3-7.</td></tr>
+			<tr><td>A4</td><td>Load allophone address stream into Buffers 4-7.</td></tr>
+			<tr><td>A5</td><td>Load allophone address stream into Buffers 5-7.</td></tr>
+			<tr><td>A6</td><td>Load allophone address stream into Buffers 6-7.</td></tr>
+			<tr><td>A7</td><td>Load allophone address stream into Buffer 7.</td></tr>
+			<tr><td>A8</td><td>Load register string into Buffers 0-7 for later execution. Terminator is FF.</td></tr>
+			<tr><td>A9</td><td>Load register string into Buffers 1-7.</td></tr>
+			<tr><td>AA</td><td>Load register string into Buffers 2-7.</td></tr>
+			<tr><td>AB</td><td>Load register string into Buffers 3-7.</td></tr>
+			<tr><td>AC</td><td>Load register string into Buffers 4-7.</td></tr>
+			<tr><td>AD</td><td>Load register string into Buffers 5-7.</td></tr>
+			<tr><td>AE</td><td>Load register string into Buffers 6-7.</td></tr>
+			<tr><td>AF</td><td>Toggles input function into a mode that allows direct access to sound registers.</td></tr>
+			<tr><td>B0</td><td>Load allophone address stream into Buffer 0 for later execution. Terminator is FF.</td></tr>
+			<tr><td>B1</td><td>Load allophone address stream into Buffer 1.</td></tr>
+			<tr><td>B2</td><td>Load allophone address stream into Buffer 2.</td></tr>
+			<tr><td>B3</td><td>Load allophone address stream into Buffer 3.</td></tr>
+			<tr><td>B4</td><td>Load allophone address stream into Buffer 4.</td></tr>
+			<tr><td>B5</td><td>Load allophone address stream into Buffer 5.</td></tr>
+			<tr><td>B6</td><td>Load allophone address stream into Buffer 6.</td></tr>
+			<tr><td>B7</td><td>Load allophone Address stream into Buffer 7.</td></tr>
+			<tr><td>B8</td><td>Load register string into Buffer 0 for later execution. Terminator is FF.</td></tr>
+			<tr><td>B9</td><td>Load register string into Buffer 1.</td></tr>
+			<tr><td>BA</td><td>Load register string into Buffer 2.</td></tr>
+			<tr><td>BB</td><td>Load register string into Buffer 3.</td></tr>
+			<tr><td>BC</td><td>Load register string into Buffer 4.</td></tr>
+			<tr><td>BD</td><td>Load register string into Buffer 5.</td></tr>
+			<tr><td>BE</td><td>Load register string into Buffer 6.</td></tr>
+			<tr><td>BF</td><td>Load register string into Buffer 7.</td></tr>
+			<tr><td>C0</td><td>Execute speech string from Buffers 0-7.</td></tr>
+			<tr><td>C1</td><td>Execute speech string from Buffers 1-7.</td></tr>
+			<tr><td>C2</td><td>Execute speech string from Buffers 2-7.</td></tr>
+			<tr><td>C3</td><td>Execute speech string from Buffers 3-7.</td></tr>
+			<tr><td>C4</td><td>Execute speech string from Buffers 4-7.</td></tr>
+			<tr><td>C5</td><td>Execute speech string from Buffers 5-7.</td></tr>
+			<tr><td>C6</td><td>Execute speech string from Buffers 6-7.</td></tr>
+			<tr><td>C7</td><td>Stop all speech.</td></tr>
+			<tr><td>C8</td><td>Execute sound data from Buffers 0-7.</td></tr>
+			<tr><td>C9</td><td>Execute sound data from Buffers 1-7.</td></tr>
+			<tr><td>CA</td><td>Execute sound data from Buffers 2-7.</td></tr>
+			<tr><td>CB</td><td>Execute sound data from Buffers 3-7.</td></tr>
+			<tr><td>CC</td><td>Execute sound data from Buffers 4-7.</td></tr>
+			<tr><td>CD</td><td>Execute sound data from Buffers 5-7.</td></tr>
+			<tr><td>CE</td><td>Execute sound data from Buffers 6-7.</td></tr>
+			<tr><td>CF</td><td>Stop all sound.</td></tr>
+			<tr><td>D0</td><td>Execute speech string from Buffer 0.</td></tr>
+			<tr><td>D1</td><td>Execute speech string from Buffer 1.</td></tr>
+			<tr><td>D2</td><td>Execute speech string from Buffer 2.</td></tr>
+			<tr><td>D3</td><td>Execute speech string from Buffer 3.</td></tr>
+			<tr><td>D4</td><td>Execute speech string from Buffer 4.</td></tr>
+			<tr><td>D5</td><td>Execute speech string from Buffer 5.</td></tr>
+			<tr><td>D6</td><td>Execute speech string from Buffer 6.</td></tr>
+			<tr><td>D7</td><td>Execute speech string from Buffer 7.</td></tr>
+			<tr><td>D8</td><td>Execute sound data from Buffer 0.</td></tr>
+			<tr><td>D9</td><td>Execute sound data from Buffer 1.</td></tr>
+			<tr><td>DA</td><td>Execute sound data from Buffer 2.</td></tr>
+			<tr><td>DB</td><td>Execute sound data from Buffer 3.</td></tr>
+			<tr><td>DC</td><td>Execute sound data from Buffer 4.</td></tr>
+			<tr><td>DD</td><td>Execute sound data from Buffer 5.</td></tr>
+			<tr><td>DE</td><td>Execute sound data from Buffer 6.</td></tr>
+			<tr><td>DF</td><td>Execute sound data from Buffer 7.</td></tr>
+			<tr><td>E0</td><td>Execute allophone address stream from Buffers 0-7.</td></tr>
+			<tr><td>E1</td><td>Execute allophone address stream from Buffers 1-7.</td></tr>
+			<tr><td>E2</td><td>Execute allophone address stream from Buffers 2-7.</td></tr>
+			<tr><td>E3</td><td>Execute allophone address stream from Buffers 3-7.</td></tr>
+			<tr><td>E4</td><td>Execute allophone address stream from Buffers 4-7.</td></tr>
+			<tr><td>E5</td><td>Execute allophone address stream from Buffers 5-7.</td></tr>
+			<tr><td>E6</td><td>Execute allophone address stream from Buffers 6-7.</td></tr>
+			<tr><td>E7</td><td>Execute allophone address stream from Buffer 7.</td></tr>
+			<tr><td>E8</td><td>Execute register string from Buffers 0-7.</td></tr>
+			<tr><td>E9</td><td>Execute register string from Buffers 1-7.</td></tr>
+			<tr><td>EA</td><td>Execute register string from Buffers 2-7.</td></tr>
+			<tr><td>EB</td><td>Execute register string from Buffers 3-7.</td></tr>
+			<tr><td>EC</td><td>Execute register string from Buffers 4-7.</td></tr>
+			<tr><td>ED</td><td>Execute register string from Buffers 5-7.</td></tr>
+			<tr><td>EE</td><td>Execute register string from Buffers 6-7.</td></tr>
+			<tr><td>EF</td><td>Execute register string from Buffer 7.</td></tr>
+			<tr><td>F0</td><td>Execute allophone address stream from Buffer 0.</td></tr>
+			<tr><td>F1</td><td>Execute allophone address stream from Buffer 1.</td></tr>
+			<tr><td>F2</td><td>Execute allophone address stream from Buffer 2.</td></tr>
+			<tr><td>F3</td><td>Execute allophone address stream from Buffer 3.</td></tr>
+			<tr><td>F4</td><td>Execute allophone address stream from Buffer 4.</td></tr>
+			<tr><td>F5</td><td>Execute allophone address stream from Buffer 5.</td></tr>
+			<tr><td>F6</td><td>Execute allophone address stream from Buffer 6.</td></tr>
+			<tr><td>F7</td><td>Execute allophone address stream from Buffer 7.</td></tr>
+			<tr><td>F8</td><td>Execute register string from Buffer 0.</td></tr>
+			<tr><td>F9</td><td>Execute register string from Buffer 1.</td></tr>
+			<tr><td>FA</td><td>Execute register string from Buffer 2.</td></tr>
+			<tr><td>FB</td><td>Execute register string from Buffer 3.</td></tr>
+			<tr><td>FC</td><td>Execute register string from Buffer 4.</td></tr>
+			<tr><td>FD</td><td>Execute register string from Buffer 5.</td></tr>
+			<tr><td>FE</td><td>Execute register string from Buffer 6.</td></tr>
+			<tr><td>FF</td><td>Execute register string from Buffer 7.</td></tr>
+			<tr><td>00</td><td>Stops all sounds, including speech. Does not clear buffers.</td></tr>
+		</table>
+		<br>
+		<br>
+		<br>
+	</td></tr>
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>

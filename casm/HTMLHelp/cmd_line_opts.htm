@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Command line options</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<table class="site" cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<P><A name="main_index"></A><B></B></P>
+					<P align="left"><STRONG><FONT size="4">Command line options</FONT></STRONG></P>
+					<P>
+						All command line options begin with a dash (-) and unlike earlier versions of 
+						the assembler can appear before, after or inbetween the source filenames.
+					</P>
+					<P>&nbsp;</P>
+					<table width="100%" cellpadding="0" cellspacing="0" border="0">
+						<tr>
+							<td class="header" colspan="3">General CASM options:</td>
+						</tr>
+						<tr>
+							<td class="option">-help</td>
+							<td class="info" width="100%">Displays list of command line options</td>
+						</tr>
+						<tr>
+							<td class="option">-?</td>
+							<td class="info">Displays list of command line options</td>
+						</tr>
+						<tr>
+							<td class="option">-6809</td>
+							<td class="info">Allow only 6809 Opcodes</td>
+						</tr>
+						<tr>
+							<td class="option">-D</td>
+							<td class="info">Define symbol</td>
+						</tr>
+						<tr>
+							<td class="option">-C</td>
+							<td class="info">Use case sensative labels</td>
+						</tr>
+						<tr>
+							<td class="option">-silent</td>
+							<td class="info">Run in silent mode</td>
+						</tr>
+						<tr>
+							<td class="option">--no-warn</td>
+							<td class="info">Disable warnings</td>
+						</tr>
+						<tr>
+							<td class="header" colspan="3">Output file options:</td>
+						</tr>
+						<tr>
+							<td class="option">-O</td>
+							<td class="info">Set output directory</td>
+						</tr>
+						<tr>
+							<td class="option">-o</td>
+							<td class="info">Set output name</td>
+						</tr>
+						<tr>
+							<td class="option">-bin</td>
+							<td class="info">Generate CoCo RS-DOS binary file</td>
+						</tr>
+						<tr>
+							<td class="option">-s19</td>
+							<td class="info">Generate S-record file</td>
+						</tr>
+						<tr>
+							<td class="option">-rom</td>
+							<td class="info">Generate a padded ROM file</td>
+						</tr>
+						<tr>
+							<td class="option">-raw</td>
+							<td class="info">Generate raw binary file</td>
+						</tr>
+						<tr>
+							<td class="option">-mod</td>
+							<td class="info">Generate shared object module</td>
+						</tr>
+						<tr>
+							<td class="option">-os9</td>
+							<td class="info">Generate Microware OS-9 module</td>
+						</tr>
+						<tr>
+							<td class="option">-rof</td>
+							<td class="info">Generate Microware Relocatable Object File</td>
+						</tr>
+						<tr>
+							<td class="option">-obj</td>
+							<td class="info">Generate CASM object file</td>
+						</tr>
+						<tr>
+							<td class="option">-noout</td>
+							<td class="info">Assemble only, do not generate output file</td>
+						</tr>
+						<tr>
+							<td class="header" colspan="3">Compatibilty options:</td>
+						</tr>
+						<tr>
+							<td class="option">--mode-rma</td>
+							<td class="info">Assemble in RMA compatibility mode</td>
+						</tr>
+						<tr>
+							<td class="option">--mode-macro80c</td>
+							<td class="info">Assemble in Macro-80c compatibility mode</td>
+						</tr>
+						<tr>
+							<td class="option">--mode-edtasm</td>
+							<td class="info">Assemble in EDTASM+ compatibility mode</td>
+						</tr>
+						<tr>
+							<td class="option">--mode-edtasm6309</td>
+							<td class="info">Assemble in EDTASM6309 compatibility mode</td>
+						</tr>
+						<tr>
+							<td class="option">--mode-ccasm</td>
+							<td class="info">Assemble in CCASM compatibility mode</td>
+						</tr>
+						<tr>
+							<td class="option">--warn-portable</td>
+							<td class="info">Warn of source code portability issues</td>
+						</tr>
+						<tr>
+							<td class="option">--force-zero-offset</td>
+							<td class="info">Enable explicit 0 index offset</td>
+						</tr>
+						<tr>
+							<td class="option">--force-pc-relative</td>
+							<td class="info">Use relative offsets for both PC and PCR on indexed addressing 
+								modes</td>
+						</tr>
+						<tr>
+							<td class="option">--disable-macros</td>
+							<td class="info">Disable use of macros</td>
+						</tr>
+						<tr>
+							<td class="option">--disable-locals</td>
+							<td class="info">Disable use of local labels</td>
+						</tr>
+						<tr>
+							<td class="option">--strict-locals</td>
+							<td class="info">Enable use of strict local label rules</td>
+						</tr>
+						<tr>
+							<td class="option">--ignore-case</td>
+							<td class="info">Ignore case on symbols</td>
+						</tr>
+						<tr>
+							<td class="option">--enable-precedence</td>
+							<td class="info">Enable operator precedence in expressions</td>
+						</tr>
+						<tr>
+							<td class="header" colspan="2">Assembler listing options:</td>
+						</tr>
+						<tr>
+							<td class="option">-list</td>
+							<td class="info">Generate formatted source file listing to stdout</td>
+						</tr>
+						<tr>
+							<td class="option">-nolist</td>
+							<td class="info">Source output disabled</td>
+						</tr>
+						<tr>
+							<td class="option">-cycle</td>
+							<td class="info">Cycle count enabled</td>
+						</tr>
+						<tr>
+							<td class="option">-slist</td>
+							<td class="info">Generate formatted list of labels</td>
+						</tr>
+						<tr>
+							<td class="option">-xref</td>
+							<td class="info">Cross refence table disabled</td>
+						</tr>
+						<tr>
+							<td class="option">-expand</td>
+							<td class="info">Macro definitions will be expanded in listing</td>
+						</tr>
+						<tr>
+							<td class="option">-opt</td>
+							<td class="info">Display number of lines that could be optmized</td>
+						</tr>
+						<tr>
+							<td class="option">-alert</td>
+							<td class="info">Display source lines containing branch instructions that can be optimized</td>
+						</tr>
+						<tr>
+							<td class="option">-noln
+							</td>
+							<td class="info">Do not print line numbers in listing</td>
+						</tr>
+						<tr>
+							<td class="option">-noopdata</td>
+							<td class="info">Do not print opcode data in listing</td>
+						</tr>
+						<tr>
+							<td class="option">-cm</td>
+							<td class="info">Comment out macros in listing</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

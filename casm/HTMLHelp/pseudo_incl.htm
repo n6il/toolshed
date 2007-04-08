@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title">
+			<b> INCL - Include an external file (Macro-80C)</b><br>
+		</div>
+		<br>
+		<pre class="bnf">[<EM>label</EM>]	INCL	<EM>filename</EM>[.<EM>ext</EM>]</pre>
+		<div class="main">
+			<br>
+			Uses source code from the source file given by <em>filename</em> into 
+			the current source file during assembly. Several directives have been
+			included to provide legacy support for a wide range of assemblers. See
+			<a href="pseudo_include.htm">INCLUDE</a> for more information.
+			<br>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+<P></P>
+			<pre class="example">
+	incl	test2.asm</pre>
+			<br>
+			<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<div class="main">
+			<a href="pseudo_include.htm">INCLUDE</a>,
+			<a href="pseudo_use.htm">USE</a>,
+			<a href="pseudo_lib.htm">LIB</a>
+		</div>
+		<hr>
+		<div class="main">
+			<table class="compat_info" width="375" ID="Table4">
+				<tr>
+					<td class="compat_header"></td>
+					<td class="compat_header" align="center"><b>INCLUDE</b></td>
+					<td class="compat_header" align="center"><b>INCL</b></td>
+					<td class="compat_header" align="center"><b>LIB</b></td>
+					<td class="compat_header" align="center"><b>USE</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">CASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+					<td class="compat_info" align="center"><b>X</b></td>
+					<td class="compat_info" align="center"><b>X</b></td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">CCASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">OS-9 RMA</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edt/Asm III</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>X&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm6309</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Disk Edtasm+</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm+</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Macro-80C</td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>X</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+					<td class="compat_info" align="center"><b>&nbsp;</b></td>
+				</tr>
+			</table><PRE></PRE></div>
+	</body>
+</html>

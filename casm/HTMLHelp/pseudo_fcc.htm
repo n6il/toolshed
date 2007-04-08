@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>CASM Introduction</title>
+		<META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="styles.css" type="text/css" rel="stylesheet">
+	</head>
+	<body class="site">
+		<div class="title">
+			<b>FCC - Form Constant Character String</b>:<br>
+		</div>
+		<br><pre class="bnf">[<em>label</em>]	FCC	<EM>string</EM></pre>
+		<div class="main">
+			<br>
+			The FCC directive 
+is used to store ASCII strings into consecutive bytes of memory. The byte 
+storage begins at the current program counter.&nbsp;If a label is present it 
+will be assigned address of the first byte in the string. Any of the printable 
+ASCII characters can be contained in the string. The string is specified between 
+two identical delimiters which can be any printable ASCII character. The first 
+non-blank character after the FCC directive is used as the delimiter.
+			<br>
+			<br>
+			<br>
+		</div>
+		<div class="section">
+			Example:
+		</div>
+		<div class="main">
+			<pre class="example">	fcc	"some string here"<BR>	fcc	/some string here/</pre>
+			<br>
+			Additionally CASM supports the ability to include trailing byte declarations 
+			similar to FCB statements to the end of the FCC declaration.<br>
+			<br>
+			<pre class="example">	fcc	"some string here",$03,$44</pre>
+			<br>
+			<br>
+		</div>
+		
+		<div class="section">
+			See also:
+		</div>
+		<hr>
+		<div class="section">
+		Compatibility:
+		</div>
+		<div class="main">
+			<table class="compat_info" width="375" ID="Table4">
+				<tr>
+					<td class="compat_info">CASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">CCASM</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">OS-9 RMA</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edt/Asm III</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm6309</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Disk Edtasm+</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Edtasm+</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+				<tr>
+					<td class="compat_info">Macro-80C</td>
+					<td class="compat_info" align="center"><b>X</b></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

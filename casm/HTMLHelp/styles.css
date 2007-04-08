@@ -1,0 +1,214 @@
+
+body.site {
+	font-size : 10pt;
+	color : #000000;
+	background-color: #ffffff;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	margin: 0 0 0 0;
+	
+}
+
+div.section
+{
+	margin: 10 20 10 10;
+	font-weight: bold;
+}
+
+div.main 
+{
+	margin: 10 20 10 20;
+}
+
+pre 
+{
+	font-size: 12px;
+	font-weight: normal;
+	font-family: Courier New;
+}
+
+.code
+{
+	font-size : 10pt;
+	background: #F8F1D8;
+	border-bottom: solid 1px #000000;
+	padding: 15px 15px 15px 15px;
+	white-space: pre;
+	font-weight: bold;
+}
+
+table.title
+{
+	font-size : 10pt;
+	background: #99DDCC;
+	border-bottom: solid 0px #000000;
+	padding: 0 0 0 0;
+	font-weight: bold;
+}
+
+table.toc
+{
+	font-size : 10pt;
+	padding: 3 3 3 3;
+	font-weight: bold;
+	border: 1px #000000 solid;
+	border-collapse: collapse;
+}
+
+td.toc
+{
+	font-size : 10pt;
+	padding: 2 5 2 5;
+	font-weight: bold;
+	border: 1px #000000 solid;
+	border-collapse: collapse;
+}
+
+
+div.title
+{
+	background: #99DDCC;
+	border-bottom: solid 1px #000000;
+	padding: 10 10 10 10;
+	white-space: nowrap;
+}
+
+div.see_also
+{
+	margin: 10 20 10 10;
+}
+
+pre.bnf
+{
+	background: #CCCCCC;
+	border: solid 1px #000000;
+	margin: 0 20 0 20;
+	padding: 5 5 5 10;
+	font-family: Courier New;
+	font-weight: bold;
+}
+
+pre.example
+{
+	background: #F8F1D8;
+	border: solid 1px #000000;
+	margin: 10 00 10 00;
+	padding: 5px 5px 5px 10px;
+	font-family: Courier New, Courier;
+	font-size : 10pt;
+	font-weight: normal;
+	white-space: pre;
+}
+
+
+
+a {
+	background-color: transparent;
+	font-size : 10pt;
+	font-weight: bold;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+}
+
+
+a:hover {
+	text-decoration: underline;
+	color : #DD6900;
+}
+
+a:visited 
+{
+	color: #0000ff;
+	text-decoration: underline;
+}
+
+
+p {
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+}
+
+
+table.compat_info
+{
+	color : #FFFFFF;
+	border: 0px #000000 solid;
+	border-collapse: collapse;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size : 10pt;
+	padding: 1 1 1 1;
+}
+
+td.compat_header
+{
+	color: #000000;
+	border: 0px #000000 solid;
+	border-collapse: collapse;
+	xbackground-color: #eeeeee;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 4px 4px 4px 4px;
+}
+
+
+td.compat_info {
+	border: 1px #000000 solid;
+	border-collapse: collapse;
+	white-space: nowrap;
+	font-size : 8pt;
+	color : #000000;
+	font-family: font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 5px 2px 10px;
+}
+
+
+td.example 
+{
+	white-space: nowrap;
+	color: #000000;
+	background-color: #f1f1f1;
+	font-family: Courier New;
+	font-size: 9pt;
+	xfont-weight: bold;
+	padding: 0px 3px 0px 3px;
+}
+
+
+
+table.info
+{
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	border: 1px #000000 solid;
+	border-collapse: collapse;
+}
+
+td.header {
+	color: #000000;
+	background-color: #eeeeee;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size: 12pt;
+	font-weight: bold;
+	padding: 5px 5px 5px 5px;
+}
+
+
+td.info {
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	padding: 5px 5px 5px 5px;
+}
+
+
+td.option 
+{
+	white-space: nowrap;
+	font-size : 10pt;
+	color : #000000;
+	font-family: Courier New, Arial, Verdana, Helvetica, sans-serif;
+	padding: 2px 25px 2px 25px;
+}
+
