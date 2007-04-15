@@ -105,6 +105,7 @@ int _mod(assembler *as)
 	unsigned char header_check;
 	int modinfo[6], i;
 	int module_size, name_offset;
+	char *operand;
 	
 	as->old_program_counter = as->program_counter = 0;
 	as->data_counter = 0;
@@ -128,11 +129,15 @@ int _mod(assembler *as)
 	}
 	
 	/* Obtain first parameter -- length of module */
-	if ((p = strtok(as->line.optr, ",")) == NULL)
+	operand = strdup(as->line.optr);
+	
+	if ((p = strtok(operand, ",")) == NULL)
 	{
 		/* Error */
 		error(as, "Missing parameter");
 
+		free(operand);
+		
 		return 0;
 	}
 
@@ -146,12 +151,16 @@ int _mod(assembler *as)
 			/* Error */
 			error(as, "Missing parameter");
 
+			free(operand);
+		
 			return 0;
 		}
 
 		evaluate(as, &modinfo[i], &p, 0);
 	}	
 	
+	free(operand);
+		
 	header_check = 0;
 	
 	/* Emit sync bytes */
@@ -449,7 +458,7 @@ int _endc(assembler *as)
 	if (as->conditional_stack_index == 0)
 	{
 		/* Conditional underflow */
-		error(as, "endc without a conditional if!");
+		error(as, "ENDC without a conditional IF!");
 
 		return 0;
 	}

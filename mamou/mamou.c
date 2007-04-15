@@ -319,7 +319,7 @@ int mamou_assemble(assembler *as)
 		/* Did we have more 'ifs' than 'endcs' ? */
 		if (as->conditional_stack_index != 0)
 		{			
-			error(as, "too many ifs for endcs");
+			error(as, "too many IFs for ENDCs");
 		}
     }
 
@@ -356,16 +356,16 @@ int mamou_assemble(assembler *as)
 				return 1;
 			}			
 			
-			/* Make the first pass. */
+			/* Make the second pass. */
 			mamou_pass(as);			
 			
 			/* Close the file. */
 			_coco_close(root_file.fd);
         }		
 
-		/* Emit Disk BASIC trailer. */		
 		if (as->o_asm_mode == ASM_DECB)
 		{
+			/* Emit Disk BASIC trailer. */		
 			decb_trailer_emit(as, 0xEEAA);
 		}
 		
@@ -427,7 +427,6 @@ static void mamou_initialize(assembler *as)
 	if (as->pass == 1)
 	{
 		/* Pass 1 initialization. */
-
 		as->current_psect			= -1;
 		as->code_segment_start			= 1;
 		as->num_errors				= 0;
@@ -712,7 +711,7 @@ void mamou_parse_line(assembler *as, char *input_line)
     /* Look up the mnemonic */
     if (mne_look(as, as->line.Op, &as->line.mnemonic) == 0)
     {
-		/* Does this op code has a parameter */
+		/* Does this op code have a parameter? */
         if ((as->line.mnemonic.type == OPCODE_PSEUDO  && as->line.mnemonic.opcode.pseudo->info != HAS_NO_OPERAND) ||
 			(as->line.mnemonic.type == OPCODE_H6309 && 
             (as->line.mnemonic.opcode.h6309->class != INH && as->line.mnemonic.opcode.h6309->class != P2INH && as->line.mnemonic.opcode.h6309->class != P3INH))
@@ -812,25 +811,29 @@ void mamou_parse_line(assembler *as, char *input_line)
  */
 void process(assembler *as)
 {	
-	/* Setup `old' program counter. */	
+	/* Setup `old' program counter */	
     as->old_program_counter = as->program_counter;
  	
-	/* Point to beginning of operand field. */
+	/* Point to beginning of operand field */
     as->line.optr = as->line.operand;
 	
+	/* Determine if we are in a FALSE conditional */
     if (as->conditional_stack[as->conditional_stack_index] == 0)
     {
-        /* We should ignore this line unless it's an if, else or endc */
-        if (as->line.mnemonic.type == OPCODE_PSEUDO)			
+        /* We are... ignore this line unless it's an PSEUDO op */
+        if (
+			as->line.mnemonic.type == OPCODE_PSEUDO
 //			(as->line.mnemonic.opcode.pseudo->class == IF || as->line.mnemonic.opcode.pseudo->class == ELSE || as->line.mnemonic.opcode.pseudo->class == ENDC)
-//		)
+		)
         {
+			/* Call the pseudo func */
 			as->line.mnemonic.opcode.pseudo->func(as);
         }
 		
         return;
     }
 
+	/* At this point we are in a TRUE conditional */
     if (*as->line.Op == EOS)
     {
         /* no mnemonic */
@@ -841,7 +844,7 @@ void process(assembler *as)
             print_line(as, 0, ' ', 0);
         }
     }
-    else if (as->line.mnemonic.type == OPCODE_UNKNOWN)
+    else if (as->line.mnemonic.type == OPCODE_UNKNOWN) // && as->pass > 1)
 	{
 		error(as, "Unrecognized mnemonic");
 	}
@@ -893,21 +896,21 @@ void mamou_init_assembler(assembler *as)
 	memset(as, 0, sizeof(assembler));
 	
     as->output_type = OUTPUT_BINARY;
-    as->pass = 1;				/* Current pass #               */
-    as->page_number = 2;		/* page number */
-    as->Opt_C = 1;		/* show conditionals in listing */
-    as->o_page_depth = 66;
-    as->o_show_error = 1;
-    as->o_pagewidth = 80;
-    as->_crc[0] = 0xFF;
-    as->_crc[1] = 0xFF;
-    as->_crc[2] = 0xFF;
-    as->o_do_parsing = 1;
-    as->current_page = 1;
-    as->header_depth = 3;
-    as->footer_depth = 3;
-    as->o_asm_mode = ASM_OS9;
-	as->newstyle = 0;
+    as->pass			= 1;		/* Current pass #               */
+    as->page_number		= 2;		/* page number */
+    as->Opt_C			= 1;		/* show conditionals in listing */
+    as->o_page_depth	= 66;
+    as->o_show_error	= 1;
+    as->o_pagewidth		= 80;
+    as->_crc[0]			= 0xFF;
+    as->_crc[1]			= 0xFF;
+    as->_crc[2]			= 0xFF;
+    as->o_do_parsing	= 1;
+    as->current_page	= 1;
+    as->header_depth	= 3;
+    as->footer_depth	= 3;
+    as->o_asm_mode		= ASM_OS9;
+	as->newstyle		= 0;
 
     return;
 }
