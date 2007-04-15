@@ -371,7 +371,7 @@ void print_footer(assembler *as);
 
 
 /* symbol_bucket.c */
-int symbol_add(assembler *as, char *str, int val, int override);
+struct nlist *symbol_add(assembler *as, char *str, int val, int override);
 struct nlist *symbol_find(assembler *as, char *name, int);
 int mne_look(assembler *as, char *str, mnemonic *m);
 void symbol_dump_bucket(struct nlist *ptr);

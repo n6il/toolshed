@@ -22,30 +22,24 @@
 	@param val The value of the symbol
 	@param override A flag which allows the changing of an existing symbol
  */
-
-int symbol_add(assembler *as, char *name, int val, int override)
+struct nlist *symbol_add(assembler *as, char *name, int val, int override)
 {
-	int				status = 0;
 	struct link		*lp;
 	struct nlist	*np, *p, *backp;
 	int				i;
 	char			tmp_label[MAXLAB];
 
-
-	/* 1. Does the symbol name meet our criteria? */
-	
+	/* 1. Does the symbol name meet our criteria? */	
 	if (!alpha(*name) && *name != '@')
 	{
 		error(as, "Illegal Symbol Name");
 
-		return 0;
+		return NULL;
 	}
-
 
 	/* 2. If it's a temporary symbol, generate a unique symbol name based on
      *    current file index and number of blank lines.
 	 */
-	 
 //	if (name[strlen(name) - 1] == '@')
 	if (strchr(name, '@') != NULL)
 	{
@@ -54,97 +48,78 @@ int symbol_add(assembler *as, char *name, int val, int override)
 		name = tmp_label;
 	}
 	
-	
 	/* See if the value is already defined. */
-
 	if ((np = symbol_find(as, name, 0)) != NULL)
 	{
 		/* 1. Symbol has been defined already -- is this pass 2? */
-
 		if (as->pass == 2)
 		{
-			/* 1. It's pass 2 -- determine if the value has changed from pass 1. */
-			
+			/* 1. It's pass 2 -- determine if the value has changed from pass 1. */			
 			if (np->def == val || override == 1)
 			{
-				/* 1. Is the existing variable is overridable? */
-				
+				/* 1. Is the existing variable is overridable? */				
 				if (np->overridable == 1)
 				{
-					/* 1.  Yes, so we'll override it with new passed value. */
-					
+					/* 1.  Yes, so we'll override it with new passed value. */					
 					np->def = val;
 				}
 				
-				return(1);
+				return np;
 			}
 			else
 			{
-				/* 1. The value is different and we can't override -- it's a phasing error. */
-				
+				/* 1. The value is different and we can't override -- it's a phasing error. */				
 				error(as, "Phasing Error");
 
-				return 0;
+				return NULL;
 			}
 		}
 
-
-		/* If we're here, it's pass 1 -- is the existing symbol overridable? */
-		
+		/* If we're here, it's pass 1 -- is the existing symbol overridable? */		
 		if (np->overridable == 1)
 		{
-			/* 1. Yes it is. */
-			
+			/* 1. Yes it is. */			
 			np->def = val;
 			
-			return(1);
+			return np;
 		}
 		else
 		{
-			/* 2. No, it's not overridable. */
-			
+			/* 2. No, it's not overridable. */			
 			if (override == 0)
 			{
 				error(as, "Symbol Redefined");
 			}
 			
-			return 0;
+			return NULL;
 		}
 	}
 
-
 	/* 3. It's not an existing symbol, so we'll add it to the bucket. */
-
 	if (as->o_debug)
 	{
 		 printf("Installing %s as $%x\n", name, val);
 	}
 
-
-	/* 4. Allocate memory for a symbol entry. */
-	
+	/* 4. Allocate memory for a symbol entry. */	
 	np = (struct nlist *)malloc(sizeof(struct nlist));
 	if (np == NULL)
 	{
 		error(as, "Symbol table full");
 
-		return 0;
+		return NULL;
 	}
 	
-	
 	/* 5. Allocate memory for the symbol name. */
-	
 	np->name = (char *)malloc(strlen(name) + 1);
 	if (np->name == NULL)
 	{
 		error(as, "Symbol table full");
 
-		return 0;
+		return NULL;
 	}
 
-
 	/* 6. Set up the symbol entry with the appropriate information. */
-	
 	strcpy(np->name, name);
 	np->def = val;
 	np->Lnext = NULL;  
@@ -152,11 +127,10 @@ int symbol_add(assembler *as, char *name, int val, int override)
 	np->overridable = override;
 
 	/* 7. Allocate a link. */
-	
 	lp = (struct link *)malloc(sizeof(struct link));
 	if (lp == NULL)
 	{
-		return status;
+		return NULL;
 	}
 	
 	np->L_list = lp;
@@ -167,19 +141,15 @@ int symbol_add(assembler *as, char *name, int val, int override)
 	}
 	else
 	{
-		/* 1. Symbol was defined on the command line. */
-		
+		/* 1. Symbol was defined on the command line. */		
 		lp->L_num = 0;
 	}
 	
 	lp->next = NULL;
 	p = as->bucket;
-
 	backp = NULL;
 
-
 	/* 8. Insert the symbol into the table in alphabetical order. */
-	
 	while (p != NULL) 
 	{
 		backp = p;
@@ -195,7 +165,7 @@ int symbol_add(assembler *as, char *name, int val, int override)
 		}
 		else
 		{
-			p=p->Rnext;
+			p = p->Rnext;
 		}
 	}
 	if (backp == NULL)
@@ -215,12 +185,9 @@ int symbol_add(assembler *as, char *name, int val, int override)
 		backp->Rnext = np;
 	}
 
-
-	/* 9. We're done, and we were successful. */
-	
-	return(1);  
+	/* 9. We're done, and we were successful. */	
+	return np;  
 }
-
 
 
 /*!
@@ -230,26 +197,22 @@ int symbol_add(assembler *as, char *name, int val, int override)
 	@param name Name of the symbol to search for
 	@param ignoreUndefined Ignore the symbol if it is not found
  */
-
 struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 {
 	struct nlist *np;
 	int     i;
 	char			tmp_label[MAXLAB];
-		
 	
 	/* 1. If it's a temporary symbol that hasn't had the _tmp tag prepended,
 	 *    then generate a unique symbol name based on the current use depth
 	 *    and number of blank lines.
-	 */
-	
+	 */	
 	if (strchr(name, '@') != NULL && strncmp(name, "_tmp", 4) != 0)
 	{
 		sprintf(tmp_label, "_tmp%s%04X%04X", name, (int)as->use_depth, (int)as->current_file->num_blank_lines);
 		
 		name = tmp_label;
 	}
-
 	
 	np = as->bucket;
 
@@ -281,11 +244,9 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 	{
 		error(as, "symbol undefined on pass 2");
 	}
-
 	
 	return(NULL); 
 }
-
 
 
 #define NMNE (sizeof(table) / sizeof(struct h6309_opcode))
@@ -298,21 +259,16 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 	@param str A pointer to the text of the mnemonic
 	@param m A pointer to the mnemonic structure
  */
-
 int mne_look(assembler *as, char *str, mnemonic *m)
 {
 	struct h6309_opcode		*low, *high, *mid;
 	struct pseudo_opcode	*plow, *phigh, *pmid;
 	int						cond;
 	
-	
-	/* Assume opcode is unknown. */
-	
+	/* Assume opcode is unknown. */	
 	m->type = OPCODE_UNKNOWN;
 
-	
 	/* Search machine mnemonics first. */
-
 	low =  &table[0];
 	high = &table[NMNE - 1];
 	while (low <= high)
@@ -340,9 +296,7 @@ int mne_look(assembler *as, char *str, mnemonic *m)
 		}
 	}
 
-
 	/* Check for pseudo ops. */
-	
 	plow =  &pseudo[0];
 	phigh = &pseudo[NPSE - 1];
 	
@@ -361,8 +315,7 @@ int mne_look(assembler *as, char *str, mnemonic *m)
 		else
 		{
 			m->type = OPCODE_PSEUDO;
-			m->opcode.pseudo = pmid;
-			
+			m->opcode.pseudo = pmid;			
 			
 			return 0;
 		}
@@ -370,7 +323,6 @@ int mne_look(assembler *as, char *str, mnemonic *m)
 
 	return 1;
 }
-
 
 
 static void symbol_dump_bucket_r(struct nlist *ptr);
@@ -381,21 +333,15 @@ static unsigned int	counter;
 	@discussion Prints the symbol table in alphabetical order
 	@param ptr Pointer to the symbol bucket tree
  */
-
 void symbol_dump_bucket(struct nlist *ptr)
 {
-	/* 1. Reset the counter. */
-	
+	/* 1. Reset the counter. */	
 	counter = 0;
-	
 
-	/* 2. Print the symbol table heading. */
-	
+	/* 2. Print the symbol table heading. */	
 	printf("Symbol table:\n");
-
 	
-	/* 3. Do the dump. */
-	
+	/* 3. Do the dump. */	
 	symbol_dump_bucket_r(ptr);
 }
 
@@ -423,11 +369,9 @@ static void symbol_dump_bucket_r(struct nlist *ptr)
 		
 		symbol_dump_bucket_r(ptr->Rnext);
 	}
-	
-	
+		
 	return;
 }
-
 
 
 /*!
@@ -435,18 +379,14 @@ static void symbol_dump_bucket_r(struct nlist *ptr)
 	@discussion Prints the cross reference table
 	@param ptr Pointer to the symbol table
  */
-
 static void symbol_cross_reference_r(struct nlist *ptr);
 
 void symbol_cross_reference(struct nlist *ptr)
 {
-	/* 1. Print the heading. */
-	
+	/* 1. Print the heading. */	
 	printf("Cross-Reference table:\n");
 	
-	
-	/* 2. Do the cross reference. */
-	
+	/* 2. Do the cross reference. */	
 	symbol_cross_reference_r(ptr);
 }
 
@@ -455,8 +395,7 @@ static void symbol_cross_reference_r(struct nlist *ptr)
 {
 	struct link *tp;
 	int i = 1;
-	
-	
+		
 	if (ptr != NULL)
 	{
 		symbol_cross_reference_r(ptr->Lnext);
@@ -483,9 +422,6 @@ static void symbol_cross_reference_r(struct nlist *ptr)
 		
 		symbol_cross_reference_r(ptr->Rnext);
 	}
-	
-	
+		
 	return;
 }
-
-

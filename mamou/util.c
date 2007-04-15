@@ -18,7 +18,6 @@
 	@discussion (e.g. /home/darthvader/file.c returns file.c
 	@param pathlist Pointer to the pathlist to evaluate
  */
-
 char *extractfilename(char *pathlist)
 {
 	char *f;
@@ -37,7 +36,6 @@ char *extractfilename(char *pathlist)
 }
 
 
-
 void hexout(assembler *as, int byte);
 #if 0
 void imageinit(void);
@@ -50,15 +48,12 @@ int white(char c);
 	@discussion Fatal error handler
 	@param str String to report
  */
-
 void fatal(char *str)
 {
 	fprintf(stderr, "%s\n", str);
-
 	
 	exit(-1);
 }
-
 
 
 /*!
@@ -67,7 +62,6 @@ void fatal(char *str)
 	@param as The assembler state structure
 	@param str String to report
  */
-
 void error(assembler *as, char *str)
 {
 	if (as->ignore_errors == 1)
@@ -88,24 +82,20 @@ void error(assembler *as, char *str)
 }
 
 
-
 /*!
 	@function delim
 	@discussion Determine if the character is a delimiter
 	@param c Character to evaluate
  */
-
 int delim(char c)
 {
 	if (any(c, " \t\n\r"))
 	{
 		return 1;
 	}
-	
-	
+		
 	return 0;
 }
-
 
 
 /*!
@@ -113,7 +103,6 @@ int delim(char c)
 	@discussion Determine if character is an end-of-line character
 	@param c Character to evaluate
  */
-
 int eol(char c)
 {
 	if (any(c, "\n\r"))
@@ -121,10 +110,8 @@ int eol(char c)
 		return 1;
 	}
 	
-	
 	return 0;
 }
-
 
 
 /*!
@@ -132,7 +119,6 @@ int eol(char c)
 	@discussion Move poiner to next non-whitespace character
 	@param ptr String to process
  */
-
 char *skip_white(char *ptr)
 {
 	while (*ptr == BLANK || *ptr == TAB)
@@ -140,10 +126,8 @@ char *skip_white(char *ptr)
 		ptr++;
 	}
 
-
 	return ptr;
 }
-
 
 
 /*!
@@ -152,7 +136,6 @@ char *skip_white(char *ptr)
 	@param as The assembler state structure
 	@param qwd Quad word to emit
  */
-
 void equad(assembler *as, int qwd)
 {
 	eword(as, hiword(qwd));
@@ -162,14 +145,12 @@ void equad(assembler *as, int qwd)
 }
 
 
-
 /*!
 	@function eword
 	@discussion Emit a word to the code file
 	@param as The assembler state structure
 	@param wd Word to emit
  */
-
 void eword(assembler *as, int wd)
 {
 	emit(as, hibyte(wd));
@@ -179,38 +160,31 @@ void eword(assembler *as, int wd)
 }
 
 
-
 /*!
 	@function emit
 	@discussion Emit a byte to the code file
 	@param as The assembler state structure
 	@param byte Byte to emit
  */
-
 void emit(assembler *as, int byte)
 {
 	/* 1. Show debug output if flagged. */
-	
 	if (as->o_debug)
 	{
 		printf("Emit       %04X[%02X]\n", (unsigned int)as->program_counter, byte);
 	}	
-
 	
-	/* 3. If this is pass 1... */
+	/* 2. If this is pass 1... */
 	
 	if (as->pass == 1)
 	{
 		/* Is this the start of a code segment? */
-		
 		if (as->code_segment_start == 1)
 		{
 			/* Yes.  Reset the flag. */
-			
 			as->code_segment_start = 0;
 
 			/* If this is DECB mode, then set the origination and reset size. */
-			
 			if (as->o_asm_mode == ASM_DECB)
 			{
 				as->current_psect++;
@@ -247,16 +221,11 @@ void emit(assembler *as, int byte)
 		}
 	}
 
-
 	/* 2. Increment program counter. */
-	
 	as->program_counter++;
-	
-	
 	
 	return;
 }
-
 
 
 /*!
@@ -266,43 +235,32 @@ void emit(assembler *as, int byte)
 	@param start Start of code
 	@param size Size of code
  */
-
 void decb_header_emit(assembler *as, unsigned int start, unsigned int size)
 {
 	/* 1. If this is pass 2... */
-	
 	if (as->pass == 2 && as->o_asm_mode == ASM_DECB)
 	{
 		/* Disk BASIC Preamble */
-		
 		as->E_bytes[as->E_total++] = 0;
 		
-		
 		/* Segment size */
-		
 		as->E_bytes[as->E_total++] = (size & 0xFF00) >> 8;
 		as->E_bytes[as->E_total++] = (size & 0x00FF);
 
-
 		/* ORG address */
-		
 		as->E_bytes[as->E_total++] = (start & 0xFF00) >> 8;
 		as->E_bytes[as->E_total++] = (start & 0x00FF);
-
 
 		if (as->E_total > E_LIMIT + MAXBUF)
 		{
 			printf("Overflow in E_bytes array\n");
 		}
 		
-		
 		f_record(as);
 	}
 	
-		
 	return;
 }
-
 
 
 /*!
@@ -311,43 +269,32 @@ void decb_header_emit(assembler *as, unsigned int start, unsigned int size)
 	@param as The assembler state structure
 	@param exec Execution address
  */
- 
 void decb_trailer_emit(assembler *as, unsigned int exec)
 {
 	/* 1. If this is pass 2... */
-	
 	if (as->pass == 2 && as->o_asm_mode == ASM_DECB)
 	{
 		/* Disk BASIC trailer */
-		
 		as->E_bytes[as->E_total++] = 0xFF;
 		
-		
 		/* SIZE (0) */
-		
 		as->E_bytes[as->E_total++] = 0;
 		as->E_bytes[as->E_total++] = 0;
-		
 	
 		/* EXEC address */
-
 		as->E_bytes[as->E_total++] = (as->decb_exec_address & 0xFF00) >> 8;
 		as->E_bytes[as->E_total++] = (as->decb_exec_address & 0x00FF);
-
 
 		if (as->E_total > E_LIMIT + MAXBUF)
 		{
 			printf("Overflow in E_bytes array\n");
 		}
 		
-		
 		f_record(as);
 	}
-	
 		
 	return;
 }
-
 
 
 /*!
@@ -355,22 +302,17 @@ void decb_trailer_emit(assembler *as, unsigned int exec)
 	@discussion Flush one line out in Motorola S or Intel Hex format or binary
 	@param as The assembler state structure
  */
-
 void f_record(assembler *as)
 {
 	u_int i, chksum;
 
-
 	/* 1. Pass 2 only. */
-	
 	if (as->pass == 1)
 	{
 		return;
 	}
 	
-	
 	/* 2. Count up accumulated code bytes. */
-	
 	as->code_bytes += as->E_total;
 		
 	if (as->E_total == 0)
@@ -384,17 +326,13 @@ void f_record(assembler *as)
 	chksum += lobyte(as->E_pc);
 	chksum += as->E_pc >> 8;
 
-
 	/* Compute module CRC. */
-
 	if (as->do_module_crc == 1 && as->pass == 2)
 	{
 		_os9_crc_compute((u_char *)as->E_bytes, as->E_total, (u_char *)as->_crc);
 	}
 
-
 	/* S-Record and Hex files: record header preamble. */
-
 	if (as->output_type == OUTPUT_BINARY && as->object_output == 1)
 	{
 		u_int		size = as->E_total;
@@ -428,7 +366,6 @@ void f_record(assembler *as)
 		hexout(as, as->E_pc >> 8);        	/* high byte of PC */
 		hexout(as, lobyte(as->E_pc));		/* low byte of PC */
 
-
 		for (i = 0; i < as->E_total; i++)
 		{
 			chksum += lobyte(as->E_bytes[i]);
@@ -436,7 +373,6 @@ void f_record(assembler *as)
 		}
 
 		/* ones or twos complement checksum then output it */
-
 		chksum =~ chksum;
 		if (as->output_type == OUTPUT_HEX)
 		{
@@ -450,18 +386,14 @@ void f_record(assembler *as)
 		_coco_write(as->fd_object, "\n", &size);
 	}
 
-	
 	as->E_pc = as->program_counter;
 	as->E_total = 0;
-	
 
 	return;
 }
 
 
-
 char *hexstr = {"0123456789ABCDEF"};
-
 
 /*!
 	@function hex_out
@@ -469,7 +401,6 @@ char *hexstr = {"0123456789ABCDEF"};
 	@param as The assembler state structure
 	@param byte Byte to output
  */
-
 void hexout(assembler *as, int byte)
 {
 	if (as->object_output == 1)
@@ -482,7 +413,6 @@ void hexout(assembler *as, int byte)
 
 		_coco_write(as->fd_object, tmp, &size);
 	}
-
 
 	return;
 }
@@ -505,17 +435,14 @@ void imageinit(void)
 #endif
 
 
-
 /*!
 	@function finish_outfile
 	@discussion Close the output file
 	@param as The assembler state structure
  */
-
 void finish_outfile(assembler *as)
 {
 	u_int size;
-	
 	
 	if (as->object_output == 0)
 	{
@@ -540,10 +467,8 @@ void finish_outfile(assembler *as)
 
 	_coco_close(as->fd_object);
 
-
 	return;
 }
-
 
 
 /*!
@@ -552,7 +477,6 @@ void finish_outfile(assembler *as)
 	@param c Character to search for
 	@param str String to search
  */
-
 int any(char c, char *str)
 {
 	while (*str != EOS)
@@ -563,10 +487,8 @@ int any(char c, char *str)
 		}
 	}
 
-
 	return 0;
 }
-
 
 
 /*!
@@ -574,7 +496,6 @@ int any(char c, char *str)
 	@discussion Converts uppercase to lowercase
 	@param c Character to convert
  */
-
 char mapdn(char c)
 {
 	if (c >= 'A' && c <= 'Z')
@@ -586,13 +507,11 @@ char mapdn(char c)
 }
 
 
-
 /*!
 	@function lobyte
 	@discussion Returns the low byte of an integer
 	@param i Integer to process
  */
-
 int lobyte(int i)
 {
 	return(i & 0xFF);
@@ -604,7 +523,6 @@ int lobyte(int i)
 	@discussion Returns the high byte of an integer
 	@param i Integer to process
  */
-
 u_int hibyte(int i)
 {
 	return((i >> 8) & 0xFF);
@@ -617,12 +535,10 @@ u_int hibyte(int i)
 	@discussion Returns the low word of an integer
 	@param i Integer to process
  */
-
 int loword(int i)
 {
 	return i & 0xFFFF;
 }
-
 
 
 /*!
@@ -630,12 +546,10 @@ int loword(int i)
 	@discussion Returns the high word of an integer
 	@param i Integer to process
  */
-
 int hiword(int i)
 {
 	return (i >> 16) & 0xFFFF;
 }
-
 
 
 /*!
@@ -644,7 +558,6 @@ int hiword(int i)
 	@param str1 String to search
 	@param str2 String to search for
  */
-
 int head(char *str1, char *str2)
 {
 	while (tolower(*str1) != EOS && tolower(*str2) != EOS)
@@ -670,10 +583,8 @@ int head(char *str1, char *str2)
 		}
 	}
 
-	
 	return 0;
 }
-
 
 
 /*!
@@ -681,7 +592,6 @@ int head(char *str1, char *str2)
 	@discussion Determins if character is a legal letter
 	@param c Character to evaluate
  */
-
 int alpha(char c)
 {
 	if (c <= 'z' && c >= 'a')
@@ -701,10 +611,8 @@ int alpha(char c)
 		return 1;
 	}
 
-
 	return 0;
 }
-
 
 
 /*!
@@ -712,7 +620,6 @@ int alpha(char c)
 	@discussion Determines if character is a legal letter or digit
 	@param c Character to evaluate
  */
-
 int alphan(char c)
 {
 	if (alpha(c))
@@ -730,10 +637,8 @@ int alphan(char c)
 		return 1;      /* allow imbedded $ */
 	}
 	
-	
 	return 0;
 }
-
 
 
 /*!
@@ -741,7 +646,6 @@ int alphan(char c)
 	@discussion Determines if character is a legal digit
 	@param c Character to evaluate
  */
-
 int numeric(char c)
 {
 	if (c <= '9' && c >= '0')

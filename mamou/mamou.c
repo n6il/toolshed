@@ -27,7 +27,6 @@ char product_copyright[256];
 	@param argc argument count
 	@param argv argument vector
  */
-
 int main(int argc, char **argv)
 {
 	char			*p;
@@ -36,22 +35,17 @@ int main(int argc, char **argv)
     int				v;
 	assembler		as;
 	
-	
 	/* 1. Initialize our globals. */
-	
     as.arguments = argv;
 
     mamou_init_assembler(&as);
-
  
 	sprintf(product_name, "The Mamou Assembler Version %02d.%02d",
 			VERSION_MAJOR, VERSION_MINOR);
 	
 	sprintf(product_copyright, "Copyright (C) 2004 Boisy G. Pitre");
 
-	
-	/* 2. Display help, if necessary. */
-	
+	/* 2. Display help, if necessary. */	
 	if (argc < 2)
     {
 		fprintf(stderr, "%s\n", product_name);
@@ -61,7 +55,7 @@ int main(int argc, char **argv)
         fprintf(stderr, " -a<sym>[=<val>] assign val to sym\n");
         fprintf(stderr, " -d        debug mode\n");
         fprintf(stderr, " -e        enhanced 6309 assembler mode\n");
-	fprintf(stderr, " -ee       enhanced 6309 and X9 assembler mode\n");
+		fprintf(stderr, " -ee       enhanced 6309 and X9 assembler mode\n");
         fprintf(stderr, " -i<dir>   additional include directories\n");
         fprintf(stderr, " -p        don't assemble, just parse\n");
         fprintf(stderr, " -q        quiet mode\n");
@@ -90,9 +84,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-
     /* 3. Parse command line for options */
-
     for (j = 1; j < argc; j++)
     {
         if (*argv[j] == '-')
@@ -150,8 +142,8 @@ int main(int argc, char **argv)
                 case 'e':
                     /* 6309 extended instruction mode */
                     as.o_cpuclass = CPU_H6309;
-		    if (tolower(argv[j][2]) == 'e') as.o_cpuclass = CPU_X9;
-                    break;	
+					if (tolower(argv[j][2]) == 'e') as.o_cpuclass = CPU_X9;
+						break;	
 					
                 case 'i':
                     /* Include directive */
@@ -267,15 +259,12 @@ int main(int argc, char **argv)
         }
         else if (as.file_index + 1 < MAXAFILE)
         {
-			/* 1. Add the filename to the file list array. */
-			
+			/* 1. Add the filename to the file list array. */			
             as.file_name[as.file_index++] = argv[j];
         }
     }
 	
-	
 	/* 4. Call the assembler to do its work. */
-
 	return mamou_assemble(&as);
 }
 
@@ -292,26 +281,19 @@ int mamou_assemble(assembler *as)
 	int ret = 0;
 
 	/* Get the current time for future reference. */
-
 	as->start_time = time(NULL);
 	
-	
 	/* Initialize the assembler for the first pass. */
-		
 	as->pass = 1;
 	
     mamou_initialize(as);
 
-
 	/* For each file we have to assemble... */
-	
     for (as->current_filename_index = 0; as->current_filename_index < as->file_index; as->current_filename_index++)
     {
 		struct filestack root_file;
 		
-		
 		/* Set up the structure. */
-		
 		as->current_file = &root_file;
 		
 		strncpy(root_file.file, as->file_name[as->current_filename_index], FNAMESIZE);
@@ -320,9 +302,7 @@ int mamou_assemble(assembler *as)
 		root_file.num_comment_lines = 0;
 		root_file.end_encountered = 0;
 		
-		
 		/* Open a path to the file. */
-		
         if (_coco_open(&(root_file.fd), root_file.file, FAM_READ) != 0)
         {
             printf("mamou: can't open %s\n", root_file.file);
@@ -330,52 +310,36 @@ int mamou_assemble(assembler *as)
             return 1;
         }
 
-
-		/* Make the first pass. */
-		
+		/* Make the first pass. */		
 		mamou_pass(as);
 
-		
-		/* Close the file. */
-		
+		/* Close the file. */		
 		_coco_close(root_file.fd);
 		
-		
 		/* Did we have more 'ifs' than 'endcs' ? */
-		
 		if (as->conditional_stack_index != 0)
 		{			
 			error(as, "too many ifs for endcs");
 		}
     }
 
-
 	/* If the assembly pass above yielded no errors... */
-	
     if (as->num_errors == 0)
     {
 		/********** SECOND PASS **********/
 		
-		
 		/* Increment the pass. */
-		
         as->pass++;
 		
-		
 		/* Re-initialize the assembler. */
-		
         mamou_initialize(as);
 		
-		
 		/* Walk the file list again... */
-		
         for (as->current_filename_index = 0; as->current_filename_index < as->file_index; as->current_filename_index++)
         {
 			struct filestack root_file;
 			
-			
 			/* Set up the structure. */
-			
 			as->current_file = &root_file;
 			
 			strncpy(root_file.file, as->file_name[as->current_filename_index], FNAMESIZE);
@@ -384,38 +348,28 @@ int mamou_assemble(assembler *as)
 			root_file.num_comment_lines = 0;
 			root_file.end_encountered = 0;
 			
-			
 			/* Open a path to the file. */
-			
 			if (_coco_open(&(root_file.fd), root_file.file, FAM_READ) != 0)
 			{
 				printf("mamou: can't open %s\n", root_file.file);
 				
 				return 1;
-			}
-			
+			}			
 			
 			/* Make the first pass. */
-			
-			mamou_pass(as);
-			
+			mamou_pass(as);			
 			
 			/* Close the file. */
-			
 			_coco_close(root_file.fd);
-        }
-		
+        }		
 
-		/* Emit Disk BASIC trailer. */
-		
+		/* Emit Disk BASIC trailer. */		
 		if (as->o_asm_mode == ASM_DECB)
 		{
 			decb_trailer_emit(as, 0xEEAA);
 		}
-
 		
-		/* Do we show the symbol table? */
-		
+		/* Do we show the symbol table? */		
         if (as->o_show_symbol_table == 1)
         {
             printf("\f");
@@ -435,37 +389,27 @@ int mamou_assemble(assembler *as)
         finish_outfile(as);
     }
 
-
     if ((as->o_quiet_mode == 0) && (as->o_format_only == 0))
     {
         print_summary(as);
     }
 
-
 	/* Terminate the forward reference file. */
-
     fwd_deinit(as);
 
-
     /* Added to remove an object if there were errors in the assembly - BGP 2002/07/25 */
-
     if (as->num_errors != 0)
     {
-	ret = 1;			/* error status */
+		ret = 1;			/* error status */
         _coco_delete(as->object_name);
     }
 
-
 	/* Deinitialize the assembler. */
-	
     mamou_deinitialize(as);
 
-
 	/* Return. */
-
     return ret;
 }
-
 
 
 /*!
@@ -473,7 +417,6 @@ int mamou_assemble(assembler *as)
 	@discussion Initialize the assembler for each pass
 	@param as The assembler state structure
  */
-
 static void mamou_initialize(assembler *as)
 {
     if (as->o_debug)
@@ -527,13 +470,10 @@ static void mamou_initialize(assembler *as)
 			}
 		}
 
-
 		fwd_init(as);		/* forward ref init */
 		local_init();		/* target machine specific init. */
-
 		
 		/* Get 'include' environment variable. */
-
 		{
 			char *include;
 			
@@ -550,7 +490,6 @@ static void mamou_initialize(assembler *as)
 	else
 	{
 		/* Pass 2 initialization. */
-
 		as->current_psect			= -1;
 		as->cumulative_blank_lines  = 0;
 		as->cumulative_comment_lines  = 0;
@@ -570,11 +509,9 @@ static void mamou_initialize(assembler *as)
 		as->conditional_stack[0] = 1;
 //		as->conditional_stack[as->conditional_stack_index] = 1;
 	}
-	
 
     return;
 }
-
 
 
 /*!
@@ -582,18 +519,15 @@ static void mamou_initialize(assembler *as)
 	@discussion Deinitializes the assembler
 	@param as The assembler state structure
  */
-
 static void mamou_deinitialize(assembler *as)
 {
     if (as->o_debug)
     {
         printf("Deinitializing\n");
     }
-	
 
     return;
 }
-
 
 
 /*!
@@ -601,30 +535,24 @@ static void mamou_deinitialize(assembler *as)
 	@discussion Makes one pass through the source
 	@param as The assembler state structure
  */
-
 void mamou_pass(assembler *as)
 {
 	u_int		size = MAXBUF - 1;
 	char		input_line[1024];
 	
-	
 	/* 1. If debug mode is on, show output. */
-
     if (as->o_debug)
     {
         printf("\n------");
         printf("\nPass %u", (unsigned int)as->pass);
         printf("\n------\n");
     }
-
 	
 	/* 2. While we haven't encountered 'end' and there are more lines to read... */
-	
 	while (as->current_file->end_encountered == 0 && _coco_readln(as->current_file->fd, input_line, &size) == 0)
 	{
 		char *p = strchr(input_line, 0x0D);
 
-		
 		size = MAXBUF - 1;
 
 		if (p != NULL)
@@ -652,10 +580,8 @@ void mamou_pass(assembler *as)
 		else
 		{
 			print_line(as, 0, ' ', 0);
-
 			
-			/* Keep track of the number of blank and comment lines. */
-			
+			/* Keep track of the number of blank and comment lines. */			
 			if (as->line.type == LINETYPE_BLANK)
 			{
 				as->current_file->num_blank_lines++;
@@ -667,12 +593,9 @@ void mamou_pass(assembler *as)
 				as->cumulative_comment_lines++;
 			}
 		}
-
 		
 		/* Keep track of the total number of lines so far. */
-		
 		as->cumulative_total_lines++;
-
 	
 		as->P_total = 0;	/* reset byte count */
 
@@ -681,10 +604,8 @@ void mamou_pass(assembler *as)
 
     f_record(as);
 
-
 	return;
 }
-
 
 
 /*!
@@ -695,15 +616,12 @@ void mamou_pass(assembler *as)
 	@param as The assembler state structure
 	@param input_line A pointer to the line to parse
  */
-
 void mamou_parse_line(assembler *as, char *input_line)
 {
     char *ptrfrm = input_line;
     char *ptrto = as->line.label;
-
 	
 	/* 1. Initialize line structure. */
-	
 	as->line.has_warning = 0;
 	as->line.optr = as->line.Op;
 	as->line.force_word = 0;
@@ -711,13 +629,11 @@ void mamou_parse_line(assembler *as, char *input_line)
     *as->line.label = EOS;
     *as->line.Op = EOS;
     *as->line.operand = EOS;
-    *as->line.comment = EOS;
-	
+    *as->line.comment = EOS;	
 	
 	/* 2. First, check to see if this line has the 5 byte numerical field that
-		* is associated with EDTASM source files.
-		*/
-	
+	 * is associated with EDTASM source files.
+	 */	
 	if (
 		numeric(*(ptrfrm + 0)) == 1 &&
 		numeric(*(ptrfrm + 1)) == 1 &&
@@ -731,9 +647,7 @@ void mamou_parse_line(assembler *as, char *input_line)
 		input_line += 6;
 	}
 	
-	
 	/* 3. Check to see if this is a blank line. */
-	
 	while (isspace(*ptrfrm)) ptrfrm++;
 	
 	if (*ptrfrm == '\n' || *ptrfrm == EOS)
@@ -745,14 +659,10 @@ void mamou_parse_line(assembler *as, char *input_line)
 		return;
 	}
 	
-	
 	/* 4. Reanchor pointer to start of line. */
-	
 	ptrfrm = input_line;
-	
 
     /* 5. Check for comment characters. */
-	
 	if (*ptrfrm == '*' || *ptrfrm == ';' || *ptrfrm == '#')
     {
         strcpy(as->line.comment, input_line);
@@ -785,7 +695,6 @@ void mamou_parse_line(assembler *as, char *input_line)
 	
 	
 	/* Skip over whitespace. */
-	
     ptrfrm = skip_white(ptrfrm);
 	
     ptrto = as->line.Op;
@@ -801,27 +710,22 @@ void mamou_parse_line(assembler *as, char *input_line)
 	
 	
     /* Look up the mnemonic */
-	
     if (mne_look(as, as->line.Op, &as->line.mnemonic) == 0)
     {
 		/* Does this op code has a parameter */
-		
         if ((as->line.mnemonic.type == OPCODE_PSEUDO  && as->line.mnemonic.opcode.pseudo->info != HAS_NO_OPERAND) ||
 			(as->line.mnemonic.type == OPCODE_H6309 && 
             (as->line.mnemonic.opcode.h6309->class != INH && as->line.mnemonic.opcode.h6309->class != P2INH && as->line.mnemonic.opcode.h6309->class != P3INH))
 		)
         {
 			/* Yes, it does. */
-			
             ptrto = as->line.operand;
 
             if (as->line.mnemonic.type == OPCODE_PSEUDO && as->line.mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_DELIMITERS)
             {
                 char fccdelim;
 
-
-				/* Check for nul operand */
-				
+				/* Check for nul operand */				
 				if (*ptrfrm == EOS || eol(*ptrfrm))
 				{
 					if (as->pass == 2)
@@ -831,8 +735,7 @@ void mamou_parse_line(assembler *as, char *input_line)
 				}
 				else
 				{
-					/* Pseudo opcode with delimiter bounded data (i.e. fcc, fcs). */
-				
+					/* Pseudo opcode with delimiter bounded data (i.e. fcc, fcs). */				
 					fccdelim = *ptrfrm;
 
 					do
@@ -845,10 +748,8 @@ void mamou_parse_line(assembler *as, char *input_line)
             }
             else if (as->line.mnemonic.type == OPCODE_PSEUDO && as->line.mnemonic.opcode.pseudo->info == HAS_OPERAND_WITH_SPACES)
             {
-                /* Pseudo opcode with spaces in the operand. */
-				
-				/* Check for nul operand */
-				
+                /* Pseudo opcode with spaces in the operand. */				
+				/* Check for nul operand */				
 				if (*ptrfrm == EOS || eol(*ptrfrm))
 				{
 					if (as->pass == 2)
@@ -866,8 +767,7 @@ void mamou_parse_line(assembler *as, char *input_line)
             }
             else
             {
-				/* Pseudo or real opcode with regular operand */
-                
+				/* Pseudo or real opcode with regular operand */                
 				while (delim(*ptrfrm) == 0)
                 {
                     *ptrto++ = *ptrfrm++;
@@ -879,10 +779,8 @@ void mamou_parse_line(assembler *as, char *input_line)
             ptrfrm = skip_white(ptrfrm);
         }
     }
-	
-	
-	/* Point to the line's comment field and suck up the remainder of the line as a comment. */
-	
+		
+	/* Point to the line's comment field and suck up the remainder of the line as a comment. */	
     ptrto = as->line.comment;
 	
     while (!eol(*ptrfrm))
@@ -891,10 +789,8 @@ void mamou_parse_line(assembler *as, char *input_line)
     }
 	
     *ptrto = EOS;
-	
 
-    /* If debug mode is on, print the line information. */
-	
+    /* If debug mode is on, print the line information. */	
     if (as->o_debug)
     {
         printf("\n");
@@ -903,13 +799,10 @@ void mamou_parse_line(assembler *as, char *input_line)
         printf("Operand    %s\n", as->line.operand);
     }
 	
-	
 	as->line.type = LINETYPE_SOURCE;
-	
 	
 	return;
 }
-
 
 
 /*!
@@ -917,24 +810,17 @@ void mamou_parse_line(assembler *as, char *input_line)
 	@discussion Process an assembled line
 	@param as The assembler state structure
  */
-
 void process(assembler *as)
-{
-	
-	/* Setup `old' program counter. */
-	
+{	
+	/* Setup `old' program counter. */	
     as->old_program_counter = as->program_counter;
-
  	
 	/* Point to beginning of operand field. */
-
     as->line.optr = as->line.operand;
 	
-
     if (as->conditional_stack[as->conditional_stack_index] == 0)
     {
         /* We should ignore this line unless it's an if, else or endc */
-		
         if (as->line.mnemonic.type == OPCODE_PSEUDO)			
 //			(as->line.mnemonic.opcode.pseudo->class == IF || as->line.mnemonic.opcode.pseudo->class == ELSE || as->line.mnemonic.opcode.pseudo->class == ENDC)
 //		)
@@ -948,7 +834,6 @@ void process(assembler *as)
     if (*as->line.Op == EOS)
     {
         /* no mnemonic */
-
         if (*as->line.label != EOS)
         {
             symbol_add(as, as->line.label, as->program_counter, 0);
@@ -968,7 +853,6 @@ void process(assembler *as)
         {
             f_record(as);
         }
-
     }
     else
     {
@@ -999,13 +883,11 @@ void process(assembler *as)
 }
 
 
-
 /*!
 	@function mamou_init_assembler
 	@discussion Initializes an instance of the assembler to default values
 	@param as The assembler state structure
  */
-
 void mamou_init_assembler(assembler *as)
 {
 	memset(as, 0, sizeof(assembler));

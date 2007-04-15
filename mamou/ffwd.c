@@ -10,9 +10,7 @@
 
 #include "mamou.h"
 
-
 coco_path_id	forward_path;		/* temp file's file descriptor	*/
-
 
 char	fwd_name[] = { "fwd_refs" } ;
 
@@ -21,7 +19,6 @@ char	fwd_name[] = { "fwd_refs" } ;
 	@discussion Initializes the forward reference file
 	@param as The assembler state structure
  */
-
 void fwd_init(assembler *as)
 {
 	if (_coco_create(&forward_path, fwd_name, FAM_READ | FAM_WRITE, FAP_READ | FAP_WRITE) != 0)
@@ -36,10 +33,8 @@ void fwd_init(assembler *as)
 		fatal("Cannot open forward reference file.");
 	}
 
-
 	return;
 }
-
 
 
 /*!
@@ -47,17 +42,14 @@ void fwd_init(assembler *as)
 	@discussion Deinitializes the forward reference file
 	@param as The assembler state structure
  */
-
 void fwd_deinit(assembler *as)
 {
 	_coco_close(forward_path);
 
 	_coco_delete(fwd_name);
 
-
 	return;
 }
-
 
 
 /*!
@@ -65,11 +57,9 @@ void fwd_deinit(assembler *as)
 	@discussion Reinitializes the forward reference file
 	@param as The assembler state structure
  */
-
 void fwd_reinit(assembler *as)
 {
 	u_int			size;
-	
 	
 	as->F_ref   = 0;
 	as->Ffn     = 0;
@@ -89,10 +79,8 @@ void fwd_reinit(assembler *as)
 		printf("First fwd ref: %d,%u\n", as->Ffn, (unsigned int)as->F_ref);
 	}
 
-
 	return;
 }
-
 
 
 /*!
@@ -100,11 +88,9 @@ void fwd_reinit(assembler *as)
 	@discussion Marks the current file/line as containing a forward reference
 	@param as The assembler state structure
  */
-
 void fwd_mark(assembler *as)
 {
 	u_int		size;
-	
 	
 	size = sizeof(as->current_filename_index);	
 	_coco_write(forward_path, (char *)&as->current_filename_index, &size);
@@ -112,10 +98,8 @@ void fwd_mark(assembler *as)
 	size = sizeof(as->current_file->current_line);
 	_coco_write(forward_path, (char *)&(as->current_file->current_line), &size);
 
-
 	return;
 }
-
 
 
 /*!
@@ -123,12 +107,10 @@ void fwd_mark(assembler *as)
 	@discussion Obtains the next forward reference
 	@param as The assembler state structure
  */
- 
 void fwd_next(assembler *as)
 {
 	u_int size;
 	
-
 	size = sizeof(as->Ffn);
 	_coco_read(forward_path, (char *)&as->Ffn, &size);
 
@@ -155,7 +137,6 @@ void fwd_next(assembler *as)
 	{
 		printf("Next Fwd ref: %d,%u\n", as->Ffn, (unsigned int)as->F_ref);
 	}
-
 
 	return;
 }

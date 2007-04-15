@@ -64,11 +64,9 @@ int     rcycl[]= { 2,2, 2, 2, 2, 2,  0,0,1,1,1,1,0};
 	@function local_init
 	@discussion Machine specific initialization
  */
-
 void local_init(void)
 {
 }
-
 
 
 /*!
@@ -77,22 +75,16 @@ void local_init(void)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _inh(assembler *as, int opcode)
 {
 	/* Emit opcode. */
-	
 	emit(as, opcode);
 
-
-	/* Print the line. */
-	
+	/* Print the line. */	
 	print_line(as, 0, ' ', as->old_program_counter);
-
 
 	return 0;
 }
-
 
 
 /*!
@@ -101,19 +93,14 @@ int _inh(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p2inh(assembler *as, int opcode)
 {
 	/* Emit leading opcode. */
-	
 	emit(as, PAGE2);
 	
-
 	/* Let the primary function handle the rest. */
-	
 	return _inh(as, opcode);
 }
-
 
 
 /*!
@@ -122,19 +109,14 @@ int _p2inh(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p3inh(assembler *as, int opcode)
 {
-	/* Emit leading opcode. */
-	
+	/* Emit leading opcode. */	
 	emit(as, PAGE3);
 
-
-	/* Let the primary function handle the rest. */
-	
+	/* Let the primary function handle the rest. */	
 	return _inh(as, opcode);
 }
-
 
 
 /*!
@@ -143,30 +125,21 @@ int _p3inh(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _gen(assembler *as, int opcode)
 {
 	int     amode;
-
 	
      /* Get addressing mode. */
-	
 	amode = addressing_mode(as);
-
 	
 	/* Do general addressing */
-	
 	do_gen(as, opcode, amode, 0);
-
 	
 	/* Print the line. */
-	
 	print_line(as, 0, ' ', as->old_program_counter);
 
-	
 	return 0;
 }
-
 
 
 /*!
@@ -175,22 +148,17 @@ int _gen(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _imgen(assembler *as, int opcode)
 {
 	int	result;
 	int	amode;
 	int	old;
 	char		*p;
-
 	
 	/* Get indicated addressing mode. */
-	
 	amode = addressing_mode(as);
 	
-	
 	/* Verify immediate addressing. */
-	
 	if (amode != IMMED)
 	{
 		error(as, "Immediate Operand Required");
@@ -254,12 +222,9 @@ int _imgen(assembler *as, int opcode)
 
 	
 	/* General addressing */
-
 	do_gen(as, opcode, amode, 0);
 
-	
 	/* Fix up output */
-
 	as->E_bytes[old] = as->E_bytes[old + 1];
 	as->E_bytes[old + 1] = result;
 	as->P_bytes[0] = as->P_bytes[1];
@@ -277,11 +242,9 @@ int _imgen(assembler *as, int opcode)
 	}
 
 	print_line(as, 0, ' ', as->old_program_counter);
-
 	
 	return 0;
 }
-
 
 
 /*!
@@ -296,11 +259,9 @@ int _imm(assembler *as, int opcode)
 	int	result;
 	int amode;  /* indicated addressing mode */
 
-	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	/* Immediate addressing ONLY. */
-
 	if (amode != IMMED)
 	{
 		error(as, "Immediate Operand Required");
@@ -321,10 +282,8 @@ int _imm(assembler *as, int opcode)
 	emit(as, lobyte(result));
 	print_line(as, 0, ' ', as->old_program_counter);
 
-	
 	return 0;
 }
-
 
 
 /*!
@@ -333,7 +292,6 @@ int _imm(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p3imm(assembler *as, int opcode)
 {
 	emit(as, PAGE3);
@@ -342,21 +300,18 @@ int _p3imm(assembler *as, int opcode)
 }
 
 
-
 /*!
 	@function _rel
 	@discussion Relative instruction handler
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _rel(assembler *as, int opcode)
 {
 	int	result;
 	int dist;
 
 	/* Short relative branches */
-	
 	evaluate(as, &result, &as->line.optr, 0);
 	dist = result - (as->program_counter + 2);
 	emit(as, opcode);
@@ -372,7 +327,6 @@ int _rel(assembler *as, int opcode)
 	emit(as, lobyte(dist));
 
 	print_line(as, 0, ' ', as->old_program_counter);
-
 	
 	return 0;
 }
@@ -385,15 +339,12 @@ int _rel(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p2rel(assembler *as, int opcode)
 {
 	int	result;
 	int			dist;
 
-	
 	/* Long relative branches */
-	
 	evaluate(as, &result, &as->line.optr, 0);
 	dist = result - (as->program_counter + 4);
 	emit(as, PAGE2);
@@ -408,10 +359,8 @@ int _p2rel(assembler *as, int opcode)
 	
 	print_line(as, 0, ' ', as->old_program_counter);
 	
-	
 	return 0;
 }
-
 
 
 /*!
@@ -420,7 +369,6 @@ int _p2rel(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p1rel(assembler *as, int opcode)
 {
 	int	result;
@@ -429,9 +377,7 @@ int _p1rel(assembler *as, int opcode)
 
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
-	
 	/* lbra and lbsr */
-	
 	if (amode == IMMED)
 	{
 		as->line.optr++; /* kludge for C compiler */
@@ -451,7 +397,6 @@ int _p1rel(assembler *as, int opcode)
 
 	print_line(as, 0, ' ', as->old_program_counter);
 
-	
 	return 0;
 }
 
@@ -463,12 +408,10 @@ int _p1rel(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _noimm(assembler *as, int opcode)
 {
 	int amode;
 
-	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	if (amode == IMMED)
@@ -481,10 +424,8 @@ int _noimm(assembler *as, int opcode)
 	do_gen(as, opcode, amode, 0);
 	print_line(as, 0, ' ', as->old_program_counter);
 
-	
 	return 0;
 }
-
 
 
 /*!
@@ -493,7 +434,6 @@ int _noimm(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p2noimm(assembler *as, int opcode)
 {
 	emit(as, PAGE2);
@@ -502,14 +442,12 @@ int _p2noimm(assembler *as, int opcode)
 }
 
 
-
 /*!
 	@function _p3noimm
 	@discussion Part 3 non-immediate instruction handler
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p3noimm(assembler *as, int opcode)
 {
 	emit(as, PAGE3);
@@ -518,18 +456,15 @@ int _p3noimm(assembler *as, int opcode)
 }
 
 
-
 /*!
 	@function _pxgen
 	@discussion Part X generic instruction handler
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 static int _pxgen(assembler *as, int opcode, int amode)
 {
 	int	result;
-
 	
 	if ((amode == IMMED) || (amode == IMMED8))
 	{
@@ -555,10 +490,8 @@ static int _pxgen(assembler *as, int opcode, int amode)
 
 	print_line(as, 0, ' ', as->old_program_counter);
 
-
 	return 0;
 }
-
 
 
 /*!
@@ -567,7 +500,6 @@ static int _pxgen(assembler *as, int opcode, int amode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _ldqgen(assembler *as, int opcode)
 {
 	int amode;
@@ -576,23 +508,21 @@ int _ldqgen(assembler *as, int opcode)
 	
 	if (amode == IMMED)
 	{
-	  int result;
+		int result;
 
-	  evaluate(as, &result, &as->line.optr, 0);
-	  emit(as, 0xcd);
-	  emit(as, (result >> 24) & 0xff);
-	  emit(as, (result >> 16) & 0xff);
-	  emit(as, (result >> 8) & 0xff);
-	  emit(as, result & 0xff);
-	  print_line(as, 0, ' ', as->old_program_counter);
+		evaluate(as, &result, &as->line.optr, 0);
+		emit(as, 0xcd);
+		emit(as, (result >> 24) & 0xff);
+		emit(as, (result >> 16) & 0xff);
+		emit(as, (result >> 8) & 0xff);
+		emit(as, result & 0xff);
+		print_line(as, 0, ' ', as->old_program_counter);
 
-	  return 0;
+		return 0;
 	}
 
-	
 	return _p2gen(as, 0xcc);
 }
-
 
 
 /*!
@@ -601,18 +531,15 @@ int _ldqgen(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p2gen(assembler *as, int opcode)
 {
 	int amode;
 
 	emit(as, PAGE2);
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
-	
-	
+
 	return _pxgen(as, opcode, amode);
 }
-
 
 
 /*!
@@ -621,19 +548,15 @@ int _p2gen(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p3gen(assembler *as, int opcode)
 {
 	int amode;
 
-
 	emit(as, PAGE3);
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
-	
-	
+
 	return _pxgen(as, opcode, amode);
 }
-
 
 
 /*!
@@ -642,12 +565,10 @@ int _p3gen(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p3gen8(assembler *as, int opcode)
 {
 	int amode;
 
-	
 	emit(as, PAGE3);
 	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
@@ -657,10 +578,8 @@ int _p3gen8(assembler *as, int opcode)
 		amode = IMMED8;
 	}
 	
-	
 	return _pxgen(as, opcode, amode);
 }
-
 
 
 /*!
@@ -669,14 +588,12 @@ int _p3gen8(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _rtor(assembler *as, int opcode)
 {
 	int src, srcsz;
 	int dst, dstsz;
 
 	/* tfr and exg */
-	
 	emit(as, opcode);
 	
 	src = regnum(as);
@@ -711,6 +628,7 @@ int _rtor(assembler *as, int opcode)
 	{
 		error(as, "Register Name Required");
 		emit(as, 0);
+
 		return 0;
 	}
 	
@@ -718,6 +636,7 @@ int _rtor(assembler *as, int opcode)
 	{
 		error(as, "PCR illegal here");
 		emit(as, 0);
+
 		return 0;
 	}
 
@@ -727,6 +646,7 @@ int _rtor(assembler *as, int opcode)
 	if (dst == RZERO)
 	{
 		error(as, "Destination Zero register is illegal");
+
 		return 0;
 	}
 
@@ -738,22 +658,22 @@ int _rtor(assembler *as, int opcode)
 	{
 		error(as, "Register Size Mismatch");
 		emit(as, 0);
+
 		return 0;
 	}
 
 	if (*as->line.optr && (*as->line.optr != BLANK) && (*as->line.optr != TAB))
 	{
 		error(as, "Invalid trailing text");
+
 		return 0;
 	}
 
 	emit(as, (src << 4) + dst);
 	print_line(as, 0, ' ', as->old_program_counter);
-
 	
 	return 0;
 }
-
 
 
 /*!
@@ -762,7 +682,6 @@ int _rtor(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p2rtor(assembler *as, int opcode)
 {
 	emit(as, PAGE2);
@@ -771,21 +690,18 @@ int _p2rtor(assembler *as, int opcode)
 }
 
 
-
 /*!
 	@function _p3rtor
 	@discussion Part 3 register-to-register instruction handler
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _p3rtor(assembler *as, int opcode)
 {
 	int src;
 	int dst;
 	int form = 0;
 
-	
 	src = regnum(as);
 
 	while (alpha(*as->line.optr) || (*as->line.optr == '0'))
@@ -918,10 +834,8 @@ int _p3rtor(assembler *as, int opcode)
 	emit(as, (src << 4) + dst);
 	print_line(as, 0, ' ', as->old_program_counter);
 
-	
 	return 0;
 }
-
 
 
 /*!
@@ -930,12 +844,10 @@ int _p3rtor(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _indexed(assembler *as, int opcode)
 {
 	int amode;
 
-	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	/* indexed addressing only */
@@ -955,11 +867,9 @@ int _indexed(assembler *as, int opcode)
 
 	do_indexed(as, opcode);
 	print_line(as, 0, ' ', as->old_program_counter);
-
 	
 	return 0;
 }
-
 
 
 /*!
@@ -968,15 +878,12 @@ int _indexed(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _rlist(assembler *as, int opcode)
 {
 	int pbyte;
 	int j;
-
 	
 	/* pushes and pulls */
-
 	if (*as->line.operand == EOS)
 	{
 		error(as, "Register List Required");
@@ -1027,10 +934,8 @@ int _rlist(assembler *as, int opcode)
 	emit(as, lobyte(pbyte));
 	print_line(as, 0, ' ', as->old_program_counter);
 
-	
 	return 0;
 }
-
 
 
 /*!
@@ -1039,12 +944,10 @@ int _rlist(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _longimm(assembler *as, int opcode)
 {
 	int result;
 	int amode;
-
 
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
@@ -1061,11 +964,9 @@ int _longimm(assembler *as, int opcode)
 	}
 
 	print_line(as, 0, ' ', as->old_program_counter);
-
 	
 	return 0;
 }
-
 
 
 /*!
@@ -1074,27 +975,24 @@ int _longimm(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _grp2(assembler *as, int opcode)
 {
 	int result;
 	int amode;
 
-	
 	amode = addressing_mode(as);     /* pickup indicated addressing mode */
 
 	if (amode == IND)
 	{
 		/* Indexed mode (i.e. $5,y) */
-		
 		do_indexed(as, opcode + 0x60);
 		print_line(as, 0, ' ', as->old_program_counter);
 		return 0;
 	}
-	else if (amode == INDIR)
+	else
+	if (amode == INDIR)
 	{
 		/* Indrect mode (i.e. [$FFFE]) */
-		
 		as->line.optr++;
 		emit(as, opcode + 0x60);
 		emit(as, IPBYTE);
@@ -1115,18 +1013,15 @@ int _grp2(assembler *as, int opcode)
 	}
 
 	/* Evaluate result */
-	
 	evaluate(as, &result, &as->line.optr, 0);
 	
 	/* Check for inconsistency in force mode and DP */
-	
 	if (as->line.force_byte == 1 && hibyte(result) != as->DP)
 	{
 		error(as, "DP out of range");
 		
 		return 0;
 	}
-
 
 	if (as->line.force_word == 1 || hibyte(result) != as->DP)
 	{
@@ -1144,6 +1039,7 @@ int _grp2(assembler *as, int opcode)
 		if (hibyte(result) != as->DP)
 		{
 			error(as, "DP out of range");
+
 			return 0;
 		}
 		
@@ -1155,10 +1051,8 @@ int _grp2(assembler *as, int opcode)
 	
 	print_line(as, 0, ' ', as->old_program_counter);
 
-	
 	return 0;
 }
-
 
 
 /*!
@@ -1167,23 +1061,19 @@ int _grp2(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 int _sys(assembler *as, int opcode)
 {
 	int	result;
 
 	/* system call */
-
 	emit(as, PAGE2);
 	emit(as, opcode);
 	evaluate(as, &result, &as->line.optr, 0);
 	emit(as, lobyte(result));
 	print_line(as, 0, ' ', as->old_program_counter);
 
-	
 	return 0;
 }
-
 
 
 /*!
@@ -1192,27 +1082,20 @@ int _sys(assembler *as, int opcode)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 static int do_gen(assembler *as, int opcode, int mode, int always_word)
 {
 	int	result;
 
-	
 	if (mode == IMMED)
 	{
 		/* Immediate addressing mode (i.e. #$123) */
-		
 		as->line.optr++;
 		emit(as, opcode);
-
 		
 		/* Evaluate the result. */
-		
 		evaluate(as, &result, &as->line.optr, 0);
-
 		
 		/* If the result is > 255, return error. */
-		
 		if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 		{
 			error(as, "Result >255");
@@ -1220,35 +1103,30 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 			return 0;
 		}
 		
-		
 		/* Emit the low byte result. */
-		
 		emit(as, lobyte(result));
 
 		return 0;
 	}
-	else if (mode == IND)
+	else
+	if (mode == IND)
 	{
-		/* Indexed mode (i.e. $5,y) */
-		
+		/* Indexed mode (i.e. $5,y) */		
 		do_indexed(as, opcode + 0x20);
 
 		return 0;
 	}
-	else if (mode == INDIR)
+	else
+	if (mode == INDIR)
 	{
 		/* Indirect mode (i.e. [$FFFE] */
-		
 		as->line.optr++;
 
 		emit(as, opcode + 0x20);
 		emit(as, IPBYTE);
 
-		
 		/* Evaluate. */
-		
 		evaluate(as, &result, &as->line.optr, 0);
-
 
 		/* Emit word. */
 		eword(as, result);
@@ -1266,10 +1144,10 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 
 		return 0;
 	}
-	else if (mode == OTHER)
+	else
+	if (mode == OTHER)
 	{
 		/* Evaluate result */
-		
 		evaluate(as, &result, &as->line.optr, 0);
 		
 		if (as->line.force_byte == 1)
@@ -1293,7 +1171,8 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 			
 			return 0;
 		}
-		else if (as->line.force_word == 1)
+		else
+		if (as->line.force_word == 1)
 		{
 			/* Case #2: > has been prepended to expression */
 			
@@ -1315,7 +1194,6 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 		else
 		{
 			/* Case #3: Ambiguous... look to as->DP for guidance. */
-			
 			if (hibyte(result) == as->DP)
 			{
 				emit(as, opcode + 0x10);
@@ -1339,10 +1217,10 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 	else
 	{
 		error(as, "Unknown Addressing Mode");
+
 		return 0;
 	}
 }
-
 
 
 /*!
@@ -1351,7 +1229,6 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
-
 static int do_indexed(assembler *as, int opcode)
 {
 	int     pbyte;
@@ -1359,7 +1236,6 @@ static int do_indexed(assembler *as, int opcode)
 	int     predec,pstinc;
 	int	result;
 
-	
 	as->cumulative_cycles += 2;    /* indexed is always 2+ base cycle count */
 	predec = 0;
 	pstinc = 0;
@@ -1462,10 +1338,8 @@ static int do_indexed(assembler *as, int opcode)
 
 			return 0;
 		}
-
 		
 		/* PC or PCR addressing */
-
 		if (as->line.force_word)
 		{
 			emit(as, pbyte + 13);
@@ -1565,7 +1439,6 @@ static int do_indexed(assembler *as, int opcode)
 		}
 
 		/* handle ,W++  ,--W */
-
 		if (pbyte & 0x10)  /* [,W++] */
 		{
 			if (predec == 2)
@@ -1719,14 +1592,12 @@ static int do_indexed(assembler *as, int opcode)
 }
 
 
-
 /*!
 	@function abd_index
 	@discussion A, B or D indexed
 	@param as The assembler state structure
 	@param pbyte Post byte
  */
-
 static int abd_index(assembler *as, int pbyte)
 {
 	int     k;
@@ -1745,10 +1616,8 @@ static int abd_index(assembler *as, int pbyte)
 	pbyte += k;
 	emit(as, pbyte);
 
-	
 	return 0;
 }
-
 
 
 /*
@@ -1779,11 +1648,9 @@ static int reg_type(assembler *as, int r)
 	}
 
 	error(as, "Illegal Register for Indexed");
-
 	
 	return 0;
 }
-
 
 
 /*!
@@ -1791,13 +1658,11 @@ static int reg_type(assembler *as, int r)
 	@discussion Determine addressing mode from operand field
 	@param as The assembler state structure
  */
-
 static int addressing_mode(assembler *as)
 {
 	char *p;
 
-	
-	if (*as->line.operand == '#')
+		if (*as->line.operand == '#')
 	{
 		return(IMMED);          /* immediate addressing */
 	}
@@ -1820,11 +1685,9 @@ static int addressing_mode(assembler *as)
 	{
 		return(INDIR);          /* indirect addressing */
 	}
-
 	
 	return(OTHER);                  /* NOTA */
 }
-
 
 
 /*!
@@ -1832,7 +1695,6 @@ static int addressing_mode(assembler *as)
 	@discussion Return register number of *as->line.optr
 	@param as The assembler state structure
  */
-
 static h6309_reg regnum(assembler *as)
 {
 	if (head(as->line.optr, "D") == 1)
@@ -1928,8 +1790,7 @@ static h6309_reg regnum(assembler *as)
 			return(RT);
 		}
 	}
-		
-	
+			
 	return(ERR);
 }
 

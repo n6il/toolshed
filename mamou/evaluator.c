@@ -46,15 +46,12 @@
 
 
 /* Static functions */
-
 static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined);
 static int is_op(char c);
 
 
 /* Static variables */
-
 static int forward = 0;
-
 
 
 /*!
@@ -64,44 +61,38 @@ static int forward = 0;
 	@param result A pointer to the result of the evaluated expression
 	@param eptr The expression to be evaluated
 	@param ignoreUndefined Ignore any undefined symbols
+	@result 1=evaluation was made ok
  */
-
 int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
-	int	left, right;		/* left and right terms for expression */
+	int			left = 0;
+	int			right = 0;			/* left and right terms for expression */
 	char		o;					/* operator character */
 
-
 	/* 1. Do any debugging output. */
-
 	if (as->o_debug)
 	{
 		printf("Evaluating %s\n", *eptr);
-	}
-	
+	}	
 	
 	/* 2. Assume no forcing of result size. */
-	
 	as->line.force_byte = 0;
 	as->line.force_word = 0;
-
 	
 	/* 3. Force byte or word size? */
-	
 	if (**eptr == '<')
 	{
 		as->line.force_byte = 1;
 		(*eptr)++;
 	}
-	else if (**eptr == '>')
+	else
+	if (**eptr == '>')
 	{
 		as->line.force_word = 1;
 		(*eptr)++;
 	}
 
-
 	/* 4. Pickup first part of expression. */
-	
 	if ((get_term(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
 	{
 //		*result = Dp * 256 + 0xfe;
@@ -109,18 +100,13 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 //		return 0;
 	}
 
-
 	/* 5. Gather rest of line. */
-	
 	while (is_op(**eptr))
 	{
 		/* 1. Pickup operator and skip. */
-		
  		o = *((*eptr)++);
 
-
-		/* 2. Pickup current rightmost side. */
-		
+		/* 2. Pickup current rightmost side. */		
 		if (get_term(as, &right, eptr, ignoreUndefined) == 0)
 		{
 //			*result = Dp * 256 + 0xfe;
@@ -128,9 +114,7 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 //			return 0;
 		}
 		
-		
 		/* 3. Process left/right according to operator. */
-		
 		switch (o)
 		{
 			case '+':
@@ -161,14 +145,10 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 		}
 	}
 
-
-	/* 6. Assign result to left. */
-	
+	/* 6. Assign result to left. */	
 	*result = left;
 
-
-	/* 7. Print debugging information if requested. */
-	
+	/* 7. Print debugging information if requested. */	
 	if (as->o_debug)
 	{
 		printf("Result     $%x\n", (int)*result);
@@ -176,9 +156,7 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 		printf("force_word %d\n", as->line.force_word);
 	}
 
-
-	/* 8. Return status. */
-	
+	/* 8. Return status. */	
 	return 1;
 }
 
@@ -189,18 +167,15 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 	@discussion Determines if a character is an expression operator
 	@param c Character to evaluate
  */
-
 static int is_op(char c)
 {
 	if (any(c, "+-*/&%|^!"))
 	{
 		return 1;
-	}
-	
+	}	
 	
 	return 0;
 }
-
 
 
 /*!
@@ -211,42 +186,33 @@ static int is_op(char c)
 	@param eptr The address of a pointer to the expression to be evaluated
 	@param ignoreUndefined Ignore any undefined symbols
  */
-
 static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 {
 	char			hold[MAXBUF];
 	char			*tmp;
-	int		val = 0;				/* local value being built */
-	int			minus = 0;		/* unary minus flag */
-	int			complement = 0;		/* complement flag */
+	int				val = 0;				/* local value being built */
+	int				minus = 0;				/* unary minus flag */
+	int				complement = 0;			/* complement flag */
 	struct nlist	*pointer;
 	struct link		*pnt, *bpnt;
-
 
 	forward = 0;
 
 	/* 1. If we encounter end of string, something's wrong. */
-	
 	if (!**eptr)
 	{
 		error(as, "Unbalanced expression");
 
 		return 0;
-	}
-
-	
-	/* 2. A leading minus is a negation. */
-	
+	}	
+	/* 2. A leading minus is a negation. */	
 	else if (**eptr == '-')
 	{
 		(*eptr)++;
 
 		minus = 1;
 	}
-
-
 	/* 3. A leading tilde is a complement. */
-	
 	else if (**eptr == '~')
 	{
 		(*eptr)++;
@@ -254,9 +220,7 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 		complement = 1;
 	}
 
-
-	/* 3. Open brace? */
-	
+	/* 4. Open brace? */	
 	if (**eptr == '(')
 	{
 		(*eptr)++;
@@ -277,36 +241,27 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 		return 0;
 	}
 
-
-	/* 4. Skip over immediate character. */
-	
+	/* 5. Skip over immediate character. */
 	while (**eptr == '#')
 	{
 		(*eptr)++;
 	}
 	
-	
-	/* 5. Complement? */
-	
+	/* 6. Complement? */
 	if (**eptr == '^')
 	{
 		int	term2;
 		int		ret;
 
-
 		/* 1. Complement next term. */
-
 		(*eptr)++;
 		ret = get_term(as, &term2, eptr, ignoreUndefined);
 		*term = ~term2;
 
-
 		return ret;
 	}
-	
 
-	/* 6. Binary constant? */
-	
+	/* 7. Binary constant? */
 	if (**eptr == '%')
 	{
 		(*eptr)++;
@@ -316,10 +271,7 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 			val = (val * 2) + ((*((*eptr)++)) - '0');
 		}
 	}
-
-
-	/* 7. Octal constant? */
-	
+	/* 8. Octal constant? */
 	else if (**eptr == '@')
 	{
 		(*eptr)++;
@@ -329,10 +281,7 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 			val = (val * 8) + ((*((*eptr)++)) - '0');
 		}
 	}
-
-
-	/* 8. Hexadecimal constant? */
-	
+	/* 9. Hexadecimal constant? */
 	else if (**eptr == '$')
 	{
 		(*eptr)++;
@@ -349,10 +298,7 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 			}
 		}
 	}
-
-
-	/* 9. Decimal constant? */
-	
+	/* 10. Decimal constant? */	
 	else if (any(**eptr, "0123456789"))
 	{
 		while (**eptr >= '0' && **eptr <= '9')
@@ -360,28 +306,19 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 			val = (val * 10) + ((*((*eptr)++)) - '0');
 		}
 	}
-
-
-	/* 10. Current program counter? */
-	
+	/* 11. Current program counter? */
 	else if (**eptr == '*')
 	{
 		(*eptr)++;
 		val = as->old_program_counter;
 	}
-
-
-	/* 11. Current data counter? */
-	
+	/* 12. Current data counter? */
 	else if (**eptr == '.')
 	{
 		(*eptr)++;
 		val = as->data_counter;
 	}
-	
-	
-	/* 12. Character literal? */
-
+	/* 13. Character literal? */
 	else if (**eptr == '\'')
 	{
 		(*eptr)++;
@@ -417,14 +354,10 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 			}
 		}
 	}
-	
-
-	/* 13. Symbol? */
-	
+	/* 14. Symbol? */
 	else if (alpha(**eptr))
 	{
 		/* 1. Let's collect the symbol name. */
-
 		tmp = hold;
 
 		while (alphan(**eptr))
@@ -471,11 +404,9 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 				/* NEW!! 04/09/05 - if symbol begins with
 				 * _$, assume it is an environment var
 				 */
-
 				if (hold[0] == '_' && hold[1] == '$')
 				{
 					char *p;
-
 
 					p = getenv(&(hold[2]));
 
@@ -511,23 +442,18 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 		}
 	}
 
-	
-	/* Closing parentheses? */
-	
+	/* Closing parentheses? */	
 	else if (**eptr == ')')
 	{
 		(*eptr)++;
 	}
 	else
 	{
-		/* 1. None of the above */
-		
+		/* 1. None of the above */		
 		val = 0;
 	}
 
-	
-	/* Negate if needed. */
-	
+	/* Negate if needed. */	
 	if (minus)
 	{
 		*term = -val;
@@ -537,14 +463,11 @@ static int get_term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 		*term = val;
 	}
 
-
 	/* Complement if needed. */
-	
 	if (complement)
 	{
 		*term = ~val;
 	}
 
-	
 	return 1;
 }

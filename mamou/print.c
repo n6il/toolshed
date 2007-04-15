@@ -21,32 +21,25 @@
 	@param infochar Character to be placed in the info field of the line
 	@param counter Line counter?
  */
-
 void print_line(assembler *as, int override, char infochar, int counter)
 {
 	u_int i = 0;
 	char Tmp_buff[512];
 	char Line_buff[512];
 
-	
 	Line_buff[0] = EOS;
-
 	
 	if (as->conditional_stack[as->conditional_stack_index] == 0)
 	{
 		/* We are currently in a false condition -- return. */
-		
 		return;
 	}
-	
 	
 	if (as->pass == 1 && override == 0)
 	{
 		/* We do nothing on pass 1 here unless overridden. */
-		
 		return;
 	}
-	
 	
 	if (override == 0 && (as->o_show_listing == 0 || as->f_new_page == 1))
 	{
@@ -63,19 +56,15 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		if (as->current_line == 0)
 		{
 			/* 1. We're at top of page, print header. */
-			
 			print_header(as);
 		}
 
-
-		/* 1. Print line number. */
-		
+		/* 1. Print line number. */		
 		sprintf(Tmp_buff, "%05d ", (int)as->current_file->current_line);
 		
 		strcat(Line_buff, Tmp_buff);
 	
 		/* TODO! warnings, errors will go here later */
-
 		if (as->line.has_warning)
 		{
 			as->num_warnings++;
@@ -164,7 +153,6 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		}
 	}
 	
-	
 	/* New -- make all pseudo opcodes uppercase if wanted */
 	if (as->pseudoUppercase == 1 && as->line.mnemonic.type == OPCODE_PSEUDO)
 	{
@@ -214,7 +202,6 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		}
 	}
 
-
 	if (as->Opt_G == 1)
 	{
 		int Temp_pc = as->old_program_counter;
@@ -233,16 +220,12 @@ void print_line(assembler *as, int override, char infochar, int counter)
 		}
 	}
 
-	
-	/* Print out the built up line. */
-	
+	/* Print out the built up line. */	
 	strncpy(Tmp_buff, Line_buff, as->o_pagewidth);
 	Tmp_buff[as->o_pagewidth] = EOS;
 	printf("%s\n", Tmp_buff);
 
-	
 	/* Check if we are at last line before footer should be printed. */
-	
 	if (as->o_format_only == 0)
 	{
 		if (as->current_line == as->o_page_depth - as->footer_depth)
@@ -251,8 +234,7 @@ void print_line(assembler *as, int override, char infochar, int counter)
 			as->current_line = 0;
 			as->current_page++;
 		}
-	}
-	
+	}	
 	
 	return;
 }
@@ -264,7 +246,6 @@ void print_line(assembler *as, int override, char infochar, int counter)
 	@discussion Prints the summary of the assembler's work
 	@param as The assembler state structure
  */
-
 void print_summary(assembler *as)
 {
 	printf("\n");
@@ -294,7 +275,6 @@ void print_summary(assembler *as)
 			   );
 	}
 	
-
 	if (as->object_name[0] == '\0')
 	{
 		printf(" - No output file\n");
@@ -304,10 +284,8 @@ void print_summary(assembler *as)
 		printf(" - Output file: \"%s\"\n", as->object_name);
 	}
 
-	
 	return;
 }
-
 
 
 /*!
@@ -315,11 +293,9 @@ void print_summary(assembler *as)
 	@discussion Prints the header of the assembler's output page
 	@param as The assembler state structure
  */
-
 void print_header(assembler *as)
 {
 	struct tm *tm;
-
 	
 	tm = localtime(&as->start_time);
 	
@@ -355,13 +331,11 @@ void print_header(assembler *as)
 }
 
 
-
 /*!
 	@function print_footer
 	@discussion Prints the footer of the assembler's output page
 	@param as The assembler state structure
  */
-
 void print_footer(assembler *as)
 {
 	printf("\n");
