@@ -161,37 +161,40 @@ int _imgen(assembler *as, int opcode)
 	/* Verify immediate addressing. */
 	if (amode != IMMED)
 	{
-		error(as, "Immediate Operand Required");
+		error(as, "immediate operand required");
 
 		return 0;
 	}
 	
+	/* skip over # */
 	as->line.optr++;
 
 	evaluate(as, &result, &as->line.optr, 0);
-
+	
 	if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 	{
-		error(as, "Result >255");
+		error(as, "result >255");
 
 		return 0;
 	}
 
 	if (*as->line.optr++ != ',')
 	{
-		error(as, "Comma required between operands");
+		error(as, "comma required between operands");
 
 		return 0;
 	}
 
+#if 0
 	while (*as->line.optr == ' ') as->line.optr++;
 
 	if (*as->line.optr == '#')
 	{
-		error(as, "Immediate Addressing Illegal");
+		error(as, "immediate addressing illegal");
 
 		return 0;
 	}
+#endif
 
 	if (*as->line.optr == '[')
 	{
@@ -264,18 +267,19 @@ int _imm(assembler *as, int opcode)
 	/* Immediate addressing ONLY. */
 	if (amode != IMMED)
 	{
-		error(as, "Immediate Operand Required");
+		error(as, "immediate operand required");
 
 		return 0;
 	}
 
+	/* skip over # */
 	as->line.optr++;
 	evaluate(as, &result, &as->line.optr, 0);
 	emit(as, opcode);
 
 	if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 	{
-		error(as, "Result >255");
+		error(as, "result >255");
 		return 0;
 	}
 
@@ -318,7 +322,7 @@ int _rel(assembler *as, int opcode)
 	
 	if ((dist > 127 || dist < -128) && as->pass == 2)
 	{
-		error(as, "Branch out of Range");
+		error(as, "branch out of range");
 		emit(as, lobyte(-2));
 
 		return 0;
@@ -416,7 +420,7 @@ int _noimm(assembler *as, int opcode)
 
 	if (amode == IMMED)
 	{
-		error(as, "Immediate Addressing Illegal");
+		error(as, "immediate addressing illegal");
 
 		return 0;
 	}
@@ -605,14 +609,14 @@ int _rtor(assembler *as, int opcode)
 	
 	if (src == ERR)
 	{
-		error(as, "Register Name Required");
+		error(as, "register name required");
 		emit(as, 0);
 		return 0;
 	}
 	
 	if (*as->line.optr++ != ',')
 	{
-		error(as, "Missing ,");
+		error(as, "missing ,");
 		emit(as, 0);
 		return 0;
 	}
@@ -626,7 +630,7 @@ int _rtor(assembler *as, int opcode)
 	
 	if (dst == ERR)
 	{
-		error(as, "Register Name Required");
+		error(as, "register name required");
 		emit(as, 0);
 
 		return 0;
@@ -645,7 +649,7 @@ int _rtor(assembler *as, int opcode)
 	
 	if (dst == RZERO)
 	{
-		error(as, "Destination Zero register is illegal");
+		error(as, "destination zero register is illegal");
 
 		return 0;
 	}
@@ -656,7 +660,7 @@ int _rtor(assembler *as, int opcode)
 
 	if ((srcsz != dstsz) && (opcode == 30)) /* EXG disallows R16->R8 */
 	{
-		error(as, "Register Size Mismatch");
+		error(as, "register size mismatch");
 		emit(as, 0);
 
 		return 0;
@@ -664,7 +668,7 @@ int _rtor(assembler *as, int opcode)
 
 	if (*as->line.optr && (*as->line.optr != BLANK) && (*as->line.optr != TAB))
 	{
-		error(as, "Invalid trailing text");
+		error(as, "invalid trailing text");
 
 		return 0;
 	}
@@ -711,7 +715,7 @@ int _p3rtor(assembler *as, int opcode)
 
 	if (src == ERR)
 	{
-		error(as, "Register Name Required");
+		error(as, "register name required");
 
 		return 0;
 	}
@@ -732,13 +736,13 @@ int _p3rtor(assembler *as, int opcode)
 			break;
 
 		default:
-			error(as, "Invalid text");
+			error(as, "invalid text");
 			return 0;
 	}
 
 	if (*as->line.optr++ != ',')
 	{
-		error(as, "Missing ,");
+		error(as, "missing ,");
 		emit(as, 0);
 
 		return 0;
@@ -752,7 +756,7 @@ int _p3rtor(assembler *as, int opcode)
 
 	if (dst == ERR)
 	{
-		error(as, "Register Name Required");
+		error(as, "register name required");
 
 		return 0;
 	}
@@ -766,14 +770,14 @@ int _p3rtor(assembler *as, int opcode)
 
 	if (dst == RZERO)
 	{
-		error(as, "Destination Zero register is illegal");
+		error(as, "destination zero register is illegal");
 
 		return 0;
 	}
 
 	if ((dst > 4) || ((src > 4) && (src != RZERO)))
 	{
-		error(as, "Invalid Register");
+		error(as, "invalid register");
 
 		return 0;
 	}
@@ -791,7 +795,7 @@ int _p3rtor(assembler *as, int opcode)
 			}
 			else
 			{
-				error(as, "Unexpected trailing '+'");
+				error(as, "unexpected trailing '+'");
 				return 0;
 			}
 			break;
@@ -803,7 +807,7 @@ int _p3rtor(assembler *as, int opcode)
 			}
 			else
 			{
-				error(as, "Unexpected trailing '-'");
+				error(as, "unexpected trailing '-'");
 				return 0;
 			}
 			break;
@@ -815,7 +819,7 @@ int _p3rtor(assembler *as, int opcode)
 		  }
 		  else
 		  {
-			  error(as, "Expected addressing mode '+' or '-'");
+			  error(as, "expected addressing mode '+' or '-'");
 
 			  return 0;
 		  }
@@ -824,7 +828,7 @@ int _p3rtor(assembler *as, int opcode)
 
 	if (*as->line.optr && (*as->line.optr != BLANK) && (*as->line.optr != TAB))
 	{
-		error(as, "Invalid trailing text");
+		error(as, "invalid trailing text");
 
 		return 0;
 	}
@@ -852,15 +856,17 @@ int _indexed(assembler *as, int opcode)
 
 	/* indexed addressing only */
 
+#if 0
 	if (*as->line.optr == '#')
 	{
 		as->line.optr++;         /* kludge city */
 		amode = IND;
 	}
+#endif
 
 	if (amode != IND)
 	{
-		error(as, "Indexed Addressing Required");
+		error(as, "indexed addressing required");
 
 		return 0;
 	}
@@ -886,7 +892,7 @@ int _rlist(assembler *as, int opcode)
 	/* pushes and pulls */
 	if (*as->line.operand == EOS)
 	{
-		error(as, "Register List Required");
+		error(as, "register list required");
 
 		return 0;
 	}
@@ -900,24 +906,24 @@ int _rlist(assembler *as, int opcode)
 		
 		if (j == ERR || j == RPCR)
 		{
-			error(as, "Illegal Register Name");
+			error(as, "illegal register name");
 		}
 #if 0
 		else if (j == RS && (opcode == 52))
 		{
-			error(as, "Can't Push S on S");
+			error(as, "can't push S on S");
 		}
 		else if (j == RU && (opcode == 54))
 		{
-			error(as, "Can't Push U on U");
+			error(as, "can't push U on U");
 		}
 		else if (j == RS && (opcode == 53))
 		{
-			error(as, "Can't Pull S from S");
+			error(as, "can't pull S from S");
 		}
 		else if (j == RU && (opcode == 55))
 		{
-			error(as, "Can't Pull U from U");
+			error(as, "can't pull U from U");
 		}
 #endif
 		else
@@ -1007,7 +1013,7 @@ int _grp2(assembler *as, int opcode)
 			return 0;
 		}
 
-		error(as, "Missing ']'");
+		error(as, "missing ']'");
 
 		return 0;
 	}
@@ -1095,10 +1101,17 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 		/* Evaluate the result. */
 		evaluate(as, &result, &as->line.optr, 0);
 		
+		if (*as->line.optr != EOS)
+		{
+			error(as, "bad operand");
+			
+			return 0;
+		}
+		
 		/* If the result is > 255, return error. */
 		if ((hibyte(result) != 0x00) && (hibyte(result) != 0xFF))
 		{
-			error(as, "Result >255");
+			error(as, "result >255");
 
 			return 0;
 		}
@@ -1140,7 +1153,7 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 			return 0;
 		}
 
-		error(as, "Missing ']'");
+		error(as, "missing ']'");
 
 		return 0;
 	}
@@ -1216,7 +1229,7 @@ static int do_gen(assembler *as, int opcode, int mode, int always_word)
 	}
 	else
 	{
-		error(as, "Unknown Addressing Mode");
+		error(as, "unknown addressing mode");
 
 		return 0;
 	}
@@ -1248,7 +1261,7 @@ static int do_indexed(assembler *as, int opcode)
 		as->line.optr++;
 		if (!any((char)']', as->line.optr))
 		{
-			error(as, "Missing ']'");
+			error(as, "missing ']'");
 		}
 
 		as->cumulative_cycles += 3;    /* indirection takes this much longer */
@@ -1334,7 +1347,7 @@ static int do_indexed(assembler *as, int opcode)
 		}
 		if (pstinc || predec)
 		{
-			error(as, "Auto Inc/Dec Illegal on PC");
+			error(as, "auto inc/dec illegal on PCR");
 
 			return 0;
 		}
@@ -1384,14 +1397,14 @@ static int do_indexed(assembler *as, int opcode)
 	{
 		if (result != 0)
 		{
-			error(as, "Offset must be Zero");
+			error(as, "offset must be zero");
 
 			return 0;
 		}
 
 		if (predec > 2 || pstinc > 2)
 		{
-			error(as, "Auto Inc/Dec by 1 or 2 only");
+			error(as, "auto inc/dec by 1 or 2 only");
 
 			return 0;
 		}
@@ -1399,14 +1412,14 @@ static int do_indexed(assembler *as, int opcode)
 		if ((predec == 1 && (pbyte & 0x10) != 0) ||
 			(pstinc == 1 && (pbyte & 0x10) != 0))
 		{
-			error(as, "No Auto Inc/Dec by 1 for Indirect");
+			error(as, "no auto inc/dec by 1 for indirect");
 
 			return 0;
 		}
 
 		if (predec && pstinc)
 		{
-			error(as, "Can't do both!");
+			error(as, "can't do both!");
 
 			return 0;
 		}
@@ -1433,7 +1446,7 @@ static int do_indexed(assembler *as, int opcode)
 
 		if ((predec != 2) && (pstinc != 2))
 		{
-			error(as, "Only ,--W and ,W++ allowed for W indexing");
+			error(as, "only ,--W and ,W++ allowed for W indexing");
 
 			return 0;
 		}
@@ -1551,7 +1564,7 @@ static int do_indexed(assembler *as, int opcode)
 		/* ,W  n,W [n,W] */
 		if (as->line.force_byte)
 		{
-			error(as, "Byte indexing is invalid for W");
+			error(as, "byte indexing is invalid for W");
 
 			return 0;
 		}
@@ -1608,7 +1621,7 @@ static int abd_index(assembler *as, int pbyte)
 
 	if (k == 0x100)
 	{
-		error(as, "Cannot use W for register indirect");
+		error(as, "cannot use W for register indirect");
 
 		return 0;
 	}
@@ -1647,7 +1660,7 @@ static int reg_type(assembler *as, int r)
 			}
 	}
 
-	error(as, "Illegal Register for Indexed");
+	error(as, "illegal register for indexed");
 	
 	return 0;
 }
@@ -1662,7 +1675,7 @@ static int addressing_mode(assembler *as)
 {
 	char *p;
 
-		if (*as->line.operand == '#')
+	if (*as->line.operand == '#')
 	{
 		return(IMMED);          /* immediate addressing */
 	}

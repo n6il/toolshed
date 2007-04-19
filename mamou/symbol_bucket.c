@@ -32,7 +32,7 @@ struct nlist *symbol_add(assembler *as, char *name, int val, int override)
 	/* 1. Does the symbol name meet our criteria? */	
 	if (!alpha(*name) && *name != '@')
 	{
-		error(as, "Illegal Symbol Name");
+		error(as, "illegal symbol name");
 
 		return NULL;
 	}
@@ -69,7 +69,7 @@ struct nlist *symbol_add(assembler *as, char *name, int val, int override)
 			else
 			{
 				/* 1. The value is different and we can't override -- it's a phasing error. */				
-				error(as, "Phasing Error");
+				error(as, "phasing error");
 
 				return NULL;
 			}
@@ -88,7 +88,7 @@ struct nlist *symbol_add(assembler *as, char *name, int val, int override)
 			/* 2. No, it's not overridable. */			
 			if (override == 0)
 			{
-				error(as, "Symbol Redefined");
+				error(as, "symbol redefined");
 			}
 			
 			return NULL;
@@ -105,7 +105,7 @@ struct nlist *symbol_add(assembler *as, char *name, int val, int override)
 	np = (struct nlist *)malloc(sizeof(struct nlist));
 	if (np == NULL)
 	{
-		error(as, "Symbol table full");
+		error(as, "symbol table full");
 
 		return NULL;
 	}
@@ -114,7 +114,7 @@ struct nlist *symbol_add(assembler *as, char *name, int val, int override)
 	np->name = (char *)malloc(strlen(name) + 1);
 	if (np->name == NULL)
 	{
-		error(as, "Symbol table full");
+		error(as, "symbol table full");
 
 		return NULL;
 	}

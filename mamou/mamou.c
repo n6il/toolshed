@@ -248,7 +248,7 @@ int main(int argc, char **argv)
                     break;
 					
                 case 'z':
-                    as.Opt_C = 0;
+                    as.o_show_cond = 0;
                     break;
                     
                 default:
@@ -729,7 +729,7 @@ void mamou_parse_line(assembler *as, char *input_line)
 				{
 					if (as->pass == 2)
 					{
-						error(as, "Operand required");
+						error(as, "operand required");
 					}
 				}
 				else
@@ -753,7 +753,7 @@ void mamou_parse_line(assembler *as, char *input_line)
 				{
 					if (as->pass == 2)
 					{
-						error(as, "Operand required");
+						error(as, "operand required");
 					}
 				}
 				else
@@ -846,7 +846,7 @@ void process(assembler *as)
     }
     else if (as->line.mnemonic.type == OPCODE_UNKNOWN) // && as->pass > 1)
 	{
-		error(as, "Unrecognized mnemonic");
+		error(as, "unrecognized mnemonic");
 	}
     else if (as->line.mnemonic.type == OPCODE_PSEUDO)
     {
@@ -898,7 +898,7 @@ void mamou_init_assembler(assembler *as)
     as->output_type = OUTPUT_BINARY;
     as->pass			= 1;		/* Current pass #               */
     as->page_number		= 2;		/* page number */
-    as->Opt_C			= 1;		/* show conditionals in listing */
+    as->o_show_cond			= 1;		/* show conditionals in listing */
     as->o_page_depth	= 66;
     as->o_show_error	= 1;
     as->o_pagewidth		= 80;

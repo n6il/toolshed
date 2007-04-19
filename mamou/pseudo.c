@@ -91,6 +91,7 @@ int _dtb(assembler *as)
  * OS-9 ASM DIRECTIVES (MOD, EMOD)
  *
  *****************************************************************************/
+#pragma mark OS-9 Asm Directives
 
 /*!
 	@function _mod
@@ -134,7 +135,7 @@ int _mod(assembler *as)
 	if ((p = strtok(operand, ",")) == NULL)
 	{
 		/* Error */
-		error(as, "Missing parameter");
+		error(as, "missing parameter");
 
 		free(operand);
 		
@@ -149,7 +150,7 @@ int _mod(assembler *as)
 		if ((p = strtok(NULL, ",")) == NULL)
 		{
 			/* Error */
-			error(as, "Missing parameter");
+			error(as, "missing parameter");
 
 			free(operand);
 		
@@ -258,9 +259,10 @@ int _emod(assembler *as)
 
 /*****************************************************************************
  *
- * CONDITIONALS (IF, IFP1, IFP2, IFNE, IFEQ, ELSE, ENDC, etc.)
+ * CONDITIONAL DIRECTIVES (IF, IFP1, IFP2, IFNE, IFEQ, ELSE, ENDC, etc.)
  *
  *****************************************************************************/
+#pragma mark Conditional Directives
 
 typedef enum
 {
@@ -291,7 +293,7 @@ static int _generic_if(assembler *as, conditional whichone)
 	if (as->conditional_stack_index + 1 > CONDSTACKLEN)
 	{
 		/* Overflow */
-		error(as, "Conditional stack overflow!");
+		error(as, "conditional stack overflow!");
 		
 		return 0;
 	}	
@@ -307,13 +309,12 @@ static int _generic_if(assembler *as, conditional whichone)
 	}
 	
 	/* Previous conditional true, evaluate this one */		
-/*	if (whichone != _IFP1 & whichone != _IFP2) */
 	if (whichone != _IFP1 && whichone != _IFP2)
 	{
 		evaluate(as, &result, &as->line.optr, 1);
 	}
 
-	if (as->Opt_C == 1)
+	if (as->o_show_cond == 1)
 	{
 		print_line(as, 0, ' ', 0);
 	}
@@ -465,7 +466,7 @@ int _endc(assembler *as)
 
 	as->conditional_stack_index--;
 
-	if (as->Opt_C == 1)
+	if (as->o_show_cond == 1)
 	{
 		print_line(as, 0, ' ', 0);
 	}
@@ -488,15 +489,15 @@ int _else(assembler *as)
 		return 0;
 	}
 	
-	/* Invert the sense of the conditional */
-	if (as->Opt_C == 1)
+	if (as->o_show_cond == 1)
 	{
 		print_line(as, 0, ' ', 0);
 	}
 
+	/* Invert the sense of the conditional */
 	as->conditional_stack[as->conditional_stack_index] = !as->conditional_stack[as->conditional_stack_index];
 
-	if (as->Opt_C == 1)
+	if (as->o_show_cond == 1)
 	{
 		print_line(as, 0, ' ', 0);
 	}
@@ -507,9 +508,10 @@ int _else(assembler *as)
 
 /*****************************************************************************
  *
- * ALIGNMENT DIRECTIVES (MOD, EMOD)
+ * ALIGNMENT DIRECTIVES
  *
  *****************************************************************************/
+#pragma mark Alignment Directives
 
 /*!
 	@function _align
@@ -547,7 +549,7 @@ int _align(assembler *as)
 	}
 	else
 	{
-		error(as, "Undefined operand during pass one");
+		error(as, "undefined operand during pass one");
 	}
 	
 	return 0;
@@ -619,6 +621,7 @@ int _odd(assembler *as)
 * PAGING DIRECTIVES (NAM, TTL, PAGE, etc.)
 *
 *****************************************************************************/
+#pragma mark Paging Directives
 
 /*!
 	@function nam
@@ -751,7 +754,7 @@ int _fill(assembler *as)
 
 	if (*as->line.optr++ != ',')
 	{
-		error(as, "Bad fill");
+		error(as, "bad fill");
 	}
 	else
 	{
@@ -761,7 +764,7 @@ int _fill(assembler *as)
 
 		if (result < 0)
 		{
-			error(as, "Illegal value for fill");
+			error(as, "illegal value for fill");
 
 			return 0;
 		}
@@ -824,7 +827,7 @@ int _fcc(assembler *as)
 	}
 	else
 	{
-		error(as, "Missing Delimiter");
+		error(as, "missing delimiter");
 
 		return 0;
 	}
@@ -875,7 +878,7 @@ int _fcz(assembler *as)
 	}
 	else
 	{
-		error(as, "Missing Delimiter");
+		error(as, "missing delimiter");
 
 		return 0;
 	}
@@ -936,7 +939,7 @@ int _fcs(assembler *as)
 	}
 	else
 	{
-		error(as, "Missing Delimiter");
+		error(as, "missing delimiter");
 
 		return 0;
 	}
@@ -990,7 +993,7 @@ int _fcr(assembler *as)
 	}
 	else
 	{
-		error(as, "Missing Delimiter");
+		error(as, "missing delimiter");
 		
 		return 0;
 	}
@@ -1045,7 +1048,7 @@ int _org(assembler *as)
 	}
 	else
 	{
-		error(as, "Undefined operand during Pass One");
+		error(as, "undefined operand during pass one");
 
 		return 0;
 	}
@@ -1075,7 +1078,7 @@ int _equ(assembler *as)
 
 	if (*as->line.label == EOS)
 	{
-		error(as, "Label required");
+		error(as, "label required");
 
 		return 0;
 	}
@@ -1087,7 +1090,7 @@ int _equ(assembler *as)
 	}
 	else
 	{
-		error(as, "Undefined operand during pass one");
+		error(as, "undefined operand during pass one");
 
 		return 0;
 	}
@@ -1117,7 +1120,7 @@ int _set(assembler *as)
 
 	if (*as->line.label == EOS)
 	{
-		error(as, "Label required");
+		error(as, "label required");
 
 		return 0;
 	}
@@ -1185,7 +1188,7 @@ int _opt(assembler *as)
 			break;
 						
 		case 'c':	/* conditional assembly in listing */
-			as->Opt_C = opt_state;
+			as->o_show_cond = opt_state;
 			break;
 
 		case 'd':	/* page depth */
@@ -1426,6 +1429,7 @@ int __end(assembler *as)
 * RESERVE MEMORY STORAGE (RMB, etc.)
 *
 *****************************************************************************/
+#pragma mark Reserve Memory Storage
 
 static int _reserve_memory(assembler *as, int size);
 
@@ -1478,7 +1482,7 @@ static int _reserve_memory(assembler *as, int size)
 	}
 	else
 	{
-		error(as, "Undefined operand during pass one");
+		error(as, "undefined operand during pass one");
 	}
 	
 	return 0;
@@ -1523,7 +1527,7 @@ int _rmq(assembler *as)
  * FILL CONSTANT DATA
  *
  *****************************************************************************/
-
+#pragma mark Fill Constant Data
 
 static int _fill_constant(assembler *as, int size);
 
@@ -1554,7 +1558,7 @@ int _fill_constant(assembler *as, int size)
 			case 1:
 				if (result > 0xFF && as->line.force_byte == 0)
 				{
-					error(as, "Value truncated");
+					error(as, "value truncated");
 				}
 				result = lobyte(result);
 				emit(as, result);
@@ -1563,7 +1567,7 @@ int _fill_constant(assembler *as, int size)
 			case 2:
 				if (result > 0xFFFF && as->line.force_byte == 0)
 				{
-					error(as, "Value truncated");
+					error(as, "value truncated");
 				}
 				eword(as, result);
 				break;
@@ -1624,7 +1628,7 @@ int _fqb(assembler *as)
  * FILL CONSTANT DATA WITH VALUE
  *
  *****************************************************************************/
-
+#pragma mark Fill Constant Data With Value
 
 static int _fill_constant_with_value(assembler *as, int size, int value);
 
@@ -1651,7 +1655,7 @@ static int _fill_constant_with_value(assembler *as, int size, int value)
 	{
 		if (result < 0)
 		{
-			error(as, "Illegal value");
+			error(as, "illegal value");
 
 			return 0;
 		}
@@ -1686,7 +1690,7 @@ static int _fill_constant_with_value(assembler *as, int size, int value)
 	}
 	else
 	{
-		error(as, "Undefined operand during pass one");
+		error(as, "undefined operand during pass one");
 	}
 
 	if (*as->line.label != EOS)

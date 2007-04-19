@@ -27,7 +27,6 @@
 
 
 /* Variable limits */
-
 #define FNAMESIZE	512
 #define MAXBUF		1024
 #define MAXOP		10      /* longest mnemonic */
@@ -37,14 +36,12 @@
 
 
 /* Character Constants */
-
 #define TAB     '\t'
 #define BLANK   ' '
 #define EOS     '\0'
 
 
 /* Opcode Classes */
-
 typedef enum _opcode_class
 {
      INH,			/* Inherent                     */
@@ -65,12 +62,12 @@ typedef enum _opcode_class
      GRP2,			/* Group 2 (Read/Modify/Write)  */
      LONGIMM,		/* Immediate mode takes 2 bytes */
      BTB,			/* Bit test and branch          */
-     SETCLR,			/* Bit set or clear             */
+     SETCLR,		/* Bit set or clear             */
      CPD,			/* compare d               6811 */
      XLIMM,			/* LONGIMM for X           6811 */
-     XNOIMM,			/* NOIMM for X             6811 */
+     XNOIMM,		/* NOIMM for X             6811 */
      YLIMM,			/* LONGIMM for Y           6811 */
-     YNOIMM,			/* NOIMM for Y             6811 */
+     YNOIMM,		/* NOIMM for Y             6811 */
      FAKE,			/* convenience mnemonics   6804 */
      APOST,			/* A accum after opcode    6804 */
      BPM,			/* branch reg plus/minus   6804 */
@@ -83,16 +80,14 @@ typedef enum _opcode_class
      BIT,			/* bit manipulation        6301 */
      SYS,			/* syscalls (really swi)        */
 //     PSEUDO,			/* Pseudo ops                   */
-     P2RTOR,			/* Page 2 register to register  */
-     P3RTOR,			/* Page 3 register to register  */
+     P2RTOR,		/* Page 2 register to register  */
+     P3RTOR,		/* Page 3 register to register  */
      P3IMM,			/* Page 3 immediate only	*/
-     P3NOIMM			/* Page 3 No Immediate          */
+     P3NOIMM		/* Page 3 No Immediate          */
 } opcode_class;
 
 
-
 /* Pseudo-op classes. */
-
 typedef enum _pseudo_class
 {
 	RM,              /* Reserve Memory               */
@@ -111,31 +106,29 @@ struct filestack
 	coco_path_id	fd;
 	char			file[FNAMESIZE];
 	u_int			current_line;
-	int		num_blank_lines;
-	int		num_comment_lines;
-	int			end_encountered;
+	int				num_blank_lines;
+	int				num_comment_lines;
+	int				end_encountered;
 };
-
 
 
 /* linked list to hold line numbers */
-
 struct link
 {
-	int		L_num; /* line number */
-	struct link		*next; /* pointer to next node */
+	int				L_num;		/* line number */
+	struct link		*next;		/* pointer to next node */
 };
+
 
 struct nlist
 {	/* basic symbol table entry */
 	char			*name;
-	int		def;
-	int			overridable;
-	struct nlist	*Lnext ; /* left node of the tree leaf */
-	struct nlist	*Rnext; /* right node of the tree leaf */ 
-	struct link		*L_list; /* pointer to linked list of line numbers */
+	int				def;
+	int				overridable;
+	struct nlist	*Lnext;		/* left node of the tree leaf */
+	struct nlist	*Rnext;		/* right node of the tree leaf */ 
+	struct link		*L_list;	/* pointer to linked list of line numbers */
 };
-
 
 
 struct psect
@@ -144,8 +137,6 @@ struct psect
 	int		size;
 	struct psect	*next;
 };
-
-
 
 
 typedef enum
@@ -157,12 +148,12 @@ typedef enum
 
 
 /* mnemonic table entry */
-
 enum {
 	CPU_M6809=0,
 	CPU_H6309=1,
 	CPU_X9=2
 };
+
 
 struct h6309_opcode
 {
@@ -171,7 +162,7 @@ struct h6309_opcode
 	int     opcode;         /* its base opcode */
 	char    cycles;         /* its base # of cycles */
 	char    cpuclass;       /* its processor class (CPU_* above) */
-	int	(*func)();	/* function */
+	int		(*func)();		/* function */
 };
 
 
@@ -191,7 +182,6 @@ struct pseudo_opcode
 	pseudo_info		info;
 	int				(*func)();		/* function */
 };
-
 
 
 typedef struct
@@ -215,22 +205,20 @@ typedef enum
 
 struct source_line
 {
-	line_type			type;
+	line_type		type;
 	int				has_warning;				/* allow assembler warnings */
-	char				label[MAXLAB];				/* label on current line */
-	char				Op[MAXOP];					/* opcode mnemonic on current line */
-	char				operand[MAXBUF];			/* remainder of line after op */
-	char				comment[MAXBUF];			/* comment after operand, or entire line */
-	mnemonic			mnemonic;
-	char				*optr;						/* pointer into current operand field */
+	char			label[MAXLAB];				/* label on current line */
+	char			Op[MAXOP];					/* opcode mnemonic on current line */
+	char			operand[MAXBUF];			/* remainder of line after op */
+	char			comment[MAXBUF];			/* comment after operand, or entire line */
+	mnemonic		mnemonic;
+	char			*optr;						/* pointer into current operand field */
 	int				force_word;					/* Result should be a word when set */
 	int				force_byte;					/* result should be a byte when set */
 };
 
 
-
 /* Object generation types. */
-
 typedef enum
 {
 	OUTPUT_BINARY,
@@ -239,9 +227,7 @@ typedef enum
 } object_file_type;
 
 
-
 /* Assembly modes. */
-
 typedef enum
 {
 	ASM_OS9,
@@ -250,20 +236,18 @@ typedef enum
 } asm_mode;
 
 
-
 /* Assembler state */
-
 typedef struct _assembler
 {
-	time_t				start_time;
-	struct source_line  line;						/* current source line */
-	object_file_type	output_type;				/* type of output file */
+	time_t			start_time;
+	struct source_line  line;					/* current source line */
+	object_file_type	output_type;			/* type of output file */
 	u_int			num_errors;					/* total number of errors */
 	u_int			num_warnings;				/* assembler warnings */
 	u_int			cumulative_blank_lines;		/* blank line count across all files */
 	u_int			cumulative_comment_lines;   /* comment line count across all files */
 	u_int			cumulative_total_lines;		/* total line count across all files */
-	char				input_line[MAXBUF];			/* input line buffer */
+	char			input_line[MAXBUF];			/* input line buffer */
 	u_int			program_counter;			/* Program Counter */
 	u_int			data_counter;				/* data counter */
 	u_int			old_program_counter;		/* Program Counter at beginning */
@@ -274,33 +258,33 @@ typedef struct _assembler
 	u_int			use_depth;					/* depth of includes/uses */
 #define MAXAFILE	16
 	u_int			file_index;
-	char				*file_name[MAXAFILE];		/* assembly file name on cmd line */
+	char			*file_name[MAXAFILE];		/* assembly file name on cmd line */
 	u_int			current_filename_index;		/* file number count            */
 #define INCSIZE 16
 	u_int			include_index;
-	char				*includes[INCSIZE];	
-	u_int					Ffn;						/* forward ref file #           */
+	char			*includes[INCSIZE];	
+	u_int			Ffn;						/* forward ref file #           */
 	u_int			F_ref;						/* next line with forward ref   */
-	char				**arguments;				/* pointer to file names        */
+	char			**arguments;				/* pointer to file names        */
 	u_int			E_total;					/* total # bytes for one line   */
-	char				E_bytes[E_LIMIT + MAXBUF];  /* Emitted held bytes           */
+	char			E_bytes[E_LIMIT + MAXBUF];  /* Emitted held bytes           */
 	u_int			E_pc;						/* Pc at beginning of collection*/
 	u_int			P_force;					/* force listing line to include Old_pc */
 	u_int			P_total;					/* current number of bytes collected    */
-	char				P_bytes[P_LIMIT + 60];		/* Bytes collected for listing  */
+	char			P_bytes[P_LIMIT + 60];		/* Bytes collected for listing  */
 	u_int			cumulative_cycles;			/* # of cycles per instruction  */
 	u_int			Ctotal;						/* # of cycles seen so far */
 	int				f_new_page;					/* new page flag */
 	u_int			page_number;				/* page number */
 	int				o_show_cross_reference;		/* cross reference table flag */
 	int				f_count_cycles;				/* cycle count flag */
-	u_int			Opt_C;						/* */
-	int			o_page_depth;				/* page depth */
+	u_int			o_show_cond;				/* show conditionals in listing */
+	int				o_page_depth;				/* page depth */
 	int				o_show_error;				/* show error */
 	u_int			Opt_F;						/* */
 	u_int			Opt_G;						/* */
 	int				o_show_listing;				/* listing flag 0=nolist, 1=list*/
-	asm_mode			o_asm_mode;					/* assembler mode */
+	asm_mode		o_asm_mode;					/* assembler mode */
 	u_int			Opt_N;						/* */
 	int				o_quiet_mode;				/* quiet mode */
 	int				o_show_symbol_table;		/* symbol table flag, 0=no symbol */
@@ -311,30 +295,30 @@ typedef struct _assembler
 	u_int			footer_depth;				/* page footer of lines */
 	int				o_format_only;              /* format only flag, 0=no symbol */
 	int				o_debug;					/* debug flag */
-	coco_path_id		fd_object;					/* object file's file descriptor*/
+	coco_path_id	fd_object;					/* object file's file descriptor*/
 	int				object_output;
-	char				object_name[FNAMESIZE];
-	char				_crc[3];
+	char			object_name[FNAMESIZE];
+	char			_crc[3];
 	u_int			do_module_crc;
 	int				ignore_errors;
 	int				tabbed;
 #define	CONDSTACKLEN	256
 	u_int			conditional_stack_index;
-	char				conditional_stack[CONDSTACKLEN];
+	char			conditional_stack[CONDSTACKLEN];
 	int				o_do_parsing;
 	int				o_cpuclass;
 	u_int			code_bytes;					/* number of emitted code bytes */
 #define NAMLEN 64
 #define TTLLEN NAMLEN
-	u_char				name_header[NAMLEN];
-	u_char				title_header[TTLLEN];
-	struct nlist		*bucket;					/* root node of the tree */
-	struct psect		psect[256];
-	int			current_psect;
+	u_char			name_header[NAMLEN];
+	u_char			title_header[TTLLEN];
+	struct nlist	*bucket;					/* root node of the tree */
+	struct psect	psect[256];
+	int				current_psect;
 	int				code_segment_start;
 	u_int			decb_exec_address;
-	int					newstyle;
-	int					pseudoUppercase;
+	int				newstyle;
+	int				pseudoUppercase;
 } assembler;
 
 
@@ -362,13 +346,11 @@ void fwd_mark(assembler *as);
 void fwd_next(assembler *as);
 void fwd_reinit(assembler *as);
 
-
 /* print.c */
 void print_line(assembler *as, int override, char infochar, int counter);
 void print_summary(assembler *as);
 void print_header(assembler *as);
 void print_footer(assembler *as);
-
 
 /* symbol_bucket.c */
 struct nlist *symbol_add(assembler *as, char *str, int val, int override);
@@ -376,7 +358,6 @@ struct nlist *symbol_find(assembler *as, char *name, int);
 int mne_look(assembler *as, char *str, mnemonic *m);
 void symbol_dump_bucket(struct nlist *ptr);
 void symbol_cross_reference(struct nlist *ptr);
-
 
 /* util.c */
 char *extractfilename(char *pathlist);
@@ -402,7 +383,6 @@ u_int hibyte(int i);
 int lobyte(int i);
 char mapdn(char c);
 char *skip_white(char *ptr);
-
 
 /* pseudo.c */
 int	_else(assembler *as),
@@ -476,5 +456,3 @@ int	_gen(assembler *as, int opcode),
 	_p2rtor(assembler *as, int opcode),
 	_p3rtor(assembler *as, int opcode),
 	_sys(assembler *as, int opcode);
-
-
