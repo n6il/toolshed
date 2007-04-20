@@ -43,6 +43,7 @@ int CoCoToUnixPerms(int attrs)
 	{
 		ret |= S_IXUSR;
 	}
+#ifndef BDS
 	if (attrs & FAP_PREAD)
 	{
 		ret |= S_IROTH;
@@ -55,6 +56,7 @@ int CoCoToUnixPerms(int attrs)
 	{
 		ret |= S_IXOTH;
 	}
+#endif
 			
 	return ret;
 }
@@ -76,6 +78,7 @@ int UnixToCoCoPerms(int attrs)
 	{
 		ret |= FAP_EXEC;
 	}
+#ifndef BDS
 	if (attrs & S_IROTH)
 	{
 		ret |= FAP_PREAD;
@@ -88,7 +91,8 @@ int UnixToCoCoPerms(int attrs)
 	{
 		ret |= FAP_PEXEC;
 	}
-			
+ #endif
+ 			
 	return ret;
 }
 

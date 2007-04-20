@@ -10,7 +10,9 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <errno.h>
+#ifndef WIN32
 #include <dirent.h>
+#endif
 
 #include "cocotypes.h"
 #include "os9path.h"

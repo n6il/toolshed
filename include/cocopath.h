@@ -15,7 +15,9 @@ extern "C" {
 #include <sys/stat.h>
 #include <cocotypes.h>
 #include <cococonv.h>
+#ifndef WIN32
 #include <dirent.h>
+#endif
 
 #include "nativepath.h"
 #include "os9path.h"

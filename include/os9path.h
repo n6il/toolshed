@@ -10,8 +10,9 @@
 #include <sys/stat.h>
 #include <cocotypes.h>
 #include <cococonv.h>
+#ifndef WIN32
 #include <dirent.h>
-
+#endif
 
 /* File descriptor segment descriptor */
 typedef struct

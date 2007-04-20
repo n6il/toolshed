@@ -14,8 +14,9 @@ extern "C" {
 #include <sys/stat.h>
 #include <cocotypes.h>
 #include <cococonv.h>
+#ifndef WIN32
 #include <dirent.h>
-
+#endif
 
 typedef struct _decb_dir_entry
 {
