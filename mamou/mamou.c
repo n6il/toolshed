@@ -658,10 +658,7 @@ void mamou_parse_line(assembler *as, char *input_line)
 		return;
 	}
 	
-	/* 4. Reanchor pointer to start of line. */
-	ptrfrm = input_line;
-
-    /* 5. Check for comment characters. */
+    /* 4. Check for comment characters. */
 	if (*ptrfrm == '*' || *ptrfrm == ';' || *ptrfrm == '#')
     {
         strcpy(as->line.comment, input_line);
@@ -680,6 +677,9 @@ void mamou_parse_line(assembler *as, char *input_line)
         return;
     }
 	
+	/* 5. Reanchor pointer to start of line. */
+	ptrfrm = input_line;
+
     while (delim(*ptrfrm) == 0)
     {
         *ptrto++ = *ptrfrm++;
