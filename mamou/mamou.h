@@ -252,7 +252,6 @@ typedef struct _assembler
 	u_int			data_counter;				/* data counter */
 	u_int			old_program_counter;		/* Program Counter at beginning */
 	u_int			DP;							/* Direct Page pointer */
-	u_int			last_symbol;				/* result of last symbol_find */
 	u_int			pass;						/* current pass */
 	struct filestack	*current_file;
 	u_int			use_depth;					/* depth of includes/uses */

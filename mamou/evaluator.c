@@ -9,11 +9,19 @@
  *
  *      an expression is constructed like this:
  *
- *      expr ::=  fact + expr |
- *                fact - expr |
- *                fact | expr |
- *                fact & expr |
- *                fact ^ expr |
+ *      expr ::=  rel > expr |
+ *                rel < expr |
+ *                rel >= expr |
+ *                rel <= expr |
+ *                rel <> expr |
+ *                rel = expr |
+ *				  rel
+ *                
+ *      rel  ::=  fact + rel |
+ *                fact - rel |
+ *                fact | rel |
+ *                fact & rel |
+ *                fact ^ rel |
  *				  fact
  *                
  *      fact ::=  term * fact |
@@ -51,10 +59,12 @@
 
 /* Static functions */
 static int expr(assembler *as, int *term, char **eptr, int ignoreUndefined);
+static int rel(assembler *as, int *term, char **eptr, int ignoreUndefined);
 static int factor(assembler *as, int *term, char **eptr, int ignoreUndefined);
 static int term(assembler *as, int *term, char **eptr, int ignoreUndefined);
 static int is_factor_op(char c);
 static int is_term_op(char c);
+static int is_rel_op(char c);
 
 
 /* Static variables */
@@ -128,6 +138,108 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 	@result 1=evaluation was made ok
  */
 static int expr(assembler *as, int *result, char **eptr, int ignoreUndefined)
+{
+	int			left = 0;
+	int			right = 0;			/* left and right terms for expression */
+	char		o, o2;				/* operator characters */
+
+	/* pickup first part of expression */
+	if ((rel(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
+	{
+//		*result = Dp * 256 + 0xfe;
+		left = 0;
+//		return 0;
+	}
+
+	/* gather rest of line */
+	if (is_rel_op(**eptr))
+	{
+		/* pickup operator and skip */
+ 		o = *((*eptr)++);
+		o2 = EOS;
+		if (is_rel_op(**eptr))
+		{
+			o2 = *((*eptr)++);
+		}
+		
+		/* pickup current rightmost side */		
+		if (expr(as, &right, eptr, ignoreUndefined) == 0)
+		{
+//			*result = Dp * 256 + 0xfe;
+			right = 0;
+//			return 0;
+		}
+		
+		/* process left/right according to operator */
+		switch (o)
+		{
+			case '>':
+				if (o2)
+				{
+					switch (o2)
+					{
+						case '=':
+							left = (left >= right);
+							break;
+
+						default:
+							error(as, "bad operator");
+							return 0;
+					}
+				}
+				else
+				{
+					left = (left > right);
+				}
+				break;
+			case '<':
+				if (o2)
+				{
+					switch (o2)
+					{
+						case '=':
+							left = (left <= right);
+							break;
+
+						case '>':
+							left = (left != right);
+							break;
+
+						default:
+							error(as, "bad operator");
+							return 1;
+					}
+				}
+				else
+				{
+					left = (left < right);
+				}
+				break;
+			case '=':
+				left = left == right;
+				break;
+		}
+	}
+
+	/* assign left to result */
+	*result = left;
+
+	/* return status */
+	return 1;
+}
+
+
+
+/*!
+	@function rel
+	@discussion Evaluates relational expressions
+	@param as The assembler state structure
+	@param result A pointer to the result of the evaluated expression
+	@param eptr The expression to be evaluated
+	@param ignoreUndefined Ignore any undefined symbols
+	@result 1=evaluation was made ok
+ */
+static int rel(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
 	int			left = 0;
 	int			right = 0;			/* left and right terms for expression */
@@ -451,7 +563,7 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 				pnt->next = NULL;
 			}
 
-			val = as->last_symbol;
+			val = pointer->def;
 		}
 		else
 		{
@@ -540,6 +652,22 @@ static int is_factor_op(char c)
 static int is_term_op(char c)
 {
 	if (any(c, "+-&|^!"))
+	{
+		return 1;
+	}	
+	
+	return 0;
+}
+
+
+/*!
+	@function is_rel_op
+	@discussion Determines if a character is a relation operator
+	@param c Character to evaluate
+ */
+static int is_rel_op(char c)
+{
+	if (any(c, "=<>!"))
 	{
 		return 1;
 	}	

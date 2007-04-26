@@ -196,6 +196,7 @@ struct nlist *symbol_add(assembler *as, char *name, int val, int override)
 	@param as The assembler state structure
 	@param name Name of the symbol to search for
 	@param ignoreUndefined Ignore the symbol if it is not found
+	@result pointer to symbol if found, else NULL
  */
 struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 {
@@ -225,8 +226,7 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 #endif
 		if (i == 0)
 		{
-			as->last_symbol = np->def;
-			return(np);
+			return np;
 		}
 		else if (i < 0)
 		{
@@ -238,14 +238,12 @@ struct nlist *symbol_find(assembler *as, char *name, int ignoreUndefined)
 		}
 	}
 
-	as->last_symbol = 0;
-
 	if (as->pass == 2 && ignoreUndefined == 0)
 	{
 		error(as, "symbol undefined on pass 2");
 	}
 	
-	return(NULL); 
+	return NULL;
 }
 
 

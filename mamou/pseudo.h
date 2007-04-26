@@ -22,6 +22,7 @@ struct pseudo_opcode pseudo[] = {
 	{"absolute",OTHER,  HAS_NO_OPERAND,					_null_op},
 	{"align",   OTHER,  HAS_OPERAND,					_align},
 	{"bsz",		FC,		HAS_NO_OPERAND,					_zmb},
+	{"byte",	FC,		HAS_OPERAND,					_fcb},
 	{"code",	OTHER,  HAS_NO_OPERAND,					_null_op},
 	{"cond",	IF,		HAS_OPERAND,					_ifne},
 	{"db",		RM,		HAS_OPERAND,					_fcb},
@@ -29,6 +30,7 @@ struct pseudo_opcode pseudo[] = {
 	{"dtb",		FC,		HAS_NO_OPERAND,					_dtb},
 	{"dts",		FC,		HAS_NO_OPERAND,					_dts},
 	{"dw",		RM,		HAS_OPERAND,					_fdb},
+	{"dword",	FC,		HAS_OPERAND,					_fqb},
 	{"else",	ELSE,   HAS_NO_OPERAND,					_else},
 	{"emod",	OTHER,  HAS_NO_OPERAND,					_emod},
 	{"end",		OTHER,  HAS_OPERAND,					__end},
@@ -81,6 +83,7 @@ struct pseudo_opcode pseudo[] = {
 	{"title",   OTHER,  HAS_OPERAND_WITH_SPACES,		_ttl},
 	{"ttl",		OTHER,  HAS_OPERAND_WITH_SPACES,		_ttl},
 	{"use",		OTHER,  HAS_OPERAND,					_use},
+	{"word",	FC,		HAS_OPERAND,					_fdb},
 	{"zmb",		OTHER,  HAS_OPERAND,					_zmb},
 	{"zmd",		OTHER,  HAS_OPERAND,					_zmd},
 	{"zmq",		OTHER,  HAS_OPERAND,					_zmq}
