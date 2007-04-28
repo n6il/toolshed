@@ -158,6 +158,7 @@ int _imgen(assembler *as, int opcode)
 	/* Get indicated addressing mode. */
 	amode = addressing_mode(as);
 	
+#if 0
 	/* Verify immediate addressing. */
 	if (amode != IMMED)
 	{
@@ -168,6 +169,14 @@ int _imgen(assembler *as, int opcode)
 	
 	/* skip over # */
 	as->line.optr++;
+#else
+	/* Make use of immediate addressing # optional */
+	if (*(as->line.optr) == '#')
+	{
+		/* skip over # */
+		as->line.optr++;
+	}
+#endif
 
 	evaluate(as, &result, &as->line.optr, 0);
 	
@@ -178,23 +187,14 @@ int _imgen(assembler *as, int opcode)
 		return 0;
 	}
 
-	if (*as->line.optr++ != ',')
+	if (*as->line.optr != ',' && *as->line.optr != ';')
 	{
-		error(as, "comma required between operands");
+		error(as, "comma or semicolon required between operands");
 
 		return 0;
 	}
-
-#if 0
-	while (*as->line.optr == ' ') as->line.optr++;
-
-	if (*as->line.optr == '#')
-	{
-		error(as, "immediate addressing illegal");
-
-		return 0;
-	}
-#endif
+	
+	as->line.optr++;
 
 	if (*as->line.optr == '[')
 	{
@@ -1510,10 +1510,17 @@ static int do_indexed(assembler *as, int opcode)
 		if (as->line.force_byte)
 	    {
 			emit(as, pbyte + 0x08);
-			if (result <-128 || result >127)
+			if (result <- 128 || result > 127)
 			{
+				/* it is permissible to specify a larger range, we just
+				 * flag it with a warning and downgrade the value
+				 */
+#if 0
 				error(as, "value out of range 2");
 				return 0;
+#else
+				as->line.has_warning = 1;
+#endif
 			}
 
 			if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0))
