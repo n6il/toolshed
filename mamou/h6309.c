@@ -1814,3 +1814,93 @@ static h6309_reg regnum(assembler *as)
 	return(ERR);
 }
 
+
+/*!
+	@function _bitgen
+	@discussion Bitfield instruction handler
+	@param as The assembler state structure
+	@param opcode The op-code value to emit
+ */
+int _bitgen(assembler *as, int opcode)
+{
+	int r, src, dst, addr;
+	
+	/* get register number */
+	r = regnum(as);
+
+	/* check for legal register */
+	if (r != RA && r != RB && r != RCC)
+	{
+		error(as, "illegal register");
+		
+		return 1;
+	}
+	
+	/* skip over register name */
+	while (alpha(*as->line.optr))
+	{
+		as->line.optr++;
+	}
+	
+	/* skip over delimiter */
+	as->line.optr++;
+	
+	/* capture source bit */
+	evaluate(as, &src, &as->line.optr, 0);
+	
+	/* skip over delimiter */
+	as->line.optr++;
+	
+	/* capture destination bit */
+	evaluate(as, &dst, &as->line.optr, 0);
+
+	/* if src or dst bit > 7, error */
+	if (src > 7 || dst > 7)
+	{
+		error(as, "illegal bit number");
+		return 1;
+	}
+	
+	/* skip over delimiter */
+	as->line.optr++;
+	
+	/* capture 8-bit address (DP offsetted) */
+	evaluate(as, &addr, &as->line.optr, 0);
+
+	emit(as, PAGE3);
+	emit(as, opcode);
+
+	/* emit encoded byte */
+	{
+		char b;
+		
+		switch (r)
+		{
+			case RA:
+				b = 1 << 6;
+				break;
+				
+			case RB:
+				b = 2 << 6;
+				break;
+			
+			case RCC:
+				b = 0 << 6;
+				break;
+		}
+		
+		b |= (dst - 1) << 3;
+		b |= (src - 1);
+		
+		emit(as, b);
+	}
+	
+	/* emit direct page address */
+	emit(as, addr);
+		
+	print_line(as, 0, ' ', as->old_program_counter);
+	
+	return 0;
+}
+
+

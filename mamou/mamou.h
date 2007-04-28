@@ -454,4 +454,5 @@ int	_gen(assembler *as, int opcode),
 	_rtor(assembler *as, int opcode),
 	_p2rtor(assembler *as, int opcode),
 	_p3rtor(assembler *as, int opcode),
-	_sys(assembler *as, int opcode);
+	_sys(assembler *as, int opcode),
+	_bitgen(assembler *as, int opcode);
