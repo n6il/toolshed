@@ -19,6 +19,7 @@
  */
 
 struct pseudo_opcode pseudo[] = {
+	{"=",		EQU,    HAS_OPERAND,					_equ},
 	{"absolute",OTHER,  HAS_NO_OPERAND,					_null_op},
 	{"align",   OTHER,  HAS_OPERAND,					_align},
 	{"bsz",		FC,		HAS_NO_OPERAND,					_zmb},
