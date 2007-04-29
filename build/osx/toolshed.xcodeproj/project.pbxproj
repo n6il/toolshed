@@ -22,6 +22,7 @@
 				684E54A90AC24AFF004DAB23 /* PBXTargetDependency */,
 				684E54AB0AC24B04004DAB23 /* PBXTargetDependency */,
 				684E54AD0AC24B07004DAB23 /* PBXTargetDependency */,
+				771193570BE50C4C00BD51A1 /* PBXTargetDependency */,
 			);
 			name = All;
 			productName = All;
@@ -209,6 +210,7 @@
 		68F937300B8DB02100DF9944 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
 		68F937310B8DB02100DF9944 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
 		68F937320B8DB02100DF9944 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
+		771193480BE50BF000BD51A1 /* makewav.c in Sources */ = {isa = PBXBuildFile; fileRef = 771193470BE50BF000BD51A1 /* makewav.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -716,6 +718,13 @@
 			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
 		};
+		771193560BE50C4C00BD51A1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 771193410BE50BAF00BD51A1;
+			remoteInfo = makewav;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -865,6 +874,8 @@
 		68E3F24A0AC37F1300E1DFE0 /* toolshed.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = toolshed.c; path = ../../libtoolshed/toolshed.c; sourceTree = SOURCE_ROOT; };
 		68F936D70B8DAEBE00DF9944 /* cocofuse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cocofuse; sourceTree = BUILT_PRODUCTS_DIR; };
 		68F936DD0B8DAEED00DF9944 /* cocofuse.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = cocofuse.c; path = ../../cocofuse/cocofuse.c; sourceTree = SOURCE_ROOT; };
+		771193420BE50BAF00BD51A1 /* makewav */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = makewav; sourceTree = BUILT_PRODUCTS_DIR; };
+		771193470BE50BF000BD51A1 /* makewav.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = makewav.c; path = ../../makewav/makewav.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1039,6 +1050,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		771193400BE50BAF00BD51A1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1090,6 +1108,7 @@
 				684E54250AC249D8004DAB23 /* ar2 */,
 				684E54840AC24A76004DAB23 /* tocgen */,
 				68F936D70B8DAEBE00DF9944 /* cocofuse */,
+				771193420BE50BAF00BD51A1 /* makewav */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1181,6 +1200,7 @@
 		684E53400AC2484C004DAB23 /* Executables */ = {
 			isa = PBXGroup;
 			children = (
+				7711935C0BE50D2D00BD51A1 /* makewav */,
 				68F937650B8DB0C900DF9944 /* cocofuse */,
 				684E547E0AC24A66004DAB23 /* tocgen */,
 				684E53FB0AC2499B004DAB23 /* ar2 */,
@@ -1346,6 +1366,14 @@
 				68F936DD0B8DAEED00DF9944 /* cocofuse.c */,
 			);
 			name = cocofuse;
+			sourceTree = "<group>";
+		};
+		7711935C0BE50D2D00BD51A1 /* makewav */ = {
+			isa = PBXGroup;
+			children = (
+				771193470BE50BF000BD51A1 /* makewav.c */,
+			);
+			name = makewav;
 			sourceTree = "<group>";
 		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
@@ -1736,6 +1764,22 @@
 			productReference = 68F936D70B8DAEBE00DF9944 /* cocofuse */;
 			productType = "com.apple.product-type.tool";
 		};
+		771193410BE50BAF00BD51A1 /* makewav */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 771193440BE50BDE00BD51A1 /* Build configuration list for PBXNativeTarget "makewav" */;
+			buildPhases = (
+				7711933F0BE50BAF00BD51A1 /* Sources */,
+				771193400BE50BAF00BD51A1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = makewav;
+			productName = makewav;
+			productReference = 771193420BE50BAF00BD51A1 /* makewav */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1763,6 +1807,7 @@
 				684E549A0AC24AD8004DAB23 /* All */,
 				68E3F2430AC37ED200E1DFE0 /* libtoolshed */,
 				68F936D60B8DAEBE00DF9944 /* cocofuse */,
+				771193410BE50BAF00BD51A1 /* makewav */,
 			);
 		};
 /* End PBXProject section */
@@ -1998,6 +2043,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				68F936DE0B8DAEED00DF9944 /* cocofuse.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7711933F0BE50BAF00BD51A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				771193480BE50BF000BD51A1 /* makewav.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2363,6 +2416,11 @@
 			isa = PBXTargetDependency;
 			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
 			targetProxy = 68F937050B8DAF5300DF9944 /* PBXContainerItemProxy */;
+		};
+		771193570BE50C4C00BD51A1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 771193410BE50BAF00BD51A1 /* makewav */;
+			targetProxy = 771193560BE50C4C00BD51A1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2921,6 +2979,36 @@
 			};
 			name = Release;
 		};
+		771193450BE50BDE00BD51A1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = makewav;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		771193460BE50BDE00BD51A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = makewav;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3082,6 +3170,15 @@
 			buildConfigurations = (
 				68F936E00B8DAEED00DF9944 /* Debug */,
 				68F936E10B8DAEED00DF9944 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		771193440BE50BDE00BD51A1 /* Build configuration list for PBXNativeTarget "makewav" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				771193450BE50BDE00BD51A1 /* Debug */,
+				771193460BE50BDE00BD51A1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
