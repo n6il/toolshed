@@ -1,4 +1,5 @@
 # Makefile for libdecb.a
+include ../rules.mak
 
 vpath %.c ../../../libdecb
 

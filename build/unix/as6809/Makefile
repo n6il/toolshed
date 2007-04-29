@@ -1,4 +1,5 @@
 # Makefile for as6809
+include ../rules.mak
 
 vpath %.c ../../../attic/as6809
 

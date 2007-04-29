@@ -1,4 +1,5 @@
 # Makefile for rsdos
+include ../rules.mak
 
 vpath %.c ../../../rsdos
 

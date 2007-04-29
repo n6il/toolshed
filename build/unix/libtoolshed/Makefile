@@ -1,4 +1,5 @@
 # Makefile for libtoolshed.a
+include ../rules.mak
 
 vpath %.c ../../../libtoolshed
 

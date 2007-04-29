@@ -1,4 +1,5 @@
 # Makefile for libcoco.a
+include ../rules.mak
 
 vpath %.c ../../../libcoco
 

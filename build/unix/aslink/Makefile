@@ -1,4 +1,5 @@
 # Makefile for aslink
+include ../rules.mak
 
 vpath %.c ../../../aslink
 

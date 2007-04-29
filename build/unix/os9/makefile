@@ -1,4 +1,5 @@
 # Makefile for os9
+include ../rules.mak
 
 vpath %.c ../../../os9
 

@@ -1,4 +1,5 @@
 # Makefile for libsys.a
+include ../rules.mak
 
 vpath %.c ../../../libsys
 

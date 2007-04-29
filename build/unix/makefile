@@ -1,4 +1,5 @@
 # Makefile for ToolShed
+include rules.mak
 
 vpath %.c ../../mamou:../../os9
 
@@ -8,7 +9,7 @@ DIRS		= libtoolshed libnative librbf libcoco libdecb libmisc libsys libdecb \
 		ar2 os9 mamou decb rma rlink rdump tocgen cocofuse
 
 all:
-	$(foreach dir, $(DIRS), (cd $(dir); make);)
+	$(foreach dir, $(DIRS), (cd $(dir); $(MAKE));)
 
 install: all
 	cp ar2/ar2 os9/os9 mamou/mamou decb/decb rma/rma rlink/rlink rdump/rdump tocgen/tocgen cocofuse/cocofuse \
@@ -26,5 +27,5 @@ package: all
 	rm -rf toolshed$(RELEASE)
 
 clean:
-	$(foreach dir, $(DIRS), (cd $(dir); make clean);)
+	$(foreach dir, $(DIRS), (cd $(dir); $(MAKE) clean);)
 	rm $(PACKAGENAME)

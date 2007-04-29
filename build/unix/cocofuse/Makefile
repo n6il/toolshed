@@ -1,3 +1,5 @@
+include ../rules.mak
+
 BINARY = cocofuse
 
 vpath %.c ../../../$(BINARY)

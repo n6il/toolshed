@@ -1,4 +1,5 @@
 # Makefile for libmisc.a
+include ../rules.mak
 
 vpath %.c ../../../libmisc
 

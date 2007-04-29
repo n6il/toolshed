@@ -1,4 +1,5 @@
 # Makefile for mamou
+include ../rules.mak
 
 vpath %.c ../../../mamou
 

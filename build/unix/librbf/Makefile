@@ -1,4 +1,5 @@
 # Makefile for librbf.a
+include ../rules.mak
 
 vpath %.c ../../../librbf
 

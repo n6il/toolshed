@@ -1,4 +1,5 @@
 # Makefile for decb
+include ../rules.mak
 
 vpath %.c ../../../decb ../../../os9
 

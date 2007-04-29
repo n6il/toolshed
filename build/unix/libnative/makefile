@@ -1,4 +1,5 @@
 # Makefile for libnative.a
+include ../rules.mak
 
 vpath %.c ../../../libnative
 
