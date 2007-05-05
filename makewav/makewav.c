@@ -19,6 +19,25 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef __linux__
+/* implemented based on OSX man page */
+static inline int digittoint(int c)
+{
+	/* if not 0-9, a-f, or A-F then return 0 */
+	if (!isxdigit(c))
+		return 0;
+
+	if (isdigit(c))
+		return c - '0';
+
+	if (isupper(c))
+		return c - 'A' + 10;
+
+	/* not 0-9, not A-F, must be a-f */
+	return c - 'a' + 10;
+}
+#endif
+
 #define MAXPATHLEN 512
 #define PI 3.1415926
 

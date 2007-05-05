@@ -7,9 +7,10 @@ vpath %.h ../../../makewav
 
 BINARY	= makewav
 OBJS	= makewav.o
+LIBS	= -lm
 
 $(BINARY):	$(OBJS)
-	$(CC) $(OBJS) -o $@
+	$(CC) $(OBJS) $(LIBS) -o $@
 
 clean:
 	rm $(BINARY) *.o
