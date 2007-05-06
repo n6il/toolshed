@@ -593,10 +593,19 @@ static struct fuse_operations coco_filesystem_operations =
 #endif
 };
 
+void usage(char* name)
+{
+	printf("Usage: %s: dskimage mountpoint [FUSE options]\n", name);
+	exit(1);
+}
 
 int main(int argc, char **argv)
 {
-	strcpy(dsk, argv[2]);
-	return fuse_main(argc - 1, argv, &coco_filesystem_operations, NULL);
+	if(argc < 3)
+		usage(argv[0]);
+
+	strcpy(dsk, argv[1]);
+	argv[1] = argv[0];
+	return fuse_main(argc - 1, &argv[1], &coco_filesystem_operations, NULL);
 }
 #endif
