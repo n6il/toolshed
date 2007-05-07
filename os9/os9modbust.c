@@ -128,7 +128,7 @@ static int do_modbust(char **argv, char *filename)
 
 			if (buffer[0] == '\xCD')
 			{
-				os9_path_id path2;
+				coco_path_id path2;
 				char name[256];
 				int nameoffset;
 
@@ -156,7 +156,7 @@ static int do_modbust(char **argv, char *filename)
 				OS9StringToCString((u_char *)name);
 				printf("Busting module %s...\n", name);
 
-				ec = _os9_create(&path2, name, FAM_WRITE, FAP_READ | FAP_WRITE);
+				ec = _coco_create(&path2, name, FAM_WRITE, FAP_READ | FAP_WRITE);
 
 				if (ec != 0)
 				{
@@ -165,8 +165,8 @@ static int do_modbust(char **argv, char *filename)
 				}
 
 				size += 4;
-				_os9_write(path2, module, &size);
-				_os9_close(path2);
+				_coco_write(path2, module, &size);
+				_coco_close(path2);
 
 				free(module);
 			}
