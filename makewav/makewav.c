@@ -43,12 +43,15 @@ static inline int digittoint(int c)
 
 int             seconds;
 int             sample_rate;
+int             binary;
 char            filename[9];
 unsigned char   file_type;
 unsigned char   data_type;
 char            out_filename[MAXPATHLEN];
 char            in_filename[MAXPATHLEN];
 int             verbose;
+short           start_address;
+short           exec_address;
 
 unsigned char  *buffer_1200,
                *buffer_2400;
@@ -171,19 +174,21 @@ void            Build_Sinusoidal_Bufer(unsigned char *buffer, int length)
 int             main(int argc, char **argv)
 {
 	char            linebuf[256];
-	unsigned short  address;
 	int             j;
 
 	/* Initialize globals */
 	seconds = 2;
 	sample_rate = 11250;
+	binary = 0;
 	bzero(filename, 8);
 	strncpy(filename, "FILE", 8);
 	file_type = 2;
 	data_type = 0;
 	strncpy(out_filename, "file.wav", MAXPATHLEN);
 	verbose = 0;
-
+	start_address = 0;
+	exec_address = 0;
+	
 	if (argc < 2)
 	{
 		fprintf(stderr, "\nmakewav - S record to CoCo/MC-10 audio WAV file\n");
@@ -196,15 +201,18 @@ int             main(int argc, char **argv)
 		fprintf(stderr, "General options:\n");
 		fprintf(stderr, " -l<val>    Length for silent leader (default %d seconds)\n", seconds);
 		fprintf(stderr, " -s<val>    Sample rate for WAV file (default %d samples per second)\n", sample_rate);
+		fprintf(stderr, " -r         Treat input file as raw binary, not an S Record file.\n" );
 		fprintf(stderr, " -n<string> Filename to encode in header (default: %s)\n", filename);
 		fprintf(stderr, " -[0-2]     File type (default %d)\n", file_type);
 		fprintf(stderr, "            0 = BASIC program\n");
 		fprintf(stderr, "            1 = BASIC data file\n");
 		fprintf(stderr, "            2 = Machine language program\n");
 		fprintf(stderr, " -[a|b]     Data type (a = ASCII, b=binary (default: %s)\n", data_type == 0 ? "binary" : "ASCII");
+		fprintf(stderr, " -d<val>    Start address (default: $%x)\n", start_address );
+		fprintf(stderr, " -e<val>    Execution address (default: $%x)\n", exec_address );
 		fprintf(stderr, " -o<string> Output file name for WAV file (default: %s)\n", out_filename);
-		fprintf(stderr, " -v         Print information about the conversion (default: off)\n");
-		fprintf(stderr, "\n");
+		fprintf(stderr, " -v         Print information about the conversion (default: off)\n\n");
+		fprintf(stderr, "For <val> use 0x prefix for hex, 0 prefix for octal and no prefix for decimal.\n");
 
 		exit(1);
 	}
@@ -216,10 +224,13 @@ int             main(int argc, char **argv)
 			switch (tolower(argv[j][1]))
 			{
 			case 'l':
-				seconds = atoi(&(argv[j][2]));
+				seconds = strtol(&(argv[j][2]), NULL, 0);
 				break;
 			case 's':
-				sample_rate = atoi(&(argv[j][2]));
+				sample_rate = strtol(&(argv[j][2]), NULL, 0);
+				break;
+			case 'r':
+				binary = 1;
 				break;
 			case 'n':
 				bzero(filename, 8);
@@ -245,6 +256,12 @@ int             main(int argc, char **argv)
 				break;
 			case 'v':
 				verbose = 1;
+				break;
+			case 'd':
+				start_address = strtol(&(argv[j][2]), NULL, 0);
+				break;
+			case 'e':
+				exec_address = strtol(&(argv[j][2]), NULL, 0);
 				break;
 			default:
 				/* Bad option */
@@ -274,29 +291,39 @@ int             main(int argc, char **argv)
 		fprintf(stderr, "Unable to open S Record file name %s\n\n", in_filename);
 		return -1;
 	}
-
+	
 	/* Compute length of data in entire S record */
 	int             total_length;
 
-	total_length = 0;
-
-	while (fgets(linebuf, 255, srec) != NULL)
+	if( binary )
 	{
-		if (linebuf[0] != 'S')
+		/* binary file */
+		fseek( srec, 0, SEEK_END );
+		total_length = ftell( srec );
+	}
+	else
+	{
+		/* srecord */
+		total_length = 0;
+
+		while (fgets(linebuf, 255, srec) != NULL)
 		{
-			fprintf(stderr, "Not an S record file, Line does not begin with 'S'\n\n");
-			return -1;
+			if (linebuf[0] != 'S')
+			{
+				fprintf(stderr, "Not an S record file, Line does not begin with 'S'\n\n");
+				return -1;
+			}
+
+			if (linebuf[1] != '1')
+			{
+				if (verbose)
+					fprintf(stderr, "Warning: Skipping a non S1 record\n");
+
+				continue;
+			}
+
+			total_length += (digittoint(linebuf[2]) * 16) + digittoint(linebuf[3]) - 3;
 		}
-
-		if (linebuf[1] != '1')
-		{
-			if (verbose)
-				fprintf(stderr, "Warning: Skipping a non S1 record\n");
-
-			continue;
-		}
-
-		total_length += (digittoint(linebuf[2]) * 16) + digittoint(linebuf[3]) - 3;
 	}
 
 	if (verbose)
@@ -313,60 +340,82 @@ int             main(int argc, char **argv)
 		return -1;
 	}
 
-	clearerr(srec);
-	fseek(srec, 0, SEEK_SET);
+	rewind( srec );
 
-	int             line_data_length,
-	                program_counter = 0,
-	                line_address = 0;
-
-	while (fgets(linebuf, 255, srec) != NULL)
+	if( binary )
 	{
-		if (linebuf[0] != 'S')
+		/* binary file */
+
+		int	value;
+		value = fread( buffer, total_length, 1, srec );
+		
+		if( value != 1 )
 		{
-			fprintf(stderr, "Not an S record file, Line does not begin with 'S'\n\n");
+			fprintf( stderr, "Could not read entire input file. (%d != 1)\n\n", value );
 			return -1;
 		}
+	}
+	else
+	{
+		/* srecord file */
+		int             line_data_length,
+						program_counter = 0,
+						line_address = 0;
 
-		if (linebuf[1] != '1')
+		while (fgets(linebuf, 255, srec) != NULL)
 		{
-			if (verbose)
-				fprintf(stderr, "Warning: Skipping a non S1 record\n");
-
-			continue;
-		}
-
-		line_address = (digittoint(linebuf[4]) * 4096) + (digittoint(linebuf[5]) * 256) +
-			(digittoint(linebuf[6]) * 16) + digittoint(linebuf[7]);
-
-		if (program_counter != 0)
-		{
-			if (program_counter + line_data_length != line_address)
+			if (linebuf[0] != 'S')
 			{
-				fprintf(stderr, "Discontinus S Records not allowed.\n\n");
+				fprintf(stderr, "Not an S record file, Line does not begin with 'S'\n\n");
 				return -1;
 			}
+
+			if (linebuf[1] != '1')
+			{
+				if (verbose)
+					fprintf(stderr, "Warning: Skipping a non S1 record\n");
+
+				continue;
+			}
+
+			line_address = (digittoint(linebuf[4]) * 4096) + (digittoint(linebuf[5]) * 256) +
+				(digittoint(linebuf[6]) * 16) + digittoint(linebuf[7]);
+
+			if (program_counter != 0)
+			{
+				if (program_counter + line_data_length != line_address)
+				{
+					fprintf(stderr, "Discontinus S Records not allowed.\n\n");
+					return -1;
+				}
+			}
+			else
+			{
+				if( start_address == 0 )
+					start_address = line_address;
+					
+				if( exec_address == 0 )
+					exec_address = line_address;
+			}
+
+			line_data_length = (digittoint(linebuf[2]) * 16) + digittoint(linebuf[3]) - 3;
+			program_counter = line_address;
+
+			int             i;
+
+			for (i = 8; i < 8 + (line_data_length * 2); i += 2)
+			{
+				buffer[byte++] = (digittoint(linebuf[i]) * 16) + digittoint(linebuf[i + 1]);
+			}
 		}
-		else
-			address = line_address;
 
-		line_data_length = (digittoint(linebuf[2]) * 16) + digittoint(linebuf[3]) - 3;
-		program_counter = line_address;
-
-		int             i;
-
-		for (i = 8; i < 8 + (line_data_length * 2); i += 2)
+		if (byte != total_length)
 		{
-			buffer[byte++] = (digittoint(linebuf[i]) * 16) + digittoint(linebuf[i + 1]);
+			fprintf(stderr, "Data buffer not filled completely (%d != %d).\n\n", total_length, byte);
+			return -1;
 		}
 	}
-
-	if (byte != total_length)
-	{
-		fprintf(stderr, "Data buffer not filled completely (%d != %d).\n\n", total_length, byte);
-		return -1;
-	}
-
+	
 	FILE           *output = fopen(out_filename, "w+");
 
 	if (output == NULL)
@@ -375,8 +424,11 @@ int             main(int argc, char **argv)
 		return -1;
 	}
 
+	/* Defined values */
 //	buffer_1200_length = (double)sample_rate / 1200.0;
 //	buffer_2400_length = (double)sample_rate / 2400.0;
+
+	/* Using emperical measurment */
 	buffer_1200_length = (double)sample_rate / 1094.68085106384;
 	buffer_2400_length = (double)sample_rate / 2004.54545454545;
 	
@@ -441,8 +493,8 @@ int             main(int argc, char **argv)
 	/* Header block */
 	unsigned char   checksum = 0 + 0x0f + Checksum_Buffer((unsigned char *) filename, 8) +
 							file_type + data_type + 0 +
-							Checksum_Buffer((unsigned char *) &address, 2) +
-							Checksum_Buffer((unsigned char *) &address, 2);
+							Checksum_Buffer((unsigned char *) &start_address, 2) +
+							Checksum_Buffer((unsigned char *) &exec_address, 2);
 
 	sample_count += fwrite_audio("\x55\x3c", 2, output);	/* Block ID */
 	sample_count += fwrite_audio("\x00", 1, output);	/* Header block */
@@ -451,8 +503,8 @@ int             main(int argc, char **argv)
 	sample_count += fwrite_audio((char *) &file_type, 1, output);	/* 0: BASIC, 1: Data, 2: M/L */
 	sample_count += fwrite_audio((char *) &data_type, 1, output);	/* 0: binary, ff: ASCII */
 	sample_count += fwrite_audio("\x00", 1, output);	/* 0: no gaps, ff: gaps) */
-	sample_count += fwrite_audio((char *) &address, 2, output);	/* Start address */
-	sample_count += fwrite_audio((char *) &address, 2, output);	/* Execute address */
+	sample_count += fwrite_audio((char *) &start_address, 2, output);	/* Start address */
+	sample_count += fwrite_audio((char *) &exec_address, 2, output);	/* Execute address */
 	sample_count += fwrite_audio((char *) &checksum, 1, output);	/* checksum */
 	sample_count += fwrite_audio("\x55", 1, output);	/* End of block ID */
 
@@ -461,9 +513,9 @@ int             main(int argc, char **argv)
 		printf( "Encoded filename: %s\n", filename );
 		printf( "File type: $%x\n", file_type );
 		printf( "Data type: $%x\n", data_type );
-		printf( "Start address: $%x\n", address );
-		printf( "Exec address: $%x\n", address );
-		printf( "End address: $%x\n", address+total_length );
+		printf( "Start address: $%x\n", start_address );
+		printf( "Exec address: $%x\n", exec_address );
+		printf( "End address: $%x\n", start_address+total_length );
 	}
 	
 	/* Leader for data blocks */
@@ -520,6 +572,7 @@ int             main(int argc, char **argv)
 	fclose(srec);
 	free(buffer_1200);
 	free(buffer_2400);
-
+	free(buffer);
+	
 	return 0;
 }
