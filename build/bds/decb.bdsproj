@@ -5,12 +5,12 @@
 			<Option Name="Personality">CPlusPlusBuilder.Personality</Option>
 			<Option Name="ProjectType">CppConsoleApplication</Option>
 			<Option Name="Version">1.0</Option>
-			<Option Name="GUID">{19C4813A-19B4-4280-8521-00313178AF03}</Option>
+			<Option Name="GUID">{17A05C05-D1ED-4748-8536-73CA637F813A}</Option>
 		</Option>
 	</PersonalityInfo>
 	<CPlusPlusBuilder.Personality>
 		<Source>
-			<Source Name="MainSource">mamoucli.bpf</Source>
+			<Source Name="MainSource">decb.bpf</Source>
 		</Source>
 		<BCBPROJECT>
       <project version="10.0">
@@ -28,7 +28,7 @@
         <property category="build.config.1" name="settings.win32b" value="default"/>
         <property category="build.config.1" name="type" value="Toolset"/>
         <property category="build.config.1" name="win32.win32b.builddir" value="Release_Build"/>
-        <property category="build.node" name="name" value="mamoucli.exe"/>
+        <property category="build.node" name="name" value="decb.exe"/>
         <property category="build.node" name="packages" value="vcl;rtl;vclx;dbrtl;vcldb;adortl;dbxcds;dbexpress;vclib;ibxpress;xmlrtl;vclactnband;inet;IntrawebDB_80_100;Intraweb_80_100;vclie;inetdbbde;inetdbxpress;IndyCore;IndySystem;bcbsmp;soaprtl;dsnap;IndyProtocols;bcbie;bdertl;teeui;teedb;tee;vcldbx;comndOPC10;dOPCDA10;dOPCAE10;fs10;frx10;fsDB10;frxDB10;fsBDE10;frxBDE10;fsADO10;frxADO10;fsIBX10;frxIBX10;frxDBX10;frxe10;fsTee10;frxTee10;sdlbasepack_85D2006;sdlmathpack_85D2006;dclZipForged10;vclZipForged10;fqbADO100;fqbBDE100;fqbIBX100;fqbDBX100;fqb100"/>
         <property category="build.node" name="use_packages" value="0"/>
         <property category="build.platform" name="active" value="win32"/>
@@ -81,6 +81,14 @@
         <property category="win32.Release_Build.win32b.tasm32" name="option.zn.enabled" value="1"/>
         <optionset name="all_configurations">
           <property category="node" name="displayname" value="All Configurations"/>
+          <property category="win32.*.win32b.bcc32" name="container.SelectedOptimizations.containerenabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="container.SelectedWarnings.containerenabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="option.4.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.5.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.6.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.A.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.AK.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.AU.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.D.arg.1" value="BDS"/>
           <property category="win32.*.win32b.bcc32" name="option.D.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.D.enabled" value="1"/>
@@ -88,16 +96,38 @@
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\mamou"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\dinkumware"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include\vcl"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\os9"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\decb"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\decb"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="..\..\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include\dinkumware"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.7" value="$(BDS)\include\vcl"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.enabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="option.Jgi.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.Jgx.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.O1.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.O2.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.Od.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.V0.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.V1.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.Ve.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.Vmd.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.Vmm.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.Vms.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.align-1.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.align-2.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.align-3.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.align-5.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.b.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.disablewarns.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.noregistervars.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.p.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.pm.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.pr.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.ps.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.rd.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.1" value="_RTLDLL"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.2" value="NO_STRICT"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.3" value="_NO_VCL"/>
@@ -107,36 +137,45 @@
           <property category="win32.*.win32b.bcc32" name="option.tWC.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.tWD.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWM.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.bcc32" name="option.w.enabled" value="0"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\os9"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\decb"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.3" value="..\..\decb"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.I.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\os9"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\Desktop\toolshed\decb"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.3" value="..\..\decb"/>
           <property category="win32.*.win32b.dcc32" name="option.O.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.O.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\os9"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\Desktop\toolshed\decb"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.3" value="..\..\decb"/>
           <property category="win32.*.win32b.dcc32" name="option.R.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.R.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="..\..\..\..\My Documents\Borland Studio Projects"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="$(BDS)\lib"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="$(BDS)\lib\obj"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\os9"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\Desktop\toolshed\decb"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="..\..\decb"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="..\..\..\..\My Documents\Borland Studio Projects"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="$(BDS)\lib"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.6" value="$(BDS)\lib\obj"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.U.enabled" value="1"/>
           <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\os9"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\Desktop\toolshed\decb"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.3" value="..\..\decb"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.enabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="container.SelectedWarnings.containerenabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="option.-w-.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.Gi.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.2" value="..\..\mamou"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.3" value="$(BDS)\lib"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.4" value="$(BDS)\lib\obj"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.5" value="$(BDS)\lib\psdk"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.1" value="..\..\os9"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.2" value="debug_build"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.3" value="..\..\decb"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.4" value="$(BDS)\lib"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.5" value="$(BDS)\lib\obj"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.6" value="$(BDS)\lib\psdk"/>
           <property category="win32.*.win32b.ilink32" name="option.L.arg.merge" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.L.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.Tpd.enabled" value="0"/>
@@ -145,10 +184,16 @@
           <property category="win32.*.win32b.ilink32" name="option.aa.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.ap.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="..\..\os9"/>
+          <property category="win32.*.win32b.ilink32" name="option.j.arg.2" value="..\..\Desktop\toolshed\decb"/>
+          <property category="win32.*.win32b.ilink32" name="option.j.arg.3" value="..\..\decb"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.merge" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.j.enabled" value="0"/>
+          <property category="win32.*.win32b.ilink32" name="option.m.enabled" value="0"/>
+          <property category="win32.*.win32b.ilink32" name="option.map_segments.enabled" value="0"/>
+          <property category="win32.*.win32b.ilink32" name="option.r.enabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="option.s.enabled" value="0"/>
+          <property category="win32.*.win32b.ilink32" name="option.w.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="param.libfiles.1" value="import32.lib"/>
           <property category="win32.*.win32b.ilink32" name="param.libfiles.2" value="cw32i.lib"/>
           <property category="win32.*.win32b.ilink32" name="param.libfiles.merge" value="1"/>
@@ -158,22 +203,26 @@
         </optionset>
       </project>
       <FILELIST>
-        <FILE FILENAME="mamoucli.bpf" CONTAINERID="BPF" LOCALCOMMAND="" UNITNAME="mamoucli" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="mamoucli.res" CONTAINERID="ResTool" LOCALCOMMAND="" UNITNAME="mamoucli.res" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\util.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="util" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\evaluator.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="evaluator" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\ffwd.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ffwd" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\h6309.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="h6309" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\mamou.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="mamou" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\print.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="print" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\pseudo.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="pseudo" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\symbol_bucket.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="symbol_bucket" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="decb.bpf" CONTAINERID="BPF" LOCALCOMMAND="" UNITNAME="decb" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="decb.res" CONTAINERID="ResTool" LOCALCOMMAND="" UNITNAME="decb.res" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbrename.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbrename" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbattr.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbattr" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbcopy.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbcopy" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbdir.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbdir" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbdskini.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbdskini" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbfree.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbfree" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbfstat.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbfstat" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbhdbconv.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbhdbconv" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decbkill.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbkill" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decblist.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decblist" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="Debug_Build\libmisc.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libmisc" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="Debug_Build\libdecb.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libdecb" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="Debug_Build\libsys.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libsys" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="Debug_Build\libcoco.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libcoco" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libdecb.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libdecb" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libmisc.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libmisc" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="Debug_Build\libnative.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libnative" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="Debug_Build\librbf.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="librbf" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\os9\os9dump.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9dump" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\decb\decb_main.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decb_main" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -207,7 +256,7 @@
           <Debugging Name="DebugSourceDirs"></Debugging>
         </Debugging>
         <Parameters>
-          <Parameters Name="RunParams">c:\x</Parameters>
+          <Parameters Name="RunParams"></Parameters>
           <Parameters Name="Launcher"></Parameters>
           <Parameters Name="UseLauncher">True</Parameters>
           <Parameters Name="DebugCWD"></Parameters>
@@ -223,11 +272,6 @@
           <Parameters Name="LoadAllSymbols">True</Parameters>
           <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
         </Parameters>
-        <Language>
-          <Language Name="ActiveLang"></Language>
-          <Language Name="ProjectLang">$00000000</Language>
-          <Language Name="RootDir"></Language>
-        </Language>
         <Linker>
           <Linker Name="LibPrefix"></Linker>
           <Linker Name="LibSuffix"></Linker>
@@ -236,10 +280,10 @@
       </IDEOPTIONS>
     </BCBPROJECT>
 		<buildevents>
-      <buildevent file="mamoucli.bdsproj">
-        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\mamou.exe
+			<buildevent file="decb.bdsproj">
+				<postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\decb.exe
 </postcompile>
-      </buildevent>
-    </buildevents>
+			</buildevent>
+		</buildevents>
 	</CPlusPlusBuilder.Personality>
 </BorlandProject>
