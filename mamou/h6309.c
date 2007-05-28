@@ -514,6 +514,7 @@ int _ldqgen(assembler *as, int opcode)
 	{
 		int result;
 
+		as->line.optr++;
 		evaluate(as, &result, &as->line.optr, 0);
 		emit(as, 0xcd);
 		emit(as, (result >> 24) & 0xff);
