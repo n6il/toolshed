@@ -65,10 +65,20 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined);
 static int is_factor_op(char c);
 static int is_term_op(char c);
 static int is_rel_op(char c);
+static int higher_precedence(char op1, char op2);
+static int compute(int left, char op, int right);
+static char getop(char **eptr);
 
 
 /* Static variables */
 static int forward = 0;
+static int valp = 0;
+static int valstack[256];
+static int opp = 0;
+static char opstack[256];
+static int pp = 0;
+static char pstack[256];
+
 
 
 /*!
@@ -83,6 +93,10 @@ static int forward = 0;
 int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
 	int			retval;
+	
+	valp = 0;
+	opp = 0;
+	pp = 0;
 	
 	/* show any debugging output. */
 	if (as->o_debug)
@@ -109,7 +123,7 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 	/* parse the expression */
 	retval = expr(as, result, eptr, ignoreUndefined);
 
-	if (**eptr == ')')
+	if (pp > 0)
 	{
 		error(as, "unbalanced parentheses");
 
@@ -139,220 +153,118 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
  */
 static int expr(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
-	int			left = 0;
-	int			right = 0;			/* left and right terms for expression */
-	char		o, o2;				/* operator characters */
+	int			left = 0, right = 0;
+	char		op;
 
 	/* pickup first part of expression */
-	if ((rel(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
-	{
-//		*result = Dp * 256 + 0xfe;
-		left = 0;
-//		return 0;
-	}
-
-	/* gather rest of line */
-	if (is_rel_op(**eptr))
-	{
-		/* pickup operator and skip */
- 		o = *((*eptr)++);
-		o2 = EOS;
-		if (is_rel_op(**eptr))
-		{
-			o2 = *((*eptr)++);
-		}
-		
-		/* pickup current rightmost side */		
-		if (expr(as, &right, eptr, ignoreUndefined) == 0)
-		{
-//			*result = Dp * 256 + 0xfe;
-			right = 0;
-//			return 0;
-		}
-		
-		/* process left/right according to operator */
-		switch (o)
-		{
-			case '>':
-				if (o2)
-				{
-					switch (o2)
-					{
-						case '=':
-							left = (left >= right);
-							break;
-
-						default:
-							error(as, "bad operator");
-							return 0;
-					}
-				}
-				else
-				{
-					left = (left > right);
-				}
-				break;
-			case '<':
-				if (o2)
-				{
-					switch (o2)
-					{
-						case '=':
-							left = (left <= right);
-							break;
-
-						case '>':
-							left = (left != right);
-							break;
-
-						default:
-							error(as, "bad operator");
-							return 1;
-					}
-				}
-				else
-				{
-					left = (left < right);
-				}
-				break;
-			case '=':
-				left = left == right;
-				break;
-		}
-	}
-
-	/* assign left to result */
-	*result = left;
-
-	/* return status */
-	return 1;
-}
-
-
-
-/*!
-	@function rel
-	@discussion Evaluates relational expressions
-	@param as The assembler state structure
-	@param result A pointer to the result of the evaluated expression
-	@param eptr The expression to be evaluated
-	@param ignoreUndefined Ignore any undefined symbols
-	@result 1=evaluation was made ok
- */
-static int rel(assembler *as, int *result, char **eptr, int ignoreUndefined)
-{
-	int			left = 0;
-	int			right = 0;			/* left and right terms for expression */
-	char		o;					/* operator character */
-
-	/* pickup first part of expression */
-	if ((factor(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
-	{
-//		*result = Dp * 256 + 0xfe;
-		left = 0;
-//		return 0;
-	}
-
-	/* gather rest of line */
-	if (is_term_op(**eptr))
-	{
-		/* pickup operator and skip */
- 		o = *((*eptr)++);
-
-		/* pickup current rightmost side */		
-		if (expr(as, &right, eptr, ignoreUndefined) == 0)
-		{
-//			*result = Dp * 256 + 0xfe;
-			right = 0;
-//			return 0;
-		}
-		
-		/* process left/right according to operator */
-		switch (o)
-		{
-			case '+':
-				left += right;
-				break;
-			case '-':
-				left -= right;
-				break;
-			case '|':
-			case '!':
-				left |= right;
-				break;
-			case '&':
-				left &= right;
-				break;
-		}
-	}
-
-	/* assign left to result */
-	*result = left;
-
-	/* return status */
-	return 1;
-}
-
-
-
-/*!
-	@function factor
-	@discussion Evaluates factors
-	@param as The assembler state structure
-	@param result A pointer to the result of the evaluated expression
-	@param eptr The expression to be evaluated
-	@param ignoreUndefined Ignore any undefined symbols
-	@result 1=evaluation was made ok
- */
-static int factor(assembler *as, int *result, char **eptr, int ignoreUndefined)
-{
-	int			left = 0;
-	int			right = 0;			/* left and right terms for expression */
-	char		o;					/* operator character */
-
 	if ((term(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
 	{
-//		*result = Dp * 256 + 0xfe;
 		left = 0;
-//		return 0;
 	}
 
-	/* gather rest of line */
-	if (is_factor_op(**eptr))
+	/* Push value onto value stack */
+	valstack[valp++] = left;
+	
+	while (valp > 0 && **eptr)
 	{
-		/* pickup operator and skip */
- 		o = *((*eptr)++);
-
-		/* pickup current rightmost side */
-		if (factor(as, &right, eptr, ignoreUndefined) == 0)
+		op = getop(eptr);
+		
+		if (!op)
 		{
-//			*result = Dp * 256 + 0xfe;
-			right = 0;
-//			return 0;
+			/* A character we don't recognize... return */
+			*result = 0;
+			
+			return 0;
 		}
 		
-		/* process left/right according to operator */
-		switch (o)
+		
+		/* CHeck for closing parenthesis */
+		if (op == ')')
 		{
-			case '*':
-				left *= right;
-				break;
-			case '/':
-				left /= right;
-				break;
-			case '%':
-				left %= right;
-				break;
+			/* We've encountered one... is it one too many? */
+			if (pp == 0)
+			{
+				error(as, "too many )'s");
+
+				return 0;
+			}
+
+			if (valp > pstack[pp - 1])
+			{
+				right = valstack[--valp];
+
+				if (valp > pstack[pp - 1])
+				{
+					left = valstack[--valp];
+					valstack[valp++] = compute(left, opstack[--opp], right);
+				}
+				else
+				{
+					valstack[valp++] = right;
+				}
+				pp--;
+			}
+			continue;
+		}
+
+		/* Pickup second part of expression */				
+		if ((term(as, &right, eptr, ignoreUndefined) == 0) && (forward == 0))
+		{
+			right = 0;
+		}
+
+		/* If operator stack is not empty... */
+		if (opp > 0)
+		{
+			/* If this operator has higher precedence than one at top of stack.. */
+			if (higher_precedence(op, opstack[opp - 1]))
+			{
+				/* Pop to value from stack as left */
+				left = valstack[--valp];
+				
+				/* Compute value and put back on stack */
+				valstack[valp++] = compute(left, op, right);
+			}
+			else
+			{
+				/* Push op and right onto respective stacks */
+				opstack[opp++] = op;
+				
+				valstack[valp++] = right;
+			}
+		}
+		else
+		{
+			/* Push operator onto operator stack */
+			opstack[opp++] = op;
+
+			/* Push term onto term stack */
+			valstack[valp++] = right;
 		}
 	}
+	
+	/* Now go through stacks as a queue and compute until complete */
+	{
+		int o = 0;
+		int v = 0;
+		
+		left = valstack[v++];
 
-	/* assign result to left */	
+		while (o < opp)
+		{
+			right = valstack[v++];
+			op = opstack[o++];
+			
+			left = compute(left, op, right);
+		}
+	}
+	
+	/* Result is now left value */
 	*result = left;
-
-	/* return status */	
+	
+	/* return status */
 	return 1;
 }
-
 
 
 /*!
@@ -408,24 +320,11 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 	}
 
 	/* open parenthesis? */	
-	if (**eptr == '(')
+	while (**eptr == '(')
 	{
-		int	ret;
-
 		(*eptr)++;
 
-		ret = expr(as, term, eptr, ignoreUndefined); /* evaluate the inside */
-
-		if (**eptr != ')')
-		{
-			error(as, "unbalanced parentheses");
-
-			return 0;
-		}
-
-		(*eptr)++;
-
-		return ret;
+		pstack[pp++] = valp;
 	}
 	
 	/* binary constant? */
@@ -673,4 +572,152 @@ static int is_rel_op(char c)
 	}	
 	
 	return 0;
+}
+
+
+static int compute(int left, char op, int right)
+{
+	switch (op)
+	{
+		case '!':
+		case '|':
+			return left | right;
+
+		case '&':
+			return left & right;
+
+		case '+':
+			return left + right;
+
+		case '-':
+			return left - right;
+
+		case '*':
+			return left * right;
+
+		case '/':
+			if (right == 0) return 0;
+			return left / right;
+
+		case '%':
+			if (right == 0) return 0;
+			return left % right;
+
+		case '>':
+			return left > right;
+
+		case 'G':
+			return left >= right;
+
+		case '<':
+			return left < right;
+
+		case 'L':
+			return left <= right;
+
+		case '=':
+			return left == right;
+
+		case 'N':
+			return left != right;
+	}
+
+	return 0;
+}
+	
+
+static int higher_precedence(char op1, char op2)
+{
+	int p1v = 0, p2v = 0;
+	
+	switch (op1)
+	{
+		case '*':
+		case '/':
+			p1v = 2;
+			break;
+			
+		case '+':
+		case '-':
+			p1v = 1;
+			break;
+			
+		case '>':
+		case '<':
+		case 'G':
+		case 'L':
+		case 'N':
+			p1v = 0;
+			break;
+	}
+	
+	switch (op2)
+	{
+		case '*':
+		case '/':
+			p2v = 2;
+			break;
+			
+		case '+':
+		case '-':
+			p2v = 1;
+			break;
+			
+		case '>':
+		case '<':
+			p2v = 0;
+			break;
+	}
+	
+	return p1v > p2v;
+}
+
+
+static char getop(char **eptr)
+{
+	char op = *((*eptr)++);
+
+	switch (op)
+	{
+		case ')':
+		case '!':
+		case '|':
+		case '&':
+		case '+':
+		case '-':
+		case '*':
+		case '/':
+		case '%':
+			break;
+			
+		case '>':
+			if (**eptr == '=')
+			{
+				(*eptr)++;
+				op = 'G';
+			}
+			break;
+
+		case '<':
+			if (**eptr == '>')
+			{
+				(*eptr)++;
+				op = 'N';
+			}
+			else
+			if (**eptr == '=')
+			{
+				(*eptr)++;
+				op = 'L';
+			}
+			break;
+			
+		default:
+			/* We don't recognize.. back up and return nul */
+			(*eptr)--;
+			op = EOS;
+			break;
+	}
+	
+	return op;
 }
