@@ -7,27 +7,10 @@
  *
  * (C) 2004 Boisy G. Pitre
  *
- *      an expression is constructed like this:
  *
- *      expr ::=  rel > expr |
- *                rel < expr |
- *                rel >= expr |
- *                rel <= expr |
- *                rel <> expr |
- *                rel = expr |
- *				  rel
- *                
- *      rel  ::=  fact + rel |
- *                fact - rel |
- *                fact | rel |
- *                fact & rel |
- *                fact ^ rel |
- *				  fact
- *                
- *      fact ::=  term * fact |
- *                term / fact |
- *                term % fact |
- *                term
+ * The Shunting yard algorithm is used to parse and evaluate the mathematical
+ * expressions passed here.
+ * (http://en.wikipedia.org/wiki/Shunting_yard_algorithm)
  *
  *      term ::=  symbol   |
  *                *        |
@@ -59,12 +42,7 @@
 
 /* Static functions */
 static int expr(assembler *as, int *term, char **eptr, int ignoreUndefined);
-static int rel(assembler *as, int *term, char **eptr, int ignoreUndefined);
-static int factor(assembler *as, int *term, char **eptr, int ignoreUndefined);
 static int term(assembler *as, int *term, char **eptr, int ignoreUndefined);
-static int is_factor_op(char c);
-static int is_term_op(char c);
-static int is_rel_op(char c);
 static int higher_precedence(char op1, char op2);
 static int compute(int left, char op, int right);
 static char getop(char **eptr);
@@ -72,12 +50,11 @@ static char getop(char **eptr);
 
 /* Static variables */
 static int forward = 0;
-static int valp = 0;
-static int valstack[256];
+static int expp = 0;
+static int expqueue[256];
+static int typqueue[256];
 static int opp = 0;
-static char opstack[256];
-static int pp = 0;
-static char pstack[256];
+static int opstack[256];
 
 
 
@@ -94,9 +71,8 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
 	int			retval;
 	
-	valp = 0;
+	expp = 0;
 	opp = 0;
-	pp = 0;
 	
 	/* show any debugging output. */
 	if (as->o_debug)
@@ -123,7 +99,7 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 	/* parse the expression */
 	retval = expr(as, result, eptr, ignoreUndefined);
 
-	if (pp > 0)
+	if (0 > 0)
 	{
 		error(as, "unbalanced parentheses");
 
@@ -153,114 +129,116 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
  */
 static int expr(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
-	int			left = 0, right = 0;
+	int			left = 0;
 	char		op;
 
-	/* pickup first part of expression */
-	if ((term(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
+	while (**eptr)
 	{
-		left = 0;
-	}
-
-	/* Push value onto value stack */
-	valstack[valp++] = left;
-	
-	while (valp > 0 && **eptr)
-	{
+		/* pickup term part of expression */
+		if ((term(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
+		{
+			left = 0;
+		}
+		else
+		{
+			/* add value to expression queue and type (1 = value) to type queue */
+			expqueue[expp] = left;
+			typqueue[expp++] = 1;
+		}
+getdatop:		
 		op = getop(eptr);
 		
-		if (!op)
+		if (op)
 		{
-			/* A character we don't recognize... return */
-			*result = 0;
-			
-			return 0;
-		}
-		
-		
-		/* CHeck for closing parenthesis */
-		if (op == ')')
-		{
-			/* We've encountered one... is it one too many? */
-			if (pp == 0)
+			/* Check for closing parenthesis */
+			if (op == ')')
 			{
-				error(as, "too many )'s");
-
-				return 0;
-			}
-
-			if (valp > pstack[pp - 1])
-			{
-				right = valstack[--valp];
-
-				if (valp > pstack[pp - 1])
+				/* We've encountered one... is it one too many? */
+				if (opp == 0)
 				{
-					left = valstack[--valp];
-					valstack[valp++] = compute(left, opstack[--opp], right);
+					error(as, "too many )'s");
+
+					return 0;
 				}
-				else
+
+				do
 				{
-					valstack[valp++] = right;
+					op = opstack[--opp];
+					if (op != '(')
+					{
+						expqueue[expp] = op;
+						typqueue[expp++] = 0;
+					}
 				}
-				pp--;
-			}
-			continue;
-		}
-
-		/* Pickup second part of expression */				
-		if ((term(as, &right, eptr, ignoreUndefined) == 0) && (forward == 0))
-		{
-			right = 0;
-		}
-
-		/* If operator stack is not empty... */
-		if (opp > 0)
-		{
-			/* If this operator has higher precedence than one at top of stack.. */
-			if (higher_precedence(op, opstack[opp - 1]))
-			{
-				/* Pop to value from stack as left */
-				left = valstack[--valp];
+				while (op != '(');
 				
-				/* Compute value and put back on stack */
-				valstack[valp++] = compute(left, op, right);
+				goto getdatop;
 			}
 			else
 			{
-				/* Push op and right onto respective stacks */
+				/* If operator at top of stack is higher precedence, then
+				 * pop it and add it to expression queue
+				 */
+				while (higher_precedence(opstack[opp - 1], op))
+				{
+					if (opp == 0)
+					{
+					}
+					expqueue[expp] = opstack[--opp];
+					typqueue[expp++] = 0;
+				}
 				opstack[opp++] = op;
-				
-				valstack[valp++] = right;
 			}
 		}
 		else
 		{
-			/* Push operator onto operator stack */
-			opstack[opp++] = op;
-
-			/* Push term onto term stack */
-			valstack[valp++] = right;
+			/* Unrecognized operator -- break */
+			break;
 		}
 	}
 	
-	/* Now go through stacks as a queue and compute until complete */
+	/* Pop operators off stack and add them to queue */
+	while (opp > 0)
 	{
-		int o = 0;
-		int v = 0;
-		
-		left = valstack[v++];
-
-		while (o < opp)
+		if (opstack[opp - 1] == '(')
 		{
-			right = valstack[v++];
-			op = opstack[o++];
-			
-			left = compute(left, op, right);
+			error(as, "too many ('s");
+
+			return 0;
+		}
+		expqueue[expp] = opstack[--opp];
+		typqueue[expp++] = 0;
+	}
+	
+	/* Now go through expression queue and compute until complete */
+	{
+		int v = 0;
+		int popper;
+		
+		opp = 0;
+
+		while (v < expp)
+		{
+			popper = expqueue[v];
+			if (typqueue[v++] == 1)
+			{
+				/* it's a value - push it onto the staqck */
+				opstack[opp++] = popper;
+			}
+			else
+			{
+				/* it's an operator */
+				int left, right;
+				
+				right = opstack[--opp];
+				left = opstack[--opp];
+				opstack[opp++] = compute(left, popper, right);
+			}
 		}
 	}
 	
 	/* Result is now left value */
-	*result = left;
+	*result = opstack[--opp];
 	
 	/* return status */
 	return 1;
@@ -292,6 +270,10 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 
 		return 0;
 	}	
+	else if (**eptr == ')')
+	{
+		return 0;
+	}
 	/* a leading minus is a negation */	
 	else if (**eptr == '-')
 	{
@@ -322,9 +304,7 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 	/* open parenthesis? */	
 	while (**eptr == '(')
 	{
-		(*eptr)++;
-
-		pstack[pp++] = valp;
+		opstack[opp++] = *((*eptr)++);
 	}
 	
 	/* binary constant? */
@@ -519,6 +499,8 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 	{
 		/* none of the above */		
 		val = 0;
+		
+		return 0;
 	}
 		
 	*term = val;
@@ -528,53 +510,13 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 
 
 /*!
-	@function is_factor_op
-	@discussion Determines if a character is a factor operator
-	@param c Character to evaluate
+	@function compute
+	@discussion Computes a basic operation
+	@param left The left side of the operation
+	@param op The operation code
+	@param right The right side of the operation
+	@result The value of the operation
  */
-static int is_factor_op(char c)
-{
-	if (any(c, "*/%"))
-	{
-		return 1;
-	}	
-	
-	return 0;
-}
-
-
-/*!
-	@function is_term_op
-	@discussion Determines if a character is a term operator
-	@param c Character to evaluate
- */
-static int is_term_op(char c)
-{
-	if (any(c, "+-&|^!"))
-	{
-		return 1;
-	}	
-	
-	return 0;
-}
-
-
-/*!
-	@function is_rel_op
-	@discussion Determines if a character is a relation operator
-	@param c Character to evaluate
- */
-static int is_rel_op(char c)
-{
-	if (any(c, "=<>!"))
-	{
-		return 1;
-	}	
-	
-	return 0;
-}
-
-
 static int compute(int left, char op, int right)
 {
 	switch (op)
@@ -626,6 +568,13 @@ static int compute(int left, char op, int right)
 }
 	
 
+/*!
+	@function higher_precedence
+	@discussion Returns a comparison of passed operators' precedence
+	@param op1 The first operator
+	@param op2 The second operator
+	@result 1 if op1 has a higher precedence than op2, else 0
+ */
 static int higher_precedence(char op1, char op2)
 {
 	int p1v = 0, p2v = 0;
