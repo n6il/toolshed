@@ -88,12 +88,11 @@
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\mamou"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\dinkumware"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include\vcl"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="$(BDS)\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include\dinkumware"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\vcl"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Ve.enabled" value="0"/>
@@ -144,7 +143,7 @@
           <property category="win32.*.win32b.ilink32" name="option.Tpp.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.aa.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.ap.enabled" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="..\..\Desktop\toolshed\mamou"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.2" value="..\..\mamou"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.merge" value="1"/>
@@ -231,10 +230,10 @@
       </IDEOPTIONS>
     </BCBPROJECT>
 		<buildevents>
-      <buildevent file="mamou.bdsproj">
-        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\mamou.exe
+			<buildevent file="mamou.bdsproj">
+				<postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\mamou.exe
 </postcompile>
-      </buildevent>
-    </buildevents>
+			</buildevent>
+		</buildevents>
 	</CPlusPlusBuilder.Personality>
 </BorlandProject>

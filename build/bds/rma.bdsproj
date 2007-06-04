@@ -81,22 +81,47 @@
         <property category="win32.Release_Build.win32b.tasm32" name="option.zn.enabled" value="1"/>
         <optionset name="all_configurations">
           <property category="node" name="displayname" value="All Configurations"/>
-          <property category="win32.*.win32b.bcc32" name="option.D.arg.1" value="__STDC__"/>
+          <property category="win32.*.win32b.bcc32" name="container.SelectedOptimizations.containerenabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="container.SelectedWarnings.containerenabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="option.4.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.5.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.6.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.A.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.AK.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.AU.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.D.arg.1" value="BDS"/>
+          <property category="win32.*.win32b.bcc32" name="option.D.arg.2" value="__STDC__"/>
           <property category="win32.*.win32b.bcc32" name="option.D.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.D.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.1" value="$(BDS)\lib\vcl100.csm"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\rma"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\include"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\rma"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="$(BDS)\include"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include\dinkumware"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\vcl"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.enabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="option.Jgi.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.Jgx.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.O1.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.O2.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.Od.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.V0.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.V1.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.Ve.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.align-1.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.align-2.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.align-3.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.align-5.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.b.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.disablewarns.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.p.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.pm.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.pr.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.ps.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.1" value="_RTLDLL"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.2" value="NO_STRICT"/>
           <property category="win32.*.win32b.bcc32" name="option.sysdefines.arg.3" value="_NO_VCL"/>
@@ -106,6 +131,7 @@
           <property category="win32.*.win32b.bcc32" name="option.tWC.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.tWD.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWM.enabled" value="0"/>
+          <property category="win32.*.win32b.bcc32" name="option.w.enabled" value="0"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\rma"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\rma"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.merge" value="1"/>
@@ -143,7 +169,7 @@
           <property category="win32.*.win32b.ilink32" name="option.Tpp.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.aa.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.ap.enabled" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="..\..\Desktop\toolshed\rma"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.2" value="..\..\rma"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.merge" value="1"/>

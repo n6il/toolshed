@@ -291,14 +291,17 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		DBGPNT(("Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ob_cur->fp), ftell(ob_cur->fp) + ob_cur->hd.h_ddata));
 
 		fseek(ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode + ob_cur->hd.h_data, SEEK_SET);
-		data = malloc(ob_cur->hd.h_ddata);
-		if (data == NULL)
+		if (ob_cur->hd.h_ddata > 0)
 		{
-			fprintf(stderr, "linker fatal: out of memory\n");
-			return 1;
-		}
+			data = malloc(ob_cur->hd.h_ddata);
+			if (data == NULL)
+			{
+				fprintf(stderr, "linker fatal: out of memory\n");
+				return 1;
+			}
 
-		fread(data, ob_cur->hd.h_ddata, 1, ob_cur->fp);
+			fread(data, ob_cur->hd.h_ddata, 1, ob_cur->fp);
+		}
 
 		/* Adjust local references */
 		fseek(ob_cur->fp, ob_cur->locref, SEEK_SET);
@@ -396,14 +399,17 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 		DBGPNT(("Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ob_cur->fp), ftell(ob_cur->fp) + ob_cur->hd.h_data));
 		fseek(ob_cur->fp, ob_cur->object + ob_cur->hd.h_ocode, SEEK_SET);
-		data = malloc(ob_cur->hd.h_data);
-		if (data == NULL)
+		if (ob_cur->hd.h_data > 0)
 		{
-			fprintf(stderr, "linker fatal: out of memory\n");
-			return 1;
-		}
+			data = malloc(ob_cur->hd.h_data);
+			if (data == NULL)
+			{
+				fprintf(stderr, "linker fatal: out of memory\n");
+				return 1;
+			}
 
-		fread(data, ob_cur->hd.h_data, 1, ob_cur->fp);
+			fread(data, ob_cur->hd.h_data, 1, ob_cur->fp);
+		}
 
 		/* Adjust local references */
 		fseek(ob_cur->fp, ob_cur->locref, SEEK_SET);

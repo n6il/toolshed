@@ -200,10 +200,10 @@
           <Debugging Name="DebugSourceDirs"></Debugging>
         </Debugging>
         <Parameters>
-          <Parameters Name="RunParams">attr c:\x,startup</Parameters>
+          <Parameters Name="RunParams">test.r -o=test</Parameters>
           <Parameters Name="Launcher"></Parameters>
           <Parameters Name="UseLauncher">False</Parameters>
-          <Parameters Name="DebugCWD"></Parameters>
+          <Parameters Name="DebugCWD">c:\</Parameters>
           <Parameters Name="HostApplication"></Parameters>
           <Parameters Name="RemoteHost"></Parameters>
           <Parameters Name="RemotePath"></Parameters>

@@ -144,7 +144,7 @@
           <property category="win32.*.win32b.ilink32" name="option.Tpp.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.aa.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.ap.enabled" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="..\..\Desktop\toolshed\rlink"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.2" value="..\..\rlink"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.merge" value="1"/>
@@ -199,10 +199,10 @@
           <Debugging Name="DebugSourceDirs"></Debugging>
         </Debugging>
         <Parameters>
-          <Parameters Name="RunParams"></Parameters>
+          <Parameters Name="RunParams">test.r -o=test</Parameters>
           <Parameters Name="Launcher"></Parameters>
           <Parameters Name="UseLauncher">True</Parameters>
-          <Parameters Name="DebugCWD"></Parameters>
+          <Parameters Name="DebugCWD">c:\</Parameters>
           <Parameters Name="HostApplication"></Parameters>
           <Parameters Name="RemoteHost"></Parameters>
           <Parameters Name="RemotePath"></Parameters>
@@ -223,10 +223,10 @@
       </IDEOPTIONS>
     </BCBPROJECT>
 		<buildevents>
-			<buildevent file="rlink.bdsproj">
-				<postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rlink.exe
+      <buildevent file="rlink.bdsproj">
+        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rlink.exe
 </postcompile>
-			</buildevent>
-		</buildevents>
+      </buildevent>
+    </buildevents>
 	</CPlusPlusBuilder.Personality>
 </BorlandProject>
