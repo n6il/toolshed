@@ -187,6 +187,7 @@ static int expr(assembler *as, int *result, char **eptr, int ignoreUndefined)
 		int popper;
 		
 		opp = 0;
+		opstack[opp] = 0;
 
 		while (v < expp)
 		{
