@@ -10,7 +10,7 @@
  *
  * The Shunting yard algorithm is used to parse and evaluate the mathematical
  * expressions passed here.
- * (http://en.wikipedia.org/wiki/Shunting_yard_algorithm)
+ * http://en.wikipedia.org/wiki/Shunting_yard_algorithm
  *
  *      term ::=  symbol   |
  *                *        |
@@ -50,11 +50,6 @@ static char getop(char **eptr);
 
 /* Static variables */
 static int forward = 0;
-static int expp = 0;
-static int expqueue[256];
-static int typqueue[256];
-static int opp = 0;
-static int opstack[256];
 
 
 
@@ -70,9 +65,6 @@ static int opstack[256];
 int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
 	int			retval;
-	
-	expp = 0;
-	opp = 0;
 	
 	/* show any debugging output. */
 	if (as->o_debug)
@@ -99,11 +91,9 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
 	/* parse the expression */
 	retval = expr(as, result, eptr, ignoreUndefined);
 
-	if (0 > 0)
+	if (**eptr && **eptr == ')')
 	{
-		error(as, "unbalanced parentheses");
-
-		return 0;
+		error(as, "too many )'s");
 	}
 	
 	/* print debugging information if requested */
@@ -129,23 +119,27 @@ int evaluate(assembler *as, int *result, char **eptr, int ignoreUndefined)
  */
 static int expr(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
-	int			left = 0;
+	int			value = 0;
 	char		op;
+
+	int			expp = 0, expqueue[256];
+	int			typqueue[256];
+	int			opp = 0, opstack[256];
 
 	while (**eptr)
 	{
 		/* pickup term part of expression */
-		if ((term(as, &left, eptr, ignoreUndefined) == 0) && (forward == 0))
+		if ((term(as, &value, eptr, ignoreUndefined) == 0) && (forward == 0))
 		{
-			left = 0;
+			value = 0;
 		}
 		else
 		{
-			/* add value to expression queue and type (1 = value) to type queue */
-			expqueue[expp] = left;
+			/* add value to expression queue and type to type queue */
+			expqueue[expp] = value;
 			typqueue[expp++] = 1;
 		}
-getdatop:		
+
 		op = getop(eptr);
 		
 		if (op)
@@ -153,37 +147,20 @@ getdatop:
 			/* Check for closing parenthesis */
 			if (op == ')')
 			{
-				/* We've encountered one... is it one too many? */
-				if (opp == 0)
-				{
-					error(as, "too many )'s");
-
-					return 0;
-				}
-
-				do
+				while (opp > 0)
 				{
 					op = opstack[--opp];
-					if (op != '(')
-					{
-						expqueue[expp] = op;
-						typqueue[expp++] = 0;
-					}
+					expqueue[expp] = op;
+					typqueue[expp++] = 0;
 				}
-				while (op != '(');
-				
-				goto getdatop;
 			}
 			else
 			{
 				/* If operator at top of stack is higher precedence, then
 				 * pop it and add it to expression queue
 				 */
-				while (higher_precedence(opstack[opp - 1], op))
+				while (opp > 0 && higher_precedence(opstack[opp - 1], op))
 				{
-					if (opp == 0)
-					{
-					}
 					expqueue[expp] = opstack[--opp];
 					typqueue[expp++] = 0;
 				}
@@ -200,12 +177,6 @@ getdatop:
 	/* Pop operators off stack and add them to queue */
 	while (opp > 0)
 	{
-		if (opstack[opp - 1] == '(')
-		{
-			error(as, "too many ('s");
-
-			return 0;
-		}
 		expqueue[expp] = opstack[--opp];
 		typqueue[expp++] = 0;
 	}
@@ -219,17 +190,20 @@ getdatop:
 
 		while (v < expp)
 		{
-			popper = expqueue[v];
-			if (typqueue[v++] == 1)
+			int type = typqueue[v];
+			
+			popper = expqueue[v++];
+
+			if (type == 1)
 			{
-				/* it's a value - push it onto the staqck */
+				/* it's a value - push it onto the opstack */
 				opstack[opp++] = popper;
 			}
 			else
 			{
 				/* it's an operator */
 				int left, right;
-				
+					
 				right = opstack[--opp];
 				left = opstack[--opp];
 				opstack[opp++] = compute(left, popper, right);
@@ -238,8 +212,8 @@ getdatop:
 	}
 	
 	/* Result is now left value */
-	*result = opstack[--opp];
-	
+	*result = opstack[0];
+
 	/* return status */
 	return 1;
 }
@@ -253,7 +227,7 @@ getdatop:
 	@param eptr The address of a pointer to the expression to be evaluated
 	@param ignoreUndefined Ignore any undefined symbols
  */
-static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
+static int term(assembler *as, int *result, char **eptr, int ignoreUndefined)
 {
 	char			hold[MAXBUF];
 	char			*tmp;
@@ -282,8 +256,8 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 
 		/* negate next term */
 		(*eptr)++;
-		ret = expr(as, &term2, eptr, ignoreUndefined);
-		*term = -term2;
+		ret = term(as, &term2, eptr, ignoreUndefined);
+		*result = -term2;
 
 		return ret;
 	}
@@ -295,8 +269,8 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 
 		/* complement next term */
 		(*eptr)++;
-		ret = expr(as, &term2, eptr, ignoreUndefined);
-		*term = ~term2;
+		ret = term(as, &term2, eptr, ignoreUndefined);
+		*result = ~term2;
 
 		return ret;
 	}
@@ -304,7 +278,24 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 	/* open parenthesis? */	
 	while (**eptr == '(')
 	{
-		opstack[opp++] = *((*eptr)++);
+		int	term2;
+		int	ret;
+
+		(*eptr)++;
+		
+		ret = expr(as, &term2, eptr, ignoreUndefined);
+
+		if (**eptr != ')')
+		{
+			error(as, "too many ('s");
+
+			return 0;
+		}
+
+		(*eptr)++;
+		*result = term2;
+
+		return ret;
 	}
 	
 	/* binary constant? */
@@ -473,7 +464,7 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 				}
 #endif
 				forward = 1;
-				*term = 0;
+				*result = 0;
 
 				return 0;
 			}
@@ -503,7 +494,7 @@ static int term(assembler *as, int *term, char **eptr, int ignoreUndefined)
 		return 0;
 	}
 		
-	*term = val;
+	*result = val;
 	
 	return 1;
 }
@@ -628,7 +619,6 @@ static char getop(char **eptr)
 
 	switch (op)
 	{
-		case ')':
 		case '!':
 		case '|':
 		case '&':
