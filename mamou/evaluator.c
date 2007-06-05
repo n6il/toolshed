@@ -43,7 +43,7 @@
 /* Static functions */
 static int expr(assembler *as, int *term, char **eptr, int ignoreUndefined);
 static int term(assembler *as, int *term, char **eptr, int ignoreUndefined);
-static int higher_precedence(char op1, char op2);
+static int higher_or_same_precedence(char op1, char op2);
 static int compute(int left, char op, int right);
 static char getop(char **eptr);
 
@@ -156,10 +156,10 @@ static int expr(assembler *as, int *result, char **eptr, int ignoreUndefined)
 			}
 			else
 			{
-				/* If operator at top of stack is higher precedence, then
+				/* If operator at top of stack is higher or same precedence, then
 				 * pop it and add it to expression queue
 				 */
-				while (opp > 0 && higher_precedence(opstack[opp - 1], op))
+				while (opp > 0 && higher_or_same_precedence(opstack[opp - 1], op))
 				{
 					expqueue[expp] = opstack[--opp];
 					typqueue[expp++] = 0;
@@ -561,13 +561,13 @@ static int compute(int left, char op, int right)
 	
 
 /*!
-	@function higher_precedence
+	@function higher_or_same_precedence
 	@discussion Returns a comparison of passed operators' precedence
 	@param op1 The first operator
 	@param op2 The second operator
-	@result 1 if op1 has a higher precedence than op2, else 0
+	@result 1 if op1 has a higher or same precedence than op2, else 0
  */
-static int higher_precedence(char op1, char op2)
+static int higher_or_same_precedence(char op1, char op2)
 {
 	int p1v = 0, p2v = 0;
 	
@@ -610,7 +610,7 @@ static int higher_precedence(char op1, char op2)
 			break;
 	}
 	
-	return p1v > p2v;
+	return p1v >= p2v;
 }
 
 
