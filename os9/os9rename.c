@@ -80,7 +80,7 @@ int os9rename(int argc, char *argv[])
 		
         if( (p != NULL) && (new_name != NULL) )
         {
-            ec = TSRBFRename(p, new_name);
+            ec = TSRename(p, new_name);
 		
             if (ec != 0)
             {

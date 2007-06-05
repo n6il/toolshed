@@ -4,7 +4,7 @@ vpath %.c ../../../rdump
 vpath %.h ../../../rdump
 
 BINARY	= rdump
-OBJS	= rdump.o 6309dasm.o
+OBJS	= rdump_main.o 6309dasm.o
 
 $(BINARY):	$(OBJS)
 	$(CC) $(OBJS) -o $@ $(DEBUG)

@@ -297,7 +297,21 @@ static void PseudoInclude(EnvContext *ctx, const Mneumonic *op)
 		dst++;
 	}
 
-	OpenInputFile(ctx, buffer, false);
+	if (OpenInputFile(ctx, buffer, false) == false)
+	{
+		char buffer2[MAX_BUFFERSIZE];
+		int i;
+		
+		for (i = 0; i < includeCount; i++)
+		{
+			sprintf(buffer2, "%s/%s", includeDirectories[i], buffer);
+
+			if (OpenInputFile(ctx, buffer2, false) == true)
+			{
+				return;
+			}
+		}
+	}
 }
 
 

@@ -337,6 +337,13 @@ void Params(EnvContext *ctx, int argc, char **argv)
 					break;
 
 				case 'I':	/* Add include directory */
+					if(opt[1] == '=') {
+						includeDirectories[includeCount++] = &opt[2];
+					}
+					else {
+						includeDirectories[includeCount++] = &opt[2];
+					}
+					break;
 					break;
 
 				case 'D':	/* Add #define */

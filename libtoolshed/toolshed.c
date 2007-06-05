@@ -55,11 +55,42 @@ void TSReportError(error_code te, char *errorstr)
 }
 
 
-error_code TSRBFRename(char *pathlist, char *new_name)
+int TSIsDirectory(char *pathlist)
+{
+	error_code ec = 0;
+	coco_file_stat statbuf;
+	
+	ec = _coco_gs_fd_pathlist(pathlist, &statbuf);
+	if (ec == 0 && statbuf.attributes & FAM_DIR)
+	{
+		return 1;
+	}
+	
+	return 0;
+}
+
+
+error_code TSRename(char *pathlist, char *new_name)
 {
     error_code	ec = 0;
 
     ec = _coco_rename(pathlist, new_name);
+	
+    return ec;
+}
+
+
+
+error_code TSDelete(char *pathlist)
+{
+    error_code	ec = 0;
+
+    ec = _coco_delete(pathlist);
+	
+	if (ec != 0)
+	{
+		ec = _coco_delete_directory(pathlist);
+	}
 	
     return ec;
 }
@@ -191,6 +222,27 @@ error_code TSRBFAttrSet(char *file, int attrSetMask, int attrResetMask, char att
     _os9_close(path);
 
     return(0);
+}
+
+
+error_code TSMoveFile(char *srcfile, char *dstfile)
+{
+    error_code	ec = 0;
+	char buff[512];
+	
+	/* determine if srcfile is a directory, delete the make */
+	if (TSIsDirectory(srcfile) == 1)
+	{
+		TSMakeDirectory(dstfile);
+		TSDelete(srcfile);
+	}
+	else
+	if (TSCopyFile(srcfile, dstfile, 0, 1, 0, 0, buff, 512) == 0)
+	{
+		TSDelete(srcfile);
+	}
+	
+	return ec;
 }
 
 
@@ -604,6 +656,59 @@ int TSMakeDirectory(char *p)
     return ec;
 }
 
+
+
+error_code TSDECBFree(char *pathlist, u_int *free_granules)
+{
+	error_code	ec = 0;
+	int i;
+	char decbpathlist[256];
+	decb_path_id path;
+
+
+	/* 1. Make a copy of the pathlist. */
+	
+	strcpy(decbpathlist, pathlist);
+
+
+	/* 2. If a comma isn't present int he string, then add it so that the path is opened as a non-native path. */
+	
+	if (strchr(decbpathlist, ',') == NULL)
+	{
+		strcat(decbpathlist, ",");
+	}
+	
+	
+	/* 3. Open a path to the device. */
+	
+	ec = _decb_open(&path, decbpathlist, FAM_READ);
+
+	if (ec != 0)
+	{
+		return ec;
+	}
+
+
+	/* 4. Walk the FAT. */
+	*free_granules = 0;
+	for (i = 0; i < 256; i++)
+	{
+		if (path->FAT[i] == 0xFF)
+		{
+			(*free_granules)++;
+		}
+	}
+
+
+	/* 6. Close the path. */
+	
+	_decb_close(path);
+
+
+	/* 7. Return status. */
+	
+	return 0;
+}
 
 
 error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *year, u_int *bps, u_int *total_sectors, u_int *bytes_free, u_int *free_sectors, u_int *largest_free_block, u_int *sectors_per_cluster, u_int *largest_count, u_int *sector_count)

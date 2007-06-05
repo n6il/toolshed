@@ -73,7 +73,8 @@ char		**Argv =0;              		/* pointer to file names        		*/
 u_int16		OptCount;						/* Counter for lines that can be optimized */
 int			lineCount = 0;
 
-
+char		*includeDirectories[256];
+int			includeCount;
 char		*outputDirectory;
 char		*outputFilename;
 
@@ -148,6 +149,7 @@ static void Initialize(EnvContext *ctx)
 	Cfn = 0;
 	lineCount = 0;
 
+	includeCount = 0;
 	outputDirectory = NULL;
 	outputFilename = NULL;
 

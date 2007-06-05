@@ -30,7 +30,8 @@ int decbfree(int argc, char *argv[])
 {
 	error_code	ec = 0;
 	char		*p = NULL;
-	int		i;
+	int			i;
+	u_int		free_granules;
 
 	/* walk command line for options */
 	for (i = 1; i < argc; i++)
@@ -66,11 +67,16 @@ int decbfree(int argc, char *argv[])
 			p = argv[i];
 		}
 
-		ec = do_free(argv, p);
 
-		if (ec != 0)
+		ec = TSDECBFree(p, &free_granules);
+
+		if (ec == 0)
 		{
-			fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, p);
+			printf("Free granules: %d (%d bytes)\n", free_granules, free_granules * (4608 / 2));
+		}
+		else
+		{
+			fprintf(stderr, "%s: error %d determining free space for '%s'\n", argv[0], ec, p);
 			return(ec);
 		}
 	}

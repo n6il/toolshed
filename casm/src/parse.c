@@ -127,7 +127,8 @@ bool ProcessLine(EnvContext *ctx)
 	*/
 	
 	/* If no mneumonic was found, open as a macro */
-	if(NULL == mne)	{
+	if (NULL == mne)
+	{
 
 		if(*ctx->m_Opcode) {
 			bool result;

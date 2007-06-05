@@ -89,6 +89,8 @@ extern bool			instruct;
 extern Struct		*laststructfound;
 
 /* More misc */
+extern char			*includeDirectories[256];
+extern int			includeCount;
 extern char			*outputDirectory;
 extern char			*outputFilename;
 

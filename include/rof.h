@@ -18,9 +18,9 @@ extern "C" {
 #define INIENT		0x01        /* clear/init. data flag */
 
 /* location flags */
-#define CODLOC		0x20        /* data/code flag */
-#define DIRLOC		0x10        /* global/direct flag */
 #define LOC1BYT		0x08        /* two/one byte size flag */
+#define DIRLOC		0x10        /* global/direct flag */
+#define CODLOC		0x20        /* data/code flag */
 #define LOCMASK		(CODLOC|DIRLOC)
 #define NEGMASK		0x40        /* negate on resolution */
 #define RELATIVE	0x80        /* relative reference */
