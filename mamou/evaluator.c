@@ -620,6 +620,7 @@ static char getop(char **eptr)
 
 	switch (op)
 	{
+		case '=':
 		case '!':
 		case '|':
 		case '&':
