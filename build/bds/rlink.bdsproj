@@ -159,7 +159,7 @@
       </project>
       <FILELIST>
         <FILE FILENAME="rlink.bpf" CONTAINERID="BPF" LOCALCOMMAND="" UNITNAME="rlink" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="rlink.res" CONTAINERID="ResTool" LOCALCOMMAND="" UNITNAME="rlink.res" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="rlink.res" CONTAINERID="ResTool" LOCALCOMMAND="" UNITNAME="rlink" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\rlink\decbout.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decbout" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\rlink\os9out.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9out" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\rlink\rl_pass1a.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rl_pass1a" FORMNAME="" DESIGNCLASS=""/>
@@ -223,10 +223,10 @@
       </IDEOPTIONS>
     </BCBPROJECT>
 		<buildevents>
-      <buildevent file="rlink.bdsproj">
-        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rlink.exe
+			<buildevent file="rlink.bdsproj">
+				<postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rlink.exe
 </postcompile>
-      </buildevent>
-    </buildevents>
+			</buildevent>
+		</buildevents>
 	</CPlusPlusBuilder.Personality>
 </BorlandProject>

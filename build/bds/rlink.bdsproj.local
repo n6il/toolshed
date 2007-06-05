@@ -7,5 +7,7 @@
     <Transaction>2007/04/19 19:13:09.027.c,C:\Documents and Settings\Boisy\Desktop\toolshed\rlink\rlink.c=C:\Documents and Settings\Boisy\Desktop\toolshed\rlink\rlinkx.c</Transaction>
     <Transaction>2007/04/19 19:13:14.545.bdsproj,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\rlinkcli.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\rlink.bdsproj</Transaction>
     <Transaction>2007/04/19 19:13:19.001.c,C:\Documents and Settings\Boisy\Desktop\toolshed\rlink\rlinkx.c=C:\Documents and Settings\Boisy\Desktop\toolshed\rlink\rlink.c</Transaction>
+    <Transaction>2007/06/04 20:06:56.060.res,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\rlink.res=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\rdump.res</Transaction>
+    <Transaction>2007/06/04 20:06:56.070.res,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\rdump.res=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\rlink.res</Transaction>
   </Transactions>
 </BorlandProject>

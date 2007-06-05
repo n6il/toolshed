@@ -12,12 +12,6 @@
     
     
     
-    
-    
-    
-    
-    
-    
     <Projects>
       <Projects Name="libdecb.lib">libdecb.bdsproj</Projects>
       <Projects Name="librbf.lib">librbf.bdsproj</Projects>
@@ -31,7 +25,9 @@
       <Projects Name="rlink.exe">rlink.bdsproj</Projects>
       <Projects Name="rma.exe">rma.bdsproj</Projects>
       <Projects Name="libtoolshed.lib">libtoolshed.bdsproj</Projects>
-      <Projects Name="Targets">libdecb.lib librbf.lib libcoco.lib libnative.lib libmisc.lib libsys.lib decb.exe os9.exe mamou.exe rlink.exe rma.exe libtoolshed.lib</Projects>
+      <Projects Name="tocgen.exe">tocgen.bdsproj</Projects>
+      <Projects Name="rdump.exe">rdump.bdsproj</Projects>
+      <Projects Name="Targets">libdecb.lib librbf.lib libcoco.lib libnative.lib libmisc.lib libsys.lib decb.exe os9.exe mamou.exe rlink.exe rma.exe libtoolshed.lib tocgen.exe rdump.exe</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{17A05C05-D1ED-4748-8536-73CA637F813A}">
@@ -61,7 +57,7 @@
         <Dependency GUID="{B6AEE58C-65C0-4529-BA33-542B2184C6BF}"/>
         <Dependency GUID="{7164A0EE-2577-409C-B3D6-E6FC51934310}"/>
       </Dependency>
-      <Dependency GUID="{9B7F3BC0-090E-4697-BBA1-B5FAFBA98BBB}">
+      <Dependency GUID="{FC31EB6E-FEBC-433F-AE30-1DFB5C10017E}">
         <Dependency GUID="{3938B61F-A6F2-4D3C-9C8C-3C0260F6FA31}"/>
         <Dependency GUID="{8462F2F1-FD42-4F8A-B203-4E6671D07C05}"/>
         <Dependency GUID="{48DB889B-44E7-415D-B9A6-A4C229494C33}"/>
@@ -70,7 +66,16 @@
         <Dependency GUID="{B6AEE58C-65C0-4529-BA33-542B2184C6BF}"/>
         <Dependency GUID="{7164A0EE-2577-409C-B3D6-E6FC51934310}"/>
       </Dependency>
-      <Dependency GUID="{FC31EB6E-FEBC-433F-AE30-1DFB5C10017E}">
+      <Dependency GUID="{BA49F966-E006-4956-9B47-D03F226C5E00}">
+        <Dependency GUID="{3938B61F-A6F2-4D3C-9C8C-3C0260F6FA31}"/>
+        <Dependency GUID="{8462F2F1-FD42-4F8A-B203-4E6671D07C05}"/>
+        <Dependency GUID="{48DB889B-44E7-415D-B9A6-A4C229494C33}"/>
+        <Dependency GUID="{E1E5E50E-4811-4015-9A8B-2A285A307C4A}"/>
+        <Dependency GUID="{7018AA1E-BA16-4A6A-9F15-4E395D597D76}"/>
+        <Dependency GUID="{B6AEE58C-65C0-4529-BA33-542B2184C6BF}"/>
+        <Dependency GUID="{7164A0EE-2577-409C-B3D6-E6FC51934310}"/>
+      </Dependency>
+      <Dependency GUID="{24DFD12B-EDA8-4851-B2B0-85BCFEF4A899}">
         <Dependency GUID="{3938B61F-A6F2-4D3C-9C8C-3C0260F6FA31}"/>
         <Dependency GUID="{8462F2F1-FD42-4F8A-B203-4E6671D07C05}"/>
         <Dependency GUID="{48DB889B-44E7-415D-B9A6-A4C229494C33}"/>

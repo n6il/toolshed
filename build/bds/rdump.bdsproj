@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-	<PersonalityInfo>
-		<Option>
-			<Option Name="Personality">CPlusPlusBuilder.Personality</Option>
-			<Option Name="ProjectType">CppConsoleApplication</Option>
-			<Option Name="Version">1.0</Option>
-			<Option Name="GUID">{19C4813A-19B4-4280-8521-00313178AF03}</Option>
-		</Option>
-	</PersonalityInfo>
-	<CPlusPlusBuilder.Personality>
-		<Source>
-			<Source Name="MainSource">mamou.bpf</Source>
-		</Source>
-		<BCBPROJECT>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">CPlusPlusBuilder.Personality</Option>
+      <Option Name="ProjectType">CppConsoleApplication</Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{24DFD12B-EDA8-4851-B2B0-85BCFEF4A899}</Option>
+    </Option>
+  </PersonalityInfo>
+  <CPlusPlusBuilder.Personality>
+    <Source>
+      <Source Name="MainSource">rdump.bpf</Source>
+    </Source>
+    <BCBPROJECT>
       <project version="10.0">
         <property category="build.config" name="active" value="0"/>
         <property category="build.config" name="count" value="1"/>
@@ -28,8 +28,8 @@
         <property category="build.config.1" name="settings.win32b" value="default"/>
         <property category="build.config.1" name="type" value="Toolset"/>
         <property category="build.config.1" name="win32.win32b.builddir" value="Release_Build"/>
-        <property category="build.node" name="name" value="mamou.exe"/>
-        <property category="build.node" name="packages" value="vcl;rtl;vclx;dbrtl;vcldb;adortl;dbxcds;dbexpress;vclib;ibxpress;xmlrtl;vclactnband;inet;IntrawebDB_80_100;Intraweb_80_100;vclie;inetdbbde;inetdbxpress;IndyCore;IndySystem;bcbsmp;soaprtl;dsnap;IndyProtocols;bcbie;bdertl;teeui;teedb;tee;vcldbx;comndOPC10;dOPCDA10;dOPCAE10;fs10;frx10;fsDB10;frxDB10;fsBDE10;frxBDE10;fsADO10;frxADO10;fsIBX10;frxIBX10;frxDBX10;frxe10;fsTee10;frxTee10;sdlbasepack_85D2006;sdlmathpack_85D2006;dclZipForged10;vclZipForged10;fqbADO100;fqbBDE100;fqbIBX100;fqbDBX100;fqb100"/>
+        <property category="build.node" name="name" value="rdump.exe"/>
+        <property category="build.node" name="packages" value="vcl;rtl;vclx;dbrtl;vcldb;adortl;dbxcds;dbexpress;vclib;ibxpress;xmlrtl;vclactnband;inet;IntrawebDB_80_100;Intraweb_80_100;vclie;inetdbbde;inetdbxpress;IndyCore;IndySystem;bcbsmp;soaprtl;dsnap;IndyProtocols;bcbie;bdertl;teeui;teedb;tee;vcldbx;comndOPC10;dOPCDA10;dOPCAE10;sdlbasepack_85D2006;sdlmathpack_85D2006;vclZipForged10;VirtualTreesD10;Package1;dclZipForged10;fs10;frx10;fsDB10;frxDB10;fsBDE10;frxBDE10;fsADO10;frxADO10;fsIBX10;frxIBX10;frxDBX10;frxe10;fsTee10;frxTee10"/>
         <property category="build.node" name="use_packages" value="0"/>
         <property category="build.platform" name="active" value="win32"/>
         <property category="build.platform" name="win32.Debug_Build.toolset" value="win32b"/>
@@ -37,10 +37,6 @@
         <property category="build.platform" name="win32.default" value="win32b"/>
         <property category="build.platform" name="win32.enabled" value="1"/>
         <property category="build.platform" name="win32.win32b.enabled" value="1"/>
-        <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
-        <property category="win32.*.win32b.tasm32" name="param.listfile.merge" value="1"/>
-        <property category="win32.*.win32b.tasm32" name="param.objfile.merge" value="1"/>
-        <property category="win32.*.win32b.tasm32" name="param.xreffile.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.arg.1" value="_DEBUG"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.arg.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.enabled" value="1"/>
@@ -81,15 +77,12 @@
         <property category="win32.Release_Build.win32b.tasm32" name="option.zn.enabled" value="1"/>
         <optionset name="all_configurations">
           <property category="node" name="displayname" value="All Configurations"/>
-          <property category="win32.*.win32b.bcc32" name="option.D.arg.1" value="BDS"/>
-          <property category="win32.*.win32b.bcc32" name="option.D.arg.merge" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.D.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.1" value="$(BDS)\lib\vcl100.csm"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\rdump"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\rdump"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="$(BDS)\include"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include\dinkumware"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\vcl"/>
@@ -106,33 +99,33 @@
           <property category="win32.*.win32b.bcc32" name="option.tWC.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.tWD.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWM.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\rdump"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\rdump"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.I.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\Desktop\toolshed\rdump"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\rdump"/>
           <property category="win32.*.win32b.dcc32" name="option.O.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.O.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\Desktop\toolshed\rdump"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\rdump"/>
           <property category="win32.*.win32b.dcc32" name="option.R.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.R.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\Desktop\toolshed\rdump"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\rdump"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="..\..\..\..\My Documents\Borland Studio Projects"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="$(BDS)\lib"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="$(BDS)\lib\obj"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.U.enabled" value="1"/>
           <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\Desktop\toolshed\rdump"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\rdump"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.Gi.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.1" value="..\..\Desktop\toolshed\rdump"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.2" value="..\..\rdump"/>
           <property category="win32.*.win32b.ilink32" name="option.L.arg.3" value="$(BDS)\lib"/>
           <property category="win32.*.win32b.ilink32" name="option.L.arg.4" value="$(BDS)\lib\obj"/>
           <property category="win32.*.win32b.ilink32" name="option.L.arg.5" value="$(BDS)\lib\psdk"/>
@@ -143,9 +136,9 @@
           <property category="win32.*.win32b.ilink32" name="option.Tpp.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.aa.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.ap.enabled" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="..\..\Desktop\toolshed\mamou"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.arg.2" value="..\..\mamou"/>
+          <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="1"/>
+          <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="..\..\Desktop\toolshed\rdump"/>
+          <property category="win32.*.win32b.ilink32" name="option.j.arg.2" value="..\..\rdump"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.merge" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.j.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="param.libfiles.1" value="import32.lib"/>
@@ -157,22 +150,10 @@
         </optionset>
       </project>
       <FILELIST>
-        <FILE FILENAME="mamou.bpf" CONTAINERID="BPF" LOCALCOMMAND="" UNITNAME="mamou" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="mamou.res" CONTAINERID="ResTool" LOCALCOMMAND="" UNITNAME="mamou.res" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\util.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="util" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\evaluator.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="evaluator" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\ffwd.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ffwd" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\h6309.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="h6309" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\print.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="print" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\pseudo.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="pseudo" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\symbol_bucket.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="symbol_bucket" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libsys.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libsys" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libcoco.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libcoco" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libdecb.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libdecb" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libmisc.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libmisc" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\libnative.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libnative" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="Debug_Build\librbf.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="librbf" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\mamou\mamou_main.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="mamou_main" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="rdump.bpf" CONTAINERID="BPF" LOCALCOMMAND="" UNITNAME="rdump" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="rdump.res" CONTAINERID="ResTool" LOCALCOMMAND="" UNITNAME="rdump.res" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\rdump\6309dasm.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="6309dasm" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\rdump\rdump_main.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rdump_main" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -206,7 +187,7 @@
           <Debugging Name="DebugSourceDirs"></Debugging>
         </Debugging>
         <Parameters>
-          <Parameters Name="RunParams">c:\x</Parameters>
+          <Parameters Name="RunParams"></Parameters>
           <Parameters Name="Launcher"></Parameters>
           <Parameters Name="UseLauncher">True</Parameters>
           <Parameters Name="DebugCWD"></Parameters>
@@ -229,11 +210,11 @@
         </Linker>
       </IDEOPTIONS>
     </BCBPROJECT>
-		<buildevents>
-      <buildevent file="mamou.bdsproj">
-        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\mamou.exe
+    <buildevents>
+      <buildevent file="rdump.bdsproj">
+        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\rdump.exe
 </postcompile>
       </buildevent>
     </buildevents>
-	</CPlusPlusBuilder.Personality>
+  </CPlusPlusBuilder.Personality>
 </BorlandProject>
