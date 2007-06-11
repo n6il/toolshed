@@ -6,7 +6,7 @@ vpath %.h ../../../rlink
 # CFLAGS += -DDEBUG
 
 BINARY	= rlink
-OBJS	= rlink.o rl_pass1a.o rl_pass1b.o rl_pass2.o os9out.o decbout.o
+OBJS	= rlink_main.o rl_pass1a.o rl_pass1b.o rl_pass2.o os9out.o decbout.o
 
 $(BINARY):	$(OBJS)
 	$(CC) $(OBJS) -o $@
