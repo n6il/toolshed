@@ -2,6 +2,7 @@
  * nativepath.h - Native path definitions header file
  *
  * $Id$
+ * A conditional removed from an #include RG
  ********************************************************************/
 #ifndef	_NATIVEPATH_H
 #define	_NATIVEPATH_H
@@ -14,9 +15,10 @@ extern "C" {
 #include <sys/stat.h>
 #include <cocotypes.h>
 #include <cococonv.h>
-#ifndef WIN32
+/* Turbo had ifndef, msys needs ifdef; was WIN32
+  Removing the conditional works for both. RG */
 #include <dirent.h>
-#endif
+
 
 
 typedef struct _native_path_id

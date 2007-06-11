@@ -2,6 +2,7 @@
  * ss.c - Native SetStatus routines
  *
  * $Id$
+ * Changed several conditionals for msys compatibility
  ********************************************************************/
 
 #include <stdlib.h>
@@ -46,38 +47,27 @@ error_code _native_ss_attr(native_path_id path, int perms)
 error_code _native_ss_fd(native_path_id path, struct stat *statbuf)
 {
     error_code	ec = 0;
-#if defined(__MIGW32__)
-	struct timeval tbuff;
-#else
+/* Removed a conditional; RG*/
 	struct utimbuf tbuff;
-#endif
 
 	
-#if defined(__MINGW32__)
-	tbuff[0].tv_sec = statbuf->st_ctime;
-	tbuff[1].tv_sec = statbuf->st_mtime;
-#else
+/* Removed a conditional; RG*/
 	tbuff.actime = statbuf->st_ctime;
 	tbuff.modtime = statbuf->st_mtime;
-#endif
 
 
 	/* 1. Update times. */
 
-#if defined(__MINGW__)
-	utimes(path->pathlist, tbuff);
-#else
+/* Removed a conditional; RG*/
 	utime(path->pathlist, &tbuff);
-#endif
+/* #endif */
 
 
 	/* 2. Update permissions. */
 
-#if defined(__MINGW32__)
-	chmod(path->pathlist, statbuf->st_mode);
-#else
-	chmod(path->pathlist, statbuf->st_mode);
-#endif
+/* Removed a conditional; RG */
+    chmod(path->pathlist, statbuf->st_mode);
+
 
 
     return ec;

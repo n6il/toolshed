@@ -12,7 +12,7 @@
  **********************************************************************/
 
 #include <stdio.h>
-#ifdef UNIX
+#if defined(UNIX) || defined(__APPLE__)
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>

@@ -12,7 +12,7 @@
  **********************************************************************/
 
 #include <stdio.h>
-#ifdef UNIX
+#if defined(UNIX) || defined(__APPLE__)
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
@@ -111,17 +111,20 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 	while (ob_cur != NULL)
 	{
-		unsigned char  *data;
+		unsigned char  *data = NULL;
 		unsigned        count;
 
 		DBGPNT(("Object %s is %4.4lx - %4.4lx, len: %u\n", ob_cur->modname, ftell(ob_cur->fp), ftell(ob_cur->fp) + ob_cur->hd.h_ocode, ob_cur->hd.h_ocode));
 
 		fseek(ob_cur->fp, ob_cur->object, SEEK_SET);
-		data = malloc(ob_cur->hd.h_ocode);
-		if (data == NULL)
+		if (ob_cur->hd.h_ocode > 0)
 		{
-			fprintf(stderr, "linker fatal: out of memory\n");
-			return 1;
+			data = malloc(ob_cur->hd.h_ocode);
+			if (data == NULL)
+			{
+				fprintf(stderr, "linker fatal: out of memory\n");
+				return 1;
+			}
 		}
 
 		fread(data, ob_cur->hd.h_ocode, 1, ob_cur->fp);
@@ -274,7 +277,10 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		}
 
 		XXX_body(&obh, data, ob_cur->hd.h_ocode);
-		free(data);
+		if (data != NULL)
+		{
+			free(data);
+		}
 
 		ob_cur = ob_cur->next;
 	}
@@ -285,7 +291,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 	while (ob_cur != NULL)
 	{
-		unsigned char  *data;
+		unsigned char  *data = NULL;
 		unsigned        count;
 
 		DBGPNT(("Initialized DP data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ob_cur->fp), ftell(ob_cur->fp) + ob_cur->hd.h_ddata));
@@ -375,7 +381,10 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		}
 
 		XXX_body(&obh, data, ob_cur->hd.h_ddata);
-		free(data);
+		if (data != NULL)
+		{
+			free(data);
+		}
 
 		/* Dump special linker initialized dp data */
 		if (ob_cur == *ob_start && !omitC)
@@ -394,7 +403,7 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 
 	while (ob_cur != NULL)
 	{
-		unsigned char  *data;
+		unsigned char  *data = NULL;
 		unsigned        count;
 
 		DBGPNT(("Initialized data %s is %4.4lx - %4.4lx\n", ob_cur->modname, ftell(ob_cur->fp), ftell(ob_cur->fp) + ob_cur->hd.h_data));
@@ -486,7 +495,10 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 		}
 
 		XXX_body(&obh, data, ob_cur->hd.h_data);
-		free(data);
+		if (data != NULL)
+		{
+			free(data);
+		}
 
 		/* Dump special linker initialized data */
 		if (ob_cur == *ob_start && !omitC)
