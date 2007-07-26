@@ -881,7 +881,7 @@ int _indexed(assembler *as, int opcode)
 
 /*!
 	@function _rlist
-	@discussion Register list instruction handler
+	@discussion Register list instruction handler used by puls/pshs
 	@param as The assembler state structure
 	@param opcode The op-code value to emit
  */
@@ -905,7 +905,8 @@ int _rlist(assembler *as, int opcode)
 	{
 		j = regnum(as);
 		
-		if (j == ERR || j == RPCR)
+		/* check for valid registers which can be used in push/pull operations */
+		if (!(j == RPC || j == RU || j == RY || j == RX || j == RDP || j == RD || j == RA || j == RB ||  j == RCC))
 		{
 			error(as, "illegal register name");
 		}
