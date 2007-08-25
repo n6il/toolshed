@@ -715,7 +715,7 @@
 		684E532C0AC247F9004DAB23 /* libsys.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsys.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E532F0AC24815004DAB23 /* crc.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = crc.c; path = ../../libsys/crc.c; sourceTree = SOURCE_ROOT; };
 		684E53300AC24815004DAB23 /* prsnam.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = prsnam.c; path = ../../libsys/prsnam.c; sourceTree = SOURCE_ROOT; };
-		684E533A0AC24836004DAB23 /* os9 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = os9; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E533A0AC24836004DAB23 /* os9 */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = os9; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E53420AC2487D004DAB23 /* os9_main.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9_main.c; path = ../../os9/os9_main.c; sourceTree = SOURCE_ROOT; };
 		684E53430AC2487D004DAB23 /* os9attr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9attr.c; path = ../../os9/os9attr.c; sourceTree = SOURCE_ROOT; };
 		684E53440AC2487D004DAB23 /* os9cmp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9cmp.c; path = ../../os9/os9cmp.c; sourceTree = SOURCE_ROOT; };

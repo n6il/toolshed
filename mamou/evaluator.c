@@ -169,7 +169,6 @@ static int expr(assembler *as, int *result, char **eptr, int ignoreUndefined)
 		}
 		else
 		{
-			/* Unrecognized operator -- break */
 			break;
 		}
 	}
@@ -554,6 +553,12 @@ static int compute(int left, char op, int right)
 
 		case 'N':
 			return left != right;
+
+		case 'X':
+			return left >> right;
+
+		case 'Y':
+			return left << right;
 	}
 
 	return 0;
@@ -637,6 +642,12 @@ static char getop(char **eptr)
 				(*eptr)++;
 				op = 'G';
 			}
+			else
+			if (**eptr == '>')
+			{
+				(*eptr)++;
+				op = 'X';
+			}
 			break;
 
 		case '<':
@@ -650,6 +661,11 @@ static char getop(char **eptr)
 			{
 				(*eptr)++;
 				op = 'L';
+			}
+			if (**eptr == '<')
+			{
+				(*eptr)++;
+				op = 'Y';
 			}
 			break;
 			
