@@ -73,9 +73,10 @@ int main(int argc, char **argv)
         fprintf(stderr, " -o<file>  output to file\n");
         fprintf(stderr, " -s        show symbol table\n");
 		fprintf(stderr, "Assembler modes (select only one):\n");
-        fprintf(stderr, " -9        OS-9/6809 (default)\n");
-        fprintf(stderr, " -b        Disk BASIC\n");
-		fprintf(stderr, " -r        Rom Absolute mode\n");
+        fprintf(stderr, " -m9       OS-9/6809 (default)\n");
+        fprintf(stderr, " -mm       Microware RMA\n");
+        fprintf(stderr, " -mb       Disk BASIC\n");
+		fprintf(stderr, " -mr       ROM Absolute\n");
 		fprintf(stderr, "Object generation options (select only one):\n");
         fprintf(stderr, " -tb       binary object output (default)\n");
         fprintf(stderr, " -th       hex object output\n");
@@ -91,10 +92,33 @@ int main(int argc, char **argv)
         {
             switch (tolower(argv[j][1]))
             {
-				case '9':
-                    as.o_asm_mode = ASM_OS9;
-                    break;
+				case 'm':
+					switch (tolower(argv[j][2]))
+					{
+						case '9':
+							as.o_asm_mode = ASM_OS9;
+							break;
 										
+						case 'm':
+							as.o_asm_mode = ASM_RMA;
+							break;
+										
+						case 'r':
+							/* ROM mode, like basic mode without header, footer */
+							as.o_asm_mode = ASM_ROM;
+							break;
+					
+						case 'b':
+							as.o_asm_mode = ASM_DECB;
+							break;
+
+						default:
+							/* Bad option */
+							fprintf(stderr, "Unknown option\n");
+							exit(1);
+					}
+					break;
+					
                 case 'a':
                     /* Symbol define */
                     p = &argv[j][2];
@@ -123,10 +147,6 @@ int main(int argc, char **argv)
 						/* Add value */
 						symbol_add(&as, p, v, 0);
 					}
-                    break;
-					
-                case 'b':
-                    as.o_asm_mode = ASM_DECB;
                     break;
 					
                 case 'c':
@@ -207,11 +227,6 @@ int main(int argc, char **argv)
                     as.o_quiet_mode = 1;
                     break;
 				
-				case 'r':
-					/* Rom mode, like basic mode without header, footer */
-                    as.o_asm_mode = ASM_ROM;
-                    break;
-					
                 case 's':
                     /* Symbol table dump */
                     as.o_show_symbol_table = 1;
