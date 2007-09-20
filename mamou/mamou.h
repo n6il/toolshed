@@ -101,6 +101,15 @@ typedef enum _pseudo_class
 } pseudo_class;
 
 
+/* RMA-compatible sections (note they are bitmapped) */
+typedef enum _rma_sect
+{
+     RMA_PSECT = 1,			/* Program section		*/
+     RMA_VSECT = 2,			/* Variable section		*/
+     RMA_CSECT = 4			/* Constant section		*/
+} rma_sect;
+
+
 struct filestack
 {
 	coco_path_id	fd;
@@ -157,12 +166,14 @@ enum {
 
 struct h6309_opcode
 {
-	char    *mnemonic;      /* its name */
-	char    class;          /* its class */
-	int     opcode;         /* its base opcode */
-	char    cycles;         /* its base # of cycles */
-	char    cpuclass;       /* its processor class (CPU_* above) */
-	int		(*func)();		/* function */
+	char		*mnemonic;			/* name */
+	char		class;				/* class */
+	int			opcode;				/* base opcode */
+	char		cycles;				/* base # of cycles (6809) */
+	char		plus_delta_6309;	/* +/- cycles to adjust for 6309 */
+	char		cpuclass;			/* processor class (CPU_* above) */
+	int			(*func)();			/* function */
+	rma_sect	permissible;		/* which RMA sections this opcode is allowed in */
 };
 
 
@@ -181,6 +192,7 @@ struct pseudo_opcode
 	pseudo_class	class;
 	pseudo_info		info;
 	int				(*func)();		/* function */
+	rma_sect		permissible;	/* which RMA sections this opcode is allowed in */
 };
 
 
