@@ -486,10 +486,16 @@ static int term(assembler *as, int *result, char **eptr, int ignoreUndefined)
 	{
 		(*eptr)++;
 	}
+	/* comma? (as in ,x+) */	
+	else if (**eptr == ',')
+	{
+		val = 0;
+	}
 	else
 	{
 		/* none of the above */		
 		val = 0;
+		error(as, "illegal term value or symbol");
 		
 		return 0;
 	}
