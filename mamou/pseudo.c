@@ -1031,15 +1031,17 @@ int _org(assembler *as)
 
 	if (evaluate(as, &result, &as->line.optr, 0) == 1)
 	{
-		if ((as->o_asm_mode == ASM_DECB) || (as->o_asm_mode == ASM_ROM))
+		switch (as->o_asm_mode)
 		{
-			/* Disk BASIC BIN file or ROM -- set program counter to result. */
-			as->program_counter = result;
-		}
-		else
-		{
-			/* OS-9 mode... our emit character is 'D'. */
-			emit_char = 'D';
+			case ASM_OS9:
+				/* OS-9 mode... our emit character is 'D'. */
+				emit_char = 'D';
+				break;
+			
+			default:
+				/* Disk BASIC BIN file or ROM -- set program counter to result. */
+				as->program_counter = result;
+				break;
 		}
 
 		as->data_counter = result;
@@ -1457,27 +1459,25 @@ static int _reserve_memory(assembler *as, int size)
 	{
 		f_record(as);     /* flush out bytes */
 		
-		if (as->o_asm_mode == ASM_OS9)
+		switch (as->o_asm_mode)
 		{
-			if (*as->line.label != EOS)
-			{
-				symbol_add(as, as->line.label, as->data_counter, 0);
-			}
-			
-			print_line(as, 0, 'D', as->data_counter);
+			case ASM_OS9:
+				if (*as->line.label != EOS)
+				{
+					symbol_add(as, as->line.label, as->data_counter, 0);
+				}
+				print_line(as, 0, 'D', as->data_counter);
+				as->data_counter +=  result * size;
+				break;
 
-			as->data_counter +=  result * size;
-		}
-		else
-		{
-			if (*as->line.label != EOS)
-			{
-				symbol_add(as, as->line.label, as->program_counter, 0);
-			}
-			
-			print_line(as, 0, ' ', as->program_counter);
-
-			as->program_counter +=  result * size;
+			default:
+				if (*as->line.label != EOS)
+				{
+					symbol_add(as, as->line.label, as->program_counter, 0);
+				}
+				print_line(as, 0, ' ', as->program_counter);
+				as->program_counter +=  result * size;
+				break;
 		}
 	}
 	else
