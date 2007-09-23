@@ -715,7 +715,7 @@
 		684E532C0AC247F9004DAB23 /* libsys.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsys.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E532F0AC24815004DAB23 /* crc.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = crc.c; path = ../../libsys/crc.c; sourceTree = SOURCE_ROOT; };
 		684E53300AC24815004DAB23 /* prsnam.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = prsnam.c; path = ../../libsys/prsnam.c; sourceTree = SOURCE_ROOT; };
-		684E533A0AC24836004DAB23 /* os9 */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = os9; sourceTree = BUILT_PRODUCTS_DIR; };
+		684E533A0AC24836004DAB23 /* os9 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = os9; sourceTree = BUILT_PRODUCTS_DIR; };
 		684E53420AC2487D004DAB23 /* os9_main.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9_main.c; path = ../../os9/os9_main.c; sourceTree = SOURCE_ROOT; };
 		684E53430AC2487D004DAB23 /* os9attr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9attr.c; path = ../../os9/os9attr.c; sourceTree = SOURCE_ROOT; };
 		684E53440AC2487D004DAB23 /* os9cmp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = os9cmp.c; path = ../../os9/os9cmp.c; sourceTree = SOURCE_ROOT; };
@@ -1465,6 +1465,7 @@
 			buildPhases = (
 				684E53370AC24836004DAB23 /* Sources */,
 				684E53380AC24836004DAB23 /* Frameworks */,
+				7758303D0CA6C94500AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1488,6 +1489,7 @@
 			buildPhases = (
 				684E537F0AC248B5004DAB23 /* Sources */,
 				684E53800AC248B5004DAB23 /* Frameworks */,
+				775830400CA6C95600AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1511,6 +1513,7 @@
 			buildPhases = (
 				684E53AD0AC24901004DAB23 /* Sources */,
 				684E53AE0AC24901004DAB23 /* Frameworks */,
+				775830420CA6C95E00AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1534,6 +1537,7 @@
 			buildPhases = (
 				684E53D90AC24954004DAB23 /* Sources */,
 				684E53DA0AC24954004DAB23 /* Frameworks */,
+				775830440CA6C96800AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1557,6 +1561,7 @@
 			buildPhases = (
 				684E53FC0AC249A5004DAB23 /* Sources */,
 				684E53FD0AC249A5004DAB23 /* Frameworks */,
+				775830460CA6C97400AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1580,6 +1585,7 @@
 			buildPhases = (
 				684E540F0AC249C0004DAB23 /* Sources */,
 				684E54100AC249C0004DAB23 /* Frameworks */,
+				775830480CA6C97C00AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1603,6 +1609,7 @@
 			buildPhases = (
 				684E54220AC249D8004DAB23 /* Sources */,
 				684E54230AC249D8004DAB23 /* Frameworks */,
+				7758304A0CA6C98600AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1626,6 +1633,7 @@
 			buildPhases = (
 				684E54810AC24A76004DAB23 /* Sources */,
 				684E54820AC24A76004DAB23 /* Frameworks */,
+				7758304C0CA6C99100AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1666,6 +1674,7 @@
 			buildPhases = (
 				7711933F0BE50BAF00BD51A1 /* Sources */,
 				771193400BE50BAF00BD51A1 /* Frameworks */,
+				7758304E0CA6C99B00AA4869 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1706,6 +1715,126 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7758303D0CA6C94500AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+		775830400CA6C95600AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+		775830420CA6C95E00AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+		775830440CA6C96800AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+		775830460CA6C97400AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+		775830480CA6C97C00AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+		7758304A0CA6C98600AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+		7758304C0CA6C99100AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+		7758304E0CA6C99B00AA4869 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		684E52800AC24644004DAB23 /* Sources */ = {
@@ -2314,14 +2443,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/Library";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = rbf;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2330,12 +2461,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = rbf;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2344,14 +2477,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/Library";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = decb;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2360,12 +2495,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = decb;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2374,14 +2511,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/Library";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = coco;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2390,12 +2529,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = coco;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2404,14 +2545,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/Library";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = misc;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2420,12 +2563,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = misc;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2434,14 +2579,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/Library";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = native;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2450,12 +2597,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = native;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2464,14 +2613,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/Library";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = sys;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2480,12 +2631,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = sys;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2494,14 +2647,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = os9;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2510,12 +2665,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = os9;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2524,14 +2681,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = decb;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2540,12 +2699,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = decb;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2554,14 +2715,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = mamou;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2570,12 +2733,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = mamou;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2584,14 +2749,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = rdump;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2600,12 +2767,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = rdump;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2614,14 +2783,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = rma;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2630,12 +2801,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = rma;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2644,14 +2817,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = rlink;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2660,12 +2835,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = rlink;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2674,15 +2851,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = SYSV;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = ar2;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2691,6 +2870,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
@@ -2698,6 +2878,7 @@
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = ar2;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2706,14 +2887,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = tocgen;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2722,12 +2905,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = tocgen;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2758,14 +2943,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/Library";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = toolshed;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -2774,12 +2961,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = toolshed;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2788,14 +2977,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
+				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = makewav;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Debug;
@@ -2804,12 +2995,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = makewav;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
