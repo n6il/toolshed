@@ -24,6 +24,11 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.6  2007/10/06 06:27:24  tlindner
+ * Updated for CYGWIN, Should not have broken anything. :)
+ *
+ * ----------------------------------------------------------------------
+ *
  * Revision 1.5  2006/09/09 01:59:03  boisy
  * Changes to accomodate compiling under Turbo C++
  *
@@ -85,6 +90,9 @@ static char *id = "$Id$";
 #include <ctype.h>
 #include <string.h>
 #include <memory.h>
+#ifdef __CYGWIN__
+# include <sys/dirent.h>
+#else
 #ifdef SYSV
 # include <sys/types.h>
 # include <sys/dir.h>
@@ -93,6 +101,7 @@ static char *id = "$Id$";
 # include <dirent.h>
 #else
 # include <dir.h>
+#endif
 #endif
 #endif
 #include "ar.h"
@@ -507,7 +516,7 @@ int		updating;						/* TRUE if command is update	*/
 	{
 	char			*p, *q, *r, buf[80];
 	DIR				*dirp;
-#ifdef BDS
+#if defined(BDS) || defined(__CYGWIN__)
 	struct dirent	*dp;
 #else
 	struct direct	*dp;

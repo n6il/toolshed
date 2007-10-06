@@ -23,6 +23,11 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.6  2007/10/06 06:27:24  tlindner
+ * Updated for CYGWIN, Should not have broken anything. :)
+ *
+ * ----------------------------------------------------------------------
+ *
  * Revision 1.5  2006/09/09 01:59:03  boisy
  * Changes to accomodate compiling under Turbo C++
  *
@@ -59,11 +64,11 @@ static char *id = "$Id$";
 # include <pwd.h>
 #endif
 # include "o2u.h"
-#else ~SYSV
+#else /* SYSV */
 # ifdef  OSK
 #  include <os9.h>
 # endif
-#endif SYSV
+#endif /* SYSV */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -171,8 +176,8 @@ FILDES	*fs;
 #  ifdef CKLIB
 	getstat(SS_FD, pn, fs, sizeof(FILDES));
 #  endif CKLIB
-# endif OSK
-#endif SYSV
+# endif /* OSK */
+#endif /* SYSV */
 	}
 /*page*/
 /*
@@ -248,7 +253,7 @@ int		pn;
 	getstat(SS_SIZE, pn, &size);
 # endif
 	return (size);
-#endif SYSV
+#endif /* SYSV */
    }
 
 
@@ -268,7 +273,7 @@ long	size;
 # else
 	setstat(SS_SIZE, pn, size);
 # endif
-#endif SYSV
+#endif /* SYSV */
    }
 /*page*/
 /*+

@@ -24,6 +24,11 @@ static char *id1 = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.5  2007/10/06 06:27:24  tlindner
+ * Updated for CYGWIN, Should not have broken anything. :)
+ *
+ * ----------------------------------------------------------------------
+ *
  * Revision 1.4  2006/09/09 01:59:03  boisy
  * Changes to accomodate compiling under Turbo C++
  *
@@ -78,6 +83,7 @@ static char *id1 = "$Id$";
 #define TRUE	(FALSE == 0)
 #define ERROR	(-1)
 #endif
+
 #define HID		"+AR0.0+"
 #define HIDSIZ	7
 #define SUF		".ar"
