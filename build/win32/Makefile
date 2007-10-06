@@ -4,7 +4,7 @@ vpath %.c ../../mamou:../../os9
 
 
 RELEASE		= _1.0
-PACKAGENAME	= toolshed$(RELEASE).zip
+PACKAGENAME	= toolshed$(RELEASE)_win32.zip
 INSTALLDIR	= $(HOME)/bin
 DIRS		= libnative librbf libcoco libdecb libmisc libsys libdecb \
 		libtoolshed os9 mamou decb ar2 rma rlink makewav tocgen
