@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__CYGWIN__)
 /* implemented based on OSX man page */
 static inline int digittoint(int c)
 {
