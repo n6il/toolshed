@@ -8,8 +8,9 @@ CFLAGS	+= -I../../../include
 	ar -r $@ $^
 	ranlib $@
 
-librbf.a:	bitmap.o makdir.o read.o rename.o ss.o delete.o \
-		gs.o open.o readln.o seek.o write.o
+librbf.a:	librbfbitmap.o librbfmakdir.o librbfread.o librbfrename.o \
+librbfss.o librbfdelete.o librbfgs.o librbfopen.o librbfreadln.o \
+librbfseek.o librbfwrite.o
 
 clean:
 	rm *.o *.a

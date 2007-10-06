@@ -8,7 +8,8 @@ CFLAGS	+= -I../../../include
 	ar -r $@ $^
 	ranlib $@
 
-libcoco.a:	delete.o gs.o makdir.o open.o read.o readln.o rename.o seek.o ss.o write.o
+libcoco.a:	libcocodelete.o libcocogs.o libcocomakdir.o libcocoopen.o libcocoread.o \
+libcocoreadln.o libcocorename.o libcocoseek.o libcocoss.o libcocowrite.o
 
 clean:
 	rm *.o *.a

@@ -8,7 +8,7 @@ CFLAGS	+= -I../../../include
 	ar -r $@ $^
 	ranlib $@
 
-libmisc.a:	endian.o cococonv.o os9diskfuncs.o queue.o util.o
+libmisc.a:	libmiscendian.o libmisccococonv.o libmiscqueue.o libmiscutil.o
 
 clean:
 	rm *.o *.a

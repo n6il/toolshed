@@ -3,18 +3,19 @@
 vpath %.c ../../mamou:../../os9
 
 
-RELEASE		= 0.9
+RELEASE		= 1.0
 PACKAGENAME	= toolshed$(RELEASE).tgz
 INSTALLDIR	= $(HOME)/bin
 DIRS		= libnative librbf libcoco libdecb libmisc libsys libdecb \
-		os9 mamou decb
+		libtoolshed os9 mamou decb ar2 rma rlink
 # rma rlink rdump
 
 all:
 	$(foreach dir, $(DIRS), (cd $(dir); make);)
 
 install: all
-	cp os9/os9 mamou/mamou decb/decb $(INSTALLDIR)
+	cp os9/os9.exe mamou/mamou.exe decb/decb.exe ar2/ar2.exe \
+	rma/rma.exe rlink/rlink.exe $(INSTALLDIR)
 #	as6809/as6809 aslink/aslink $(INSTALLDIR)
 
 package: all
