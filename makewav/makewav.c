@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#if defined(__linux__) || defined(__CYGWIN__)
+#if defined(__linux__) || defined(__CYGWIN__) || defined(BDS)
 /* implemented based on OSX man page */
 static inline int digittoint(int c)
 {
@@ -180,7 +180,7 @@ int             main(int argc, char **argv)
 	seconds = 2;
 	sample_rate = 11250;
 	binary = 0;
-	bzero(filename, 8);
+	memset(filename, 0, 8);
 	strncpy(filename, "FILE", 8);
 	file_type = 2;
 	data_type = 0;
@@ -233,7 +233,7 @@ int             main(int argc, char **argv)
 				binary = 1;
 				break;
 			case 'n':
-				bzero(filename, 8);
+				memset(filename, 0, 8);
 				strncpy(filename, &(argv[j][2]), 8);
 				break;
 			case '0':
