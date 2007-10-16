@@ -1719,7 +1719,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		7758303D0CA6C94500AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -1728,7 +1728,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 		775830400CA6C95600AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1741,7 +1741,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 		775830420CA6C95E00AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1754,7 +1754,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 		775830440CA6C96800AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1767,7 +1767,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 		775830460CA6C97400AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1780,7 +1780,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 		775830480CA6C97C00AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1793,7 +1793,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 		7758304A0CA6C98600AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1806,7 +1806,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 		7758304C0CA6C99100AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1819,7 +1819,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 		7758304E0CA6C99B00AA4869 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1832,7 +1832,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME";
+			shellScript = "case $ACTION in\n\"build\") cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp $BUILT_PRODUCTS_DIR/$PRODUCT_NAME /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
 /* End PBXShellScriptBuildPhase section */
 

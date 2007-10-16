@@ -187,15 +187,27 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 				(*path)->this_directory_entry_index = (*path)->directory_entry_index;
 			}
 
-			if (strcmp((char *)de.filename, (char *)(*path)->dir_entry.filename) == 0 && strcmp((char *)de.file_extension, (char *)(*path)->dir_entry.file_extension) == 0)
+			if (strncmp((char *)de.filename, (char *)(*path)->dir_entry.filename, 8) == 0)
 			{
-				/* 1. A file of this type already exists. */
-				
-				fclose((*path)->fd);
-				
-				term_pd(*path);
-				
-				return EOS_FAE;
+				if( strncmp((char *)de.file_extension, (char *)(*path)->dir_entry.file_extension, 3) == 0)
+				{
+					/* 1. A file of this type already exists. */
+					
+					/* Error if we are not to create it */
+					if( mode & FAM_NOCREATE )
+					{
+						fclose((*path)->fd);
+						term_pd(*path);
+						return EOS_FAE;
+					}
+					else
+					{
+						fclose((*path)->fd);
+						term_pd(*path);
+						_decb_kill(pathlist);
+						return _decb_create( path, pathlist, mode, file_type, data_type );
+					}
+				}
 			}
 		}
 
@@ -267,10 +279,9 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 
 
 	/* 1. Strip off FAM_NOCREATE if passed -- irrelavent to _decb_open */
-	
-	mode = mode & ~FAM_NOCREATE;
-	
-	
+ 
+ 	mode = mode & ~FAM_NOCREATE;
+ 	
 	/* 2. Allocate & initialize path descriptor */
 	
 	ec = init_pd(path, mode);
@@ -304,6 +315,13 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 	else
 	{
 		(*path)->israw = 0;
+		
+		/* If mode is FAM_DIR, then we need to error */
+		if (mode & FAM_DIR)
+		{
+			term_pd(*path);
+			return EOS_SN;
+		}
 	}
 
 
