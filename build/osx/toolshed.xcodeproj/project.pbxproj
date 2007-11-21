@@ -1691,9 +1691,11 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "toolshed" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 08FB7794FE84155DC02AAC07 /* osx */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				684E52820AC24644004DAB23 /* librbf */,
 				684E52BB0AC246EA004DAB23 /* libdecb */,
@@ -2431,7 +2433,7 @@
 				DSTROOT = /;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
+				INSTALL_PATH = "$(HOME)/bin";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SKIP_INSTALL = NO;
