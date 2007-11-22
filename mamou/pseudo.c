@@ -1185,10 +1185,6 @@ int _opt(assembler *as)
 	/* Parse the option */
 	switch (tolower(*Opt))
 	{
-		case 'b':	/* Disk BASIC compatible mode */
-			as->o_asm_mode = opt_state;
-			break;
-						
 		case 'c':	/* conditional assembly in listing */
 			as->o_show_cond = opt_state;
 			break;
