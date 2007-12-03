@@ -202,6 +202,7 @@
 		68E3F3910AC41A4700E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		68E3F3970AC41A9500E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		771193480BE50BF000BD51A1 /* makewav.c in Sources */ = {isa = PBXBuildFile; fileRef = 771193470BE50BF000BD51A1 /* makewav.c */; };
+		775AE60A0D038A16005A1378 /* libdecbbinconcat.c in Sources */ = {isa = PBXBuildFile; fileRef = 775AE6090D038A16005A1378 /* libdecbbinconcat.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -810,6 +811,7 @@
 		68F936DD0B8DAEED00DF9944 /* cocofuse.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = cocofuse.c; path = ../../cocofuse/cocofuse.c; sourceTree = SOURCE_ROOT; };
 		771193420BE50BAF00BD51A1 /* makewav */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = makewav; sourceTree = BUILT_PRODUCTS_DIR; };
 		771193470BE50BF000BD51A1 /* makewav.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = makewav.c; path = ../../makewav/makewav.c; sourceTree = SOURCE_ROOT; };
+		775AE6090D038A16005A1378 /* libdecbbinconcat.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbbinconcat.c; path = ../../libdecb/libdecbbinconcat.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1044,6 +1046,7 @@
 				684E52AC0AC246D4004DAB23 /* libdecbss.c */,
 				684E52AD0AC246D4004DAB23 /* libdecbtokenize.c */,
 				684E52AE0AC246D4004DAB23 /* libdecbwrite.c */,
+				775AE6090D038A16005A1378 /* libdecbbinconcat.c */,
 			);
 			name = libdecb;
 			sourceTree = "<group>";
@@ -1879,6 +1882,7 @@
 				684E52C30AC246FD004DAB23 /* libdecbss.c in Sources */,
 				684E52C40AC246FD004DAB23 /* libdecbtokenize.c in Sources */,
 				684E52C50AC246FD004DAB23 /* libdecbwrite.c in Sources */,
+				775AE60A0D038A16005A1378 /* libdecbbinconcat.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -17,7 +17,7 @@
 //static u_int buffer_size = 32768;
 //static char *buffer;
 
-static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type);
+static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int binary_concat, int rewrite, int file_type, int data_type);
 static char *GetFilename(char *path);
 
 
@@ -36,6 +36,7 @@ static char *helpMessage[] =
     "     -l         perform end of line translation\n",
     "     -r         rewrite if file exists\n",
 	"     -t         perform BASIC token translation\n",
+	"     -c         perform segment concatenation on machine language loadables\n",
     NULL
 };
 
@@ -48,7 +49,7 @@ int decbcopy(int argc, char *argv[])
     int i, j;
     int targetDirectory = NO;
     int	count = 0;
-    int	eolTranslate = 0, tokTranslate = 0;
+    int	eolTranslate = 0, tokTranslate = 0, binary_concat = 0;
     int	rewrite = 0;
 	int file_type = 0, data_type = 0;
     char	df[256];
@@ -98,6 +99,10 @@ int decbcopy(int argc, char *argv[])
 
 					case 't':
 						tokTranslate = 1;
+						break;
+					
+					case 'c':
+						binary_concat = 1;
 						break;
 						
                     case 'h':
@@ -219,7 +224,7 @@ int decbcopy(int argc, char *argv[])
 		}
 		
 		
-        ec = CopyDECBFile(argv[j], df, eolTranslate, tokTranslate, rewrite, file_type, data_type);
+        ec = CopyDECBFile(argv[j], df, eolTranslate, tokTranslate, binary_concat, rewrite, file_type, data_type);
 
         if (ec != 0)
         {
@@ -265,7 +270,7 @@ static char *GetFilename(char *path)
 
 
 
-static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int rewrite, int file_type, int data_type)
+static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int binary_concat, int rewrite, int file_type, int data_type)
 {
     error_code	ec = 0;
     coco_path_id path;
@@ -320,6 +325,23 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 	if (ec != 0)
 	{
 		return -1;
+	}
+	
+	if( binary_concat == 1 )
+	{
+		u_char *binconcat_buffer;
+		int binconcat_size;
+
+		ec = _decb_binconcat(buffer, buffer_size, &binconcat_buffer, &binconcat_size);
+		
+		if( ec == 0 )
+		{
+			free( buffer );
+			buffer = binconcat_buffer;
+			buffer_size = binconcat_size;
+		}
+		else
+			return -1;
 	}
 
 	if( tokTranslate == 1 )

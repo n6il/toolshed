@@ -128,6 +128,7 @@ error_code _decb_ss_granule(decb_path_id path, int granule, char *buffer);
 error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffer, int *out_size);
 error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size);
 error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size );
+error_code _decb_binconcat(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size);
 
 /* ERROR CODES */
 #define EOS_OM		256		/* Out of memory error */
