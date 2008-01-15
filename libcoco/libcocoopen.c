@@ -11,7 +11,6 @@
 #include "cocotypes.h"
 #include "cocopath.h"
 
-
 /*
  * _coco_create()
  *
@@ -61,6 +60,15 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 				ec = _decb_create(&((*path)->path.decb), pathlist, mode, file_type, data_type);
 			}
 			break;
+		
+		case CECB:
+			{
+				char	file_type = 0, data_type = 0, gap = 0;
+				
+				ec = _cecb_create(&((*path)->path.cecb), pathlist, mode, file_type, data_type, gap);
+			}
+			break;
+		
 	}
 
 	
@@ -124,6 +132,17 @@ error_code _coco_open(coco_path_id *path, char *pathlist, int mode)
 		case DECB:
 			ec = _decb_open(&((*path)->path.decb), pathlist, mode);
 			break;
+		
+		case CECB:
+			{
+				long play_at = 0;
+				double threshold = 0.10;
+				double frequency_limit = 0;
+				_wave_parity wave_parity = NONE;
+
+				ec = _cecb_open(&((*path)->path.cecb), pathlist, mode, play_at, threshold, frequency_limit, wave_parity );
+			}
+			break;
 			
 	}
 	
@@ -158,7 +177,9 @@ error_code _coco_close(coco_path_id path)
 		case DECB:
 			ec = _decb_close(path->path.decb);
 			break;
-			
+		
+		case CECB:
+			ec = _cecb_close(path->path.cecb);
 	}
 	
 	
@@ -216,7 +237,15 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 		return ec;
 	}
 	
-    /* 3. Determine if this is an OS-9 or DECB image. */
+	/* 2b. Check for .cas file extension. */
+	if( strendcasecmp( pathlist, ".cas" ) == 0 )
+	{
+		*type = CECB;
+		
+		return ec;
+	}
+	
+    /* 3. Determine if this is an OS-9, DECB or CECB image. */
 	
 	fp = fopen(tmppathlist, "r");
 
@@ -237,44 +266,50 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 			int dir_sector_offset;
 			int bps = 256;
 			
+			/* 0. Look for WAV file marker */
 			
-			/* 1. Look for markers that this is an OS-9 disk image. */
-			
-			/* First, assume bps value is valid and get it */
-			
-			if (int1(os9_sector->dd_lsnsize) > 0)
+			if( strncmp( (char *)sector_buffer,"RIFF",4) == 0 )
+				*type = CECB;
+			else
 			{
-				bps = int1(os9_sector->dd_lsnsize) * 256;
-			}
-			
-			/* Then, check out the dir sector for .. and . entries. */
-			
-			dir_sector_offset = (int3(os9_sector->dd_dir) + 1) * bps;
+				/* 1. Look for markers that this is an OS-9 disk image. */
+				
+				/* First, assume bps value is valid and get it */
+				
+				if (int1(os9_sector->dd_lsnsize) > 0)
+				{
+					bps = int1(os9_sector->dd_lsnsize) * 256;
+				}
+				
+				/* Then, check out the dir sector for .. and . entries. */
+				
+				dir_sector_offset = (int3(os9_sector->dd_dir) + 1) * bps;
 
-			fseek(fp, dir_sector_offset, SEEK_SET);
+				fseek(fp, dir_sector_offset, SEEK_SET);
 
 #ifdef BDS
-			fread(sector_buffer, 1, 256, fp);
+				fread(sector_buffer, 1, 256, fp);
 #else
-			if (fread(sector_buffer, 1, 256, fp) < 256)
-			{
-				*type = DECB;
-			}
-			else
-#endif
-			{
-				if (sector_buffer[0] == 0x2E && sector_buffer[1] == 0xAE &&
-					sector_buffer[32] == 0xAE)
+				if (fread(sector_buffer, 1, 256, fp) < 256)
 				{
-					/* 1. This is likely an OS-9 disk image. */
-					
-					*type = OS9;
+					*type = DECB;
 				}
 				else
+#endif
 				{
-					/* 1. This is probably a DECB disk image. */
-					
-					*type = DECB;
+					if (sector_buffer[0] == 0x2E && sector_buffer[1] == 0xAE &&
+						sector_buffer[32] == 0xAE)
+					{
+						/* 1. This is likely an OS-9 disk image. */
+						
+						*type = OS9;
+					}
+					else
+					{
+						/* 1. This is probably a DECB disk image. */
+						
+						*type = DECB;
+					}
 				}
 			}
 		}

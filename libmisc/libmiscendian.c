@@ -52,3 +52,68 @@ void _int1(unsigned int a, u_char *b)
 {
     b[0] = (a & 0xFF);
 }
+
+unsigned short swap_short(unsigned short in)
+{
+	unsigned short  out = (in << 8) + (in >> 8);
+
+	return out;
+}
+
+unsigned int swap_int(unsigned int in)
+{
+	unsigned int out = swap_short(in >> 16) + (swap_short(in & 0x0000ffff) << 16);
+
+	return out;
+}
+
+/* Read multibyte values stored in little endian format in file */
+
+size_t fread_le_char( unsigned char *ptr, FILE * stream )
+{
+	size_t count;
+	
+	count = fread( ptr, 1, 1, stream );
+
+	return count;
+}
+
+size_t fread_le_short( unsigned short *ptr, FILE * stream )
+{
+	size_t count;
+	
+	count = fread( ptr, 1, 2, stream );
+
+#ifdef __BIG_ENDIAN__
+	*ptr = swap_short( *ptr );
+#endif
+
+	return count;
+}
+
+size_t fread_le_sshort( signed short *ptr, FILE * stream )
+{
+	size_t count;
+	
+	count = fread( ptr, 1, 2, stream );
+
+#ifdef __BIG_ENDIAN__
+	*ptr = swap_short( *ptr );
+#endif
+
+	return count;
+}
+
+size_t fread_le_int( unsigned int *ptr, FILE * stream )
+{
+	size_t count;
+	
+	count = fread( ptr, 1, 4, stream );
+
+#ifdef __BIG_ENDIAN__
+	*ptr = swap_int( *ptr );
+#endif
+
+	return count;
+}
+

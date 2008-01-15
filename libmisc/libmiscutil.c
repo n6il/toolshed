@@ -80,6 +80,19 @@ int StrToInt(char *s)
     return(accum);	
 }
 
+int strendcasecmp( char *s1, char *s2 )
+{
+	int a, b;
+	
+	a = strlen(s1);
+	b = strlen(s2);
+	
+	if( a < b )
+		return -1;
+	
+	return strcasecmp( s1+a-b, s2 );
+}
+	
 
 #ifdef BDS
 int strcasecmp(char *s1, char *s2)

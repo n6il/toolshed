@@ -21,7 +21,6 @@ extern "C" {
 #include <time.h>
 #include <cocotypes.h>
 
-
 /* Function prototypes for supported OS-9 commands are here */
 int os9attr(int, char **);
 int os9cmp(int, char **);
@@ -50,6 +49,7 @@ int StrToInt(char *s);
 int strcasecmp(char *s1, char *s2);
 int strncasecmp(char *s1, char *s2, int len);
 #endif
+int strendcasecmp( char *s1, char *s2 );
 void show_help(char **helpMessage);
 
 /* Function prototypes for supported Disk BASIC commands are here */
@@ -64,6 +64,10 @@ int decblist(int, char **);
 int decbrename(int, char **);
 int decbdump(int, char **);
 int decbhdbconv(int, char **);
+
+/* Function prototypes for supported Disk BASIC commands are here */
+int cecbdir(int, char **);
+int cecbfstat(int, char **);
 
 #ifdef __cplusplus
 }

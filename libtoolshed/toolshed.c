@@ -47,7 +47,19 @@ void TSReportError(error_code te, char *errorstr)
 		case EOS_PADROM:
 			strcpy(errorstr, "file size insufficient for pad size");
 			break;
-
+		
+		case EOS_WT:
+			strcpy( errorstr, "attempt to read an incompatible media");
+			break;
+		
+		case EOS_MF:
+			strcpy( errorstr, "memory full");
+			break;
+		
+		case EOS_CRC:
+			strcpy( errorstr, "CRC error" );
+			break;
+			
 		default:
 			strcpy(errorstr, "unknown error");
 			break;

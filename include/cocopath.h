@@ -22,9 +22,9 @@ extern "C" {
 #include "nativepath.h"
 #include "os9path.h"
 #include "decbpath.h"
+#include "cecbpath.h"
 
-
-typedef enum { NATIVE, OS9, DECB } _path_type;
+typedef enum { NATIVE, OS9, DECB, CECB } _path_type;
 
 
 /* ERROR CODES */
@@ -32,16 +32,18 @@ typedef enum { NATIVE, OS9, DECB } _path_type;
 #define EOS_IC		192
 #define EOS_PTHFUL	200
 #define EOS_BMODE	203
+#define EOS_MF      207
 #define	EOS_EOF		211
 #define EOS_FNA		214
 #define EOS_BPNAM	215
 #define EOS_PNNF	216
 #define EOS_SF		217
 #define EOS_FAE		218
+#define EOS_CRC		243
 #define EOS_WRITE	246
 #define EOS_SE		247
 #define EOS_DF		248
-
+#define EOS_WT		249
 
 /* file access modes */
 #define	FAM_READ	0x0001
@@ -73,6 +75,7 @@ typedef struct _coco_path_id
 		struct _native_path_id  *native;
 		struct _os9_path_id		*os9;
 		struct _decb_path_id	*decb;
+		struct _cecb_path_id	*cecb;
 	} path;
 } *coco_path_id;
 

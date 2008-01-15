@@ -67,4 +67,24 @@ error_code _decb_prsnam(char *filename)
 	return ec;
 }
 
+error_code _cecb_prsnam( char *filename )
+{
+	error_code	ec = 0;
+	int i;
+	
+	if( strlen(filename) > 8 )
+	{
+		ec = EOS_BPNAM;
+	}
+	else
+	{
+		for( i=0; i<strlen(filename); i++ )
+		{
+			if( isgraph( filename[i] ) != 0 )
+				ec = EOS_BPNAM;
+		}
+	}
+	
+	return ec;
+}
 
