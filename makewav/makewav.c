@@ -1,11 +1,14 @@
 /*
 	makewav.c
 	
-	Motorola S Record to CoCo WAV file
+	Motorola S Record (and raw binary) to CoCo WAV file
 	
 	This program will convert a Motorola S record file to
 	a WAV file. The format will match Microsoft's Color BASIC and Micro
 	Color BASIC cassette format.
+	
+	A raw binary can be encoded also, the meta data should be taken from
+	the command line.
 	
 	Only S0 records are supported, others are ignored. Execution address
 	is taken from the first S0 record.
@@ -191,7 +194,7 @@ int             main(int argc, char **argv)
 	
 	if (argc < 2)
 	{
-		fprintf(stderr, "\nmakewav - S record to CoCo/MC-10 audio WAV file\n");
+		fprintf(stderr, "\%s - S record to CoCo/MC-10 audio WAV file\n", argv[0]);
 		fprintf(stderr, "Copyright (C) 2007 tim lindner\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, "This program will convert a Motorola S record file to\n");
@@ -208,8 +211,8 @@ int             main(int argc, char **argv)
 		fprintf(stderr, "            1 = BASIC data file\n");
 		fprintf(stderr, "            2 = Machine language program\n");
 		fprintf(stderr, " -[a|b]     Data type (a = ASCII, b=binary (default: %s)\n", data_type == 0 ? "binary" : "ASCII");
-		fprintf(stderr, " -d<val>    Start address (default: $%x)\n", start_address );
-		fprintf(stderr, " -e<val>    Execution address (default: $%x)\n", exec_address );
+		fprintf(stderr, " -d<val>    Start address (default: 0x%x)\n", start_address );
+		fprintf(stderr, " -e<val>    Execution address (default: 0x%x)\n", exec_address );
 		fprintf(stderr, " -o<string> Output file name for WAV file (default: %s)\n", out_filename);
 		fprintf(stderr, " -v         Print information about the conversion (default: off)\n\n");
 		fprintf(stderr, "For <val> use 0x prefix for hex, 0 prefix for octal and no prefix for decimal.\n");
@@ -511,11 +514,11 @@ int             main(int argc, char **argv)
 	if( verbose )
 	{
 		printf( "Encoded filename: %s\n", filename );
-		printf( "File type: $%x\n", file_type );
-		printf( "Data type: $%x\n", data_type );
-		printf( "Start address: $%x\n", start_address );
-		printf( "Exec address: $%x\n", exec_address );
-		printf( "End address: $%x\n", start_address+total_length );
+		printf( "File type: 0x%x\n", file_type );
+		printf( "Data type: 0x%x\n", data_type );
+		printf( "Start address: 0x%x\n", start_address );
+		printf( "Exec address: 0x%x\n", exec_address );
+		printf( "End address: 0x%x\n", start_address+total_length );
 	}
 	
 	/* Leader for data blocks */
