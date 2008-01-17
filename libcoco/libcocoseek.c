@@ -31,6 +31,11 @@ error_code _coco_seek(coco_path_id path, int pos, int mode)
 		case DECB:
 			ec = _decb_seek(path->path.decb, pos, mode);
 			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_seek not implemented in libcecb yet.\n" );
+			ec = -1;
+			break;
 	}
 	
 	

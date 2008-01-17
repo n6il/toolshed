@@ -15,7 +15,6 @@
 			dependencies = (
 				684E549F0AC24AE2004DAB23 /* PBXTargetDependency */,
 				684E54A10AC24AE5004DAB23 /* PBXTargetDependency */,
-				77BF143F0D39E95400374444 /* PBXTargetDependency */,
 				684E54A30AC24AE7004DAB23 /* PBXTargetDependency */,
 				684E54A50AC24AEA004DAB23 /* PBXTargetDependency */,
 				684E54A70AC24AFD004DAB23 /* PBXTargetDependency */,
@@ -202,24 +201,28 @@
 		68E3F38F0AC41A2C00E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		68E3F3910AC41A4700E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		68E3F3970AC41A9500E1DFE0 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
-		770D3ACB0D3C6B2200BF990F /* cecbfstat.c in Sources */ = {isa = PBXBuildFile; fileRef = 770D3ACA0D3C6B2200BF990F /* cecbfstat.c */; };
 		771193480BE50BF000BD51A1 /* makewav.c in Sources */ = {isa = PBXBuildFile; fileRef = 771193470BE50BF000BD51A1 /* makewav.c */; };
+		773859960D3F171D007D0391 /* libcecbgs.c in Sources */ = {isa = PBXBuildFile; fileRef = 773859950D3F171D007D0391 /* libcecbgs.c */; };
+		773859C40D3F23EE007D0391 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
 		775AE60A0D038A16005A1378 /* libdecbbinconcat.c in Sources */ = {isa = PBXBuildFile; fileRef = 775AE6090D038A16005A1378 /* libdecbbinconcat.c */; };
-		77BF13500D39D2FD00374444 /* libcecbcas.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF134F0D39D2FD00374444 /* libcecbcas.c */; };
-		77BF13C50D39E0EB00374444 /* libcecbread.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF13C40D39E0EB00374444 /* libcecbread.c */; };
-		77BF14480D39E9D800374444 /* cecb_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF14470D39E9D800374444 /* cecb_main.c */; };
-		77BF14780D39F1F100374444 /* cecbdir.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF14770D39F1F100374444 /* cecbdir.c */; };
-		77BF14A60D39F78900374444 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
-		77BF14A70D39F78900374444 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
-		77BF14A80D39F78900374444 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8438D0B10D34116C008733E2 /* libcecb.a */; };
-		77BF14A90D39F78900374444 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
-		77BF14AA0D39F78900374444 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
-		77BF14AB0D39F78900374444 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
-		77BF14AC0D39F78900374444 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
-		77BF14AD0D39F78900374444 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
-		77EE03DE0D39B7F3004F70DA /* libcecbwav.c in Sources */ = {isa = PBXBuildFile; fileRef = 77EE03DC0D39B7F3004F70DA /* libcecbwav.c */; };
-		842326EB0D37EAC2008AAAC1 /* libcebcopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 842326EA0D37EAC2008AAAC1 /* libcebcopen.c */; };
-		842326F10D37EDA4008AAAC1 /* cecbpath.h in Headers */ = {isa = PBXBuildFile; fileRef = 842326F00D37EDA4008AAAC1 /* cecbpath.h */; };
+		77F0A8AD0D3DD4B800009CA5 /* cecbpath.h in Headers */ = {isa = PBXBuildFile; fileRef = 842326F00D37EDA4008AAAC1 /* cecbpath.h */; };
+		77F0A8AE0D3DD4B800009CA5 /* libcebcopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 842326EA0D37EAC2008AAAC1 /* libcebcopen.c */; };
+		77F0A8AF0D3DD4B900009CA5 /* libcecbcas.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF134F0D39D2FD00374444 /* libcecbcas.c */; };
+		77F0A8B00D3DD4BA00009CA5 /* libcecbread.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF13C40D39E0EB00374444 /* libcecbread.c */; };
+		77F0A8B10D3DD4BB00009CA5 /* libcecbwav.c in Sources */ = {isa = PBXBuildFile; fileRef = 77EE03DC0D39B7F3004F70DA /* libcecbwav.c */; };
+		77F0A8B60D3DD54A00009CA5 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
+		77F0A8E00D3DD6A300009CA5 /* cecb_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF14470D39E9D800374444 /* cecb_main.c */; };
+		77F0A8E10D3DD6A400009CA5 /* cecbdir.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF14770D39F1F100374444 /* cecbdir.c */; };
+		77F0A8E20D3DD6A500009CA5 /* cecbfstat.c in Sources */ = {isa = PBXBuildFile; fileRef = 770D3ACA0D3C6B2200BF990F /* cecbfstat.c */; };
+		77F0A8E30D3DD6AE00009CA5 /* os9dump.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E534B0AC2487D004DAB23 /* os9dump.c */; };
+		77F0A8EF0D3DD6F500009CA5 /* librbf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52830AC24644004DAB23 /* librbf.a */; };
+		77F0A8F00D3DD70000009CA5 /* libdecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52BC0AC246EA004DAB23 /* libdecb.a */; };
+		77F0A8F10D3DD70200009CA5 /* libcoco.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52D00AC24728004DAB23 /* libcoco.a */; };
+		77F0A8F20D3DD70500009CA5 /* libmisc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E52F00AC24767004DAB23 /* libmisc.a */; };
+		77F0A8F30D3DD70700009CA5 /* libnative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E53060AC247A2004DAB23 /* libnative.a */; };
+		77F0A8F40D3DD70900009CA5 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
+		77F0A8F50D3DD70C00009CA5 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
+		77F0A9020D3DD86F00009CA5 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -678,82 +681,68 @@
 			remoteGlobalIDString = 771193410BE50BAF00BD51A1;
 			remoteInfo = makewav;
 		};
-		77BF143E0D39E95400374444 /* PBXContainerItemProxy */ = {
+		77F0A8B90D3DD55A00009CA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 77BF14300D39E86400374444;
-			remoteInfo = cecb;
-		};
-		77BF14940D39F73500374444 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8438D0B00D34116C008733E2;
+			remoteGlobalIDString = 77F0A89E0D3DD29000009CA5;
 			remoteInfo = libcecb;
 		};
-		77BF14960D39F73500374444 /* PBXContainerItemProxy */ = {
+		77F0A8C70D3DD65B00009CA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 77F0A89E0D3DD29000009CA5;
+			remoteInfo = libcecb;
+		};
+		77F0A8C90D3DD65B00009CA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 684E52820AC24644004DAB23;
 			remoteInfo = librbf;
 		};
-		77BF14980D39F73500374444 /* PBXContainerItemProxy */ = {
+		77F0A8CB0D3DD65B00009CA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 684E52BB0AC246EA004DAB23;
 			remoteInfo = libdecb;
 		};
-		77BF149A0D39F73500374444 /* PBXContainerItemProxy */ = {
+		77F0A8CD0D3DD65B00009CA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 684E52CF0AC24728004DAB23;
 			remoteInfo = libcoco;
 		};
-		77BF149C0D39F73500374444 /* PBXContainerItemProxy */ = {
+		77F0A8CF0D3DD65B00009CA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 684E52EF0AC24767004DAB23;
 			remoteInfo = libmisc;
 		};
-		77BF149E0D39F73500374444 /* PBXContainerItemProxy */ = {
+		77F0A8D10D3DD65B00009CA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 684E53050AC247A2004DAB23;
 			remoteInfo = libnative;
 		};
-		77BF14A00D39F73500374444 /* PBXContainerItemProxy */ = {
+		77F0A8D30D3DD65B00009CA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 684E532B0AC247F9004DAB23;
 			remoteInfo = libsys;
 		};
-		77BF14A40D39F73500374444 /* PBXContainerItemProxy */ = {
+		77F0A8D50D3DD65B00009CA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 68E3F2430AC37ED200E1DFE0;
 			remoteInfo = libtoolshed;
-		};
-		84C180110D3845B000FA1B49 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8438D0B00D34116C008733E2;
-			remoteInfo = libcecb;
-		};
-		84C180660D3849EF00FA1B49 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8438D0B00D34116C008733E2;
-			remoteInfo = libcecb;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -906,16 +895,17 @@
 		770D3ACA0D3C6B2200BF990F /* cecbfstat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cecbfstat.c; path = ../../cecb/cecbfstat.c; sourceTree = SOURCE_ROOT; };
 		771193420BE50BAF00BD51A1 /* makewav */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = makewav; sourceTree = BUILT_PRODUCTS_DIR; };
 		771193470BE50BF000BD51A1 /* makewav.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = makewav.c; path = ../../makewav/makewav.c; sourceTree = SOURCE_ROOT; };
+		773859950D3F171D007D0391 /* libcecbgs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbgs.c; path = ../../libcecb/libcecbgs.c; sourceTree = SOURCE_ROOT; };
 		775AE6090D038A16005A1378 /* libdecbbinconcat.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbbinconcat.c; path = ../../libdecb/libdecbbinconcat.c; sourceTree = SOURCE_ROOT; };
 		77BF134F0D39D2FD00374444 /* libcecbcas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbcas.c; path = ../../libcecb/libcecbcas.c; sourceTree = SOURCE_ROOT; };
 		77BF13C40D39E0EB00374444 /* libcecbread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbread.c; path = ../../libcecb/libcecbread.c; sourceTree = SOURCE_ROOT; };
-		77BF14310D39E86400374444 /* cecb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cecb; sourceTree = BUILT_PRODUCTS_DIR; };
 		77BF14470D39E9D800374444 /* cecb_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cecb_main.c; path = ../../cecb/cecb_main.c; sourceTree = SOURCE_ROOT; };
 		77BF14770D39F1F100374444 /* cecbdir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cecbdir.c; path = ../../cecb/cecbdir.c; sourceTree = SOURCE_ROOT; };
 		77EE03DC0D39B7F3004F70DA /* libcecbwav.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbwav.c; path = ../../libcecb/libcecbwav.c; sourceTree = SOURCE_ROOT; };
+		77F0A89F0D3DD29000009CA5 /* libcecb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcecb.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		77F0A8C50D3DD65300009CA5 /* cecb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cecb; sourceTree = BUILT_PRODUCTS_DIR; };
 		842326EA0D37EAC2008AAAC1 /* libcebcopen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcebcopen.c; path = ../../libcecb/libcebcopen.c; sourceTree = SOURCE_ROOT; };
 		842326F00D37EDA4008AAAC1 /* cecbpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cecbpath.h; path = ../../include/cecbpath.h; sourceTree = SOURCE_ROOT; };
-		8438D0B10D34116C008733E2 /* libcecb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcecb.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -969,6 +959,7 @@
 				684E55FC0AC254EC004DAB23 /* libcoco.a in Frameworks */,
 				684E55FA0AC254EC004DAB23 /* librbf.a in Frameworks */,
 				684E55FB0AC254EC004DAB23 /* libdecb.a in Frameworks */,
+				77F0A8B60D3DD54A00009CA5 /* libcecb.a in Frameworks */,
 				684E55FE0AC254EC004DAB23 /* libnative.a in Frameworks */,
 				684E55FD0AC254EC004DAB23 /* libmisc.a in Frameworks */,
 				684E55FF0AC254EC004DAB23 /* libsys.a in Frameworks */,
@@ -986,6 +977,7 @@
 				684E55F80AC254E4004DAB23 /* libnative.a in Frameworks */,
 				684E55F70AC254E4004DAB23 /* libmisc.a in Frameworks */,
 				684E55F90AC254E4004DAB23 /* libsys.a in Frameworks */,
+				773859C40D3F23EE007D0391 /* libcecb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1083,25 +1075,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		77BF142F0D39E86400374444 /* Frameworks */ = {
+		77F0A89D0D3DD29000009CA5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				77BF14A60D39F78900374444 /* librbf.a in Frameworks */,
-				77BF14A70D39F78900374444 /* libdecb.a in Frameworks */,
-				77BF14A80D39F78900374444 /* libcecb.a in Frameworks */,
-				77BF14A90D39F78900374444 /* libcoco.a in Frameworks */,
-				77BF14AA0D39F78900374444 /* libmisc.a in Frameworks */,
-				77BF14AB0D39F78900374444 /* libnative.a in Frameworks */,
-				77BF14AC0D39F78900374444 /* libsys.a in Frameworks */,
-				77BF14AD0D39F78900374444 /* libtoolshed.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8438D0AF0D34116C008733E2 /* Frameworks */ = {
+		77F0A8C30D3DD65300009CA5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77F0A8F10D3DD70200009CA5 /* libcoco.a in Frameworks */,
+				77F0A8F30D3DD70700009CA5 /* libnative.a in Frameworks */,
+				77F0A8EF0D3DD6F500009CA5 /* librbf.a in Frameworks */,
+				77F0A8F00D3DD70000009CA5 /* libdecb.a in Frameworks */,
+				77F0A8F20D3DD70500009CA5 /* libmisc.a in Frameworks */,
+				77F0A8F40D3DD70900009CA5 /* libsys.a in Frameworks */,
+				77F0A8F50D3DD70C00009CA5 /* libtoolshed.a in Frameworks */,
+				77F0A9020D3DD86F00009CA5 /* libcecb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1115,7 +1107,6 @@
 				684E533C0AC2483C004DAB23 /* Libraries */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
-				770D3ACA0D3C6B2200BF990F /* cecbfstat.c */,
 			);
 			name = osx;
 			sourceTree = "<group>";
@@ -1143,7 +1134,7 @@
 			children = (
 				684E52830AC24644004DAB23 /* librbf.a */,
 				684E52BC0AC246EA004DAB23 /* libdecb.a */,
-				8438D0B10D34116C008733E2 /* libcecb.a */,
+				77F0A89F0D3DD29000009CA5 /* libcecb.a */,
 				684E52D00AC24728004DAB23 /* libcoco.a */,
 				684E52F00AC24767004DAB23 /* libmisc.a */,
 				684E53060AC247A2004DAB23 /* libnative.a */,
@@ -1158,7 +1149,7 @@
 				684E54250AC249D8004DAB23 /* ar2 */,
 				684E54840AC24A76004DAB23 /* tocgen */,
 				771193420BE50BAF00BD51A1 /* makewav */,
-				77BF14310D39E86400374444 /* cecb */,
+				77F0A8C50D3DD65300009CA5 /* cecb */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1442,6 +1433,7 @@
 			children = (
 				77BF134F0D39D2FD00374444 /* libcecbcas.c */,
 				77EE03DC0D39B7F3004F70DA /* libcecbwav.c */,
+				773859950D3F171D007D0391 /* libcecbgs.c */,
 				842326EA0D37EAC2008AAAC1 /* libcebcopen.c */,
 				77BF13C40D39E0EB00374444 /* libcecbread.c */,
 				842326F00D37EDA4008AAAC1 /* cecbpath.h */,
@@ -1454,6 +1446,7 @@
 			children = (
 				77BF14770D39F1F100374444 /* cecbdir.c */,
 				77BF14470D39E9D800374444 /* cecb_main.c */,
+				770D3ACA0D3C6B2200BF990F /* cecbfstat.c */,
 			);
 			name = cecb;
 			sourceTree = "<group>";
@@ -1517,11 +1510,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8438D0AD0D34116C008733E2 /* Headers */ = {
+		77F0A89B0D3DD29000009CA5 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				842326F10D37EDA4008AAAC1 /* cecbpath.h in Headers */,
+				77F0A8AD0D3DD4B800009CA5 /* cecbpath.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1648,7 +1641,7 @@
 				684E53790AC24899004DAB23 /* PBXTargetDependency */,
 				684E537B0AC2489C004DAB23 /* PBXTargetDependency */,
 				68E3F24F0AC37F2100E1DFE0 /* PBXTargetDependency */,
-				84C180120D3845B000FA1B49 /* PBXTargetDependency */,
+				77F0A8BA0D3DD55A00009CA5 /* PBXTargetDependency */,
 			);
 			name = os9;
 			productName = os9;
@@ -1673,7 +1666,6 @@
 				684E538D0AC248C6004DAB23 /* PBXTargetDependency */,
 				684E538F0AC248C9004DAB23 /* PBXTargetDependency */,
 				68E3F2530AC37F2700E1DFE0 /* PBXTargetDependency */,
-				84C180670D3849EF00FA1B49 /* PBXTargetDependency */,
 			);
 			name = decb;
 			productName = decb;
@@ -1858,38 +1850,13 @@
 			productReference = 771193420BE50BAF00BD51A1 /* makewav */;
 			productType = "com.apple.product-type.tool";
 		};
-		77BF14300D39E86400374444 /* cecb */ = {
+		77F0A89E0D3DD29000009CA5 /* libcecb */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 77BF14350D39E8A900374444 /* Build configuration list for PBXNativeTarget "cecb" */;
+			buildConfigurationList = 77F0A8A80D3DD2C700009CA5 /* Build configuration list for PBXNativeTarget "libcecb" */;
 			buildPhases = (
-				77BF142E0D39E86400374444 /* Sources */,
-				77BF142F0D39E86400374444 /* Frameworks */,
-				77BF143A0D39E94200374444 /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				77BF14950D39F73500374444 /* PBXTargetDependency */,
-				77BF14970D39F73500374444 /* PBXTargetDependency */,
-				77BF14990D39F73500374444 /* PBXTargetDependency */,
-				77BF149B0D39F73500374444 /* PBXTargetDependency */,
-				77BF149D0D39F73500374444 /* PBXTargetDependency */,
-				77BF149F0D39F73500374444 /* PBXTargetDependency */,
-				77BF14A10D39F73500374444 /* PBXTargetDependency */,
-				77BF14A50D39F73500374444 /* PBXTargetDependency */,
-			);
-			name = cecb;
-			productName = cecb;
-			productReference = 77BF14310D39E86400374444 /* cecb */;
-			productType = "com.apple.product-type.tool";
-		};
-		8438D0B00D34116C008733E2 /* libcecb */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8438D0B90D34117E008733E2 /* Build configuration list for PBXNativeTarget "libcecb" */;
-			buildPhases = (
-				8438D0AD0D34116C008733E2 /* Headers */,
-				8438D0AE0D34116C008733E2 /* Sources */,
-				8438D0AF0D34116C008733E2 /* Frameworks */,
+				77F0A89B0D3DD29000009CA5 /* Headers */,
+				77F0A89C0D3DD29000009CA5 /* Sources */,
+				77F0A89D0D3DD29000009CA5 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1897,8 +1864,33 @@
 			);
 			name = libcecb;
 			productName = libcecb;
-			productReference = 8438D0B10D34116C008733E2 /* libcecb.a */;
+			productReference = 77F0A89F0D3DD29000009CA5 /* libcecb.a */;
 			productType = "com.apple.product-type.library.static";
+		};
+		77F0A8C40D3DD65300009CA5 /* cecb */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 77F0A8EB0D3DD6D900009CA5 /* Build configuration list for PBXNativeTarget "cecb" */;
+			buildPhases = (
+				77F0A8C20D3DD65300009CA5 /* Sources */,
+				77F0A8C30D3DD65300009CA5 /* Frameworks */,
+				77F0A8E80D3DD6C300009CA5 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				77F0A8C80D3DD65B00009CA5 /* PBXTargetDependency */,
+				77F0A8CA0D3DD65B00009CA5 /* PBXTargetDependency */,
+				77F0A8CC0D3DD65B00009CA5 /* PBXTargetDependency */,
+				77F0A8CE0D3DD65B00009CA5 /* PBXTargetDependency */,
+				77F0A8D00D3DD65B00009CA5 /* PBXTargetDependency */,
+				77F0A8D20D3DD65B00009CA5 /* PBXTargetDependency */,
+				77F0A8D40D3DD65B00009CA5 /* PBXTargetDependency */,
+				77F0A8D60D3DD65B00009CA5 /* PBXTargetDependency */,
+			);
+			name = cecb;
+			productName = cecb;
+			productReference = 77F0A8C50D3DD65300009CA5 /* cecb */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -1910,7 +1902,7 @@
 			mainGroup = 08FB7794FE84155DC02AAC07 /* osx */;
 			projectDirPath = "";
 			targets = (
-				8438D0B00D34116C008733E2 /* libcecb */,
+				77F0A89E0D3DD29000009CA5 /* libcecb */,
 				684E52820AC24644004DAB23 /* librbf */,
 				684E52BB0AC246EA004DAB23 /* libdecb */,
 				684E52CF0AC24728004DAB23 /* libcoco */,
@@ -1920,7 +1912,7 @@
 				68E3F2430AC37ED200E1DFE0 /* libtoolshed */,
 				684E53390AC24836004DAB23 /* os9 */,
 				684E53810AC248B5004DAB23 /* decb */,
-				77BF14300D39E86400374444 /* cecb */,
+				77F0A8C40D3DD65300009CA5 /* cecb */,
 				684E53AF0AC24901004DAB23 /* mamou */,
 				684E53DB0AC24954004DAB23 /* rdump */,
 				684E53FE0AC249A5004DAB23 /* rma */,
@@ -2051,7 +2043,7 @@
 			shellPath = /bin/sh;
 			shellScript = "case $ACTION in\n\"build\") cp \"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME\" ~/bin/$PRODUCT_NAME\n\t;;\n\"install\") sudo cp \"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME\" /usr/local/bin/$PRODUCT_NAME\n\t;;\nesac";
 		};
-		77BF143A0D39E94200374444 /* ShellScript */ = {
+		77F0A8E80D3DD6C300009CA5 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2301,24 +2293,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		77BF142E0D39E86400374444 /* Sources */ = {
+		77F0A89C0D3DD29000009CA5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				77BF14480D39E9D800374444 /* cecb_main.c in Sources */,
-				77BF14780D39F1F100374444 /* cecbdir.c in Sources */,
-				770D3ACB0D3C6B2200BF990F /* cecbfstat.c in Sources */,
+				77F0A8AE0D3DD4B800009CA5 /* libcebcopen.c in Sources */,
+				77F0A8AF0D3DD4B900009CA5 /* libcecbcas.c in Sources */,
+				77F0A8B00D3DD4BA00009CA5 /* libcecbread.c in Sources */,
+				77F0A8B10D3DD4BB00009CA5 /* libcecbwav.c in Sources */,
+				773859960D3F171D007D0391 /* libcecbgs.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8438D0AE0D34116C008733E2 /* Sources */ = {
+		77F0A8C20D3DD65300009CA5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				842326EB0D37EAC2008AAAC1 /* libcebcopen.c in Sources */,
-				77EE03DE0D39B7F3004F70DA /* libcecbwav.c in Sources */,
-				77BF13500D39D2FD00374444 /* libcecbcas.c in Sources */,
-				77BF13C50D39E0EB00374444 /* libcecbread.c in Sources */,
+				77F0A8E00D3DD6A300009CA5 /* cecb_main.c in Sources */,
+				77F0A8E10D3DD6A400009CA5 /* cecbdir.c in Sources */,
+				77F0A8E20D3DD6A500009CA5 /* cecbfstat.c in Sources */,
+				77F0A8E30D3DD6AE00009CA5 /* os9dump.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2650,60 +2644,50 @@
 			target = 771193410BE50BAF00BD51A1 /* makewav */;
 			targetProxy = 771193560BE50C4C00BD51A1 /* PBXContainerItemProxy */;
 		};
-		77BF143F0D39E95400374444 /* PBXTargetDependency */ = {
+		77F0A8BA0D3DD55A00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 77BF14300D39E86400374444 /* cecb */;
-			targetProxy = 77BF143E0D39E95400374444 /* PBXContainerItemProxy */;
+			target = 77F0A89E0D3DD29000009CA5 /* libcecb */;
+			targetProxy = 77F0A8B90D3DD55A00009CA5 /* PBXContainerItemProxy */;
 		};
-		77BF14950D39F73500374444 /* PBXTargetDependency */ = {
+		77F0A8C80D3DD65B00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8438D0B00D34116C008733E2 /* libcecb */;
-			targetProxy = 77BF14940D39F73500374444 /* PBXContainerItemProxy */;
+			target = 77F0A89E0D3DD29000009CA5 /* libcecb */;
+			targetProxy = 77F0A8C70D3DD65B00009CA5 /* PBXContainerItemProxy */;
 		};
-		77BF14970D39F73500374444 /* PBXTargetDependency */ = {
+		77F0A8CA0D3DD65B00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 684E52820AC24644004DAB23 /* librbf */;
-			targetProxy = 77BF14960D39F73500374444 /* PBXContainerItemProxy */;
+			targetProxy = 77F0A8C90D3DD65B00009CA5 /* PBXContainerItemProxy */;
 		};
-		77BF14990D39F73500374444 /* PBXTargetDependency */ = {
+		77F0A8CC0D3DD65B00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 684E52BB0AC246EA004DAB23 /* libdecb */;
-			targetProxy = 77BF14980D39F73500374444 /* PBXContainerItemProxy */;
+			targetProxy = 77F0A8CB0D3DD65B00009CA5 /* PBXContainerItemProxy */;
 		};
-		77BF149B0D39F73500374444 /* PBXTargetDependency */ = {
+		77F0A8CE0D3DD65B00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 684E52CF0AC24728004DAB23 /* libcoco */;
-			targetProxy = 77BF149A0D39F73500374444 /* PBXContainerItemProxy */;
+			targetProxy = 77F0A8CD0D3DD65B00009CA5 /* PBXContainerItemProxy */;
 		};
-		77BF149D0D39F73500374444 /* PBXTargetDependency */ = {
+		77F0A8D00D3DD65B00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 684E52EF0AC24767004DAB23 /* libmisc */;
-			targetProxy = 77BF149C0D39F73500374444 /* PBXContainerItemProxy */;
+			targetProxy = 77F0A8CF0D3DD65B00009CA5 /* PBXContainerItemProxy */;
 		};
-		77BF149F0D39F73500374444 /* PBXTargetDependency */ = {
+		77F0A8D20D3DD65B00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 684E53050AC247A2004DAB23 /* libnative */;
-			targetProxy = 77BF149E0D39F73500374444 /* PBXContainerItemProxy */;
+			targetProxy = 77F0A8D10D3DD65B00009CA5 /* PBXContainerItemProxy */;
 		};
-		77BF14A10D39F73500374444 /* PBXTargetDependency */ = {
+		77F0A8D40D3DD65B00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 684E532B0AC247F9004DAB23 /* libsys */;
-			targetProxy = 77BF14A00D39F73500374444 /* PBXContainerItemProxy */;
+			targetProxy = 77F0A8D30D3DD65B00009CA5 /* PBXContainerItemProxy */;
 		};
-		77BF14A50D39F73500374444 /* PBXTargetDependency */ = {
+		77F0A8D60D3DD65B00009CA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 68E3F2430AC37ED200E1DFE0 /* libtoolshed */;
-			targetProxy = 77BF14A40D39F73500374444 /* PBXContainerItemProxy */;
-		};
-		84C180120D3845B000FA1B49 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8438D0B00D34116C008733E2 /* libcecb */;
-			targetProxy = 84C180110D3845B000FA1B49 /* PBXContainerItemProxy */;
-		};
-		84C180670D3849EF00FA1B49 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8438D0B00D34116C008733E2 /* libcecb */;
-			targetProxy = 84C180660D3849EF00FA1B49 /* PBXContainerItemProxy */;
+			targetProxy = 77F0A8D50D3DD65B00009CA5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2711,12 +2695,9 @@
 		1DEB91F008733DB70010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = /;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
@@ -2760,7 +2741,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = rbf;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -2784,7 +2765,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				DEPLOYMENT_LOCATION = NO;
+				DEPLOYMENT_LOCATION = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -2794,7 +2775,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = decb;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -2827,8 +2808,9 @@
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = coco;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -2862,7 +2844,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = misc;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -2896,7 +2878,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = native;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -2930,7 +2912,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = sys;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -2964,7 +2946,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = os9;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -2998,7 +2980,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = decb;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -3032,7 +3014,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = mamou;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -3066,7 +3048,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = rdump;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -3100,7 +3082,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = rma;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -3134,7 +3116,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = rlink;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -3169,7 +3151,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = ar2;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -3204,7 +3186,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = tocgen;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -3260,7 +3242,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = toolshed;
 				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -3291,6 +3273,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
+				LINK_WITH_STANDARD_LIBRARIES = NO;
 				PREBINDING = NO;
 				PRODUCT_NAME = makewav;
 				SKIP_INSTALL = YES;
@@ -3314,24 +3297,19 @@
 			};
 			name = Release;
 		};
-		77BF14360D39E8A900374444 /* Debug */ = {
+		77F0A8A90D3DD2C700009CA5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				DEPLOYMENT_LOCATION = NO;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = cecb;
-				SKIP_INSTALL = YES;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
-		77BF14370D39E8A900374444 /* Release */ = {
+		77F0A8AA0D3DD2C700009CA5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -3341,44 +3319,36 @@
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = cecb;
-				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
-		8438D0BA0D34117E008733E2 /* Debug */ = {
+		77F0A8EC0D3DD6D900009CA5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = cecb;
-				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = (
-					"$(inherited)",
-					"-Wall",
-				);
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
-		8438D0BB0D34117E008733E2 /* Release */ = {
+		77F0A8ED0D3DD6D900009CA5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
 				PRODUCT_NAME = cecb;
-				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -3548,20 +3518,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		77BF14350D39E8A900374444 /* Build configuration list for PBXNativeTarget "cecb" */ = {
+		77F0A8A80D3DD2C700009CA5 /* Build configuration list for PBXNativeTarget "libcecb" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				77BF14360D39E8A900374444 /* Debug */,
-				77BF14370D39E8A900374444 /* Release */,
+				77F0A8A90D3DD2C700009CA5 /* Debug */,
+				77F0A8AA0D3DD2C700009CA5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8438D0B90D34117E008733E2 /* Build configuration list for PBXNativeTarget "libcecb" */ = {
+		77F0A8EB0D3DD6D900009CA5 /* Build configuration list for PBXNativeTarget "cecb" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8438D0BA0D34117E008733E2 /* Debug */,
-				8438D0BB0D34117E008733E2 /* Release */,
+				77F0A8EC0D3DD6D900009CA5 /* Debug */,
+				77F0A8ED0D3DD6D900009CA5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

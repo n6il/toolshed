@@ -41,6 +41,11 @@ error_code _coco_rename_ex(char *pathlist, char *new_name, coco_dir_entry *dentr
 		case DECB:
 			ec = _decb_rename_ex(pathlist, new_name, &dentry->dentry.decb);
 			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_rename not implemented in libcecb yet.\n" );
+			ec = -1;
+			break;
 	}
 
 	return ec;

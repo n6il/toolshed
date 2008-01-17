@@ -83,7 +83,9 @@ typedef struct _cecb_path_id
 	long			play_at;				/* Sample or bit to begin reading */
 	unsigned char	data[256];				/* Current blocks data */
 	unsigned char	block_type;				/* The block type of held data */
-	int				length;					/* Length of data in above block */
+	int				current_pointer;		/* Current location in current block */
+	unsigned char	length;					/* Length of data in above block */
+	int				eof_flag;				/* End of file flag. Set when last block read */
 	long			cas_start_byte;			/* Byte where file starts */
 	unsigned char	cas_start_bit;			/* Bit where file starts.  Fist bit of block type. */
 	long			cas_current_byte;		/* byte position in CAS file */
@@ -110,6 +112,9 @@ error_code _cecb_close(cecb_path_id path);
 error_code _cecb_parse_cas( cecb_path_id path );
 error_code _cecb_parse_riff( cecb_path_id path );
 error_code _cecb_read( cecb_path_id path, void *buffer, u_int *size );
+error_code _cecb_readln(cecb_path_id path, void *buffer, u_int *size);
+error_code _cecb_gs_eof(cecb_path_id path);
+error_code _cecb_gs_pos(cecb_path_id path, u_int *pos);
 error_code _cecb_read_next_dir_entry( cecb_path_id path, cecb_dir_entry *dir_entry );
 error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, unsigned char *block_length, unsigned char *data  );
 error_code _cecb_read_bits( cecb_path_id path, int count, unsigned char *result );

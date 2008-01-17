@@ -50,6 +50,11 @@ error_code _coco_gs_attr(coco_path_id path, int *perms)
 		case DECB:
 			ec = EOS_BPNAM;
 			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_gs_attr not implemented in libcecb yet.\n" );
+			ec = -1;
+			break;
 	}
 	
 	
@@ -77,6 +82,10 @@ error_code _coco_gs_eof(coco_path_id path)
 			
 		case DECB:
 			ec = _decb_gs_eof(path->path.decb);
+			break;
+		
+		case CECB:
+			ec = _cecb_gs_eof(path->path.cecb);
 			break;
 	}
 	
@@ -165,6 +174,11 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 			statbuf->user_id = 0;
 			statbuf->group_id = 0;
 			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_gs_fd not implemented in libcecb yet.\n" );
+			ec = -1;
+			break;
 	}
 
 
@@ -221,6 +235,11 @@ error_code _coco_gs_size(coco_path_id path, u_int *size)
 			
 		case DECB:
 			ec = _decb_gs_size(path->path.decb, size);
+			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_gs_size not implemented in libcecb yet.\n" );
+			ec = -1;
 			break;
 	}
 	
@@ -280,6 +299,10 @@ error_code _coco_gs_pos(coco_path_id path, u_int *pos)
 			
 		case DECB:
 			ec = _decb_gs_pos(path->path.decb, pos);
+			break;
+		
+		case CECB:
+			ec = _cecb_gs_pos(path->path.cecb, pos);
 			break;
 	}
 	

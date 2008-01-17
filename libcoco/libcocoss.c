@@ -32,6 +32,11 @@ error_code _coco_ss_attr(coco_path_id path, int perms)
 		case DECB:
 //			ec = _decb_ss_attr(path->path.decb, perms);
 			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_ss_attr not implemented in libcecb yet.\n" );
+			ec = -1;
+			break;
 	}
 	
 	
@@ -105,6 +110,11 @@ error_code _coco_ss_fd(coco_path_id path, coco_file_stat *statbuf)
 			
 		case DECB:
 			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_ss_fd not implemented in libcecb yet.\n" );
+			ec = -1;
+			break;
 	}
 	
 	
@@ -132,6 +142,11 @@ error_code _coco_ss_size(coco_path_id path, int size)
 			
 		case DECB:
 			ec = _decb_ss_size(path->path.decb, size);
+			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_ss_size not implemented in libcecb yet.\n" );
+			ec = -1;
 			break;
 	}
 	

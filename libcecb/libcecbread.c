@@ -6,10 +6,13 @@
 
 #include "cecbpath.h"
 
+#define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
+
 error_code _cecb_read(cecb_path_id path, void *buffer, u_int *size)
 {
-	error_code		ec = 0;
-
+	error_code ec = 0;
+	u_int requested_bytes;
+	
 	/* 1. Check the mode. */
 	
     if ((path->mode & FAM_READ) == 0)
@@ -25,12 +28,80 @@ error_code _cecb_read(cecb_path_id path, void *buffer, u_int *size)
 		return EOS_FNA;
 	}
 	
-	/* fufil request from buffer */
+	requested_bytes = *size;
+	*size = 0;
 	
-	/* buffer empty, get new block */
+	if( (path->eof_flag == 1) && (path->current_pointer == path->length) )
+			return EOS_EOF;
+
+	while( requested_bytes > 0 )
+	{
+		if( (path->eof_flag == 1) && (path->current_pointer == path->length) )
+				break;
+
+		/* Fufill request from buffer */
+		if( path->current_pointer < path->length)
+		{
+			size_t copy_bytes;
+			
+			copy_bytes = MIN( (path->length - path->current_pointer), requested_bytes );
+			
+			memcpy( buffer, &(path->data[path->current_pointer]), copy_bytes );
+
+			path->current_pointer += copy_bytes;
+			*size += copy_bytes;
+			requested_bytes -= copy_bytes;
+			path->filepos += copy_bytes;
+		}
+		
+		/* if buffer empty, get new block */
+		if( path->current_pointer == path->length )
+		{
+			ec = _cecb_read_next_block( path, &(path->block_type), &(path->length), path->data  );
+			path->current_pointer = 0;
+			
+			if( ec != 0 )
+				return ec;
+			
+			if( path->block_type == 0xff )
+				path->eof_flag = 1; /* End of file */
+		}
+	}
+
+	return ec;
+}
+
+error_code _cecb_readln(cecb_path_id path, void *buffer, u_int *size)
+{
+	error_code ec = 0;
+	char *current;
+	u_int read_size;
+	u_int requested_bytes;
 	
-	/* repeat until out of blocks */
+	current = buffer;
+	requested_bytes = *size;
+	*size = 0;
 	
+	while( requested_bytes > 0 )
+	{
+		read_size = 1;
+		ec = _cecb_read( path, current, &read_size );
+		
+		if( ec != 0 )
+			return ec;
+
+		if( read_size != 1 )
+			break;
+		
+		current++;
+		*size += 1;
+		requested_bytes -= 1;
+		
+		if( *current == 0x0d )
+			break;
+	}
+	
+	return ec;	
 }
 
 error_code _cecb_read_next_dir_entry( cecb_path_id path, cecb_dir_entry *dir_entry )

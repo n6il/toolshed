@@ -32,6 +32,10 @@ error_code _coco_read(coco_path_id path, void *buffer, u_int *size)
 		case DECB:
 			ec = _decb_read(path->path.decb, buffer, size);
 			break;
+		
+		case CECB:
+			ec = _cecb_read(path->path.cecb, buffer, size);
+			break;
 	}
 	
 	
@@ -59,6 +63,11 @@ error_code _coco_readdir(coco_path_id path, coco_dir_entry *e)
 
 		case DECB:
 			ec = _decb_readdir(path->path.decb, &e->dentry.decb);
+			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_readdir not implemented in libcecb yet.\n" );
+			ec = -1;
 			break;
 	}
 

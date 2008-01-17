@@ -40,6 +40,11 @@ error_code _coco_delete(char *pathlist)
 		case DECB:
 			ec = _decb_kill(pathlist);
 			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_delete not implemented in libcecb yet.\n" );
+			ec = -1;
+			break;
 	}
 	
 	
@@ -73,6 +78,11 @@ error_code _coco_delete_directory(char *pathlist)
 			
 		case DECB:
 			ec = EOS_BPNAM;
+			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_delete_directory not implemented in libcecb yet.\n" );
+			ec = -1;
 			break;
 	}
 	

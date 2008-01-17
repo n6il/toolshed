@@ -50,6 +50,7 @@ static struct cmdtbl table[] =
 {
 	{cecbdir,		"dir"},
 	{cecbfstat,     "fstat"},
+	{os9dump,		"dump"},
 	{NULL,			NULL}
 };
 

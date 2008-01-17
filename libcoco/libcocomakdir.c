@@ -38,6 +38,11 @@ error_code _coco_makdir(char *pathlist)
 		case DECB:
 			ec = EOS_FNA;
 			break;
+		
+		case CECB:
+			fprintf( stderr, "_coco_makdir not implemented in libcecb yet.\n" );
+			ec = -1;
+			break;
 	}
 	
 	
