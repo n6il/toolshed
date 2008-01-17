@@ -6,6 +6,11 @@
 
 #include "cecbpath.h"
 
+double cecb_threshold = 0;
+double cecb_frequency = 0;
+_wave_parity cecb_wave_parity = NONE;
+long cecb_start_sample = 0;
+
 static error_code parse_header( cecb_path_id path  );
 static error_code validate_pathlist(cecb_path_id path, char *pathlist);
 static int init_pd(cecb_path_id *path, int mode);
@@ -17,7 +22,7 @@ static int term_pd(cecb_path_id path);
  * Create a file
  */
 
-error_code _cecb_create(cecb_path_id *path, char *pathlist, int mode, int file_type, int data_type, int gap)
+error_code _cecb_create(cecb_path_id *path, char *pathlist, int mode, int file_type, int data_type, int gap, int ml_load_address, int ml_exec_address)
 {
 	error_code		ec = EOS_BPNAM;
 	char			*open_mode;
@@ -91,7 +96,7 @@ error_code _cecb_create(cecb_path_id *path, char *pathlist, int mode, int file_t
  * 3. imagename       (considered to be an error) 
 */
 
-error_code _cecb_open(cecb_path_id *path, char *pathlist, int mode, long play_at, double wav_threshold, double wav_frequency_limit, _wave_parity wave_parity )
+error_code _cecb_open(cecb_path_id *path, char *pathlist, int mode )
 {
 	error_code	ec = 0;
 	char *open_mode;
@@ -163,11 +168,11 @@ error_code _cecb_open(cecb_path_id *path, char *pathlist, int mode, long play_at
 	}
 	
 	/* 6. Open and determine CAS or WAV and fill in data structors */
-	
-	(*path)->play_at = play_at;
-	(*path)->wav_threshold = wav_threshold;
-	(*path)->wav_frequency_limit = wav_frequency_limit;
-	(*path)->wav_parity = wave_parity;
+
+	(*path)->play_at = cecb_start_sample;
+	(*path)->wav_threshold = cecb_threshold;
+	(*path)->wav_frequency_limit = cecb_frequency;
+	(*path)->wav_parity = cecb_wave_parity;
 	
 	ec = parse_header( *path );
 

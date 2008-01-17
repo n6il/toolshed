@@ -63,9 +63,9 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 		
 		case CECB:
 			{
-				char	file_type = 0, data_type = 0, gap = 0;
+				int	file_type = 0, data_type = 0, gap = 0, ml_load_address = 0, ml_exec_address = 0;
 				
-				ec = _cecb_create(&((*path)->path.cecb), pathlist, mode, file_type, data_type, gap);
+				ec = _cecb_create(&((*path)->path.cecb), pathlist, mode, file_type, data_type, gap, ml_load_address, ml_exec_address);
 			}
 			break;
 		
@@ -134,14 +134,7 @@ error_code _coco_open(coco_path_id *path, char *pathlist, int mode)
 			break;
 		
 		case CECB:
-			{
-				long play_at = 0;
-				double threshold = 0.10;
-				double frequency_limit = 0;
-				_wave_parity wave_parity = NONE;
-
-				ec = _cecb_open(&((*path)->path.cecb), pathlist, mode, play_at, threshold, frequency_limit, wave_parity );
-			}
+			ec = _cecb_open(&((*path)->path.cecb), pathlist, mode);
 			break;
 			
 	}

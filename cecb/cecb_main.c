@@ -14,11 +14,6 @@
 #include <util.h>
 #include <cecbpath.h>
 
-double cecb_threshold;
-double cecb_frequency;
-_wave_parity cecb_wave_parity = NONE;
-long cecb_start_sample;
-
 static void show_cecb_help(char **helpMessage);
 static int do_command(int argc, char **argv);
 
@@ -51,6 +46,7 @@ static struct cmdtbl table[] =
 	{cecbdir,		"dir"},
 	{cecbfstat,     "fstat"},
 	{os9dump,		"dump"},
+	{decblist,		"list"},
 	{NULL,			NULL}
 };
 

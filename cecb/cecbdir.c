@@ -15,11 +15,6 @@
 #include "cocotypes.h"
 #include "cecbpath.h"
 
-extern double cecb_threshold;
-extern double cecb_frequency;
-extern _wave_parity cecb_wave_parity;
-extern long cecb_start_sample;
-
 static int do_dir(char **argv, char *p);
 
 /* Help Message */
@@ -101,7 +96,7 @@ static int do_dir(char **argv, char *p)
 	char asciiflag;
 	cecb_dir_entry	dir_entry;
 	
-	ec = _cecb_open(&path, p, FAM_READ, cecb_start_sample, cecb_threshold, cecb_frequency, cecb_wave_parity );
+	ec = _cecb_open(&path, p, FAM_READ );
 	
 	if( ec == 0 )
 	{

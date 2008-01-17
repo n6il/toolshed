@@ -106,8 +106,8 @@ typedef struct _cecb_path_id
 	FILE			*fd;					/* file path pointer */
 } *cecb_path_id;
 
-error_code _cecb_create(cecb_path_id *path, char *pathlist, int mode, int file_type, int data_type, int gap);
-error_code _cecb_open(cecb_path_id *path, char *pathlist, int mode, long play_at, double wav_threshold, double wav_frequency_limit, _wave_parity wave_parity );
+error_code _cecb_create(cecb_path_id *path, char *pathlist, int mode, int file_type, int data_type, int gap, int ml_load_address, int ml_exec_address);
+error_code _cecb_open(cecb_path_id *path, char *pathlist, int mode );
 error_code _cecb_close(cecb_path_id path);
 error_code _cecb_parse_cas( cecb_path_id path );
 error_code _cecb_parse_riff( cecb_path_id path );
@@ -120,6 +120,12 @@ error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, 
 error_code _cecb_read_bits( cecb_path_id path, int count, unsigned char *result );
 error_code _cecb_read_bits_wav( cecb_path_id path, int count, unsigned char *result );
 error_code _cecb_read_bits_cas( cecb_path_id path, int count, unsigned char *result );
+
+/* WAV and CAS global settings copied by _cecb_open and _cecb_create */
+extern double cecb_threshold;
+extern double cecb_frequency;
+extern _wave_parity cecb_wave_parity;
+extern long cecb_start_sample;
 
 #include <cocopath.h>
 

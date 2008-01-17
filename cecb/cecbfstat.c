@@ -14,11 +14,6 @@
 #include <cocotypes.h>
 #include <cecbpath.h>
 
-extern double cecb_threshold;
-extern double cecb_frequency;
-extern _wave_parity cecb_wave_parity;
-extern long cecb_start_sample;
-
 static int do_fstat(char **argv, char *p);
 
 /* Help message */
@@ -97,7 +92,7 @@ static int do_fstat(char **argv, char *p)
 
 	/* 1. Open a path to the device. */
 
-	ec = _cecb_open( &path, p, FAM_READ, cecb_start_sample, cecb_threshold, cecb_frequency, cecb_wave_parity );
+	ec = _cecb_open( &path, p, FAM_READ );
 
 	if (ec == 0)
 	{

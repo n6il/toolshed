@@ -223,6 +223,7 @@
 		77F0A8F40D3DD70900009CA5 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
 		77F0A8F50D3DD70C00009CA5 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		77F0A9020D3DD86F00009CA5 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
+		8410E8CD0D3FECE700567E94 /* decblist.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E539F0AC248E9004DAB23 /* decblist.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2313,6 +2314,7 @@
 				77F0A8E10D3DD6A400009CA5 /* cecbdir.c in Sources */,
 				77F0A8E20D3DD6A500009CA5 /* cecbfstat.c in Sources */,
 				77F0A8E30D3DD6AE00009CA5 /* os9dump.c in Sources */,
+				8410E8CD0D3FECE700567E94 /* decblist.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

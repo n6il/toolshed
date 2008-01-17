@@ -25,6 +25,7 @@ static char *helpMessage[] =
 	NULL
 };
 
+#define BLOCKSIZE 256
 
 int decblist(int argc, char *argv[])
 {
@@ -32,9 +33,8 @@ int decblist(int argc, char *argv[])
 	char *p = NULL;
 	coco_path_id path;
 	int i;
-	unsigned char *buffer;
-	char *buffer2;
-	u_int size, size2;
+	unsigned char *buffer, *buffer2;
+	u_int size, size2, size3;
 	
 
 	/* 1. Walk command line for options */
@@ -95,20 +95,34 @@ int decblist(int argc, char *argv[])
 		return(ec);
 	}
 
-	ec = _coco_gs_size( path, &size );
+	/* Read in entire file without using _coco_gs_size() */
 	
-	buffer = malloc( size );
+	size = 0;
+	size3 = BLOCKSIZE;
+	buffer = malloc( size3 );
 	
 	if( buffer == NULL )
-	{
-		/* Memory error */
 		return -1;
-	}
 	
-	ec = _coco_read(path, buffer, &size);
-	if (ec != 0)
+	while( _coco_gs_eof(path) == 0 )
 	{
-		return -1;
+		while( (size + BLOCKSIZE) > size3 )
+		{
+			size3 += BLOCKSIZE;
+			buffer2 = realloc( buffer, size3);
+			
+			if( buffer2 == NULL )
+				return -1;
+				
+			buffer = buffer2;
+		}
+
+		size2 = BLOCKSIZE;
+		ec = _coco_read(path, &(buffer[size]), &size2);
+		size += size2;
+		
+		if( ec != 0 )
+			return -1;
 	}
 
 	if( _decb_detect_tokenized( buffer, size ) == 0 )
@@ -127,7 +141,7 @@ int decblist(int argc, char *argv[])
 		size = program_size;
 	}
 
-	DECBToNative((char *)buffer, size, &buffer2, &size2);
+	DECBToNative((char *)buffer, size, (char **)&buffer2, &size2);
 
 	printf( "%s", buffer2 );
 
