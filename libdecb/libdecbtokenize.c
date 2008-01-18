@@ -79,6 +79,7 @@ const char* d_commands[128] = {"FOR", "GO", "REM", "'", "ELSE", "IF", "DATA", "P
 							  "VERIFY", "FROM", "FLREAD", "SWAP",  NULL };
 
 //size_t malloc_size(void *ptr);
+error_code append_zero( u_int *position, char **str, size_t *buffer_size );
 error_code buffer_sprintf(u_int *position, char **str, size_t *buffersize, const char *format, ...);
 int tok_strcmp( const char *str1, char *str2 );
 
@@ -92,7 +93,7 @@ int tok_strcmp( const char *str1, char *str2 );
 
 error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffer, int *out_size)
 {
-	u_int in_pos = 1, out_pos = 0;
+	u_int in_pos = 0, out_pos = 0;
 	int file_size, value, line_number;
 	unsigned char character;
 	error_code ec;
@@ -100,19 +101,18 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 	
 	*out_size = 0;
 
-	if( _decb_detect_tokenized( in_buffer, in_size ) == EOS_SN )
+	if( *in_buffer == 0xff )
 	{
-		/* File not a tokenized BASIC file */
-		return EOS_SN;
-	}
+		in_pos = 1;
 
-	file_size = in_buffer[in_pos++] << 8;
-	file_size += in_buffer[in_pos++];
-	
-	if( file_size != (in_size-3) )
-	{
-		/* Error adjusted internal BASIC file size does not match buffer size */
-		return EOS_SN;
+		file_size = in_buffer[in_pos++] << 8;
+		file_size += in_buffer[in_pos++];
+		
+		if( file_size != (in_size-3) )
+		{
+			/* Error adjusted internal BASIC file size does not match buffer size */
+			return EOS_SN;
+		}
 	}
 	
 	*out_buffer = malloc( BLOCK_QUANTUM );
@@ -172,7 +172,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 			else if( character == ':' && (in_buffer[in_pos] == 0x83 || in_buffer[in_pos] == 0x84) )
 			{
 				/* When colon-apostrophe is encountered, the colon is dropped. */
-				/* Wehn colon-ELSE is encountered, the colon is dropped. */
+				/* When colon-ELSE is encountered, the colon is dropped. */
 			}
 			else
 			{
@@ -187,9 +187,11 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 		if ((ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "\n")) != 0)
 			return ec;
 	}
-
-	*out_size = out_pos;
 	
+	append_zero( &out_pos, out_buffer, &buffer_size );
+	
+	*out_size = out_pos;
+		
 	return 0;
 }
 
@@ -396,6 +398,34 @@ error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size )
 	return 0;
 }
 
+error_code append_zero( u_int *position, char **str, size_t *buffer_size )
+{
+	if( *position > ((*buffer_size) - 20) )
+	{
+		char *buffer;
+		
+		buffer = realloc( *str, (*buffer_size) + BLOCK_QUANTUM );
+		
+		if( buffer == NULL )
+		{
+			/* error */
+			return EOS_OM;
+		}
+		
+		*buffer_size = *buffer_size + BLOCK_QUANTUM;
+		
+		if( *str != buffer )
+		{
+			*str = buffer;
+		}
+	}
+
+	*((*str)+*position) = 0x00;
+	(*position) += 1;
+	
+	return 0;
+}
+
 /* This sprintf will use realloc to make the buffer larger if needed */
 error_code buffer_sprintf(u_int *position, char **str, size_t *buffer_size, const char *format, ...)
 {
@@ -424,7 +454,7 @@ error_code buffer_sprintf(u_int *position, char **str, size_t *buffer_size, cons
 	va_start(ap, format);
 	*position += vsprintf( (*str)+*position, format, ap );
 	va_end(ap);
-
+	
 	return 0;
 }
 

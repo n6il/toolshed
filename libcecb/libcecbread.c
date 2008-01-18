@@ -46,7 +46,7 @@ error_code _cecb_read(cecb_path_id path, void *buffer, u_int *size)
 			
 			copy_bytes = MIN( (path->length - path->current_pointer), requested_bytes );
 			
-			memcpy( buffer, &(path->data[path->current_pointer]), copy_bytes );
+			memcpy( buffer + (*size), &(path->data[path->current_pointer]), copy_bytes );
 
 			path->current_pointer += copy_bytes;
 			*size += copy_bytes;
@@ -157,10 +157,13 @@ error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, 
 	
 	checksum = *block_type + *block_length;
 	
+	//printf( "\nLength: %d\n", *block_length );
+	
 	for( i=0; i<*block_length; i++ )
 	{
 		ec = _cecb_read_bits( path, 8, &(data[i]) );
 		checksum += data[i];
+		//printf( "c: %2.2x, i: %d\n", data[i], i );
 	}
 	
 	ec = _cecb_read_bits( path, 8, &checksum_ck );

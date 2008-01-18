@@ -19,9 +19,9 @@
 static char *helpMessage[] =
 {
 	"Syntax: list {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
-	"Usage:  Display contents of a text file. List will also\n",
-	"        de-tokenize a binary Color BASIC file.\n",
+	"Usage:  Display contents of a text file.\n",
 	"Options:\n",
+	"     -t         perform BASIC token translation\n",
 	NULL
 };
 
@@ -35,7 +35,7 @@ int decblist(int argc, char *argv[])
 	int i;
 	unsigned char *buffer, *buffer2;
 	u_int size, size2, size3;
-	
+	int token_translation = 0;
 
 	/* 1. Walk command line for options */
 	
@@ -48,11 +48,15 @@ int decblist(int argc, char *argv[])
 
 				switch (*p)
 				{
+					case 't':
+						token_translation = 1;
+						break;
+						
 					case 'h':
 					case '?':
 						show_help(helpMessage);
 						return(0);
-	
+					
 					default:
 						fprintf(stderr, "%s: unknown option '%c'\n", argv[0], *p);
 						return(0);
@@ -125,7 +129,7 @@ int decblist(int argc, char *argv[])
 			return -1;
 	}
 
-	if( _decb_detect_tokenized( buffer, size ) == 0 )
+	if( token_translation == 1 )
 	{
 		char *program;
 		int program_size;
