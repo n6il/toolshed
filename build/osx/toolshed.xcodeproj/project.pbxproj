@@ -907,6 +907,22 @@
 		77F0A8C50D3DD65300009CA5 /* cecb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cecb; sourceTree = BUILT_PRODUCTS_DIR; };
 		842326EA0D37EAC2008AAAC1 /* libcebcopen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcebcopen.c; path = ../../libcecb/libcebcopen.c; sourceTree = SOURCE_ROOT; };
 		842326F00D37EDA4008AAAC1 /* cecbpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cecbpath.h; path = ../../include/cecbpath.h; sourceTree = SOURCE_ROOT; };
+		844AC6600D4024D000C78C0D /* rbfutil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rbfutil.h; path = ../../include/rbfutil.h; sourceTree = SOURCE_ROOT; };
+		844AC6610D4024D000C78C0D /* cocotypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cocotypes.h; path = ../../include/cocotypes.h; sourceTree = SOURCE_ROOT; };
+		844AC6620D4024D000C78C0D /* decbutil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = decbutil.h; path = ../../include/decbutil.h; sourceTree = SOURCE_ROOT; };
+		844AC6630D4024D000C78C0D /* os9module.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = os9module.h; path = ../../include/os9module.h; sourceTree = SOURCE_ROOT; };
+		844AC6640D4024D000C78C0D /* decbpath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = decbpath.h; path = ../../include/decbpath.h; sourceTree = SOURCE_ROOT; };
+		844AC6650D4024D000C78C0D /* cococonv.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cococonv.h; path = ../../include/cococonv.h; sourceTree = SOURCE_ROOT; };
+		844AC6660D4024D000C78C0D /* queue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = queue.h; path = ../../include/queue.h; sourceTree = SOURCE_ROOT; };
+		844AC6670D4024D000C78C0D /* os9path.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = os9path.h; path = ../../include/os9path.h; sourceTree = SOURCE_ROOT; };
+		844AC6680D4024D000C78C0D /* util.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../../include/util.h; sourceTree = SOURCE_ROOT; };
+		844AC6690D4024D000C78C0D /* cocosys.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cocosys.h; path = ../../include/cocosys.h; sourceTree = SOURCE_ROOT; };
+		844AC66A0D4024D000C78C0D /* toolshed.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = toolshed.h; path = ../../include/toolshed.h; sourceTree = SOURCE_ROOT; };
+		844AC66B0D4024D000C78C0D /* cecbpath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cecbpath.h; path = ../../include/cecbpath.h; sourceTree = SOURCE_ROOT; };
+		844AC66C0D4024D000C78C0D /* cocopath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cocopath.h; path = ../../include/cocopath.h; sourceTree = SOURCE_ROOT; };
+		844AC66D0D4024D000C78C0D /* cocoutil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cocoutil.h; path = ../../include/cocoutil.h; sourceTree = SOURCE_ROOT; };
+		844AC66E0D4024D000C78C0D /* rof.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rof.h; path = ../../include/rof.h; sourceTree = SOURCE_ROOT; };
+		844AC66F0D4024D000C78C0D /* nativepath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = nativepath.h; path = ../../include/nativepath.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1104,6 +1120,7 @@
 		08FB7794FE84155DC02AAC07 /* osx */ = {
 			isa = PBXGroup;
 			children = (
+				844AC6580D4024B100C78C0D /* Includes */,
 				684E53400AC2484C004DAB23 /* Executables */,
 				684E533C0AC2483C004DAB23 /* Libraries */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
@@ -1450,6 +1467,29 @@
 				770D3ACA0D3C6B2200BF990F /* cecbfstat.c */,
 			);
 			name = cecb;
+			sourceTree = "<group>";
+		};
+		844AC6580D4024B100C78C0D /* Includes */ = {
+			isa = PBXGroup;
+			children = (
+				844AC6600D4024D000C78C0D /* rbfutil.h */,
+				844AC6610D4024D000C78C0D /* cocotypes.h */,
+				844AC6620D4024D000C78C0D /* decbutil.h */,
+				844AC6630D4024D000C78C0D /* os9module.h */,
+				844AC6640D4024D000C78C0D /* decbpath.h */,
+				844AC6650D4024D000C78C0D /* cococonv.h */,
+				844AC6660D4024D000C78C0D /* queue.h */,
+				844AC6670D4024D000C78C0D /* os9path.h */,
+				844AC6680D4024D000C78C0D /* util.h */,
+				844AC6690D4024D000C78C0D /* cocosys.h */,
+				844AC66A0D4024D000C78C0D /* toolshed.h */,
+				844AC66B0D4024D000C78C0D /* cecbpath.h */,
+				844AC66C0D4024D000C78C0D /* cocopath.h */,
+				844AC66D0D4024D000C78C0D /* cocoutil.h */,
+				844AC66E0D4024D000C78C0D /* rof.h */,
+				844AC66F0D4024D000C78C0D /* nativepath.h */,
+			);
+			name = Includes;
 			sourceTree = "<group>";
 		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {

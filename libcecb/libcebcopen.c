@@ -101,6 +101,11 @@ error_code _cecb_open(cecb_path_id *path, char *pathlist, int mode )
 	error_code	ec = 0;
 	char *open_mode;
 
+	/* 0. Currently -- no writing supported */
+
+	if( (mode & FAM_WRITE) == FAM_WRITE )
+		return EOS_IC;
+
 	/* 1. Strip off FAM_NOCREATE if passed -- irrelavent to _cecb_open */
  
  	mode = mode & ~FAM_NOCREATE;
