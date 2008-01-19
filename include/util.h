@@ -68,6 +68,7 @@ int decbhdbconv(int, char **);
 /* Function prototypes for supported Disk BASIC commands are here */
 int cecbdir(int, char **);
 int cecbfstat(int, char **);
+int cecbbulkerase(int, char **);
 
 #ifdef __cplusplus
 }

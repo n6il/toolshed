@@ -117,3 +117,33 @@ size_t fread_le_int( unsigned int *ptr, FILE * stream )
 	return count;
 }
 
+size_t fwrite_le_int(unsigned int data, FILE * stream)
+{
+#ifdef __BIG_ENDIAN__
+	unsigned int    use_data = swap_int(data);
+#else
+	unsigned int    use_data = data;
+#endif
+
+	return fwrite(&use_data, 4, 1, stream);
+}
+
+size_t fwrite_le_short(unsigned short data, FILE * stream)
+{
+#ifdef __BIG_ENDIAN__
+	unsigned short  use_data = swap_short(data);
+#else
+	unsigned short  use_data = data;
+#endif
+
+	return fwrite(&use_data, 2, 1, stream);
+}
+
+size_t fwrite_le_char(unsigned char data, FILE * stream)
+{
+	unsigned char  use_data = data;
+
+	return fwrite(&use_data, 1, 1, stream);
+}
+
+

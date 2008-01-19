@@ -52,7 +52,9 @@ size_t fread_le_char( unsigned char *ptr, FILE *stream );
 size_t fread_le_short( unsigned short *ptr, FILE *stream );
 size_t fread_le_sshort( signed short *ptr, FILE *stream );
 size_t fread_le_int( unsigned int *ptr, FILE *stream );
-
+size_t fwrite_le_int(unsigned int data, FILE * stream);
+size_t fwrite_le_short(unsigned short data, FILE * stream);
+size_t fwrite_le_char(unsigned char data, FILE * stream);
 
 #ifdef __cplusplus
 }

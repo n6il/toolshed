@@ -225,6 +225,7 @@
 		77F0A8F50D3DD70C00009CA5 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		77F0A9020D3DD86F00009CA5 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
 		8410E8CD0D3FECE700567E94 /* decblist.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E539F0AC248E9004DAB23 /* decblist.c */; };
+		8487FAEA0D414E1B0031CA8E /* cecbbulkerase.c in Sources */ = {isa = PBXBuildFile; fileRef = 8487FAE90D414E1B0031CA8E /* cecbbulkerase.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -680,28 +681,28 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 77F0A89E0D3DD29000009CA5 /* libcecb */;
+			remoteGlobalIDString = 77F0A89E0D3DD29000009CA5;
 			remoteInfo = libcecb;
 		};
 		771CF9660D4074EC008A49F3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 77F0A89E0D3DD29000009CA5 /* libcecb */;
+			remoteGlobalIDString = 77F0A89E0D3DD29000009CA5;
 			remoteInfo = libcecb;
 		};
 		771CF96D0D407501008A49F3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 77F0A89E0D3DD29000009CA5 /* libcecb */;
+			remoteGlobalIDString = 77F0A89E0D3DD29000009CA5;
 			remoteInfo = libcecb;
 		};
 		771CF9A50D4079F3008A49F3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 77F0A8C40D3DD65300009CA5 /* cecb */;
+			remoteGlobalIDString = 77F0A8C40D3DD65300009CA5;
 			remoteInfo = cecb;
 		};
 		77F0A8B90D3DD55A00009CA5 /* PBXContainerItemProxy */ = {
@@ -944,6 +945,7 @@
 		844AC66D0D4024D000C78C0D /* cocoutil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cocoutil.h; path = ../../include/cocoutil.h; sourceTree = SOURCE_ROOT; };
 		844AC66E0D4024D000C78C0D /* rof.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rof.h; path = ../../include/rof.h; sourceTree = SOURCE_ROOT; };
 		844AC66F0D4024D000C78C0D /* nativepath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = nativepath.h; path = ../../include/nativepath.h; sourceTree = SOURCE_ROOT; };
+		8487FAE90D414E1B0031CA8E /* cecbbulkerase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cecbbulkerase.c; path = ../../cecb/cecbbulkerase.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1479,6 +1481,7 @@
 			children = (
 				77BF14770D39F1F100374444 /* cecbdir.c */,
 				77BF14470D39E9D800374444 /* cecb_main.c */,
+				8487FAE90D414E1B0031CA8E /* cecbbulkerase.c */,
 				770D3ACA0D3C6B2200BF990F /* cecbfstat.c */,
 			);
 			name = cecb;
@@ -2334,6 +2337,7 @@
 				77F0A8E20D3DD6A500009CA5 /* cecbfstat.c in Sources */,
 				77F0A8E30D3DD6AE00009CA5 /* os9dump.c in Sources */,
 				8410E8CD0D3FECE700567E94 /* decblist.c in Sources */,
+				8487FAEA0D414E1B0031CA8E /* cecbbulkerase.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
