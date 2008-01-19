@@ -52,6 +52,7 @@ error_code _native_writeln(native_path_id, char *, u_int *);
 error_code _native_makdir(char *pathlist);
 error_code _native_delete(char *pathlist);
 error_code _native_delete_directory(char *pathlist);
+error_code _native_truncate(char *pathlist, off_t length);
 error_code _native_rename(char *pathlist, char *new_name);
 error_code _native_close(native_path_id);
 

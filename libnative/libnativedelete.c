@@ -49,3 +49,21 @@ error_code _native_delete_directory(char *pathlist)
 	
 	return ec;
 }
+
+
+
+error_code _native_truncate(char *pathlist, off_t length)
+{
+    error_code	ec = 0;
+	
+	
+    ec = truncate(pathlist, length);
+	
+    if (ec != 0)
+	{
+		ec = errno;
+	}
+	
+	
+	return ec;
+}

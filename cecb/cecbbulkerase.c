@@ -116,6 +116,8 @@ static int do_bulkerase(char **argv, char *p)
 	native_path_id nativepath;
 	int i, headers_size, bytes_per_sample, silent_samples_count, silent_samples_bytes;
 
+	_native_truncate(p, 0);
+	
 	/* 1. Open a path to the cassette image. */
 	
 	ec = _native_open(&nativepath, p, FAM_WRITE);
@@ -126,7 +128,7 @@ static int do_bulkerase(char **argv, char *p)
 
 		if (ec != 0)
 		{
-			fprintf(stderr, "%s: cannot open virtual disk\n", argv[0]);
+			fprintf(stderr, "%s: cannot open virtual cassette\n", argv[0]);
 
 			return(ec);
 		}
