@@ -203,7 +203,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
    The caller is responsible for free()ing out_buffer
 */
 
-error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size)
+error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size, int path_type)
 {
 	int in_pos = 0, out_pos = 0;
 	
@@ -229,10 +229,14 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 			return EOS_SN;
 		}
 	}
-		
-	(*out_buffer)[out_pos++] = 0xff;  /* BASIC files begin with 0xFF */
-	(*out_buffer)[out_pos++] = 0x00;  /* Place holder for file length */
-	(*out_buffer)[out_pos++] = 0x00;
+	
+	if( path_type )
+	{
+		/* Add DECB Header */
+		(*out_buffer)[out_pos++] = 0xff;	/* flag */
+		(*out_buffer)[out_pos++] = 0;		/* File size */
+		(*out_buffer)[out_pos++] = 0;
+	}
 	
 	while( in_pos < in_size )
 	{
@@ -353,10 +357,13 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 	(*out_buffer)[out_pos++] = 0x00; /* BASIC file ends with two bytes of zeros */
 	(*out_buffer)[out_pos++] = 0x00;
 	
-	/* Update file size in BASIC's header */
-	
-	(*out_buffer)[1] = (out_pos-3) >> 8;
-	(*out_buffer)[2] = (out_pos-3) & 0x00ff;
+	if( path_type )
+	{
+		/* Update file size in Disk BASIC's header */
+		
+		(*out_buffer)[1] = (out_pos-3) >> 8;
+		(*out_buffer)[2] = (out_pos-3) & 0x00ff;
+	}
 	
 	*out_size = out_pos;
 	

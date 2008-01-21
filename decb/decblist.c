@@ -124,7 +124,6 @@ int decblist(int argc, char *argv[])
 		size2 = BLOCKSIZE;
 		ec = _coco_read(path, &(buffer[size]), &size2);
 		size += size2;
-		
 		if( ec != 0 )
 			return -1;
 	}

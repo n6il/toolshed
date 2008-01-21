@@ -32,8 +32,7 @@ error_code _coco_write(coco_path_id path, void *buffer, u_int *size)
 			break;
 		
 		case CECB:
-			fprintf( stderr, "_coco_write not implemented in libcecb yet.\n" );
-			ec = -1;
+			ec = _cecb_write(path->path.cecb, buffer, size);
 			break;
 	}
 	

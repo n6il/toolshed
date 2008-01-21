@@ -461,10 +461,11 @@ static void mamou_initialize(assembler *as)
 		if (as->object_name[0] != EOS)
 		{
 			_path_type t;
+			coco_file_stat fstat;
 			
+			fstat.perms = FAP_READ | FAP_WRITE | FAP_PREAD;
 			if (_coco_create(&(as->fd_object), as->object_name,
-				FAM_READ | FAM_WRITE,
-				FAP_READ | FAP_WRITE | FAP_PREAD) != 0)
+				FAM_READ | FAM_WRITE, &fstat) != 0)
 			{
 				fatal("Can't create object file");
 			}

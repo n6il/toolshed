@@ -69,6 +69,7 @@ int decbhdbconv(int, char **);
 int cecbdir(int, char **);
 int cecbfstat(int, char **);
 int cecbbulkerase(int, char **);
+int cecbcopy(int, char **);
 
 #ifdef __cplusplus
 }

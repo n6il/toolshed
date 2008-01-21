@@ -123,7 +123,8 @@ static int do_modbust(char **argv, char *filename)
 		if (buffer[0] == '\x87')
 		{
 			size = 1;
-
+			coco_file_stat fstat;
+			
 			ec = _os9_read(path, buffer, &size);
 
 			if (buffer[0] == '\xCD')
@@ -155,8 +156,9 @@ static int do_modbust(char **argv, char *filename)
 				memcpy(name, &module[nameoffset], OS9Strlen(&module[nameoffset]));
 				OS9StringToCString((u_char *)name);
 				printf("Busting module %s...\n", name);
-
-				ec = _coco_create(&path2, name, FAM_WRITE, FAP_READ | FAP_WRITE);
+				
+				fstat.perms = FAP_READ | FAP_WRITE;
+				ec = _coco_create(&path2, name, FAM_WRITE, &fstat);
 
 				if (ec != 0)
 				{

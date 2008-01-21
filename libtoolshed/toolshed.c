@@ -265,6 +265,7 @@ error_code TSCopyFile(char *srcfile, char *dstfile, int eolTranslate, int rewrit
     coco_path_id destpath;
     coco_file_stat	fdesc;
     int		mode = FAM_NOCREATE | FAM_WRITE;
+	coco_file_stat fstat;
 	
 
     /* 1. Set mode based on rewrite. */
@@ -287,7 +288,8 @@ error_code TSCopyFile(char *srcfile, char *dstfile, int eolTranslate, int rewrit
 
     /* 3. Attempt to create the destfile. */
 	
-    ec = _coco_create(&destpath, dstfile, mode, FAP_PREAD | FAP_READ | FAP_WRITE);
+	fstat.perms = FAP_PREAD | FAP_READ | FAP_WRITE;
+    ec = _coco_create(&destpath, dstfile, mode, &fstat);
 
     if (ec != 0)
     {

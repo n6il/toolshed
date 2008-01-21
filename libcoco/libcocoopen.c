@@ -16,7 +16,7 @@
  *
  * Create a file
  */
-error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
+error_code _coco_create(coco_path_id *path, char *pathlist, int mode, coco_file_stat *fstat)
 {
     error_code	ec = 0;
 
@@ -46,27 +46,20 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, int perms)
 	switch ((*path)->type)
 	{
 		case NATIVE:
-			ec = _native_create(&((*path)->path.native), pathlist, mode, perms);
+			ec = _native_create(&((*path)->path.native), pathlist, mode, fstat->perms);
 			break;
 			
 		case OS9:
-			ec = _os9_create(&((*path)->path.os9), pathlist, mode, perms);
+			ec = _os9_create(&((*path)->path.os9), pathlist, mode, fstat->perms);
 			break;
 			
 		case DECB:
-			{
-				char	file_type = 0, data_type = 0;
-				
-				ec = _decb_create(&((*path)->path.decb), pathlist, mode, file_type, data_type);
-			}
+				ec = _decb_create(&((*path)->path.decb), pathlist, mode, fstat->file_type, fstat->data_type);
 			break;
 		
 		case CECB:
-			{
-				int	file_type = 0, data_type = 0, gap = 0, ml_load_address = 0, ml_exec_address = 0;
-				
-				ec = _cecb_create(&((*path)->path.cecb), pathlist, mode, file_type, data_type, gap, ml_load_address, ml_exec_address);
-			}
+				ec = _cecb_create(&((*path)->path.cecb), pathlist, mode,
+					fstat->file_type, fstat->data_type, fstat->gap_flag, fstat->ml_load_address, fstat->ml_exec_address);
 			break;
 		
 	}
@@ -186,7 +179,7 @@ error_code _coco_close(coco_path_id path)
 /*
  * _coco_identify_image()
  *
- * Determines if the passed <image,path> pathlist is native, OS-9 or Disk BASIC.
+ * Determines if the passed <image,path> pathlist is native, OS-9, Disk BASIC or Cassette BASIC.
  */
 error_code _coco_identify_image(char *pathlist, _path_type *type)
 {
@@ -231,7 +224,7 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 	}
 	
 	/* 2b. Check for .cas file extension. */
-	if( strendcasecmp( pathlist, ".cas" ) == 0 )
+	if( strendcasecmp( pathlist, CAS_FILE_EXTENSION ) == 0 )
 	{
 		*type = CECB;
 		

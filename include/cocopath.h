@@ -93,24 +93,31 @@ typedef struct coco_dir_entry
 #endif
 		os9_dir_entry			os9;
 		decb_dir_entry			decb;
+		cecb_dir_entry			cecb;
 	} dentry;
 } coco_dir_entry;
 
 
 typedef struct coco_file_stat
 {
+	int					perms;
 	int					attributes;
 	int					user_id;
 	int					group_id;
-	time_t					create_time;
-	time_t					last_modified_time;
+	time_t				create_time;
+	time_t				last_modified_time;
+	u_char				file_type;
+	u_char				data_type;
+	u_char				gap_flag;
+	int					ml_load_address;
+	int					ml_exec_address;
 } coco_file_stat;
 
 
 /* prototypes */
 
 error_code _coco_open(coco_path_id *, char *, int);
-error_code _coco_create(coco_path_id *, char *, int, int);
+error_code _coco_create(coco_path_id *, char *, int, coco_file_stat *);
 error_code _coco_open_parent_directory(coco_path_id *path, char *pathlist, int mode, char *filename);
 error_code _coco_read(coco_path_id, void *, u_int *);
 error_code _coco_readdir(coco_path_id, coco_dir_entry *);

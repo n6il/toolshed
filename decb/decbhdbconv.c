@@ -138,6 +138,7 @@ static error_code HDBConv(char *srcfile, char *dstfile, int sourceSize, int targ
     int		mode = FAM_WRITE;
 	u_int		buffer_size;
 	u_char buffer[512];
+	coco_file_stat fstat;
 	
 
 	memset(buffer, 0, 512);
@@ -154,7 +155,8 @@ static error_code HDBConv(char *srcfile, char *dstfile, int sourceSize, int targ
 
     /* 2. Attempt to create the destfile. */
 	
-    ec = _coco_create(&destpath, dstfile, mode, FAP_READ | FAP_WRITE | FAP_PREAD);
+	fstat.perms = FAP_READ | FAP_WRITE | FAP_PREAD;
+    ec = _coco_create(&destpath, dstfile, mode, &fstat);
 
     if (ec != 0)
     {

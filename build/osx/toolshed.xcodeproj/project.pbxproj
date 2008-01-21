@@ -205,7 +205,9 @@
 		771CF96F0D407512008A49F3 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
 		773859960D3F171D007D0391 /* libcecbgs.c in Sources */ = {isa = PBXBuildFile; fileRef = 773859950D3F171D007D0391 /* libcecbgs.c */; };
 		773859C40D3F23EE007D0391 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
+		77590D940D41C34A00F67400 /* libcecbwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 77590D930D41C34A00F67400 /* libcecbwrite.c */; };
 		775AE60A0D038A16005A1378 /* libdecbbinconcat.c in Sources */ = {isa = PBXBuildFile; fileRef = 775AE6090D038A16005A1378 /* libdecbbinconcat.c */; };
+		77ED4B760D4301CA00C07058 /* cecbcopy.c in Sources */ = {isa = PBXBuildFile; fileRef = 77ED4B750D4301CA00C07058 /* cecbcopy.c */; };
 		77F0A8AD0D3DD4B800009CA5 /* cecbpath.h in Headers */ = {isa = PBXBuildFile; fileRef = 842326F00D37EDA4008AAAC1 /* cecbpath.h */; };
 		77F0A8AE0D3DD4B800009CA5 /* libcebcopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 842326EA0D37EAC2008AAAC1 /* libcebcopen.c */; };
 		77F0A8AF0D3DD4B900009CA5 /* libcecbcas.c in Sources */ = {isa = PBXBuildFile; fileRef = 77BF134F0D39D2FD00374444 /* libcecbcas.c */; };
@@ -224,6 +226,7 @@
 		77F0A8F40D3DD70900009CA5 /* libsys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 684E532C0AC247F9004DAB23 /* libsys.a */; };
 		77F0A8F50D3DD70C00009CA5 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		77F0A9020D3DD86F00009CA5 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
+		77F6E54C0D446863001EF032 /* cocopath.h in Headers */ = {isa = PBXBuildFile; fileRef = 844AC66C0D4024D000C78C0D /* cocopath.h */; };
 		8410E8CD0D3FECE700567E94 /* decblist.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E539F0AC248E9004DAB23 /* decblist.c */; };
 		8487FAEA0D414E1B0031CA8E /* cecbbulkerase.c in Sources */ = {isa = PBXBuildFile; fileRef = 8487FAE90D414E1B0031CA8E /* cecbbulkerase.c */; };
 /* End PBXBuildFile section */
@@ -919,11 +922,13 @@
 		770D3ACA0D3C6B2200BF990F /* cecbfstat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cecbfstat.c; path = ../../cecb/cecbfstat.c; sourceTree = SOURCE_ROOT; };
 		771193470BE50BF000BD51A1 /* makewav.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = makewav.c; path = ../../makewav/makewav.c; sourceTree = SOURCE_ROOT; };
 		773859950D3F171D007D0391 /* libcecbgs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbgs.c; path = ../../libcecb/libcecbgs.c; sourceTree = SOURCE_ROOT; };
+		77590D930D41C34A00F67400 /* libcecbwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbwrite.c; path = ../../libcecb/libcecbwrite.c; sourceTree = SOURCE_ROOT; };
 		775AE6090D038A16005A1378 /* libdecbbinconcat.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = libdecbbinconcat.c; path = ../../libdecb/libdecbbinconcat.c; sourceTree = SOURCE_ROOT; };
 		77BF134F0D39D2FD00374444 /* libcecbcas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbcas.c; path = ../../libcecb/libcecbcas.c; sourceTree = SOURCE_ROOT; };
 		77BF13C40D39E0EB00374444 /* libcecbread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbread.c; path = ../../libcecb/libcecbread.c; sourceTree = SOURCE_ROOT; };
 		77BF14470D39E9D800374444 /* cecb_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cecb_main.c; path = ../../cecb/cecb_main.c; sourceTree = SOURCE_ROOT; };
 		77BF14770D39F1F100374444 /* cecbdir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cecbdir.c; path = ../../cecb/cecbdir.c; sourceTree = SOURCE_ROOT; };
+		77ED4B750D4301CA00C07058 /* cecbcopy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cecbcopy.c; path = ../../cecb/cecbcopy.c; sourceTree = SOURCE_ROOT; };
 		77EE03DC0D39B7F3004F70DA /* libcecbwav.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbwav.c; path = ../../libcecb/libcecbwav.c; sourceTree = SOURCE_ROOT; };
 		77F0A89F0D3DD29000009CA5 /* libcecb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcecb.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		77F0A8C50D3DD65300009CA5 /* cecb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cecb; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1143,6 +1148,7 @@
 				684E533C0AC2483C004DAB23 /* Libraries */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
+				77ED4B750D4301CA00C07058 /* cecbcopy.c */,
 			);
 			name = osx;
 			sourceTree = "<group>";
@@ -1466,6 +1472,7 @@
 		77BF148A0D39F67100374444 /* libcecb */ = {
 			isa = PBXGroup;
 			children = (
+				77590D930D41C34A00F67400 /* libcecbwrite.c */,
 				77BF134F0D39D2FD00374444 /* libcecbcas.c */,
 				77EE03DC0D39B7F3004F70DA /* libcecbwav.c */,
 				773859950D3F171D007D0391 /* libcecbgs.c */,
@@ -1531,6 +1538,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77F6E54C0D446863001EF032 /* cocopath.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2325,6 +2333,7 @@
 				77F0A8B00D3DD4BA00009CA5 /* libcecbread.c in Sources */,
 				77F0A8B10D3DD4BB00009CA5 /* libcecbwav.c in Sources */,
 				773859960D3F171D007D0391 /* libcecbgs.c in Sources */,
+				77590D940D41C34A00F67400 /* libcecbwrite.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2338,6 +2347,7 @@
 				77F0A8E30D3DD6AE00009CA5 /* os9dump.c in Sources */,
 				8410E8CD0D3FECE700567E94 /* decblist.c in Sources */,
 				8487FAEA0D414E1B0031CA8E /* cecbbulkerase.c in Sources */,
+				77ED4B760D4301CA00C07058 /* cecbcopy.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

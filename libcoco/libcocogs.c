@@ -101,6 +101,7 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 	struct stat		native_stat;
 	fd_stats		os9_stat;
 	decb_file_stat  decb_stat;
+	cecb_file_stat  cecb_stat;
 	struct tm		timepak;
 	time_t			tp;
 	
@@ -176,8 +177,16 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 			break;
 		
 		case CECB:
-			fprintf( stderr, "_coco_gs_fd not implemented in libcecb yet.\n" );
-			ec = -1;
+			ec = _cecb_gs_fd(path->path.cecb, &cecb_stat);
+			/* Since Cassette BASIC files have no permissions per se, we make our own. */
+			statbuf->attributes = FAP_READ | FAP_WRITE | FAP_PREAD;
+			/* Neither does Cassette BASIC have date or time stamps. */
+			time(&tp);
+			statbuf->create_time = tp;
+			statbuf->last_modified_time = tp;
+			/* Nor does it have user/group IDs. */
+			statbuf->user_id = 0;
+			statbuf->group_id = 0;
 			break;
 	}
 
@@ -238,6 +247,7 @@ error_code _coco_gs_size(coco_path_id path, u_int *size)
 			break;
 		
 		case CECB:
+			size = 0;
 			fprintf( stderr, "_coco_gs_size not implemented in libcecb yet.\n" );
 			ec = -1;
 			break;

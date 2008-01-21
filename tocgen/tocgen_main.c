@@ -182,8 +182,10 @@ static int createToc(char *outfile, struct volLine *volArray, int volCount, int 
 	int size = 0, ec;
 	unsigned int writesize = 1;
 	char c;
+	coco_file_stat fstat;
 	
-	ec = _coco_create(&fp, outfile, FAM_WRITE, FAP_PREAD | FAP_READ | FAP_WRITE);
+	fstat.perms = FAP_PREAD | FAP_READ | FAP_WRITE;
+	ec = _coco_create(&fp, outfile, FAM_WRITE, &fstat);
 	if (ec != 0)
 	{
 		return -1;

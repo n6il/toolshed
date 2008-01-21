@@ -66,6 +66,16 @@ typedef struct _cecb_dir_entry
 //		*/
 } cecb_dir_entry;
 
+typedef struct
+{
+	u_char	file_type;		/* 0 = BASIC program, 1 = BASIC data file,
+	                           2 = M/L program, 3 = Text editor source file */
+	u_char	data_type;		/* 0 = Binary, 255 = ASCII */
+	u_char	gap_flag;		/* 0 = No Gap, 255 = Gap */
+	int		ml_load_address;
+	int		ml_exec_address;
+} cecb_file_stat, *Cecb_file_stat;
+
 typedef enum { NONE=0, CAS, WAV } _tape_type;
 typedef enum { AUTO=0, ODD, EVEN } _wave_parity;
 
@@ -93,16 +103,23 @@ typedef struct _cecb_path_id
 	unsigned char	cas_byte;				/* current byte read from file */
 	unsigned int	wav_riff_size;
 	long			wav_data_start;			/* File position of start of data chunk */
-	long			wav_data_length;		/* Length of data chunk */
+	int				wav_data_length;		/* Length of data chunk */
 	long			wav_total_samples;		/* Tot number of samples in data */
 	unsigned int	wav_sample_rate;		/* Sample rate of WAV file */
 	unsigned short	wav_bits_per_sample;	/* Bits per sample of WAV file */
 	double			wav_threshold;			/* Remove noise below this threshold */
+	int				wav_zero_value;
 	double			wav_frequency_limit;	/* Bit Deliniation frequency limit */
 	long			wav_start_sample;		/* Sample where file starts. Fist bit of block type. */
 	long			wav_current_sample;		/* Current sample position in WAV file */
 	_wave_parity	wav_parity;				/* Even or Odd wav type */
-	short			wav_ss1, wav_ss2;		/* Wave Phase timing */
+	signed int		wav_ss1, wav_ss2;		/* Wave Phase timing */
+	unsigned char	*buffer_1200,			/* WAV data used for writing */
+					*buffer_2400;
+	int             buffer_1200_length,
+					buffer_2400_length;
+	long			extra_chunks_buffer_size;
+	char			*extra_chunks_buffer;
 	FILE			*fd;					/* file path pointer */
 } *cecb_path_id;
 
@@ -113,6 +130,7 @@ error_code _cecb_parse_cas( cecb_path_id path );
 error_code _cecb_parse_riff( cecb_path_id path );
 error_code _cecb_read( cecb_path_id path, void *buffer, u_int *size );
 error_code _cecb_readln(cecb_path_id path, void *buffer, u_int *size);
+error_code _cecb_gs_fd(cecb_path_id path, cecb_file_stat *stat);
 error_code _cecb_gs_eof(cecb_path_id path);
 error_code _cecb_gs_pos(cecb_path_id path, u_int *pos);
 error_code _cecb_read_next_dir_entry( cecb_path_id path, cecb_dir_entry *dir_entry );
@@ -120,6 +138,16 @@ error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, 
 error_code _cecb_read_bits( cecb_path_id path, int count, unsigned char *result );
 error_code _cecb_read_bits_wav( cecb_path_id path, int count, unsigned char *result );
 error_code _cecb_read_bits_cas( cecb_path_id path, int count, unsigned char *result );
+int _cecb_write_wav_audio(cecb_path_id path, char *buffer, int total_length);
+int _cecb_write_wav_audio_repeat_byte(cecb_path_id path, int length, char byte);
+error_code _cecb_write(cecb_path_id path, void *buffer, unsigned int *size);
+error_code _cecb_write_block( cecb_path_id path, unsigned char block_type, unsigned char *data, int length );
+error_code _cecb_write_leader( cecb_path_id path );
+error_code _cecb_write_silence( cecb_path_id path, double length );
+int _cecb_write_wav_audio(cecb_path_id path, char *buffer, int total_length);
+int _cecb_write_wav_audio_repeat_byte(cecb_path_id path, int length, char byte);
+int _cecb_write_wav_repeat_byte(cecb_path_id path, int length, char byte);
+int _cecb_write_wav_repeat_short(cecb_path_id path, int length, short bytes);
 
 /* WAV and CAS global settings copied by _cecb_open and _cecb_create */
 extern double cecb_threshold;

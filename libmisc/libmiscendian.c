@@ -74,7 +74,7 @@ size_t fread_le_char( unsigned char *ptr, FILE * stream )
 	size_t count;
 	
 	count = fread( ptr, 1, 1, stream );
-
+	
 	return count;
 }
 

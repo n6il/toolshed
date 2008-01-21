@@ -6,7 +6,7 @@
 
 #include "cecbpath.h"
 
-double cecb_threshold = 0;
+double cecb_threshold = 0.1;
 double cecb_frequency = 0;
 _wave_parity cecb_wave_parity = NONE;
 long cecb_start_sample = 0;
@@ -69,18 +69,119 @@ error_code _cecb_create(cecb_path_id *path, char *pathlist, int mode, int file_t
 		return(EOS_BPNAM);
 	}
 
+
 	/* 4. Open and determine CAS or WAV and fill in data structors */
 	
+	(*path)->play_at = cecb_start_sample;
+	(*path)->wav_threshold = cecb_threshold;
+	(*path)->wav_frequency_limit = cecb_frequency;
+	(*path)->wav_parity = cecb_wave_parity;
+	
+	ec = parse_header( *path );
+
+	if (ec != 0)
+	{
+		term_pd(*path);
+
+		return ec;
+	}
+
+
 	/* 5. Seek to end of data */
+	
+	/* WAV files may have more chunks after the data chunk, cache them. */
+	
+	if( (*path)->tape_type == WAV )
+	{
+		int count;
+		
+		fseek( (*path)->fd, 0, SEEK_END );
+		(*path)->extra_chunks_buffer_size = ftell( (*path)->fd ) - ((*path)->wav_data_start + (*path)->wav_data_length);
+		
+		if( (*path)->extra_chunks_buffer_size > 0 )
+		{
+			fseek( (*path)->fd, (*path)->wav_data_start + (*path)->wav_data_length, SEEK_SET );
+			(*path)->extra_chunks_buffer = malloc( (*path)->extra_chunks_buffer_size );
+
+			if( (*path)->extra_chunks_buffer == NULL )
+				return EOS_OM;
+			
+			count = fread( (*path)->extra_chunks_buffer, 1, (*path)->extra_chunks_buffer_size, (*path)->fd );
+
+			if( count != (*path)->extra_chunks_buffer_size )
+				return EOS_EOF;
+		}
+
+		fseek( (*path)->fd, ((*path)->wav_data_start + (*path)->wav_data_length), SEEK_SET );
+	}
+	
+
 	
 	/* 6. Fill in dir_entry */
 	
+	strncpy( (char *)(*path)->dir_entry.filename, (*path)->filename, 8 );
+	(*path)->dir_entry.file_type = file_type;
+	(*path)->dir_entry.ascii_flag = data_type;
+	(*path)->dir_entry.gap_flag = gap;
+	(*path)->dir_entry.ml_load_address1 = ml_load_address >> 8;
+	(*path)->dir_entry.ml_load_address2 = ml_load_address & 0x0f;
+	(*path)->dir_entry.ml_exec_address1 = ml_exec_address >> 8;
+	(*path)->dir_entry.ml_exec_address2 = ml_exec_address & 0x0f;
+
 	/* 7. Write half second of silence */
-	
+
+	ec = _cecb_write_silence( *path, 0.50 );
+
+	if (ec != 0)
+	{
+		term_pd(*path);
+
+		return ec;
+	}
+
 	/* 8. Write leader, dir_entry */
-	
+
+	ec = _cecb_write_leader( *path );
+
+	if (ec != 0)
+	{
+		term_pd(*path);
+
+		return ec;
+	}
+
+	ec = _cecb_write_block( *path, 0, (unsigned char *)&((*path)->dir_entry), sizeof(cecb_dir_entry) );
+
+	if (ec != 0)
+	{
+		term_pd(*path);
+
+		return ec;
+	}
+
 	/* 9. Write gap, leader */
 
+	ec = _cecb_write_silence( *path, 0.58 );
+
+	if (ec != 0)
+	{
+		term_pd(*path);
+
+		return ec;
+	}
+
+	ec = _cecb_write_leader( *path );
+
+	if (ec != 0)
+	{
+		term_pd(*path);
+
+		return ec;
+	}
+	
+	/* Get ready for data blocks */
+	(*path)->block_type = 1;
+	
 	return ec;
 }
 
@@ -231,10 +332,48 @@ error_code _cecb_close(cecb_path_id path)
 {
 	error_code	ec = 0;
 		
-	/* if data was written, write end block */
-	
-	/* Write half second of silence */
+	/* if data was written, write last data block and end block */
+	if( (path->mode & FAM_WRITE) == FAM_WRITE )
+	{
+		if( path->length > 0 )
+		{
+			ec = _cecb_write_block( path, path->block_type, path->data, path->length );
+			path->length = 0;
+			path->current_pointer = 0;
+		}
+		
+		path->block_type = 0xff;
+		ec = _cecb_write_block( path, path->block_type, path->data, path->length );
+		
+		/* Write half second of silence */
 
+		ec = _cecb_write_silence( path, 0.58 );
+
+		if (ec != 0)
+		{
+			term_pd(path);
+
+			return ec;
+		}
+		
+		if( path->tape_type = WAV )
+		{
+			/* Update RIFF chunk lengths */
+			fseek( path->fd, 4, SEEK_SET );
+			fwrite_le_int( path->wav_riff_size, path->fd);
+			fseek( path->fd, path->wav_data_start-4, SEEK_SET );
+			fwrite_le_int( path->wav_data_length, path->fd);
+			
+			if( path->extra_chunks_buffer_size > 0 )
+			{
+				/* Write end of WAV file chunks */
+				fseek( path->fd, path->wav_data_length, SEEK_CUR );
+				fwrite( path->extra_chunks_buffer, 1, path->wav_data_length, path->fd );
+			}
+		}
+	}
+
+	
 	/* Close path. */
 
 	fclose(path->fd);
@@ -346,6 +485,11 @@ static int init_pd(cecb_path_id *path, int mode)
 
 static int term_pd(cecb_path_id path)
 {
+	/* 0. Deallocate internal buffers */
+	
+	if( path->extra_chunks_buffer_size > 0 )
+		free( path->extra_chunks_buffer );
+		
 	/* 1. Deallocate path structure. */
 	
 	free(path);

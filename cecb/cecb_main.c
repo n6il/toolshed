@@ -48,6 +48,7 @@ static struct cmdtbl table[] =
 	{os9dump,		"dump"},
 	{decblist,		"list"},
 	{cecbbulkerase,	"bulkerase"},
+	{cecbcopy,		"copy"},
 	{NULL,			NULL}
 };
 

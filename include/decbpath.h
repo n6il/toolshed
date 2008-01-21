@@ -14,6 +14,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <cocotypes.h>
 #include <cococonv.h>
+
 #ifndef WIN32
 #include <dirent.h>
 #endif
@@ -94,8 +95,6 @@ typedef struct
 	int		file_size;		/* file size */
 } decb_file_stat, *Decb_file_stat;
 
-
-
 /* Disk BASIC Prototypes */
 
 error_code _decb_open(decb_path_id *, char *, int);
@@ -126,15 +125,15 @@ error_code _decb_ss_sector(decb_path_id path, int track, int sector, char *buffe
 error_code _decb_gs_granule(decb_path_id path, int granule, char *buffer);
 error_code _decb_ss_granule(decb_path_id path, int granule, char *buffer);
 error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffer, int *out_size);
-error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size);
+error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size, int path_type);
 error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size );
 error_code _decb_binconcat(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size);
+
+#include <cocopath.h>
 
 /* ERROR CODES */
 #define EOS_OM		256		/* Out of memory error */
 #define EOS_SN		257		/* Syntax error */
-
-#include <cocopath.h>
 
 #ifdef __cplusplus
 }

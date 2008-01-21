@@ -21,7 +21,10 @@ char	fwd_name[] = { "fwd_refs" } ;
  */
 void fwd_init(assembler *as)
 {
-	if (_coco_create(&forward_path, fwd_name, FAM_READ | FAM_WRITE, FAP_READ | FAP_WRITE) != 0)
+	coco_file_stat fstat;
+	
+	fstat.perms = FAP_READ | FAP_WRITE;
+	if (_coco_create(&forward_path, fwd_name, FAM_READ | FAM_WRITE, &fstat) != 0)
 	{
 		fatal("Cannot create forward reference file.");
 	}
