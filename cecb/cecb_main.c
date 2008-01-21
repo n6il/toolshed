@@ -108,14 +108,14 @@ int main(int argc, char *argv[])
 						if( strlen(argv[i]) == 2 )
 						{
 							i++;
-							if( argv[i][0] = 'e' )
+							if( argv[i][0] == 'e' )
 								cecb_wave_parity = EVEN;
 							else
 								cecb_wave_parity = ODD;
 						}
 						else
 						{
-							if( argv[i][2] = 'e' )
+							if( argv[i][2] == 'e' )
 								cecb_wave_parity = EVEN;
 							else
 								cecb_wave_parity = ODD;

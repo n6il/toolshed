@@ -68,3 +68,21 @@ error_code _cecb_parse_cas( cecb_path_id path )
 	
 	return 0;
 }
+
+/*
+ * _cecb_write_cas_data()
+ *
+ * Write CAS data
+ *
+ */
+
+error_code _cecb_write_cas_data( cecb_path_id path, char *buffer, int total_length)
+{
+	error_code ec = 0;
+	
+	
+	
+	return ec;
+
+}
+

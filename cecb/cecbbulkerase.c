@@ -139,6 +139,12 @@ static int do_bulkerase(char **argv, char *p)
 	if( strendcasecmp( p, CAS_FILE_EXTENSION ) == 0 )
 		return 0;
 		
+	printf( "Creating WAV file: %s\n", p );
+	printf( "      Sample Rate: %d\n", sample_rate );
+	printf( "  Bits Per Sample: %d\n", bits_per_sample );
+	printf( "   Silence Length: %f\n", silence_length );
+	
+
 	bytes_per_sample = bits_per_sample / 8;
 	silent_samples_count = sample_rate * silence_length;
 	silent_samples_bytes = silent_samples_count * bytes_per_sample;

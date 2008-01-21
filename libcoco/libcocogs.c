@@ -105,7 +105,8 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 	struct tm		timepak;
 	time_t			tp;
 	
-	
+	memset( statbuf, 0, sizeof(coco_file_stat) );
+
     /* 1. Call appropriate function. */
 	
 	switch (path->type)
@@ -161,6 +162,9 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 			
 		case DECB:
 			ec = _decb_gs_fd(path->path.decb, &decb_stat);
+			statbuf->file_type = decb_stat.file_type;
+			statbuf->data_type = decb_stat.data_type;
+			
 			/* Since Disk BASIC files have no permissions per se, we make our own. */
 			statbuf->attributes = FAP_READ | FAP_WRITE | FAP_PREAD;
 			if (path->path.decb->filename[0] == '\0')
@@ -178,6 +182,12 @@ error_code _coco_gs_fd(coco_path_id path, coco_file_stat *statbuf)
 		
 		case CECB:
 			ec = _cecb_gs_fd(path->path.cecb, &cecb_stat);
+			statbuf->file_type = cecb_stat.file_type;
+			statbuf->data_type = cecb_stat.data_type;
+			statbuf->gap_flag = cecb_stat.gap_flag;
+			statbuf->ml_load_address = cecb_stat.ml_load_address;
+			statbuf->ml_exec_address = cecb_stat.ml_exec_address;
+
 			/* Since Cassette BASIC files have no permissions per se, we make our own. */
 			statbuf->attributes = FAP_READ | FAP_WRITE | FAP_PREAD;
 			/* Neither does Cassette BASIC have date or time stamps. */

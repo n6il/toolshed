@@ -444,17 +444,19 @@ static int coco_create(const char *path, mode_t perms, struct fuse_file_info * f
 	error_code ec = 0;
 	coco_path_id p;
 	char buff[1024];
+	coco_file_stat fstat;
+	
 	int mflags = FAM_READ | FAM_WRITE;
-	int pflags = FAP_READ | FAP_WRITE;
-
+	fstat.perms = FAP_READ | FAP_WRITE;
+	
 	sprintf(buff, "%s,%s", dsk, path);
 
 	if ((fi->flags & O_ACCMODE) != O_RDONLY)
 	{
-		mflags |= FAM_WRITE;
+		fstat.perms |= FAM_WRITE;
 	}
 
-	if ((ec = -CoCoToUnixError(_coco_create(&p, buff, mflags, pflags))) != 0)
+	if ((ec = -CoCoToUnixError(_coco_create(&p, buff, mflags, &fstat))) != 0)
 	{
 		return ec;
 	}

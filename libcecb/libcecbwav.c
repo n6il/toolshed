@@ -16,8 +16,8 @@ static int numbers_close_signed( int a, int b, double p );
 static error_code advance_to_next_zero_crossing( cecb_path_id path, int *diff );
 static error_code advance_to_next_lo_to_hi( cecb_path_id path, int *diff );
 static error_code advance_to_next_hi_to_lo( cecb_path_id path, int *diff );
-static void build_sinusoidal_bufer_8(unsigned char *buffer, int length);
-static void build_sinusoidal_bufer_16(short *buffer, int length);
+static void build_sinusoidal_bufer_8(_wave_parity parity, unsigned char *buffer, int length);
+static void build_sinusoidal_bufer_16(_wave_parity parity, short *buffer, int length);
 
 /*
  * _cecb_read_bits_wav()
@@ -249,7 +249,7 @@ static error_code analyze_wav_leader( cecb_path_id path )
 	}
 	else
 	{
-		if( path->wav_parity == NONE )
+		if( path->wav_parity == AUTO )
 		{
 			fprintf( stderr, "Error: If you set frequency limit, you need to set parity.\n" );
 			return EOS_IA;
@@ -269,13 +269,15 @@ static error_code analyze_wav_leader( cecb_path_id path )
 		/* Using emperical measurment */
 		mal = 1094.68085106384;
 		mah = 2004.54545454545;
+		path->wav_frequency_limit = (mal + mah)/2.0;
 		
-		fprintf( stderr, "Frequency limit check failed. Setting parity to even.\n" );
-		path->wav_parity = EVEN;
+//		fprintf( stderr, "Frequency limit check failed. Setting parity to even.\n" );
+		if( path->wav_parity == AUTO )
+			path->wav_parity = EVEN;
 	}
 	else
 	{
-		if( path->wav_parity == NONE )
+		if( path->wav_parity == AUTO )
 		{
 			if( numbers_close_double( ratio, 0.5, 0.75 ) == 1 )
 			{
@@ -311,13 +313,13 @@ static error_code analyze_wav_leader( cecb_path_id path )
 		
 	if( path->wav_bits_per_sample == 8 )
 	{
-		build_sinusoidal_bufer_8(path->buffer_1200, path->buffer_1200_length);
-		build_sinusoidal_bufer_8(path->buffer_2400, path->buffer_2400_length);
+		build_sinusoidal_bufer_8(path->wav_parity, path->buffer_1200, path->buffer_1200_length);
+		build_sinusoidal_bufer_8(path->wav_parity, path->buffer_2400, path->buffer_2400_length);
 	}
 	else if( path->wav_bits_per_sample == 16 )
 	{
-		build_sinusoidal_bufer_16((short *)path->buffer_1200, path->buffer_1200_length/2);
-		build_sinusoidal_bufer_16((short *)path->buffer_2400, path->buffer_2400_length/2);
+		build_sinusoidal_bufer_16(path->wav_parity, (short *)path->buffer_1200, path->buffer_1200_length/2);
+		build_sinusoidal_bufer_16(path->wav_parity, (short *)path->buffer_2400, path->buffer_2400_length/2);
 	}
 	else
 		return -1;
@@ -571,27 +573,35 @@ int _cecb_write_wav_repeat_short(cecb_path_id path, int length, short bytes)
 	return length*2;
 }
 
-static void build_sinusoidal_bufer_8(unsigned char *buffer, int length)
+static void build_sinusoidal_bufer_8(_wave_parity parity, unsigned char *buffer, int length)
 {
-	double increment = (PI * 2.0) / length;
-
+	double offset, increment = (PI * 2.0) / length;
 	int i;
 
+	if(parity == EVEN )
+		offset = PI*2;
+	else
+		offset = PI;
+	
 	for (i = 0; i < length; i++)
 	{
-		buffer[i] = (sin(increment * i + PI) * 110.0) + 127.0;
+		buffer[i] = (sin(increment * i + offset) * 110.0) + 127.0;
 	}
 }
 
-static void build_sinusoidal_bufer_16(short *buffer, int length)
+static void build_sinusoidal_bufer_16(_wave_parity parity, short *buffer, int length)
 {
-	double increment = (PI * 2.0) / length;
-
+	double offset, increment = (PI * 2.0) / length;
 	int i;
+
+	if(parity == EVEN )
+		offset = PI*2;
+	else
+		offset = PI;
 
 	for (i = 0; i < length; i++)
 	{
-		buffer[i] = sin(increment * i + PI) * 110.0;
+		buffer[i] = sin(increment * i + offset) * 25500.0;
 #ifdef __BIG_ENDIAN__
 		buffer[i] = swap_short( buffer[i] );
 #endif

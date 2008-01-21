@@ -314,3 +314,49 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
     return ec;
 }
 
+#define BLOCKSIZE 256
+
+/*
+ * _coco_open_read_whole_file()
+ *
+ * Read in entire file without using _coco_gs_size().
+ */
+error_code _coco_open_read_whole_file(coco_path_id *path, char *pathlist, int mode, u_char **buffer, u_int *size)
+{
+	error_code ec = 0;
+	u_int size2, size3;
+	u_char *buffer2;
+	
+	ec = _coco_open( path, pathlist, mode );
+	if( ec != 0 )
+		return ec;
+		
+	*size = 0;
+	size3 = BLOCKSIZE;
+	*buffer = malloc( size3 );
+	
+	if( *buffer == NULL )
+		return -1;
+	
+	while( _coco_gs_eof(*path) == 0 )
+	{
+		while( (*size + BLOCKSIZE) > size3 )
+		{
+			size3 += BLOCKSIZE;
+			buffer2 = realloc( *buffer, size3);
+			
+			if( buffer2 == NULL )
+				return -1;
+				
+			*buffer = buffer2;
+		}
+
+		size2 = BLOCKSIZE;
+		ec = _coco_read(*path, &((*buffer)[*size]), &size2);
+		*size += size2;
+		if( ec != 0 )
+			return ec;
+	}
+
+	return ec;
+}

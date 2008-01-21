@@ -169,14 +169,17 @@ error_code _cecb_create(cecb_path_id *path, char *pathlist, int mode, int file_t
 
 		return ec;
 	}
-
-	ec = _cecb_write_leader( *path );
-
-	if (ec != 0)
+	
+	if( (*path)->dir_entry.gap_flag == 0 )
 	{
-		term_pd(*path);
+		ec = _cecb_write_leader( *path );
 
-		return ec;
+		if (ec != 0)
+		{
+			term_pd(*path);
+
+			return ec;
+		}
 	}
 	
 	/* Get ready for data blocks */

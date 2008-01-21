@@ -130,13 +130,13 @@ error_code _cecb_read_next_dir_entry( cecb_path_id path, cecb_dir_entry *dir_ent
 error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, unsigned char *block_length, unsigned char *data  )
 {
 	error_code ec = 0;
-	unsigned short find_block;
+	unsigned char find_block;
 	unsigned char checksum, checksum_ck;
 	int i;
 	
 	find_block = 0;
 
-	while( find_block != 0x3c55 )
+	while( find_block != 0x3c )
 	{
 		unsigned char newbit;
 		
@@ -147,9 +147,9 @@ error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, 
 		if( ec != 0 )
 			return ec;
 		
-		find_block |= (unsigned short)newbit<<8;
+		find_block |= (unsigned short)newbit;
 		
-		//printf( "find_block: %4.4x\n", find_block );
+		//printf( "find_block: %4.4x, sample: %d\n", find_block, path->wav_current_sample );
 	}
 	
 	ec = _cecb_read_bits( path, 8, block_type );

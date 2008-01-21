@@ -1148,7 +1148,6 @@
 				684E533C0AC2483C004DAB23 /* Libraries */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
-				77ED4B750D4301CA00C07058 /* cecbcopy.c */,
 			);
 			name = osx;
 			sourceTree = "<group>";
@@ -1490,6 +1489,7 @@
 				77BF14470D39E9D800374444 /* cecb_main.c */,
 				8487FAE90D414E1B0031CA8E /* cecbbulkerase.c */,
 				770D3ACA0D3C6B2200BF990F /* cecbfstat.c */,
+				77ED4B750D4301CA00C07058 /* cecbcopy.c */,
 			);
 			name = cecb;
 			sourceTree = "<group>";

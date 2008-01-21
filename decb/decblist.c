@@ -34,7 +34,7 @@ int decblist(int argc, char *argv[])
 	coco_path_id path;
 	int i;
 	unsigned char *buffer, *buffer2;
-	u_int size, size2, size3;
+	u_int size, size2;
 	int token_translation = 0;
 
 	/* 1. Walk command line for options */
@@ -89,43 +89,13 @@ int decblist(int argc, char *argv[])
 
 	/* 3. Open a path to the file. */
 	
-	ec = _coco_open(&path, p, FAM_READ);
-
+	ec = _coco_open_read_whole_file( &path, p, FAM_READ, &buffer, &size );
 	if (ec != 0)
 	{
 		_coco_close(path);
 		printf("Error %d opening %s\n", ec, p);
 
 		return(ec);
-	}
-
-	/* Read in entire file without using _coco_gs_size() */
-	
-	size = 0;
-	size3 = BLOCKSIZE;
-	buffer = malloc( size3 );
-	
-	if( buffer == NULL )
-		return -1;
-	
-	while( _coco_gs_eof(path) == 0 )
-	{
-		while( (size + BLOCKSIZE) > size3 )
-		{
-			size3 += BLOCKSIZE;
-			buffer2 = realloc( buffer, size3);
-			
-			if( buffer2 == NULL )
-				return -1;
-				
-			buffer = buffer2;
-		}
-
-		size2 = BLOCKSIZE;
-		ec = _coco_read(path, &(buffer[size]), &size2);
-		size += size2;
-		if( ec != 0 )
-			return -1;
 	}
 
 	if( token_translation == 1 )

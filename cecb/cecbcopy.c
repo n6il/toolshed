@@ -302,16 +302,14 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
     error_code	ec = 0;
     coco_path_id path, destpath;
     int mode = FAM_NOCREATE | FAM_WRITE;
-	unsigned char *buffer, *buffer2;
+	u_char *buffer = NULL;
 	u_int buffer_size;
-	_path_type t;
-	u_int size2, size3;
 	coco_file_stat fstat;
 
 	
     /* 1. Open a path to the srcfile. */
 
-    ec = _coco_open(&path, srcfile, FAM_READ);
+	ec = _coco_open_read_whole_file( &path, srcfile, FAM_READ, &buffer, &buffer_size );
 
     if (ec != 0)
 	{
@@ -319,84 +317,48 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 	}
 	
 	/* 2. Apply meta data */
-	
-	fstat.perms = FAP_READ | FAP_WRITE | FAP_PREAD;
+
+	_coco_gs_fd(path, &fstat);	
 
 	if( (file_type == -1 ) && (tokTranslate == 1) )
-		fstat.file_type = 0;
+		file_type = 0;
 	else if( tokTranslate == -1 )
-		fstat.file_type = 0;
+		file_type = 0;
 
 	if( (data_type == -1 ) && (tokTranslate == -1) )
-		fstat.data_type = 0;
+		data_type = 0;
 	else if( tokTranslate == -1 )
-		fstat.data_type = 0xff;
+		data_type = 0xff;
 
-	_coco_gs_pathtype(path, &t);
+	if( file_type == -1 )
+		fstat.file_type = fstat.file_type;
+	else
+		fstat.file_type = file_type;
+		
+	if( data_type == -1 )
+		fstat.data_type = fstat.data_type;
+	else
+		fstat.data_type = data_type;
 	
-	if (t == DECB)
-	{
-		decb_file_stat f;
-		_decb_gs_fd(path->path.decb, &f);
-		
-		if( file_type == -1 )
-			fstat.file_type = f.file_type;
-		
-		if( data_type == -1 )
-			fstat.data_type = f.data_type;
-		
-		if( gap == -1 )
-		{
-			if( (file_type == 0) && (data_type == 255) )
-				fstat.gap_flag = 255;
-			else
-				fstat.gap_flag = 0;
-		}
-	}
-	else if (t == CECB )
-	{
-		cecb_file_stat f;
-		_cecb_gs_fd(path->path.cecb, &f);
-		
-		if( file_type == -1 )
-			fstat.file_type = f.file_type;
-		
-		if( data_type == -1 )
-			fstat.data_type = f.data_type;
-		
-		if( gap == -1 )
-			fstat.gap_flag = f.gap_flag;
+	if( gap == -1 )
+		fstat.gap_flag = fstat.gap_flag;
+	else
+		fstat.gap_flag = gap;
 
-		if( ml_load_address == -1 )
-			fstat.ml_load_address = f.ml_load_address;
+	if( ml_load_address == -1 )
+		fstat.ml_load_address = fstat.ml_load_address;
+	else
+		fstat.ml_load_address = ml_load_address;
 
-		if( ml_exec_address == -1 )
-			fstat.ml_exec_address = f.ml_exec_address;
-	}
-	else /* OS9 and NATIVE */
-	{
-		if( file_type == -1 )
-			fstat.file_type = 0;
-		
-		if( data_type == -1 )
-			fstat.data_type = 0;
-		
-		if( gap == -1 )
-			fstat.gap_flag = 0;
-
-		if( ml_load_address == -1 )
-			fstat.ml_load_address = 0;
-
-		if( ml_exec_address == -1 )
-			fstat.ml_exec_address = 0;
-	}
+	if( ml_exec_address == -1 )
+		fstat.ml_exec_address = fstat.ml_exec_address;
+	else
+		fstat.ml_exec_address = ml_exec_address;
 
 
-	/* Check destination type */
-	
     /* 3. Attempt to create the destfile. */
 	
-		ec = _coco_create(&destpath, dstfile, mode, &fstat);
+	ec = _coco_create(&destpath, dstfile, mode, &fstat);
 		
     if (ec != 0)
     {
@@ -405,36 +367,6 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
         return ec;
     }
 
-	/* Read in entire file without using _coco_gs_size() */
-	
-	buffer_size = 0;
-	size3 = BLOCKSIZE;
-	buffer = malloc( size3 );
-	
-	if( buffer == NULL )
-		return -1;
-	
-	while( _coco_gs_eof(path) == 0 )
-	{
-		while( (buffer_size + BLOCKSIZE) > size3 )
-		{
-			size3 += BLOCKSIZE;
-			buffer2 = realloc( buffer, size3);
-			
-			if( buffer2 == NULL )
-				return -1;
-				
-			buffer = buffer2;
-		}
-
-		size2 = BLOCKSIZE;
-		ec = _coco_read(path, &(buffer[buffer_size]), &size2);
-		buffer_size += size2;
-		
-		if( ec != 0 )
-			return -1;
-	}
-	
 	if( binary_concat == 1 )
 	{
 		u_char *binconcat_buffer;
@@ -528,6 +460,9 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 
 	ec = _coco_write(destpath, buffer, &buffer_size);
 
+	if( buffer != NULL )
+		free( buffer );
+		
     _coco_close(path);
     _coco_close(destpath);
 

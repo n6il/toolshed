@@ -130,6 +130,7 @@ error_code _coco_delete(char *pathlist);
 error_code _coco_delete_directory(char *pathlist);
 error_code _coco_rename(char *pathlist, char *new_name);
 error_code _coco_rename_ex(char *pathlist, char *new_name, coco_dir_entry *dentry);
+error_code _coco_open_read_whole_file(coco_path_id *path, char *pathlist, int mode, u_char **buffer, u_int *size);
 error_code _coco_close(coco_path_id);
 
 /* gs.c */

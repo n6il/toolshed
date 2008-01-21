@@ -50,7 +50,14 @@ error_code _cecb_write_block( cecb_path_id path, unsigned char block_type, unsig
 	
 	if( length > 0xff )
 		return -1;
-		
+	
+	/* Add gap, if requested */
+	if( (path->dir_entry.gap_flag == 0xff) && (path->block_type != 0x00) )
+	{
+		ec |= _cecb_write_silence( path, 0.5 );
+		ec |= _cecb_write_leader( path );
+	}
+	
 	ec |= write_byte( path, 0x55 );
 	ec |= write_byte( path, 0x3c );
 	ec |= write_byte( path, block_type );
