@@ -34,7 +34,7 @@ static char *helpMessage[] =
 	"                  2 = machine-language program\n",
 	"                  3 = text editor source file\n",	
 	"     -[a|b]     data type (a = ASCII, b = binary)\n",
-	"     -g         enable gap\n",
+	"     -[g|n]     gap flag (g = gaps, n = no gaps)\n",
 	"     -d<n>      load address\n",
 	"     -e<n>      execution address\n",
     "     -l         perform end of line translation\n",
@@ -91,6 +91,10 @@ int cecbcopy(int argc, char *argv[])
 	
                     case 'g':
 						gap = 255;
+						break;
+	
+                    case 'n':
+						gap = 0;
 						break;
 	
                     case 'b':
