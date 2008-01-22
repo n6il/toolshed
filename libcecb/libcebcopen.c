@@ -114,7 +114,17 @@ error_code _cecb_create(cecb_path_id *path, char *pathlist, int mode, int file_t
 
 		fseek( (*path)->fd, ((*path)->wav_data_start + (*path)->wav_data_length), SEEK_SET );
 	}
-	
+	else if( (*path)->tape_type == CAS )
+	{
+		fseek( (*path)->fd, 0, SEEK_END );
+		(*path)->cas_start_byte = ftell( (*path)->fd );
+		(*path)->cas_start_bit = 0x01;
+	}
+	else
+	{
+		fprintf( stderr, "Unknown error\n" );
+		return -1;
+	}
 
 	
 	/* 6. Fill in dir_entry */

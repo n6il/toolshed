@@ -138,6 +138,7 @@ error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, 
 error_code _cecb_read_bits( cecb_path_id path, int count, unsigned char *result );
 error_code _cecb_read_bits_wav( cecb_path_id path, int count, unsigned char *result );
 error_code _cecb_read_bits_cas( cecb_path_id path, int count, unsigned char *result );
+error_code _cecb_write_cas_data( cecb_path_id path, char *buffer, int total_length);
 int _cecb_write_wav_audio(cecb_path_id path, char *buffer, int total_length);
 int _cecb_write_wav_audio_repeat_byte(cecb_path_id path, int length, char byte);
 error_code _cecb_write(cecb_path_id path, void *buffer, unsigned int *size);

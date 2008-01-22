@@ -224,7 +224,7 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 	}
 	
 	/* 2b. Check for .cas file extension. */
-	if( strendcasecmp( pathlist, CAS_FILE_EXTENSION ) == 0 )
+	if( strendcasecmp( p, CAS_FILE_EXTENSION ) == 0 )
 	{
 		*type = CECB;
 		

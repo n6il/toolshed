@@ -89,7 +89,18 @@ error_code _cecb_write_silence( cecb_path_id path, double length )
 {
 	if( path->tape_type == CAS )
 	{
-		return -1;
+		char *buffer;
+		int size;
+		
+		size = length * 20;
+		
+		buffer = calloc( size, 1 );
+		
+		if( buffer != NULL )
+		{
+			_cecb_write_cas_data( path, buffer, size );
+			free( buffer );
+		}
 	}
 	else if( path->tape_type == WAV )
 	{
@@ -118,7 +129,9 @@ static error_code write_byte( cecb_path_id path, unsigned char byte )
 	int bytes_written;
 	
 	if( path->tape_type == CAS )
-		return -1;
+	{
+		_cecb_write_cas_data( path, (char *)&byte, 1 );
+	}
 	else if( path->tape_type == WAV )
 	{
 		bytes_written = _cecb_write_wav_audio(path, (char *)&byte, 1);
@@ -137,7 +150,7 @@ static error_code write_buffer( cecb_path_id path, unsigned char *buffer, int le
 	
 	if( path->tape_type == CAS )
 	{
-		return -1;
+		_cecb_write_cas_data( path, (char *)buffer, length );
 	}
 	else if( path->tape_type == WAV )
 	{
