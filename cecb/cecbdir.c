@@ -21,7 +21,7 @@ static int do_dir(char **argv, char *p);
 static char *helpMessage[] =
 {
 	"Syntax: dir {[<opts>]} {<dir> [<...>]} {[<opts>]}\n",
-	"Usage:  Display the contents of a directory.\n",
+	"Usage:  Display the contents of a cassette image.\n",
 	"Options:\n",
 	NULL
 };

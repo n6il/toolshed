@@ -332,7 +332,7 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 	if( binary_concat == 1 )
 	{
 		u_char *binconcat_buffer;
-		int binconcat_size;
+		u_int binconcat_size;
 
 		ec = _decb_binconcat(buffer, buffer_size, &binconcat_buffer, &binconcat_size);
 		
@@ -351,7 +351,7 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 		if( buffer[0] == 0xff )
 		{
 			u_char *detokenize_buffer;
-			int detokenize_size;
+			u_int detokenize_size;
 			
 			/* File is already a tokenized BASIC file, de-tokenize it */
 			ec = _decb_detoken( buffer, buffer_size, (char **)&detokenize_buffer, &detokenize_size);
@@ -371,7 +371,7 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 		else
 		{
 			unsigned char *entokenize_buffer;
-			int entokenize_size;
+			u_int entokenize_size;
 			
 			/* Tokenized file */
 			ec = _decb_entoken( buffer, buffer_size, &entokenize_buffer, &entokenize_size, destpath->type==DECB);

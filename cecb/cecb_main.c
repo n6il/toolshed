@@ -20,12 +20,12 @@ static int do_command(int argc, char **argv);
 /* Help message */
 static char *helpMessage[] =
 {
-	"Syntax: cecb {[<opts>]} <command> {[<opts>]}\n",
+	"Syntax: cecb {[<opts>]} <sub command> {[<opts>]}\n",
 	"Usage:  Casette BASIC File Tools Executive\n",
 	"Options:\n",
-	"     -t <%>    = Set threshold to remove background noise (for wav files).\n",
-	"     -f <n>    = Set bit delineation frequency (for wav files).\n",
-	"     -p <e|o>  = Set even or add WAV file parity (for wav files).\n",
+	"     -t <%>    = Set threshold to remove background noise (for WAV files).\n",
+	"     -f <n>    = Set bit delineation frequency (for WAV files).\n",
+	"     -p <e|o>  = Set even or odd WAV file parity (for WAV files).\n",
 	"     -s <n>    = Start at sample/bit n in WAV/CAS file.\n",
 	"\n",
 	"     % is a decimal number between 0 and 1.\n",
@@ -183,7 +183,7 @@ static void show_cecb_help(char **helpMessage)
 		fputs(*(p++), stderr);
 	}
 
-	printf("\nCommands:\n");
+	printf("\nSub commands:\n");
 	
 	while (ptr->keyword != NULL)
 	{

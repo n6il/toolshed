@@ -124,10 +124,16 @@ error_code _decb_gs_sector(decb_path_id path, int track, int sector, char *buffe
 error_code _decb_ss_sector(decb_path_id path, int track, int sector, char *buffer);
 error_code _decb_gs_granule(decb_path_id path, int granule, char *buffer);
 error_code _decb_ss_granule(decb_path_id path, int granule, char *buffer);
-error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffer, int *out_size);
-error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size, int path_type);
-error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size );
-error_code _decb_binconcat(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size);
+error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffer, u_int *out_size);
+error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, u_int *out_size, int path_type);
+error_code _decb_buffer_sprintf(u_int *position, char **str, size_t *buffersize, const char *format, ...);
+error_code _decb_detect_tokenized( unsigned char *in_buffer, u_int in_size );
+error_code _decb_binconcat(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, u_int *out_size);
+int _decb_count_segements( u_char *buffer, u_int buffer_size );
+error_code _decb_extract_first_segment( u_char *buffer, u_int buffer_size, u_char **extracted_buffer, u_int *extracted_buffer_size, u_int *load_address, u_int *exec_address );
+error_code _decb_srec_encode(unsigned char *in_buffer, int in_size, char **out_buffer, u_int *out_size);
+error_code _decb_srec_encode_sr(unsigned char *in_buffer, int in_size, int start_address, int exec_address, char **out_buffer, u_int *out_size);
+error_code _decb_srec_decode(unsigned char *in_buffer, int in_size, u_char **out_buffer, u_int *out_size);
 
 #include <cocopath.h>
 

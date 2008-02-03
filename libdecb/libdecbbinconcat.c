@@ -12,7 +12,7 @@
 
 enum binconcat_mode { FREESPACE, INBLOCK };
 
-error_code _decb_binconcat(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size)
+error_code _decb_binconcat(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, u_int *out_size)
 {
 	int	*buffer;
 	int i, type, in_pos, out_pos, length, address, size, size_pointer;
@@ -167,4 +167,81 @@ error_code _decb_binconcat(unsigned char *in_buffer, int in_size, unsigned char 
 	}
 		
 	return 0;
+}
+
+int _decb_count_segements( u_char *buffer, u_int buffer_size )
+{
+	int length, result;
+	u_int buffer_position;
+	
+	result = 0;
+	buffer_position = 0;
+	
+	while( buffer_position < buffer_size )
+	{
+		if( buffer[buffer_position++] == PREAMBLE )
+			result++;
+		else if( buffer[buffer_position++] == POSTAMBLE )
+			break;
+			
+		length = buffer[buffer_position++] << 8;
+		length += buffer[buffer_position++];
+		
+		buffer_position += length + 2;
+	
+	}
+	
+	return result;
+}
+
+error_code _decb_extract_first_segment( u_char *buffer, u_int buffer_size, u_char **extracted_buffer,
+							u_int *extracted_buffer_size, u_int *load_address, u_int *exec_address )
+{
+	error_code ec = 0;
+	int amble, first;
+	u_int buffer_position;
+	u_int post_amble_size;
+	
+	first = 0;
+	buffer_position = 0;
+	
+	while( buffer_position < buffer_size )
+	{
+		amble = buffer[buffer_position++];
+		
+		if( (amble == PREAMBLE) && (first == 0) )
+		{
+			*extracted_buffer_size = buffer[buffer_position++]<<8;
+			*extracted_buffer_size += buffer[buffer_position++];
+
+			*load_address = buffer[buffer_position++]<<8;
+			*load_address += buffer[buffer_position++];
+			
+			*extracted_buffer = malloc( *extracted_buffer_size );
+			
+			if( *extracted_buffer == NULL )
+			{
+				fprintf( stderr, "_decb_extract_first_segment: could not allocate buffer.\n" );
+				return -1;
+			}
+			
+			memcpy( *extracted_buffer, &(buffer[buffer_position]), *extracted_buffer_size );
+			
+			buffer_position += *extracted_buffer_size;
+			
+			first = 1;
+		}
+		else if( amble == POSTAMBLE )
+		{
+			post_amble_size = buffer[buffer_position++]<<8;
+			post_amble_size += buffer[buffer_position++];
+
+			*exec_address = buffer[buffer_position++]<<8;
+			*exec_address += buffer[buffer_position++];
+			
+			return ec;
+		}
+	}
+
+	return ec;
 }

@@ -227,6 +227,7 @@
 		77F0A8F50D3DD70C00009CA5 /* libtoolshed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68E3F2440AC37ED200E1DFE0 /* libtoolshed.a */; };
 		77F0A9020D3DD86F00009CA5 /* libcecb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77F0A89F0D3DD29000009CA5 /* libcecb.a */; };
 		77F6E54C0D446863001EF032 /* cocopath.h in Headers */ = {isa = PBXBuildFile; fileRef = 844AC66C0D4024D000C78C0D /* cocopath.h */; };
+		77FE73B50D54CFA3006BC697 /* libdecbsrec.c in Sources */ = {isa = PBXBuildFile; fileRef = 77FE73B40D54CFA3006BC697 /* libdecbsrec.c */; };
 		8410E8CD0D3FECE700567E94 /* decblist.c in Sources */ = {isa = PBXBuildFile; fileRef = 684E539F0AC248E9004DAB23 /* decblist.c */; };
 		8487FAEA0D414E1B0031CA8E /* cecbbulkerase.c in Sources */ = {isa = PBXBuildFile; fileRef = 8487FAE90D414E1B0031CA8E /* cecbbulkerase.c */; };
 /* End PBXBuildFile section */
@@ -932,6 +933,7 @@
 		77EE03DC0D39B7F3004F70DA /* libcecbwav.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcecbwav.c; path = ../../libcecb/libcecbwav.c; sourceTree = SOURCE_ROOT; };
 		77F0A89F0D3DD29000009CA5 /* libcecb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcecb.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		77F0A8C50D3DD65300009CA5 /* cecb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cecb; sourceTree = BUILT_PRODUCTS_DIR; };
+		77FE73B40D54CFA3006BC697 /* libdecbsrec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libdecbsrec.c; path = ../../libdecb/libdecbsrec.c; sourceTree = SOURCE_ROOT; };
 		842326EA0D37EAC2008AAAC1 /* libcebcopen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libcebcopen.c; path = ../../libcecb/libcebcopen.c; sourceTree = SOURCE_ROOT; };
 		842326F00D37EDA4008AAAC1 /* cecbpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cecbpath.h; path = ../../include/cecbpath.h; sourceTree = SOURCE_ROOT; };
 		844AC6600D4024D000C78C0D /* rbfutil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rbfutil.h; path = ../../include/rbfutil.h; sourceTree = SOURCE_ROOT; };
@@ -1197,6 +1199,7 @@
 		684E52A40AC246BF004DAB23 /* libdecb */ = {
 			isa = PBXGroup;
 			children = (
+				77FE73B40D54CFA3006BC697 /* libdecbsrec.c */,
 				684E52A60AC246D4004DAB23 /* libdecbgs.c */,
 				684E52A70AC246D4004DAB23 /* libdecbkill.c */,
 				684E52A80AC246D4004DAB23 /* libdecbopen.c */,
@@ -2139,6 +2142,7 @@
 				684E52C40AC246FD004DAB23 /* libdecbtokenize.c in Sources */,
 				684E52C50AC246FD004DAB23 /* libdecbwrite.c in Sources */,
 				775AE60A0D038A16005A1378 /* libdecbbinconcat.c in Sources */,
+				77FE73B50D54CFA3006BC697 /* libdecbsrec.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

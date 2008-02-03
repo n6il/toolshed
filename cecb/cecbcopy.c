@@ -40,7 +40,8 @@ static char *helpMessage[] =
     "     -l         perform end of line translation\n",
 	"     -t         perform BASIC entokenization of ASCII text\n",
 	"     -k         perform BASIC detokenization of binary data\n",
-	"     -s         perform s record translation\n",
+	"     -s         perform S Record encode of machine language loadables\n",
+	"     -f         perform S Record decode of ASCII text file\n",
 	"     -c         perform segment concatenation on machine language loadables\n",
     NULL
 };
@@ -119,6 +120,10 @@ int cecbcopy(int argc, char *argv[])
 					
 					case 's':
 						s_record = 1;
+						break;
+					
+					case 'f':
+						s_record = -1;
 						break;
 					
 					case 'd':
@@ -308,6 +313,7 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
     int mode = FAM_NOCREATE | FAM_WRITE;
 	u_char *buffer = NULL;
 	u_int buffer_size;
+	_path_type path_type;
 	coco_file_stat fstat;
 
 	
@@ -334,6 +340,106 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 	else if( tokTranslate == -1 )
 		data_type = 0xff;
 
+	if( s_record != 0 )
+	{
+		if( s_record == 1 )  /* s record encode */
+		{
+			char *encode_buffer;
+			u_int encode_size;
+
+			/* encode file */
+			ec = _decb_srec_encode(buffer, buffer_size, &encode_buffer, &encode_size);
+
+			if( ec == 0 )
+			{
+				free( buffer );
+				buffer = (u_char *)encode_buffer;
+				buffer_size = encode_size;
+			}
+			else
+				return -1;
+		}
+		else if( s_record == -1 ) /* s record decode */
+		{
+			unsigned char *decode_buffer;
+			u_int decode_size;
+
+			/* decode file */
+			ec = _decb_srec_decode(buffer, buffer_size, &decode_buffer, &decode_size);
+
+			if( ec == 0 )
+			{
+				free( buffer );
+				buffer = decode_buffer;
+				buffer_size = decode_size;
+			
+				if( file_type == -1 )
+					file_type = 2;
+				
+				if( data_type == -1 )
+					data_type = 0;
+
+				if( gap == -1 )
+					gap = 0xff;
+			}
+			else
+				return -1;
+		}
+	}
+	
+	if( binary_concat == 1 )
+	{
+		u_char *binconcat_buffer;
+		u_int binconcat_size;
+
+		ec = _decb_binconcat(buffer, buffer_size, &binconcat_buffer, &binconcat_size);
+		
+		if( ec == 0 )
+		{
+			free( buffer );
+			buffer = binconcat_buffer;
+			buffer_size = binconcat_size;
+		}
+		else
+			return -1;
+	}
+	
+	_coco_identify_image( dstfile, &path_type );
+	
+	if( (path_type == CECB) && (gap == 0x00) && (file_type == 2) && (data_type == 0) )
+	{
+		/* only one segment allowed */
+		int count;
+		u_char *extracted_buffer;
+		u_int extracted_buffer_size;
+		u_int load_address, exec_address;
+		
+		count = _decb_count_segements( buffer, buffer_size );
+		
+		if( (count == 0) || (count > 1) )
+		{
+			fprintf( stderr, "Error copying multiple segement binary to single segement file.\n" );
+			return -1;
+		}
+		
+		ec = _decb_extract_first_segment( buffer, buffer_size, &extracted_buffer, &extracted_buffer_size, &load_address, &exec_address );
+
+		if( ec == 0 )
+		{
+			free( buffer );
+			buffer = extracted_buffer;
+			buffer_size = extracted_buffer_size;
+
+			if( ml_load_address == -1 )
+				ml_load_address = load_address;
+				
+			if( ml_exec_address == -1 )
+				ml_exec_address = exec_address;
+		}
+		else
+			return -1;
+	}
+	
 	if( file_type == -1 )
 		fstat.file_type = fstat.file_type;
 	else
@@ -371,29 +477,13 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
         return ec;
     }
 
-	if( binary_concat == 1 )
-	{
-		u_char *binconcat_buffer;
-		int binconcat_size;
-
-		ec = _decb_binconcat(buffer, buffer_size, &binconcat_buffer, &binconcat_size);
-		
-		if( ec == 0 )
-		{
-			free( buffer );
-			buffer = binconcat_buffer;
-			buffer_size = binconcat_size;
-		}
-		else
-			return -1;
-	}
 
 	if( tokTranslate != 0 )
 	{
 		if( tokTranslate == 1 ) /* entokenize */
 		{
 			unsigned char *entokenize_buffer;
-			int entokenize_size;
+			u_int entokenize_size;
 
 			/* Tokenized file */
 			ec = _decb_entoken( buffer, buffer_size, &entokenize_buffer, &entokenize_size, destpath->type==DECB);
@@ -412,7 +502,7 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 		else /* detokenize */
 		{
 			u_char *detokenize_buffer;
-			int detokenize_size;
+			u_int detokenize_size;
 
 			if( buffer[0] == 0xff )
 			{

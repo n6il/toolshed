@@ -22,6 +22,7 @@ static char *helpMessage[] =
 	"Usage:  Display contents of a text file.\n",
 	"Options:\n",
 	"     -t         perform BASIC token translation\n",
+	"     -s         perform S-Record encoding of binary\n",
 	NULL
 };
 
@@ -36,6 +37,7 @@ int decblist(int argc, char *argv[])
 	unsigned char *buffer, *buffer2;
 	u_int size, size2;
 	int token_translation = 0;
+	int srec_translation = 0;
 
 	/* 1. Walk command line for options */
 	
@@ -52,6 +54,11 @@ int decblist(int argc, char *argv[])
 						token_translation = 1;
 						break;
 						
+					case 's':
+						srec_translation = 1;
+						break;
+						
+
 					case 'h':
 					case '?':
 						show_help(helpMessage);
@@ -101,9 +108,34 @@ int decblist(int argc, char *argv[])
 	if( token_translation == 1 )
 	{
 		char *program;
-		int program_size;
+		u_int program_size;
 		
 		ec = _decb_detoken( buffer, size, &program, &program_size);
+		if (ec != 0)
+		{
+			return ec;
+		}
+		
+		free( buffer );
+		buffer = (u_char *)program;
+		size = program_size;
+	}
+
+	if( srec_translation == 1 )
+	{
+		char *program;
+		u_int program_size;
+		coco_file_stat statbuf;
+		_path_type disk_type;
+		
+		_coco_gs_fd( path, &statbuf );
+		_coco_gs_pathtype( path, &disk_type);
+		
+		if( (disk_type == CECB) && (statbuf.gap_flag == 0) )
+			ec = _decb_srec_encode_sr(buffer, size, statbuf.ml_load_address, statbuf.ml_exec_address, &program, &program_size);
+		else
+			ec = _decb_srec_encode(buffer, size, &program, &program_size);
+			
 		if (ec != 0)
 		{
 			return ec;

@@ -80,7 +80,6 @@ const char* d_commands[128] = {"FOR", "GO", "REM", "'", "ELSE", "IF", "DATA", "P
 
 //size_t malloc_size(void *ptr);
 error_code append_zero( u_int *position, char **str, size_t *buffer_size );
-error_code buffer_sprintf(u_int *position, char **str, size_t *buffersize, const char *format, ...);
 int tok_strcmp( const char *str1, char *str2 );
 
 /* _decb_detoken()
@@ -91,7 +90,7 @@ int tok_strcmp( const char *str1, char *str2 );
    The caller is responsible for free()ing out_buffer
 */
 
-error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffer, int *out_size)
+error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffer, u_int *out_size)
 {
 	u_int in_pos = 0, out_pos = 0;
 	int file_size, value, line_number;
@@ -134,7 +133,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 		line_number = in_buffer[in_pos++] << 8;
 		line_number += in_buffer[in_pos++];
 		
-		if ((ec = buffer_sprintf(&out_pos, out_buffer, &buffer_size, "%d ", line_number)) != 0)
+		if ((ec = _decb_buffer_sprintf(&out_pos, out_buffer, &buffer_size, "%d ", line_number)) != 0)
 			return ec;
 		
 		while( (character = in_buffer[in_pos++]) != 0 )
@@ -146,12 +145,12 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 				
 				if( functions[character - 0x80] != NULL )
 				{
-					if ((ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%s", functions[character - 0x80])) != 0)
+					if ((ec = _decb_buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%s", functions[character - 0x80])) != 0)
 						return ec;
 				}
 				else
 				{
-					if ((ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "!" )) != 0 )
+					if ((ec = _decb_buffer_sprintf( &out_pos, out_buffer, &buffer_size, "!" )) != 0 )
 						return ec;
 				}
 			}
@@ -160,12 +159,12 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 				/* A Command call */
 				if( commands[character - 0x80] != NULL )
 				{
-					if ((ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%s", commands[character - 0x80])) != 0)
+					if ((ec = _decb_buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%s", commands[character - 0x80])) != 0)
 						return ec;
 				}
 				else
 				{
-					if ((ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "!" )) != 0)
+					if ((ec = _decb_buffer_sprintf( &out_pos, out_buffer, &buffer_size, "!" )) != 0)
 						return ec;
 				}
 			}
@@ -176,7 +175,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 			}
 			else
 			{
-				if ((ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%c", character)) != 0)
+				if ((ec = _decb_buffer_sprintf( &out_pos, out_buffer, &buffer_size, "%c", character)) != 0)
 					return ec;
 			}
 		}
@@ -184,7 +183,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
 		value = in_buffer[in_pos++] << 8;
 		value += in_buffer[in_pos++];
 
-		if ((ec = buffer_sprintf( &out_pos, out_buffer, &buffer_size, "\n")) != 0)
+		if ((ec = _decb_buffer_sprintf( &out_pos, out_buffer, &buffer_size, "\n")) != 0)
 			return ec;
 	}
 	
@@ -203,7 +202,7 @@ error_code _decb_detoken(unsigned char *in_buffer, int in_size, char **out_buffe
    The caller is responsible for free()ing out_buffer
 */
 
-error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, int *out_size, int path_type)
+error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **out_buffer, u_int *out_size, int path_type)
 {
 	int in_pos = 0, out_pos = 0;
 	
@@ -377,7 +376,7 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
    returns 0 if it is.
 */
 
-error_code _decb_detect_tokenized( unsigned char *in_buffer, int in_size )
+error_code _decb_detect_tokenized( unsigned char *in_buffer, u_int in_size )
 {
 	int file_size;
 	
@@ -434,7 +433,7 @@ error_code append_zero( u_int *position, char **str, size_t *buffer_size )
 }
 
 /* This sprintf will use realloc to make the buffer larger if needed */
-error_code buffer_sprintf(u_int *position, char **str, size_t *buffer_size, const char *format, ...)
+error_code _decb_buffer_sprintf(u_int *position, char **str, size_t *buffer_size, const char *format, ...)
 {
 	va_list	ap;
 
