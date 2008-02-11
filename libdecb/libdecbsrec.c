@@ -12,6 +12,25 @@
 #define PREAMBLE 0x00
 #define POSTAMBLE 0xff
 
+#if defined(__linux__) || defined(__CYGWIN__) || defined(BDS)
+/* implemented based on OSX man page */
+static inline int digittoint(int c)
+{
+    /* if not 0-9, a-f, or A-F then return 0 */
+    if (!isxdigit(c))
+        return 0;
+
+    if (isdigit(c))
+        return c - '0';
+
+    if (isupper(c))
+        return c - 'A' + 10;
+
+    /* not 0-9, not A-F, must be a-f */
+    return c - 'a' + 10;
+}
+#endif
+
 /* Input: Binary segmented machine language file
    Output: S-Record text file
 */
@@ -54,7 +73,7 @@ error_code _decb_srec_encode(unsigned char *in_buffer, int in_size, char **out_b
 				length--;
 			}
 			
-			checksum == 0xff;
+			checksum = 0xff;
 			checksum -= count+3;
 			if( (ec = _decb_buffer_sprintf( out_size, out_buffer, &buffer_size, "%2.2X", count+3)) != 0 )
 				return ec;

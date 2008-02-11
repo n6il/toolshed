@@ -1954,9 +1954,11 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "toolshed" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 08FB7794FE84155DC02AAC07 /* osx */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				77F0A89E0D3DD29000009CA5 /* libcecb */,
 				684E52820AC24644004DAB23 /* librbf */,

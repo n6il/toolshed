@@ -63,8 +63,8 @@ int cecbbulkerase(int argc, char *argv[])
 						bits_per_sample = atoi(p + 1);
 						while (*(p + 1) != '\0') p++;
 						
-						if( (bits_per_sample != 8) || (bits_per_sample != 16 ) )
-							bits_per_sample == 8;
+						if( (bits_per_sample != 8) && (bits_per_sample != 16 ) )
+							bits_per_sample = 8;
 							
 						break;
 
