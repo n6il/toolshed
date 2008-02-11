@@ -11,7 +11,7 @@ CFLAGS	+= -g -I../../../include -Wall
 
 libdecb.a:	libdecbgs.o libdecbkill.o libdecbopen.o libdecbread.o libdecbrename.o \
             libdecbseek.o libdecbss.o libdecbread.o libdecbwrite.o libdecbtokenize.o \
-            libdecbbinconcat.c
+            libdecbbinconcat.o libdecbsrec.o
 
 clean:
 	rm *.o *.a
