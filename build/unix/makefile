@@ -5,7 +5,7 @@ vpath %.c ../../mamou:../../os9
 
 PACKAGENAME	= toolshed$(RELEASE).tgz
 INSTALLDIR	= $(HOME)/bin
-DIRS		= libtoolshed libnative librbf libcoco libdecb libmisc libsys libdecb \
+DIRS		= libtoolshed libnative libcecb librbf libcoco libdecb libmisc libsys \
 		ar2 os9 mamou decb rma rlink rdump tocgen cocofuse makewav libcecb cecb
 
 all:
