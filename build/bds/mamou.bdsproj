@@ -173,6 +173,7 @@
         <FILE FILENAME="Debug_Build\libnative.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libnative" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="Debug_Build\librbf.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="librbf" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\mamou\mamou_main.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="mamou_main" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="Debug_Build\libcecb.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libcecb" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

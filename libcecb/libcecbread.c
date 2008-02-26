@@ -12,6 +12,7 @@ error_code _cecb_read(cecb_path_id path, void *buffer, u_int *size)
 {
 	error_code ec = 0;
 	u_int requested_bytes;
+	char *b = (char *)buffer;
 	
 	/* 1. Check the mode. */
 	
@@ -46,7 +47,7 @@ error_code _cecb_read(cecb_path_id path, void *buffer, u_int *size)
 			
 			copy_bytes = MIN( (path->length - path->current_pointer), requested_bytes );
 			
-			memcpy( buffer + (*size), &(path->data[path->current_pointer]), copy_bytes );
+			memcpy( b + (*size), &(path->data[path->current_pointer]), copy_bytes );
 
 			path->current_pointer += copy_bytes;
 			*size += copy_bytes;

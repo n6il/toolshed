@@ -167,6 +167,8 @@
         <FILE FILENAME="..\..\libdecb\libdecbseek.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbseek" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\libdecb\libdecbss.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbss" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\libdecb\libdecbtokenize.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbtokenize" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbbinconcat.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbbinconcat" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\libdecb\libdecbsrec.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="libdecbsrec" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

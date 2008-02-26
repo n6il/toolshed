@@ -195,6 +195,7 @@
         <FILE FILENAME="..\..\rma\part8.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="part8" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\rma\part9.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="part9" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\rma\rma_main.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="rma_main" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="libcecb.bdsproj" CONTAINERID="" LOCALCOMMAND=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

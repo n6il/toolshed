@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-  <PersonalityInfo>
-    <Option>
-      <Option Name="Personality">CPlusPlusBuilder.Personality</Option>
-      <Option Name="ProjectType">CppStaticLibrary</Option>
-      <Option Name="Version">1.0</Option>
-      <Option Name="GUID">{7164A0EE-2577-409C-B3D6-E6FC51934310}</Option>
-    </Option>
-  </PersonalityInfo>
-  <CPlusPlusBuilder.Personality>
-    <Source>
-      <Source Name="MainSource">libtoolshed.cpp</Source>
-    </Source>
-    <BCBPROJECT>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">CPlusPlusBuilder.Personality</Option>
+			<Option Name="ProjectType">CppStaticLibrary</Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{7164A0EE-2577-409C-B3D6-E6FC51934310}</Option>
+		</Option>
+	</PersonalityInfo>
+	<CPlusPlusBuilder.Personality>
+		<Source>
+			<Source Name="MainSource">libtoolshed.cpp</Source>
+		</Source>
+		<BCBPROJECT>
       <project version="10.0">
         <property category="build.config" name="active" value="0"/>
         <property category="build.config" name="count" value="1"/>
@@ -28,6 +28,7 @@
         <property category="build.config.1" name="settings.win32b" value="default"/>
         <property category="build.config.1" name="type" value="Toolset"/>
         <property category="build.config.1" name="win32.win32b.builddir" value="Release_Build"/>
+        <property category="build.node" name="libraries" value="vcl.lib rtl.lib"/>
         <property category="build.node" name="name" value="libtoolshed.lib"/>
         <property category="build.node" name="packages" value="vcl;rtl;vclx;dbrtl;vcldb;adortl;dbxcds;dbexpress;vclib;ibxpress;xmlrtl;vclactnband;inet;IntrawebDB_80_100;Intraweb_80_100;vclie;inetdbbde;inetdbxpress;IndyCore;IndySystem;bcbsmp;soaprtl;dsnap;IndyProtocols;bcbie;bdertl;teeui;teedb;tee;vcldbx;comndOPC10;dOPCDA10;dOPCAE10;sdlbasepack_85D2006;sdlmathpack_85D2006;vclZipForged10;VirtualTreesD10;Package1;dclZipForged10;fs10;frx10;fsDB10;frxDB10;fsBDE10;frxBDE10;fsADO10;frxADO10;fsIBX10;frxIBX10;frxDBX10;frxe10;fsTee10;frxTee10"/>
         <property category="build.node" name="sparelibs" value="rtl.lib vcl.lib"/>
@@ -38,6 +39,10 @@
         <property category="build.platform" name="win32.default" value="win32b"/>
         <property category="build.platform" name="win32.enabled" value="1"/>
         <property category="build.platform" name="win32.win32b.enabled" value="1"/>
+        <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
+        <property category="win32.*.win32b.tasm32" name="param.listfile.merge" value="1"/>
+        <property category="win32.*.win32b.tasm32" name="param.objfile.merge" value="1"/>
+        <property category="win32.*.win32b.tasm32" name="param.xreffile.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.arg.1" value="_DEBUG"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.arg.merge" value="1"/>
         <property category="win32.Debug_Build.win32b.bcc32" name="option.D.enabled" value="1"/>
@@ -85,12 +90,11 @@
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\Desktop\toolshed\build\bds"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\Desktop\toolshed\libtoolshed"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\libtoolshed"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\dinkumware"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include\vcl"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\libtoolshed"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="$(BDS)\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include\dinkumware"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include\vcl"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.b.enabled" value="0"/>
@@ -205,6 +209,6 @@
           <Linker Name="LibVersion"></Linker>
         </Linker>
       </IDEOPTIONS>
-    </BCBPROJECT>
+    </BCBPROJECT>  <buildevents/>
   </CPlusPlusBuilder.Personality>
 </BorlandProject>

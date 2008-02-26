@@ -122,8 +122,8 @@ static int do_modbust(char **argv, char *filename)
      
 		if (buffer[0] == '\x87')
 		{
-			size = 1;
 			coco_file_stat fstat;
+			size = 1;
 			
 			ec = _os9_read(path, buffer, &size);
 

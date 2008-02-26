@@ -222,6 +222,8 @@
         <FILE FILENAME="Debug_Build\librbf.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="librbf" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\os9\os9dump.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="os9dump" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\decb\decb_main.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="decb_main" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="Debug_Build\libcecb.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libcecb" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="Debug_Build\libtoolshed.lib" CONTAINERID="LibTool" LOCALCOMMAND="" UNITNAME="libtoolshed" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -279,10 +281,10 @@
       </IDEOPTIONS>
     </BCBPROJECT>
 		<buildevents>
-			<buildevent file="decb.bdsproj">
-				<postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\decb.exe
+      <buildevent file="decb.bdsproj">
+        <postcompile mode="0" cancancel="-1" capture="-1" showconsole="0">copy "$(OUTPUTPATH)" C:\WINDOWS\decb.exe
 </postcompile>
-			</buildevent>
-		</buildevents>
+      </buildevent>
+    </buildevents>
 	</CPlusPlusBuilder.Personality>
 </BorlandProject>

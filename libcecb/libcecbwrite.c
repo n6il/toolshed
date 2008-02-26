@@ -16,7 +16,8 @@ error_code _cecb_write(cecb_path_id path, void *buffer, unsigned int *size)
 {
     error_code	ec = 0;
 	int	fill_bytes, buffer_pointer = 0;
-	
+	char *b = (char *)buffer;
+
 	while( *size > 0 )
 	{
 		if( path->length == 0xff )
@@ -31,7 +32,7 @@ error_code _cecb_write(cecb_path_id path, void *buffer, unsigned int *size)
 			
 		fill_bytes = MIN( 0xff - path->length, *size );
 		
-		memcpy(&(path->data[path->current_pointer]), buffer+buffer_pointer, fill_bytes);
+		memcpy(&(path->data[path->current_pointer]), b + buffer_pointer, fill_bytes);
 		*size -= fill_bytes;
 		path->current_pointer += fill_bytes;
 		path->length += fill_bytes;
