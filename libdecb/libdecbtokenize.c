@@ -240,7 +240,7 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 	while( in_pos < in_size )
 	{
 		int line_number, next_line_pointer;
-		int data_literal, quote_literal, rem_literal;
+		int data_literal, quote_literal, rem_literal, var_literal;
 		
 		next_line_pointer = out_pos;
 		(*out_buffer)[out_pos++] = 0x00;  /* Reserve two bytes for BASIC's next-line-pointer */
@@ -268,7 +268,7 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 			in_pos++;  /* Spin past any post-line-number spaces */
 		
 		/* All literal flags get reset on a new line */
-		data_literal = quote_literal = rem_literal = 0;
+		data_literal = quote_literal = rem_literal = var_literal = 0;
 
 		/* entoken line */
 		while( !( in_buffer[in_pos] == 0x0d || in_buffer[in_pos] == 0x0a ) && in_pos < in_size )
@@ -278,7 +278,7 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 			i = 0x80;
 			
 			/* Skip tokenization if we are in a literal state. */
-			if( quote_literal + data_literal + rem_literal == 0 )
+			if( quote_literal + data_literal + rem_literal + var_literal == 0 )
 			{
 				/* Check for PRINT abbreviation */
 				if( in_buffer[in_pos] == '?' )
@@ -340,7 +340,17 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 				else if( in_buffer[in_pos] == ':' && quote_literal == 0 && data_literal == 1 )
 					data_literal = 0;
 				
+				if( quote_literal + data_literal + rem_literal == 0 )
+				{
+					if( isalpha( in_buffer[in_pos] ) )
+						/* If no tokens were found, and character is an letter, then we are in a variable literal */
+						var_literal = 1;
+				}
+					
 				(*out_buffer)[out_pos++] = in_buffer[in_pos++];
+
+				if( !isalnum( in_buffer[in_pos] ) )
+					var_literal = 0;
 			}
 		}
 		
