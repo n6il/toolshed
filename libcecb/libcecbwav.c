@@ -193,6 +193,29 @@ error_code _cecb_parse_riff( cecb_path_id path )
 	return ec;
 }
 
+#if defined(VS)
+float fmin(v1, v2)
+{
+	if (v1 < v2)
+	{
+		return v1;
+	}
+
+	return v2;
+}
+
+float fmax(v1, v2)
+{
+	if (v1 > v2)
+	{
+		return v1;
+	}
+
+	return v2;
+}
+
+#endif
+
 /*
  * analyze_leader()
  *

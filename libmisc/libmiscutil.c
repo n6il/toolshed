@@ -94,7 +94,7 @@ int strendcasecmp( char *s1, char *s2 )
 }
 	
 
-#ifdef BDS
+#if defined(BDS) || defined(VS)
 int strcasecmp(char *s1, char *s2)
 {
 	while (*s1 != '\0' && *s2 != '\0')

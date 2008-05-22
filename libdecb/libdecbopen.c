@@ -12,7 +12,9 @@
 
 #include "decbpath.h"
 #include "errno.h"
+#ifndef VS
 #include "dirent.h"
+#endif
 #include "util.h"
 
 

@@ -7,7 +7,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#ifndef BDS
+#if !defined(BDS) && !defined(VS)
 #include <unistd.h>
 #include <sys/stat.h>
 #endif

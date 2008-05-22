@@ -9,7 +9,9 @@
 #include <cocopath.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#if !defined(VS)
 #include <dirent.h>
+#endif
 #include <math.h>
 
 /* globals */

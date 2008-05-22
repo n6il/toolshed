@@ -9,7 +9,9 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <errno.h>
+#if !defined(VS)
 #include <dirent.h>
+#endif
 
 #include "cocotypes.h"
 #include "cococonv.h"
@@ -141,8 +143,9 @@ error_code _native_open(native_path_id *path, char *pathlist, int mode)
 		{
 			/* 1. Open as a directory. */
 			
+#if !defined(VS)
 			(*path)->dirhandle = opendir(pathlist);
-
+#endif
 			ec = 0;
 		}
 		else
@@ -197,7 +200,7 @@ error_code _native_close(native_path_id path)
 		
 		if (path->mode & FAM_DIR)
 		{
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(VS)
 			path->dirhandle = NULL;
 #else
 			closedir(path->dirhandle);

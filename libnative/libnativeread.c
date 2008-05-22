@@ -47,15 +47,22 @@ error_code _native_read(native_path_id path, void *buffer, u_int *size)
 
 
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(VS)
+#if defined(__MINGW32__)
 error_code _native_readdir(native_path_id path, struct _finddata_t *dirent)
+#else
+error_code _native_readdir(native_path_id path, WIN32_FIND_DATA *dirent)
+#endif
 #else
 error_code _native_readdir(native_path_id path, struct dirent *dirent)
 #endif
 {
     error_code	ec = 0;
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(VS)
+#if defined(__MINGW32__)
 	struct _finddata_t dp;
+#else
+#endif
 #endif
 
 	/* 1. Check the mode. */
@@ -68,7 +75,8 @@ error_code _native_readdir(native_path_id path, struct dirent *dirent)
     }
 
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(VS)
+#if defined(__MINGW32__)
 	if (path->dirhandle == 0)
 	{
 		path->dirhandle = (DIR *)_findfirst("*", dirent);
@@ -78,6 +86,8 @@ error_code _native_readdir(native_path_id path, struct dirent *dirent)
 		ec = _findnext((int)path->dirhandle, &dp);
 	}
 	if (ec == -1)
+#else
+#endif
 #else
 	dirent = readdir(path->dirhandle);
 

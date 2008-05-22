@@ -149,7 +149,7 @@ error_code _decb_read(decb_path_id path, void *buffer, u_int *size)
 
 		bytes_left -= read_size;
 		path->filepos += read_size;
-#ifdef BDS
+#if defined(BDS) | defined(VS)
 		(char *)buffer += read_size;
 #else
 		buffer += read_size;
@@ -315,7 +315,7 @@ error_code _decb_readln(decb_path_id path, void *buffer, u_int *size)
 		
 		bytes_left -= read_size;
 		path->filepos += read_size;
-#ifdef BDS
+#if defined(BDS) | defined(VS)
 		(char *)buffer += read_size;
 #else
 		buffer += read_size;

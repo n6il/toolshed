@@ -5,7 +5,7 @@
  ********************************************************************/
 #include <stdlib.h>
 #include <string.h>
-#ifndef BDS
+#if !defined(BDS) && !defined(VS)
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
@@ -57,8 +57,10 @@ error_code _native_truncate(char *pathlist, off_t length)
     error_code	ec = 0;
 	
 	
-    ec = truncate(pathlist, length);
-	
+#ifndef VS
+	ec = truncate(pathlist, length);
+#endif
+
     if (ec != 0)
 	{
 		ec = errno;

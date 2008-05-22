@@ -17,21 +17,29 @@ extern "C" {
 #include <cococonv.h>
 /* Turbo had ifndef, msys needs ifdef; was WIN32
   Removing the conditional works for both. RG */
+#ifdef VS
+#include <windows.h>
+#else
 #include <dirent.h>
-
-
+#endif
 
 typedef struct _native_path_id
 {
 	int			mode;		/* access mode */
 	char		pathlist[512];	/* pointer to pathlist */
 	FILE		*fd;		/* file path pointer */
+#ifdef VS
+	HANDLE		dirhandle;
+#else
 	DIR			*dirhandle;
+#endif
 } *native_path_id;
 
 
 #ifdef __MINGW32__
 typedef struct _finddata_t  native_dir_entry;
+#elif VS
+typedef WIN32_FIND_DATA		native_dir_entry;
 #else
 typedef struct dirent		native_dir_entry;
 #endif

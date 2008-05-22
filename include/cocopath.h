@@ -88,6 +88,8 @@ typedef struct coco_dir_entry
 	{
 #ifdef __MINGW32__
 		struct _finddata_t  native;
+#elif VS
+		WIN32_FIND_DATA     native;
 #else
 		struct dirent		native;
 #endif

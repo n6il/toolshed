@@ -18,8 +18,8 @@ error_code _cecb_gs_fd(cecb_path_id path, cecb_file_stat *stat)
 	stat->file_type = path->dir_entry.file_type;
 	stat->data_type = path->dir_entry.ascii_flag;
 	stat->gap_flag = path->dir_entry.gap_flag;
-	stat->ml_load_address = path->dir_entry.ml_load_address1 << 8 + path->dir_entry.ml_load_address2;
-	stat->ml_exec_address = path->dir_entry.ml_exec_address1 << 8 + path->dir_entry.ml_exec_address2;
+	stat->ml_load_address = (path->dir_entry.ml_load_address1 << 8) + path->dir_entry.ml_load_address2;
+	stat->ml_exec_address = (path->dir_entry.ml_exec_address1 << 8) + path->dir_entry.ml_exec_address2;
 
 	return ec;
 }

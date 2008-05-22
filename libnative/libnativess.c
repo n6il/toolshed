@@ -7,9 +7,13 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifdef BDS
+#if defined(BDS) || defined(VS)
 #include <time.h>
+#if defined(VS)
+#include <sys/utime.h>
+#else
 #include <utime.h>
+#endif
 #include <io.h>
 #else
 #include <sys/time.h>
