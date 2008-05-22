@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#ifndef BDS
+#if !defined(BDS) && !defined(VS)
 #include <unistd.h>
 #endif
 #include <cocotypes.h>
