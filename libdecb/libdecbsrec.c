@@ -164,6 +164,15 @@ error_code _decb_srec_encode_sr(unsigned char *in_buffer, int in_size, int start
 	return ec;
 }
 
+#if defined(VS)
+int
+digittoint(c)
+	int c;
+{
+	return (c - '0');
+}
+#endif
+
 /* Input: S-Record text file
    Output: Segmented binary machine language file
 */
