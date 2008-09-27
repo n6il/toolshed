@@ -63,6 +63,8 @@ error_code _native_readdir(native_path_id path, struct dirent *dirent)
 	struct _finddata_t dp;
 #else
 #endif
+#else
+	struct dirent *temp_dirent;
 #endif
 
 	/* 1. Check the mode. */
@@ -89,14 +91,38 @@ error_code _native_readdir(native_path_id path, struct dirent *dirent)
 #else
 #endif
 #else
-	dirent = readdir(path->dirhandle);
-
-	if (dirent == NULL)
+	temp_dirent = readdir(path->dirhandle);
+	
+	if (temp_dirent == NULL)
 #endif
 	{
+		memset( dirent, 0, sizeof(struct dirent) );
 		return EOS_EOF;
+	}
+	else
+	{
+		memcpy( dirent, temp_dirent, sizeof(struct dirent) );
 	}
 
 
     return ec;
+}
+
+error_code _native_ncpy_name( native_dir_entry e, u_char *name, size_t len )
+{
+	error_code ec = 0;
+
+#ifdef __MINGW32__
+	/* typedef struct _finddata_t  native_dir_entry; */
+	#error Implement me!
+#elif VS
+	/* typedef WIN32_FIND_DATA		native_dir_entry; */
+	#error Implement me!
+#else
+	/* Copy name from dir entry to suppilied buffer */
+	strncpy( (char *)name, e.d_name, len );
+#endif
+
+	return ec;
+
 }

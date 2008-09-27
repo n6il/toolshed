@@ -144,116 +144,132 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 {
 	error_code	ec = 0;
 	static int	level = 0;
-	os9_dir_entry	dirent;
+	coco_dir_entry	dirent;
 	char		command[1024];
 	char		sourcePathList[1024];
-	os9_path_id	sourcePath;
-
-	ec = _os9_open(&sourcePath, source, FAM_DIR | FAM_READ);
+	coco_path_id	sourcePath;
+	char	*src_path_seperator, *dst_path_seperator;
+	_path_type type;
+	
+	ec = _coco_open(&sourcePath, source, FAM_DIR | FAM_READ);
 	if (ec != 0)
 	{
 		return(ec);
 	}
 
-	/* read .. and . directories */
-	_os9_readdir(sourcePath, &dirent);
-	_os9_readdir(sourcePath, &dirent);
-	
-	while (_os9_readdir(sourcePath, &dirent) == 0)
+	if( (sourcePath->type == OS9) || (sourcePath->type == NATIVE) )
 	{
-		if (dirent.name[0] != '\0')
+		/* read .. and . directories */
+		_coco_readdir(sourcePath, &dirent);
+		_coco_readdir(sourcePath, &dirent);
+		src_path_seperator = "/";
+	}
+	else
+		src_path_seperator = "";
+	
+	_coco_identify_image(target, &type);
+	
+	if( (type == OS9) || (type == NATIVE) )
+		dst_path_seperator = "/";
+	else
+		dst_path_seperator = "";
+	
+	while (_coco_readdir(sourcePath, &dirent) == 0)
+	{
+		u_char direntry_name_buffer[255];
+		_coco_ncpy_name( &dirent, direntry_name_buffer, 255 );
+		
+		if ( (direntry_name_buffer[0] != '\0') && (direntry_name_buffer[0] != 255))
 		{
-		os9_path_id	filePath;
-		int		isdir = 1;
+			coco_path_id	filePath;
+			int		isdir = 1;
 
-		OS9StringToCString(dirent.name);
+			sprintf(sourcePathList, "%s%s%s", source, src_path_seperator, direntry_name_buffer);
 
-		sprintf(sourcePathList, "%s/%s", source, dirent.name);
-
-		ec = _os9_open(&filePath, sourcePathList, FAM_DIR | FAM_READ);
-		if (ec != 0)
-		{
-			isdir = 0;
-
-			ec = _os9_open(&filePath, sourcePathList, FAM_READ);
+			ec = _coco_open(&filePath, sourcePathList, FAM_DIR | FAM_READ);
 			if (ec != 0)
 			{
-				_os9_close(sourcePath);
+				isdir = 0;
 
-				return(ec);
-			}
-		}
+				ec = _coco_open(&filePath, sourcePathList, FAM_READ);
+				if (ec != 0)
+				{
+					_coco_close(sourcePath);
 
-		_os9_close(filePath);
-
-		if (isdir == 1)
-		{
-			char newTarget[512];
-
-			/* We've encountered a directory */
-			newTarget[0] = '\0';
-
-			/* 1. increment level indicator */
-			level++;
-
-			/* 2. make directory on target IF target path is relative */
-			if (*target != '/')
-			{
-//				strcpy(newTarget, "../");
+					return(ec);
+				}
 			}
 
-			if (strcmp(target, "/") == 0)
+			_coco_close(filePath);
+
+			if (isdir == 1)
 			{
-				sprintf(newTarget, "/%s", dirent.name);
+				char newTarget[512];
+
+				/* We've encountered a directory */
+				newTarget[0] = '\0';
+
+				/* 1. increment level indicator */
+				level++;
+
+				/* 2. make directory on target IF target path is relative */
+				if (*target != '/')
+				{
+	//				strcpy(newTarget, "../");
+				}
+
+				if (strcmp(target, "/") == 0)
+				{
+					sprintf(newTarget, "%s%s", dst_path_seperator, direntry_name_buffer);
+				}
+				else
+				{
+					sprintf(newTarget, "%s%s%s", target, dst_path_seperator, direntry_name_buffer);
+				}
+
+				/* 3. make directory on target */
+				sprintf(command, "makdir %s", newTarget);
+				puts(command);
+				if (execute) 
+				{
+					DoFunc(os9makdir, command);
+				}
+
+				/* 4. call this function again */
+				do_dsave(sourcePathList, newTarget, execute, buffer_size, rewrite);
+
+				/* 5. decrement level indicator */
+				level--;
 			}
 			else
 			{
-				sprintf(newTarget, "%s/%s", target, dirent.name);
-			}
+				/* We've encountered a file -- just copy */
+				char ropt[4], bopt[32];
 
-			/* 3. make directory on target */
-			sprintf(command, "makdir %s", newTarget);
-			puts(command);
-			if (execute) 
-			{
-				DoFunc(os9makdir, command);
-			}
+				ropt[0] = 0;
+				bopt[0] = 0;
 
-			/* 4. call this function again */
-			do_dsave(sourcePathList, newTarget, execute, buffer_size, rewrite);
+				if (buffer_size > 0)
+				{
+					sprintf(bopt, "-b=%d", buffer_size);
+				}
 
-			/* 5. decrement level indicator */
-			level--;
-		}
-		else
-		{
-			/* We've encountered a file -- just copy */
-			char ropt[4], bopt[32];
-
-			ropt[0] = 0;
-			bopt[0] = 0;
-
-			if (buffer_size > 0)
-			{
-				sprintf(bopt, "-b=%d", buffer_size);
-			}
-
-			if (rewrite > 0)
-			{
-				strcat(ropt, "-r");
-			}
-			
-			sprintf(command, "copy %s/%s %s/%s %s %s", source, dirent.name, target, dirent.name, ropt, bopt);
-			puts(command);
-			if (execute)
-			{
-				DoFunc(os9copy, command);
+				if (rewrite > 0)
+				{
+					strcat(ropt, "-r");
+				}
+				
+				sprintf(command, "copy %s%s%s %s%s%s %s %s", source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
+				puts(command);
+				if (execute)
+				{
+					DoFunc(os9copy, command);
+				}
 			}
 		}
 	}
-	}
 
-	_os9_close(sourcePath);
+	_coco_close(sourcePath);
 
 	return(ec);
 }

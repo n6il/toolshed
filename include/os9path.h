@@ -121,6 +121,7 @@ error_code _os9_create(os9_path_id *, char *, int, int);
 error_code _os9_open_parent_directory( os9_path_id *path, char *pathlist, int mode, char *filename );
 error_code _os9_read(os9_path_id, void *, u_int *);
 error_code _os9_readdir(os9_path_id, os9_dir_entry *);
+error_code _os9_ncpy_name( os9_dir_entry e, u_char *name, size_t len );
 error_code _os9_seek(os9_path_id, int, int);
 error_code _os9_allbit(u_char *bitmap, int firstbit, int numbits);
 error_code _os9_delbit(u_char *bitmap, int firstbit, int numbits);

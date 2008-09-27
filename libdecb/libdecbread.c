@@ -365,4 +365,17 @@ error_code _decb_readdir(decb_path_id path, decb_dir_entry *dirent)
     return(ec);
 }
 
+error_code _decb_ncpy_name( decb_dir_entry e, u_char *name, size_t len )
+{
+	error_code ec = 0;
+	u_char c_name[13];
+	
+	DECBStringToCString(e.filename, e.file_extension, c_name);
+	c_name[12] = 0;
+
+	strncpy( (char *)name, (const char *)c_name, len );
+
+	return ec;
+
+}
 

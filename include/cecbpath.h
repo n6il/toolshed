@@ -134,6 +134,7 @@ error_code _cecb_gs_fd(cecb_path_id path, cecb_file_stat *stat);
 error_code _cecb_gs_eof(cecb_path_id path);
 error_code _cecb_gs_pos(cecb_path_id path, u_int *pos);
 error_code _cecb_read_next_dir_entry( cecb_path_id path, cecb_dir_entry *dir_entry );
+error_code _cecb_ncpy_name(cecb_dir_entry e, u_char *name, size_t len);
 error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, unsigned char *block_length, unsigned char *data  );
 error_code _cecb_read_bits( cecb_path_id path, int count, unsigned char *result );
 error_code _cecb_read_bits_wav( cecb_path_id path, int count, unsigned char *result );

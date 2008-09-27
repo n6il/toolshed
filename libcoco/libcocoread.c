@@ -76,4 +76,29 @@ error_code _coco_readdir(coco_path_id path, coco_dir_entry *e)
 	return ec;
 }
 
-
+error_code _coco_ncpy_name( coco_dir_entry *e, u_char *name, size_t len )
+{
+	error_code	ec = 0;
+	
+	switch( e->type )
+	{
+		case NATIVE:
+			ec = _native_ncpy_name( e->dentry.native, name, len );
+			break;
+			
+		case OS9:
+			ec = _os9_ncpy_name( e->dentry.os9, name, len );
+			break;
+			
+		case DECB:
+			ec = _decb_ncpy_name( e->dentry.decb, name, len );
+			break;
+			
+		case CECB:
+			ec = _cecb_ncpy_name( e->dentry.cecb, name, len );
+			break;
+	}
+	
+	return ec;
+}
+			

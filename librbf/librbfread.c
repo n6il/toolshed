@@ -217,3 +217,17 @@ error_code _os9_readdir(os9_path_id path, os9_dir_entry *dirent)
 
     return ec;
 }
+
+error_code _os9_ncpy_name( os9_dir_entry e, u_char *name, size_t len )
+{
+	error_code ec = 0;
+	u_char	c_name[D_NAMELEN];
+	
+	memcpy( c_name, e.name, D_NAMELEN );
+	OS9StringToCString( c_name );
+	
+	strncpy( (char *)name, (const char *)c_name, len );
+
+	return ec;
+
+}

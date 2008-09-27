@@ -106,6 +106,7 @@ error_code _decb_write(decb_path_id path, void *buffer, u_int *size);
 error_code _decb_kill(char *filename);
 error_code _decb_seek(decb_path_id, int, int);
 error_code _decb_readdir(decb_path_id path, decb_dir_entry *de);
+error_code _decb_ncpy_name(decb_dir_entry e, u_char *name, size_t len);
 error_code _decb_writedir(decb_path_id path, decb_dir_entry *de);
 error_code _decb_seekdir(decb_path_id path, int entry, int mode);
 error_code _decb_seeksector(decb_path_id path, int track, int sector);

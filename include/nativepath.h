@@ -51,6 +51,7 @@ error_code _native_open(native_path_id *, char *, int);
 error_code _native_create(native_path_id *, char *, int, int);
 error_code _native_read(native_path_id, void *, u_int *);
 error_code _native_readdir(native_path_id, native_dir_entry *);
+error_code _native_ncpy_name(native_dir_entry e, u_char *name, size_t len);
 error_code _native_seek(native_path_id, int, int);
 error_code _native_allbit(u_char *bitmap, int firstbit, int numbits);
 error_code _native_delbit(u_char *bitmap, int firstbit, int numbits);

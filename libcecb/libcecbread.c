@@ -128,6 +128,20 @@ error_code _cecb_read_next_dir_entry( cecb_path_id path, cecb_dir_entry *dir_ent
 	return ec;
 }
 
+error_code _cecb_ncpy_name( cecb_dir_entry e, u_char *name, size_t len )
+{
+	error_code ec = 0;
+	u_char c_name[9];
+	
+	DECBStringToCString(e.filename, (u_char *)" ", c_name);
+	c_name[8] = 0;
+
+	strncpy( (char *)name, (const char *)c_name, len );
+
+	return ec;
+
+}
+
 error_code _cecb_read_next_block( cecb_path_id path, unsigned char *block_type, unsigned char *block_length, unsigned char *data  )
 {
 	error_code ec = 0;

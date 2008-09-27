@@ -123,6 +123,7 @@ error_code _coco_create(coco_path_id *, char *, int, coco_file_stat *);
 error_code _coco_open_parent_directory(coco_path_id *path, char *pathlist, int mode, char *filename);
 error_code _coco_read(coco_path_id, void *, u_int *);
 error_code _coco_readdir(coco_path_id, coco_dir_entry *);
+error_code _coco_ncpy_name( coco_dir_entry *e, u_char *name, size_t len );
 error_code _coco_seek(coco_path_id, int, int);
 error_code _coco_readln(coco_path_id, void *, u_int *);
 error_code _coco_write(coco_path_id, void *, u_int *);
