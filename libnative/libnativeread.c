@@ -46,30 +46,28 @@ error_code _native_read(native_path_id path, void *buffer, u_int *size)
 }
 
 
-
-#if defined(__MINGW32__) || defined(VS)
-#if defined(__MINGW32__)
-error_code _native_readdir(native_path_id path, struct _finddata_t *dirent)
-#else
-error_code _native_readdir(native_path_id path, WIN32_FIND_DATA *dirent)
-#endif
-#else
-error_code _native_readdir(native_path_id path, struct dirent *dirent)
-#endif
+error_code _native_readdir(native_path_id path, native_dir_entry *dirent)
 {
+
+/*
+	On MINGW dirent is:   struct _finddata_t
+	On VS dirent is:      WIN32_FIND_DATA
+	On *nix dirent is:    struct dirent
+*/	
+
     error_code	ec = 0;
-#if defined(__MINGW32__) || defined(VS)
-#if defined(__MINGW32__)
-	struct _finddata_t dp;
-#else
+
+#ifdef VS
+#error Implement me!
 #endif
-#else
-	struct dirent *temp_dirent;
+
+#ifdef __MINGW32__
+	struct _finddata_t dp;
 #endif
 
 	/* 1. Check the mode. */
 	
-	if ((path->mode & FAM_DIR) == 0 || (path->mode & FAM_READ) == 0)
+	if (path->mode & FAM_DIR == 0 || path->mode & FAM_READ == 0)
     {
         /* 1. Must be a directory. */
 
@@ -77,8 +75,7 @@ error_code _native_readdir(native_path_id path, struct dirent *dirent)
     }
 
 
-#if defined(__MINGW32__) || defined(VS)
-#if defined(__MINGW32__)
+#ifdef __MINGW32__
 	if (path->dirhandle == 0)
 	{
 		path->dirhandle = (DIR *)_findfirst("*", dirent);
@@ -89,23 +86,15 @@ error_code _native_readdir(native_path_id path, struct dirent *dirent)
 	}
 	if (ec == -1)
 #else
-#endif
-#else
-	temp_dirent = readdir(path->dirhandle);
-	
-	if (temp_dirent == NULL)
+	dirent = readdir(path->dirhandle);
+
+	if (dirent == NULL)
 #endif
 	{
-		memset( dirent, 0, sizeof(struct dirent) );
 		return EOS_EOF;
 	}
-	else
-	{
-		memcpy( dirent, temp_dirent, sizeof(struct dirent) );
-	}
-
-
-    return ec;
+	
+	return ec;
 }
 
 error_code _native_ncpy_name( native_dir_entry e, u_char *name, size_t len )
@@ -114,7 +103,7 @@ error_code _native_ncpy_name( native_dir_entry e, u_char *name, size_t len )
 
 #ifdef __MINGW32__
 	/* typedef struct _finddata_t  native_dir_entry; */
-	#error Implement me!
+	strncpy( (char *)name, e.name, len );
 #elif VS
 	/* typedef WIN32_FIND_DATA		native_dir_entry; */
 	#error Implement me!
