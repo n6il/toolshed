@@ -9,4 +9,4 @@ ar2:	ar.o arsup.o lz1.o o2u.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm ar2.exe *.o
+	rm *.o ar2.exe
