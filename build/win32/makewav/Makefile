@@ -9,4 +9,4 @@ makewav:	makewav.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm makewav.exe *.o
+	rm *.o makewav.exe

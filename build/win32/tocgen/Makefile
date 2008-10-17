@@ -10,4 +10,4 @@ tocgen:	tocgen_main.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm tocgen.exe *.o
+	rm *.o tocgen.exe
