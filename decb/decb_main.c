@@ -11,7 +11,7 @@
 #include <unistd.h>
 #endif
 
-#include <util.h>
+#include "util.h"
 
 
 static void show_decb_help(char **helpMessage);
