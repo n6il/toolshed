@@ -9,7 +9,8 @@ CFLAGS	+= -I../../../include
 	ranlib $@
 
 libdecb.a:	libdecbgs.o libdecbkill.o libdecbopen.o libdecbread.o \
-libdecbrename.o libdecbseek.o libdecbss.o libdecbwrite.o libdecbtokenize.o
+libdecbrename.o libdecbseek.o libdecbss.o libdecbwrite.o libdecbtokenize.o \
+libdecbbinconcat.o libdecbsrec.o
 
 clean:
-	rm *.o *.a
+	rm -f *.o *.a

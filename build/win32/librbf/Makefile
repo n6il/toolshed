@@ -13,4 +13,4 @@ librbfss.o librbfdelete.o librbfgs.o librbfopen.o librbfreadln.o \
 librbfseek.o librbfwrite.o
 
 clean:
-	rm *.o *.a
+	rm -f *.o *.a

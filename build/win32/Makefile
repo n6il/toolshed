@@ -11,7 +11,7 @@ DIRS		= libnative librbf libcoco libdecb libmisc libcecb libsys  \
 # rma rlink rdump
 
 all:
-	$(foreach dir, $(DIRS), (cd $(dir); make);)
+	$(foreach dir, $(DIRS), (echo $(dir); cd $(dir); make);)
 
 install: all
 	cp os9/os9.exe mamou/mamou.exe decb/decb.exe cecb/cecb.exe ar2/ar2.exe \
@@ -27,4 +27,4 @@ package: all
 
 clean:
 	$(foreach dir, $(DIRS), (cd $(dir); make clean);)
-	rm $(PACKAGENAME)
+	rm -f $(PACKAGENAME)

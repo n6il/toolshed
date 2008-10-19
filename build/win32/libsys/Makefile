@@ -11,4 +11,4 @@ CFLAGS	+= -I../../../include
 libsys.a:	crc.o prsnam.o
 
 clean:
-	rm *.o *.a
+	rm -f *.o *.a

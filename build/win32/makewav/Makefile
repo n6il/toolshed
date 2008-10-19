@@ -5,8 +5,8 @@ vpath %.h ../../../makewav
 
 CFLAGS += -I../../../include
 
-makewav:	makewav.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+makewav:    makewav.o
+    $(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
-	rm *.o makewav.exe
+    rm -f *.o makewav.exe

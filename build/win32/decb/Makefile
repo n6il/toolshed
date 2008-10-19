@@ -9,7 +9,7 @@ LDFLAGS	+= -L../libtoolshed -L../libcoco -L../libnative -L../librbf -L../libdecb
 
 decb:	decb_main.o decbattr.o decbcopy.o decbdir.o decbdskini.o decbfree.o decbfstat.o \
 	decbkill.o decblist.o decbrename.o os9dump.o decbhdbconv.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
-	rm *.o decb.exe
+	rm -f *.o decb.exe

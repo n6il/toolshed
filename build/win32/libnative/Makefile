@@ -13,4 +13,4 @@ libnativeopen.o libnativeread.o libnativereadln.o libnativerename.o \
 libnativeseek.o libnativess.o libnativewrite.o
 
 clean:
-	rm *.o *.a
+	rm -f *.o *.a

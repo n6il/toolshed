@@ -11,4 +11,4 @@ CFLAGS	+= -I../../../include
 libtoolshed.a:	toolshed.o
 
 clean:
-	rm *.o *.a
+	rm -f *.o *.a

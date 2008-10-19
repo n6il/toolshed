@@ -11,4 +11,4 @@ CFLAGS	+= -I../../../include
 libmisc.a:	libmiscendian.o libmisccococonv.o libmiscqueue.o libmiscutil.o
 
 clean:
-	rm *.o *.a
+	rm -f *.o *.a

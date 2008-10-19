@@ -11,4 +11,4 @@ CFLAGS	+= -I../../../include
 libcecb.a:	libcecbwrite.o libcecbwav.o libcecbread.o libcecbgs.o libcecbcas.o libcebcopen.o
 
 clean:
-	rm *.o *.a
+	rm -f *.o *.a
