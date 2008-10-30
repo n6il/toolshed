@@ -1,8 +1,4 @@
 
-#ifndef lint
-static char *id = "$Id$";
-#endif
-
 /*
  *------------------------------------------------------------------
  *
@@ -24,6 +20,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.4  2008/10/30 15:52:24  boisy
+ * Clenaed up warnings in ar2
+ *
  * Revision 1.3  2006/09/09 01:59:03  boisy
  * Changes to accomodate compiling under Turbo C++
  *
@@ -37,27 +36,29 @@ static char *id = "$Id$";
  */
 
 #include <stdio.h>
-#ifndef BDS
+#include <stdlib.h>
 #ifdef SYSV
 # include <sys/types.h>
 #else
 # include <types.h>
 #endif
-#endif
 #include "arerrs.h"
 #include "lz1.h"
+
+void insert_bit(short code);
+void addentry(WORD c, WORD ent);
+void writebuf(int cnt, FILE *fp);
+void lz1_init(int direction);
 
 /*page*/
 /*
  *      Writes compressed file to outfile.
  */
 
-LZ_1(infile, outfile, bytes)
-FILE	*infile, *outfile;
-long	*bytes;
+int LZ_1(FILE *infile, FILE *outfile, long *bytes)
 	{
 	VOID				output();
-	WORD				c, ent, reslt, tag = TAG;
+	WORD				c, ent, tag = TAG;
 	WORD				n_ent;
 	register COMPTBL	*ctp;
 
@@ -106,8 +107,7 @@ long	*bytes;
  * We add an entry to the table if we can.  If not, we just return.
  */
 
-addentry(c, ent)
-WORD	c, ent;
+void addentry(WORD c, WORD ent)
 	{
 	register COMPTBL	*ctp = CompTbl;
 	COMPTBL				*fep, *cep;
@@ -117,7 +117,7 @@ WORD	c, ent;
 	if (free_ent < maxmaxcode)
 		{
 		fep = &ctp[free_ent];
-		fep->chain = NULL;
+		fep->chain = 0;
 		fep->suffix = c;
 		cep = &ctp[ent];
 
@@ -185,9 +185,7 @@ FILE	*ofp;
  * function to write the buffer
  */
 
-writebuf(cnt, fp)
-int		cnt;
-FILE	*fp;
+void writebuf(int cnt, FILE *fp)
 	{
 	register UWORD	*bp = buf;
 	int				lim;
@@ -219,8 +217,7 @@ WORD mask2[] = {
  * insert a code of "n_bits" bits at "offset" bits into buf
  */
 
-insert_bit(code)
-short	code;
+void insert_bit(short code)
 	{
 	register UWORD	*bufp;
 	short			t1, w_offset, shift, size2;
@@ -346,10 +343,10 @@ FILE	*infile;
 	}
 
 
-fetch()
+int fetch(void)
 	{
 	register UWORD	*bp;
-	register WORD	t1, t2, w_offset, size2;
+	register WORD	t1, t2, w_offset;
 
 	bp = &buf[offset >> LOG2WSIZE];
 	w_offset = offset & LowOrder(LOG2WSIZE);
@@ -369,9 +366,7 @@ fetch()
  * function to fill the buffer
  */
 
-readbuf(cnt, fp)
-int		cnt;
-FILE	*fp;
+int readbuf(int cnt, FILE *fp)
 	{
 #ifdef OSK
 	register char	*bp = (char *) buf;
@@ -409,8 +404,7 @@ FILE	*fp;
  * routines to initialize the Lempel-Zev version one routines
  */
 
-lz1_init(direction)
-int		direction;						/* COMP or DECOMP				*/
+void lz1_init(int direction)
 	{
 	n_bits = INIT_BITS;
 	maxcode = (1 << n_bits) - 1;
@@ -432,7 +426,7 @@ int		direction;						/* COMP or DECOMP				*/
 
 		for (free_ent = 0; free_ent < 256; free_ent++)
 			{
-			ctp->next = ctp->chain = NULL;
+			ctp->next = ctp->chain = 0;
 			ctp->suffix = free_ent;
 			++ctp;
 			}
@@ -454,7 +448,7 @@ int		direction;						/* COMP or DECOMP				*/
 
 		for (free_ent = 0; free_ent < 256; free_ent++)
 			{
-			dtp->prefix = NULL;
+			dtp->prefix = 0;
 			dtp->lastch = free_ent;
 			++dtp;
 			}
@@ -466,8 +460,7 @@ int		direction;						/* COMP or DECOMP				*/
  * configure lz1 for number of bigs
  */
 
-lz1_config(bits)
-int		bits;
+int lz1_config(int bits)
 	{
 	if (bits)
 		{

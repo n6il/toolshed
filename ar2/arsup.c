@@ -1,7 +1,3 @@
-#ifndef lint
-static char *id = "$Id$";
-#endif
-
 /*
  *------------------------------------------------------------------
  *
@@ -23,6 +19,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.8  2008/10/30 15:52:24  boisy
+ * Clenaed up warnings in ar2
+ *
  * Revision 1.7  2008/10/30 03:08:48  boisy
  * Additional updates
  *
@@ -56,14 +55,12 @@ static char *id = "$Id$";
  *  Microware's.
  */
 
-#ifdef BDS
-#define SYSV
-#endif
-
-#ifdef SYSV
+#include <stdlib.h>
+#include <string.h>
+#if defined(SYSV)
 # include "o2u.h"
-#ifndef BDS
 # include <sys/time.h>
+#ifndef WIN32
 # include <pwd.h>
 #endif
 # include "o2u.h"
@@ -130,8 +127,7 @@ char	*s;
 #ifdef SYSV
 /* Test file for DIR status */
  
-is_dir(pn)
-int pn;
+int is_dir(int pn)
 	{
 	struct stat	stbuf;
 
@@ -149,9 +145,7 @@ int pn;
  * get file stats using _os9 for portability
  */
 
-get_fstat(pn, fs)
-int		pn;
-FILDES	*fs;
+void get_fstat(int pn, FILDES *fs)
 	{
 #ifdef SYSV
 	register char	*p;
@@ -187,16 +181,9 @@ FILDES	*fs;
  * set file attributes
  */
 
-set_fstat(pn, fs)
-#ifdef SYSV
-char	*pn;
-#else
-int		pn;
-#endif
-FILDES	*fs;
+void set_fstat(char *pn, FILDES *fs)
 	{
-#ifndef BDS
-#ifdef SYSV
+#if defined(SYSV)
 	char			*p = fs->fd_own;
 	short			s;
 	short			mode = o2uFmode(fs->fd_attr);
@@ -224,10 +211,9 @@ FILDES	*fs;
 #  ifdef CKLIB
 	setstat(SS_FD, pn, fs, sizeof(FILDES));
 	setstat(SS_ATTR, pn, fs->fd_attr);
-#  endif CKLIB
-# endif OSK
-#endif SYSV
-#endif
+#  endif /* CKLIB */
+# endif /* OSK */
+#endif /* SYSV */
 	}
 /*page*/
 /*
@@ -259,9 +245,7 @@ int		pn;
  * change the file size
  */
 
-set_fsize(pn, size)
-int		pn;
-long	size;
+void set_fsize(int pn, long size)
    {
 #ifdef SYSV
 	ftruncate(pn, size);  /* If you don't have this or something akin, deletes don't work well */
@@ -284,8 +268,7 @@ long	size;
  *   char   *path;      The directory that should exist
  */
 
-assureDir(path)
-char	*path;
+int assureDir(char *path)
 	{
 #ifdef SYSV
 	char	cmd[80];
@@ -319,10 +302,9 @@ char	*path;
 #endif
 
 
-isobject(input)
-FILE	*input;
+int isobject(FILE *input)
 	{
-	short	x;
+	unsigned short	x;
 
 	read(fileno(input), &x, 2);
 #ifdef SYSV
@@ -339,9 +321,7 @@ FILE	*input;
  * function to write a long in a machine independent manner
  */
 
-writelong(fp, l)
-FILE	*fp;
-long	l;
+int writelong(FILE *fp, long l)
 	{
 	if (putc((int)((l >> 24) & 0xff), fp) != EOF)
 		if (putc((int)((l >> 16) & 0xff), fp) != EOF)
@@ -357,9 +337,7 @@ long	l;
  * function to write a short in a machine independent manner
  */
 
-writeshort(fp, s)
-FILE	*fp;
-short	s;
+int writeshort(FILE *fp, short s)
 	{
 	if (putc((s >> 8) & 0xff, fp) != EOF)
 		if (putc(s & 0xff, fp) != EOF)
@@ -372,9 +350,7 @@ short	s;
  * function ot read a long in a machine independent manner
  */
 
-readlong(fp, lp)
-FILE	*fp;
-long	*lp;
+int readlong(FILE *fp, long *lp)
 	{
 	int		i;
 	long	l = 0;
@@ -406,9 +382,7 @@ long	*lp;
  * function ot read a short in a machine independent manner
  */
 
-readshort(fp, sp)
-FILE	*fp;
-short	*sp;
+int readshort(FILE *fp, short *sp)
 	{
 	int		i;
 	short	s = 0;
@@ -434,10 +408,7 @@ short	*sp;
 
 #define ifup(a)		(f ? toupper(a) : a)
 
-patmatch(p, s, f)
-char			*p;									/* pattern				*/
-register char	*s;									/* string to match		*/
-int				f;									/* flag for case force	*/
+int patmatch(char *p, char *s, int f)
 	{
 	char	pc,							/* a single character from pattern	*/
 			sc;							/* a single character from string	*/

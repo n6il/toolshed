@@ -1,8 +1,4 @@
 
-#ifndef lint
-static char *id = "$Id$";
-#endif
-
 /*
  *------------------------------------------------------------------
  *
@@ -24,6 +20,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.8  2008/10/30 15:52:24  boisy
+ * Clenaed up warnings in ar2
+ *
  * Revision 1.7  2008/10/30 03:08:48  boisy
  * Additional updates
  *
@@ -93,19 +92,34 @@ static char *id = "$Id$";
 #include <ctype.h>
 #include <string.h>
 #include <memory.h>
-#ifdef SYSV
-# include <sys/types.h>
+#include <stdlib.h>
+#if defined(OSK)
 # include <sys/dir.h>
 #else
-# include <dir.h>
+# include <sys/types.h>
+#if defined(WIN32)
+#include <dirent.h>
+#else
+#include <sys/dir.h>
+#endif
 #endif
 #include "ar.h"
 
-#ifdef BRAINDEAD
+#if defined(BRAINDEAD)
 # undef tolower
 # define tolower ck_tolower
 #endif
 
+void copy_from(FILE *ifp, FILE *ofp, HEADER *hp);
+void proc_opt(char *p);
+void proc_cmd(char command, FILE *afp);
+void delete(FILE *afp);
+void extract(FILE *afp, int flag);
+void table(FILE *fp);
+void fatal(int code, char *msg, int arg1, int arg2);
+void help(void);
+void update(FILE *afp);
+int puthdr(FILE *fp, HEADER *hp);
 
 FN		*fnhead = (FN *)NULL;
 char	*hid = HID;
@@ -131,7 +145,7 @@ char	**argv;
 	int		n;
 	FILE	*afp;
 
-#ifdef SYSV
+#if defined(SYSV) || defined(WIN32)
 	setuid(0);
 #else
 # ifndef OSK
@@ -158,24 +172,24 @@ char	**argv;
 
 	if (get_names(argc -= 3, argv, command == 'u') == 0)
 		if (command == 'u')
-			fatal(0, "none of the targets found\n");
+			fatal(0, "none of the targets found\n", 0, 0);
 
 	if (command == 'u')
 		{
 		if ((afp = fopen(archfile, F_RP)) == NULL)	/* try old first	*/
 			if ((afp = fopen(archfile, F_WP)) == NULL)	/* create it	*/
-				fatal(errno, "can't create %s\n", archfile);
+				fatal(errno, "can't create %s\n", archfile, 0);
 		}
 	else
 		if (command == 'd')
 			{
 			if ((afp = fopen(archfile, F_RP)) == NULL)
-				fatal(errno, "can't find %s\n", archfile);
+				fatal(errno, "can't find %s\n", archfile, 0);
 			}
 		else
 			{
 			if ((afp = fopen(archfile, F_R)) == NULL)
-				fatal(errno, "can't find %s\n", archfile);
+				fatal(errno, "can't find %s\n", archfile, 0);
 			}
 
 	proc_cmd(command, afp);				/* process a command			*/
@@ -187,8 +201,7 @@ char	**argv;
  * process command modifiers
  */
 
-int proc_opt(p)
-char	*p;
+void proc_opt(char *p)
 	{
 	int		n;
 
@@ -240,9 +253,7 @@ char	*p;
  * process the command
  */
 
-proc_cmd(command, afp)
-char	command;
-FILE	*afp;
+void proc_cmd(char command, FILE *afp)
 	{
 	switch (command)
 		{
@@ -275,8 +286,7 @@ FILE	*afp;
  * delete file(s) from the archive
  */
 
-delete(afp)
-FILE	*afp;
+void delete(FILE *afp)
 	{
 	long	archive_size, ftell(), get_fsize();
 	FN		*fnp;
@@ -284,7 +294,7 @@ FILE	*afp;
 	int		found;
 
 	if (fnhead == NULL)
-		fatal(0, "No file(s) specified to delete\n");
+		fatal(0, "No file(s) specified to delete\n", 0, 0);
 
 	archive_size = get_fsize(fileno(afp));	/* current size of archive	*/
 
@@ -338,9 +348,7 @@ FILE	*afp;
  *  copy a file from archive and restore it's origional attrs
  */
 
-extract(afp, flag)
-FILE	*afp;
-int		flag;						/* 0 = listing, 1 = writing to file	*/
+void extract(FILE *afp, int flag)
 	{
 	FILE	*ofp;						/* assume just listing			*/
 	HEADER	header;
@@ -368,7 +376,7 @@ int		flag;						/* 0 = listing, 1 = writing to file	*/
 				printf("extracting <%s>\n", header.a_name);
 				ofp = spl_open(&header);
 				copy_from(afp, ofp, &header);
-#ifdef SYSV
+#if defined(SYSV) || defined(WIN32)
 				fclose(ofp);
 				set_fstat(header.a_name, &header.a_attr);
 #else
@@ -386,12 +394,11 @@ int		flag;						/* 0 = listing, 1 = writing to file	*/
  *  unless the all flag is set, whereupon we will show old ones too
  */
 
-table(fp)
-FILE	*fp;
+void table(FILE *fp)
 	{
 	HEADER	header;
 	FN		*fnp;
-	long	n, c4tol();
+	long c4tol();
 	static char	*attrs[8] =
 		{"---", "--r", "-w-", "-wr", "e--", "e-r", "ew-", "ewr"};
 
@@ -425,8 +432,7 @@ FILE	*fp;
  * add new files or replace existing files
  */
 
-update(afp)
-FILE	*afp;
+void update(FILE *afp)
 	{
 	FILE	*ifp;
 	HEADER	header;
@@ -442,7 +448,7 @@ FILE	*afp;
 				++header.a_stat;		/* mark it older				*/
 				fseek(afp, -SIZEOF_HEADER, 1);
 				if ((puthdr(afp, &header)) == EOF)
-					fatal(errno, "write failure on delete\n");
+					fatal(errno, "write failure on delete\n", 0, 0);
 				}
 
 		fseek(afp, header.a_size, 1);
@@ -454,9 +460,9 @@ FILE	*afp;
 			if (errno == 214)
 				continue;				/* a directory, we presume		*/
 			else
-				fatal(errno, "can't find %s\n", fnp->fn_name);
+				fatal(errno, "can't find %s\n", fnp->fn_name, 0);
 
-#ifdef SYSV
+#if defined(SYSV) || defined(WIN32)
 		if (is_dir(fileno(ifp)))	/*It saves the header block otherwise*/
 			{ 
 			printf("\t<%s> is a directory and IS NOT being archived\n", fnp->fn_name);
@@ -478,7 +484,7 @@ FILE	*afp;
 		rewind(ifp);
 		head_pos = ftell(afp);			/* save for update				*/
 		if (puthdr(afp, &header) == EOF)	/* skip ahead				*/
-			fatal(errno, "write error on header for %s\n", fnp->fn_name);
+			fatal(errno, "write error on header for %s\n", fnp->fn_name, 0);
 
 		bytes = head_pos + c4tol(header.a_attr.fd_fsize) + SIZEOF_HEADER;
 		set_fsize(fileno(afp), bytes);	/* make it big enough for all	*/
@@ -488,7 +494,7 @@ FILE	*afp;
 		fseek(afp, head_pos, 0);		/* back up to header pos		*/
 /*		if ((fwrite(&header, SIZEOF_HEADER, 1, afp)) == NULL) */
 		if (puthdr(afp, &header) == EOF)
-			fatal(errno, "write error on header for %s\n", fnp->fn_name);
+			fatal(errno, "write error on header for %s\n", fnp->fn_name, 0);
 
 		fseek(afp, tail_pos, 0);		/* go to end of file			*/
 		if (rmflag)
@@ -504,14 +510,15 @@ FILE	*afp;
  *  use linked list to avoid finite limit on number of names
  */
 
-get_names(ac, av, updating)
-int		ac;
-char	**av;
-int		updating;						/* TRUE if command is update	*/
+int get_names(int ac, char **av, int updating)
 	{
 	char			*p, *q, *r, buf[80];
 	DIR				*dirp;
+#if defined(WIN32)
+	struct dirent	*dp;
+#else
 	struct direct	*dp;
+#endif
 	int				found = 0;
 
 	while (ac--)
@@ -561,14 +568,13 @@ int		updating;						/* TRUE if command is update	*/
  * squirrel a name away in the linked list of targets
  */
 
-stash_name(p)
-char	*p;
+int stash_name(char *p)
 	{
 	FN		*fnp;						/* where to insert new name		*/
 	FN		*q;
 
 	if (*p == '/')
-		fatal(1, "absolute path illegal <%s>\n", p);
+		fatal(1, "absolute path illegal <%s>\n", p, 0);
 
 	q = (FN *) emalloc(sizeof(FN) + strlen(p));
 	q->fn_link = (FN *) 0;
@@ -601,8 +607,7 @@ char	*p;
  *  returns true if name is valid.
  */
 
-notdot(p)
-char	*p;
+int notdot(char *p)
 	{
 	return (strcmp(p, ".") && strcmp(p, ".."));
 	}
@@ -613,8 +618,7 @@ char	*p;
  *  returns true if any metachars in file spec
  */
 
-iswild(p)
-char	*p;
+int iswild(char *p)
 	{
 	return (strchr(p, '?') || strchr(p, '*'));
 	}
@@ -623,29 +627,27 @@ char	*p;
  * get the next header from the file
  */
 
-gethdr(fp, hp)
-FILE	*fp;
-HEADER	*hp;
+int gethdr(FILE *fp, HEADER *hp)
 	{
 	long	pos;
 
-	if ((fread(hp->a_hid, HIDSIZ + 1, 1, fp) == NULL)
-			|| (fread(hp->a_name, FNSIZ + 1, 1, fp) == NULL)
+	if ((fread(hp->a_hid, HIDSIZ + 1, 1, fp) == 0)
+			|| (fread(hp->a_name, FNSIZ + 1, 1, fp) == 0)
 			|| (readlong(fp, &hp->a_size) == EOF)
 			|| ((hp->a_type = getc(fp)) == EOF)
 			|| ((hp->a_stat = getc(fp)) == EOF)
-			|| (fread(&hp->a_attr, sizeof(FILDES), 1, fp) == NULL))
+			|| (fread(&hp->a_attr, sizeof(FILDES), 1, fp) == 0))
 		return (EOF);
 
 	if (strncmp(hp->a_hid, hid, HIDSIZ) != 0)
 		{
 		if (0 == (pos = (ftell(fp) - SIZEOF_HEADER)))
-			fatal(1, "file not archive\n");
+			fatal(1, "file not archive\n", 0, 0);
 
 		if ((hp->a_hid[0] == 0) || (hp->a_hid[0] == 0x1a))
-			fatal(1, "probable XModem padding at $%lX\n", pos);
+			fatal(1, "probable XModem padding at $%lX\n", pos, 0);
 
-		fatal(1, "file damaged - no header at $%lX\n", pos);
+		fatal(1, "file damaged - no header at $%lX\n", pos, 0);
 		}
 
 	return (0);
@@ -656,16 +658,14 @@ HEADER	*hp;
  * put a header on the file
  */
 
-puthdr(fp, hp)
-FILE	*fp;
-HEADER	*hp;
+int puthdr(FILE *fp, HEADER *hp)
 	{
-	if ((fwrite(hp->a_hid, HIDSIZ + 1, 1, fp) == NULL)
-			|| (fwrite(hp->a_name, FNSIZ + 1, 1, fp) == NULL)
+	if ((fwrite(hp->a_hid, HIDSIZ + 1, 1, fp) == 0)
+			|| (fwrite(hp->a_name, FNSIZ + 1, 1, fp) == 0)
 			|| (writelong(fp, hp->a_size) == EOF)
 			|| (putc(hp->a_type, fp) == EOF)
 			|| (putc(hp->a_stat, fp) == EOF)
-			|| (fwrite(&hp->a_attr, sizeof(FILDES), 1, fp) == NULL))
+			|| (fwrite(&hp->a_attr, sizeof(FILDES), 1, fp) == 0))
 		return (EOF);
 
 	return (0);
@@ -688,7 +688,7 @@ HEADER	*hp;
 		{
 		*p = '\0';						/* truncate temporarily			*/
 		if (assureDir(hp->a_name))		/* create it if not there		*/
-			fatal(errno, "can't make <%s>\n", hp->a_name);
+			fatal(errno, "can't make <%s>\n", hp->a_name, 0);
 
 		*p++ = '/';						/* put back the delim			*/
 		}
@@ -698,7 +698,7 @@ HEADER	*hp;
 		sprintf(&buf[strlen(buf)], ".%d", hp->a_stat);	/* make unique	*/
 
 	if ((ofp = fopen(buf, F_W)) == NULL)
-		fatal(errno, "create failure on %s\n", buf);
+		fatal(errno, "create failure on %s\n", buf, 0);
 
 	set_fsize(fileno(ofp), c4tol(hp->a_attr.fd_fsize));
 	return (ofp);
@@ -708,9 +708,7 @@ HEADER	*hp;
  * copy an archived file from an archive
  */
 
-copy_from(ifp, ofp, hp)
-FILE	*ifp, *ofp;
-HEADER	*hp;
+void copy_from(FILE *ifp, FILE *ofp, HEADER *hp)
 	{
 	long	bytes = hp->a_size;
 	int		byt;
@@ -721,10 +719,10 @@ HEADER	*hp;
 			while (bytes--)
 				{
 				if ((byt = getc(ifp)) == ERROR)
-					fatal(errno, "read error while copying\n");
+					fatal(errno, "read error while copying\n", 0, 0);
 
 				if (putc(byt, ofp) == ERROR)
-					fatal(errno, "write error while copying\n");
+					fatal(errno, "write error while copying\n", 0, 0);
 				}
 			break;
 
@@ -733,25 +731,25 @@ HEADER	*hp;
 			byt = (hp->a_type >> 4) & 0x0f;
 			lz1_config(byt ? byt : 11);
 			byt = de_LZ_1(ifp, ofp, bytes);
-#ifdef DEBUG
+#if defined(DEBUG)
 			if (debug > 1)
 				dump_otbl();
 #endif
 			switch (byt)
 				{
 				case NOT_AR :
-					fatal(1, "not an archive or archive damaged\n");
+					fatal(1, "not an archive or archive damaged\n", 0, 0);
 
 				case RERR :
-					fatal(1, "read error on archive\n");
+					fatal(1, "read error on archive\n", 0, 0);
 
 				case WERR :
-					fatal(1, "write error on output\n");
+					fatal(1, "write error on output\n", 0, 0);
 				}
 			break;
 
 		default  :
-			fatal(1, "unknown compression method\n");
+			fatal(1, "unknown compression method\n", 0, 0);
 		}
 	}
 /*page*/
@@ -771,36 +769,36 @@ HEADER	*hp;
 		case PLAIN :
 			while ((byt = getc(ifp)) != ERROR)
 				if (putc(byt, ofp) == ERROR)
-					fatal(errno, "write error while copying\n");
+					fatal(errno, "write error while copying\n", 0, 0);
 				else
 					++bytes;
 
 			if (ferror(ifp))
-				fatal(errno, "read error while copying\n");
+				fatal(errno, "read error while copying\n", 0, 0);
 			break;
 
 		case COMP3 :
 		case COMP1 :
 			byt = LZ_1(ifp, ofp, &bytes);
-#ifdef DEBUG
+#if defined(DEBUG)
 			if (debug > 1)
 				dump_itbl();
 #endif
 			switch (byt)
 				{
 				case RERR :
-					fatal(1, "read error on input file\n");
+					fatal(1, "read error on input file\n", 0, 0);
 
 				case WERR :
-					fatal(1, "write error on archive\n");
+					fatal(1, "write error on archive\n", 0, 0);
 
 				case TBLOVF :
-					fatal(1, "string table overflow on compression\n");
+					fatal(1, "string table overflow on compression\n", 0, 0);
 				}
 			break;
 
 		default  :
-			fatal(1, "unknown compression method\n");
+			fatal(1, "unknown compression method\n", 0, 0);
 		}
 
 	return (bytes);
@@ -814,12 +812,9 @@ char	*emalloc(n)
 int		n;
 	{
 	char	*p;
-#ifndef BDS
-	char	*malloc();
-#endif
 
 	if ((p = malloc(n)) == NULL)
-		fatal(errno, "Can't get memory\n");
+		fatal(errno, "Can't get memory\n", 0, 0);
 
 	return (p);
 	}
@@ -829,10 +824,7 @@ int		n;
  * print a fatal error message and exit
  */
 
-fatal(code, msg, arg1, arg2)
-int		code;
-char	*msg;
-int		arg1, arg2;
+void fatal(int code, char *msg, int arg1, int arg2)
 	{
 	fprintf(stderr, "%s: ", mod);
 	fprintf(stderr, msg, arg1, arg2);
@@ -865,7 +857,7 @@ static char	*hlpmsg[] = {
 	"* and ?, or path lists.\n",
 	0};
 
-help()
+void help(void)
 	{
 	register char	**p;
 

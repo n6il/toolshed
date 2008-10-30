@@ -1,8 +1,3 @@
-
-#ifndef lint
-static char *id = "$Id$";
-#endif
-
 /*
  *------------------------------------------------------------------
  *
@@ -24,6 +19,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.5  2008/10/30 15:52:24  boisy
+ * Clenaed up warnings in ar2
+ *
  * Revision 1.4  2006/09/09 01:59:03  boisy
  * Changes to accomodate compiling under Turbo C++
  *
@@ -94,9 +92,7 @@ char	*buf;
 	long			result;
 	extern long		time();
 
-#ifdef BDS
 	int				timezone = 5*60*60;   /* I'm in the Eastern Time zone GMT + 5 */
-#endif
 
 	/* set up the timezone variable */
 	time(&result);

@@ -1,8 +1,4 @@
 
-#ifndef lint
-static char *id2 = "$Id$";
-#endif
-
 /*
  *------------------------------------------------------------------
  *
@@ -24,6 +20,9 @@ static char *id2 = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.2  2008/10/30 15:52:24  boisy
+ * Clenaed up warnings in ar2
+ *
  * Revision 1.1  1996/07/20 17:10:40  cc
  * Initial revision
  *
