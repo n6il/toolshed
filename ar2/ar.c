@@ -24,6 +24,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.7  2008/10/30 03:08:48  boisy
+ * Additional updates
+ *
  * Revision 1.6  2007/10/06 06:27:24  tlindner
  * Updated for CYGWIN, Should not have broken anything. :)
  *
@@ -90,19 +93,11 @@ static char *id = "$Id$";
 #include <ctype.h>
 #include <string.h>
 #include <memory.h>
-#ifdef __CYGWIN__
-# include <sys/dirent.h>
-#else
 #ifdef SYSV
 # include <sys/types.h>
 # include <sys/dir.h>
 #else
-#ifdef BDS
-# include <dirent.h>
-#else
 # include <dir.h>
-#endif
-#endif
 #endif
 #include "ar.h"
 
@@ -516,11 +511,7 @@ int		updating;						/* TRUE if command is update	*/
 	{
 	char			*p, *q, *r, buf[80];
 	DIR				*dirp;
-#if defined(BDS) || defined(__CYGWIN__)
-	struct dirent	*dp;
-#else
 	struct direct	*dp;
-#endif
 	int				found = 0;
 
 	while (ac--)

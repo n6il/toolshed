@@ -12,11 +12,15 @@
  **********************************************************************/
 
 #include <stdio.h>
-#ifdef UNIX
+#if defined(UNIX) || defined(__MINGW32__)
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
+#if defined(__MINGW32__)
+#include <winsock2.h>
+#else
 #include <netinet/in.h>
+#endif
 #endif
 #include "rlink.h"
 

@@ -5,9 +5,7 @@
  ********************************************************************/
 #include <stdlib.h>
 #include <string.h>
-#if !defined(BDS) && !defined(WIN32)
 #include <unistd.h>
-#endif
 #include <sys/stat.h>
 #include <errno.h>
 

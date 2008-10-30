@@ -13,7 +13,7 @@ extern "C" {
 
 #include <stdio.h>
 
-#if !defined(CYGWIN) && !defined(sun) && !defined(WIN32)
+#if !defined(sun)
 #include <stdint.h>
 #endif
 

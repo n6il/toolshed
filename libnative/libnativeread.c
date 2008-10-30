@@ -57,11 +57,7 @@ error_code _native_readdir(native_path_id path, native_dir_entry *dirent)
 
     error_code	ec = 0;
 
-#ifdef VS
-#error Implement me!
-#endif
-
-#ifdef __MINGW32__
+#if defined(__MINGW32__)
 	struct _finddata_t dp;
 #endif
 
@@ -75,7 +71,7 @@ error_code _native_readdir(native_path_id path, native_dir_entry *dirent)
     }
 
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__)
 	if (path->dirhandle == 0)
 	{
 		path->dirhandle = (DIR *)_findfirst("*", dirent);
@@ -101,12 +97,9 @@ error_code _native_ncpy_name( native_dir_entry e, u_char *name, size_t len )
 {
 	error_code ec = 0;
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__)
 	/* typedef struct _finddata_t  native_dir_entry; */
 	strncpy( (char *)name, e.name, len );
-#elif VS
-	/* typedef WIN32_FIND_DATA		native_dir_entry; */
-	#error Implement me!
 #else
 	/* Copy name from dir entry to suppilied buffer */
 	strncpy( (char *)name, e.d_name, len );

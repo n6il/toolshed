@@ -6,7 +6,7 @@ vpath %.h ../../../rlink
 CFLAGS += -I../../../include
 
 rlink:  decbout.o os9out.o rl_pass2.o rl_pass1b.o rl_pass1a.o rlink_main.o
-    $(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) -lwsock32
 
 clean:
-    rm -f *.o rlink.exe
+	rm -f *.o rlink.exe

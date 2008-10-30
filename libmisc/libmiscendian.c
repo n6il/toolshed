@@ -84,7 +84,7 @@ size_t fread_le_short( unsigned short *ptr, FILE * stream )
 	
 	count = fread( ptr, 1, 2, stream );
 
-#ifdef __BIG_ENDIAN__
+#if defined(__BIG_ENDIAN__)
 	*ptr = swap_short( *ptr );
 #endif
 
@@ -97,7 +97,7 @@ size_t fread_le_sshort( signed short *ptr, FILE * stream )
 	
 	count = fread( ptr, 1, 2, stream );
 
-#ifdef __BIG_ENDIAN__
+#if defined(__BIG_ENDIAN__)
 	*ptr = swap_short( *ptr );
 #endif
 
@@ -110,7 +110,7 @@ size_t fread_le_int( unsigned int *ptr, FILE * stream )
 	
 	count = fread( ptr, 1, 4, stream );
 
-#ifdef __BIG_ENDIAN__
+#if defined(__BIG_ENDIAN__)
 	*ptr = swap_int( *ptr );
 #endif
 
@@ -119,7 +119,7 @@ size_t fread_le_int( unsigned int *ptr, FILE * stream )
 
 size_t fwrite_le_int(unsigned int data, FILE * stream)
 {
-#ifdef __BIG_ENDIAN__
+#if defined(__BIG_ENDIAN__)
 	unsigned int    use_data = swap_int(data);
 #else
 	unsigned int    use_data = data;
@@ -130,7 +130,7 @@ size_t fwrite_le_int(unsigned int data, FILE * stream)
 
 size_t fwrite_le_short(unsigned short data, FILE * stream)
 {
-#ifdef __BIG_ENDIAN__
+#if defined(__BIG_ENDIAN__)
 	unsigned short  use_data = swap_short(data);
 #else
 	unsigned short  use_data = data;

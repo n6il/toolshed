@@ -12,9 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#if !defined(BDS) && !defined(VS)
 #include <unistd.h>
-#endif
 #include <ctype.h>
 #include <sys/types.h>
 

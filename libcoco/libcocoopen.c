@@ -273,15 +273,11 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 
 				fseek(fp, dir_sector_offset, SEEK_SET);
 
-#ifdef BDS
-				fread(sector_buffer, 1, 256, fp);
-#else
 				if (fread(sector_buffer, 1, 256, fp) < 256)
 				{
 					*type = DECB;
 				}
 				else
-#endif
 				{
 					if (sector_buffer[0] == 0x2E && sector_buffer[1] == 0xAE &&
 						sector_buffer[32] == 0xAE)

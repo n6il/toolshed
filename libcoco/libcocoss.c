@@ -60,31 +60,21 @@ error_code _coco_ss_fd(coco_path_id path, coco_file_stat *statbuf)
 	{
 		case NATIVE:
 			ec = _native_gs_fd(path->path.native, &native_stat);
-#if defined(VS)
-			native_stat.st_mode &= ~(S_IREAD | S_IWRITE | S_IEXEC);
-#else
 			native_stat.st_mode &= ~(S_IRWXU);
-#endif
-#if !defined(__MINGW32__) && !defined(BDS) && !defined(__CYGWIN__) && !defined(VS)
+#if !defined(__MINGW32__)
 			native_stat.st_mode &= ~(S_IRWXO);
 #endif
-#if defined(VS)
-			if (statbuf->attributes & FAP_READ) { native_stat.st_mode |= S_IREAD; }
-			if (statbuf->attributes & FAP_WRITE) { native_stat.st_mode |= S_IWRITE; }
-			if (statbuf->attributes & FAP_EXEC) { native_stat.st_mode |= S_IEXEC; }
-#else
 			if (statbuf->attributes & FAP_READ) { native_stat.st_mode |= S_IRUSR; }
 			if (statbuf->attributes & FAP_WRITE) { native_stat.st_mode |= S_IWUSR; }
 			if (statbuf->attributes & FAP_EXEC) { native_stat.st_mode |= S_IXUSR; }
-#endif
-#if !defined(__MINGW32__) && !defined(BDS) && !defined(__CYGWIN__) && !defined(VS)
+#if !defined(__MINGW32__)
 			if (statbuf->attributes & FAP_PREAD) { native_stat.st_mode |= S_IROTH; }
 			if (statbuf->attributes & FAP_PWRITE) { native_stat.st_mode |= S_IWOTH; }
 			if (statbuf->attributes & FAP_PEXEC) { native_stat.st_mode |= S_IXOTH; }
 #endif
 			native_stat.st_uid = statbuf->user_id;
 			native_stat.st_gid = statbuf->group_id;
-#if defined(__MINGW32__) || defined(BDS) || defined(__CYGWIN__) || defined(VS)
+#if defined(__MINGW32__)
 			native_stat.st_ctime = statbuf->create_time;
 			native_stat.st_mtime = statbuf->last_modified_time;
 #else

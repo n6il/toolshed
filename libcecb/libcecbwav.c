@@ -193,29 +193,6 @@ error_code _cecb_parse_riff( cecb_path_id path )
 	return ec;
 }
 
-#if defined(VS)
-float fmin(v1, v2)
-{
-	if (v1 < v2)
-	{
-		return v1;
-	}
-
-	return v2;
-}
-
-float fmax(v1, v2)
-{
-	if (v1 > v2)
-	{
-		return v1;
-	}
-
-	return v2;
-}
-
-#endif
-
 /*
  * analyze_leader()
  *
@@ -625,7 +602,7 @@ static void build_sinusoidal_bufer_16(_wave_parity parity, short *buffer, int le
 	for (i = 0; i < length; i++)
 	{
 		buffer[i] = sin(increment * i + offset) * 25500.0;
-#ifdef __BIG_ENDIAN__
+#if defined(__BIG_ENDIAN__)
 		buffer[i] = swap_short( buffer[i] );
 #endif
 	}

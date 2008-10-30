@@ -93,9 +93,9 @@ u_char _os9_header(OS9_MODULE_t *mod)
 
 /* Calculate the OS-9/68K module header parity, returning 0 == OK, !0 == !OK */
 
-u_short _osk_header(OSK_MODULE_t *mod)
+unsigned short _osk_header(OSK_MODULE_t *mod)
 {
-    u_short  tmp = 0x0000;
+    unsigned short  tmp = 0x0000;
     u_char   *ptr = (u_char *)mod;
     int      i;
 

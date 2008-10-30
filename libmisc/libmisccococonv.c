@@ -33,29 +33,17 @@ int CoCoToUnixPerms(int attrs)
 	
 	if (attrs & FAP_READ)
 	{
-#if defined(VS)
-		ret |= S_IREAD;
-#else
 		ret |= S_IRUSR;
-#endif
 	}
 	if (attrs & FAP_WRITE)
 	{
-#if defined(VS)
-		ret |= S_IWRITE;
-#else
 		ret |= S_IWUSR;
-#endif
 	}
 	if (attrs & FAP_EXEC)
 	{
-#if defined(VS)
-		ret |= S_IEXEC;
-#else
 		ret |= S_IXUSR;
-#endif
 	}
-#if !defined(BDS) && !defined(VS)
+#if !defined(__MINGW32__)
 	if (attrs & FAP_PREAD)
 	{
 		ret |= S_IROTH;
@@ -78,31 +66,19 @@ int UnixToCoCoPerms(int attrs)
 {
 	int ret = 0;
 	
-#if defined(VS)
-	if (attrs & S_IREAD)
-#else
 	if (attrs & S_IRUSR)
-#endif
 	{
 		ret |= FAP_READ;
 	}
-#if defined(VS)
-	if (attrs & S_IWRITE)
-#else
 	if (attrs & S_IWUSR)
-#endif
 	{
 		ret |= FAP_WRITE;
 	}
-#if defined(VS)
-	if (attrs & S_IEXEC)
-#else
 	if (attrs & S_IXUSR)
-#endif
 	{
 		ret |= FAP_EXEC;
 	}
-#if !defined(BDS) && !defined(VS)
+#if !defined(__MINGW32__)
 	if (attrs & S_IROTH)
 	{
 		ret |= FAP_PREAD;
@@ -115,7 +91,7 @@ int UnixToCoCoPerms(int attrs)
 	{
 		ret |= FAP_PEXEC;
 	}
- #endif
+#endif
  			
 	return ret;
 }

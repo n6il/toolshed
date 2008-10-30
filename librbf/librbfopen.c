@@ -551,7 +551,7 @@ error_code _os9_close(os9_path_id path)
         {
             if (path->mode & FAM_DIR)
             {
-#if defined(__MINGW32__) || defined(VS)
+#if defined(__MINGW32__)
                 path->dirhandle = 0;
 #else
                 closedir(path->dirhandle);

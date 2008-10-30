@@ -23,6 +23,9 @@ static char *id = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.7  2008/10/30 03:08:48  boisy
+ * Additional updates
+ *
  * Revision 1.6  2007/10/06 06:27:24  tlindner
  * Updated for CYGWIN, Should not have broken anything. :)
  *
@@ -235,11 +238,6 @@ long	get_fsize(pn)
 int		pn;
 	{
 #ifdef SYSV
-	struct stat	stbuf;
-
-	fstat(pn, &stbuf);
-	return(stbuf.st_size);
-#elif defined(BDS)
 	struct stat	stbuf;
 
 	fstat(pn, &stbuf);

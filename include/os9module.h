@@ -193,7 +193,7 @@ error_code _os9_crc(OS9_MODULE_t *mod);
 u_char  _os9_header(OS9_MODULE_t *mod);
 
 error_code _osk_crc(OSK_MODULE_t *mod);
-u_short _osk_header(OSK_MODULE_t *mod);
+unsigned short _osk_header(OSK_MODULE_t *mod);
 
 #ifdef __cplusplus
 }

@@ -24,6 +24,9 @@ static char *id1 = "$Id$";
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.6  2008/10/30 03:08:48  boisy
+ * Additional updates
+ *
  * Revision 1.5  2007/10/06 06:27:24  tlindner
  * Updated for CYGWIN, Should not have broken anything. :)
  *
@@ -78,11 +81,9 @@ static char *id1 = "$Id$";
 # define SEEK_CUR	1
 #endif
 
-#ifndef BDS
 #define FALSE	(0)
 #define TRUE	(FALSE == 0)
 #define ERROR	(-1)
-#endif
 
 #define HID		"+AR0.0+"
 #define HIDSIZ	7

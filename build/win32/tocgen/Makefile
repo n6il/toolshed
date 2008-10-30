@@ -9,7 +9,7 @@ LDFLAGS += -L../libtoolshed -L../libcoco -L../libnative -L../librbf -L../libdecb
 -lmisc -lsys -lm 
 
 tocgen: tocgen_main.o
-    $(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
-    rm -f *.o tocgen.exe
+	rm -f *.o tocgen.exe

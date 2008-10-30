@@ -323,7 +323,7 @@ void pass1(void)
 unsigned int o9_int(nbr)
 u16 nbr;
 {
-#ifdef __BIG_ENDIAN__
+#if defined(__BIG_ENDIAN__)
 	return nbr;
 #else
 	return (((nbr & 0xff00) >> 8) + ((nbr & 0xff) << 8));

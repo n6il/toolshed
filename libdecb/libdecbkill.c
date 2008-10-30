@@ -6,9 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#if !defined(BDS) & !defined(VS)
 #include <unistd.h>
-#endif
 #include <sys/stat.h>
 #include <errno.h>
 

@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#if defined(__linux__) || defined(__CYGWIN__) || defined(BDS)
+#if defined(__linux__) || defined(__MINGW32__)
 /* implemented based on OSX man page */
 static inline int digittoint(int c)
 {

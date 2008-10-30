@@ -12,12 +12,8 @@
 #define PREAMBLE 0x00
 #define POSTAMBLE 0xff
 
-#if defined(__linux__) || defined(__CYGWIN__) || defined(BDS)
-#if defined(__linux__) || defined(__CYGWIN__)
+#if defined(__linux__) || defined(__MINGW32__)
 static inline int digittoint(int c)
-#else
-static int digittoint(int c)
-#endif
 /* implemented based on OSX man page */
 {
 	/* if not 0-9, a-f, or A-F then return 0 */
@@ -163,15 +159,6 @@ error_code _decb_srec_encode_sr(unsigned char *in_buffer, int in_size, int start
 
 	return ec;
 }
-
-#if defined(VS)
-int
-digittoint(c)
-	int c;
-{
-	return (c - '0');
-}
-#endif
 
 /* Input: S-Record text file
    Output: Segmented binary machine language file

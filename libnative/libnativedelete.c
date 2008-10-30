@@ -5,9 +5,7 @@
  ********************************************************************/
 #include <stdlib.h>
 #include <string.h>
-#if !defined(BDS) && !defined(VS)
 #include <unistd.h>
-#endif
 #include <sys/stat.h>
 #include <errno.h>
 
@@ -57,7 +55,7 @@ error_code _native_truncate(char *pathlist, off_t length)
     error_code	ec = 0;
 	
 	
-#ifndef VS
+#if !defined(__MINGW32__)
 	ec = truncate(pathlist, length);
 #endif
 

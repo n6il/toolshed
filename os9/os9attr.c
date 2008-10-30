@@ -7,10 +7,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#if !defined(BDS) && !defined(VS)
 #include <unistd.h>
 #include <sys/stat.h>
-#endif
 #include <cocotypes.h>
 #include <os9path.h>
 

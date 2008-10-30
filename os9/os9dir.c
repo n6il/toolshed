@@ -8,9 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#if !defined(BDS) && !defined(VS)
 #include <unistd.h>
-#endif
 #include <cocotypes.h>
 #include <cocopath.h>
 #include <queue.h>
