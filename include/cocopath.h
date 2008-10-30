@@ -86,10 +86,8 @@ typedef struct coco_dir_entry
 	
 	union
 	{
-#ifdef __MINGW32__
+#ifdef WIN32
 		struct _finddata_t  native;
-#elif VS
-		WIN32_FIND_DATA     native;
 #else
 		struct dirent		native;
 #endif

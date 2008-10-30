@@ -28,10 +28,8 @@ typedef struct _native_path_id
 } *native_path_id;
 
 
-#ifdef __MINGW32__
+#ifdef WIN32
 typedef struct _finddata_t  native_dir_entry;
-#elif VS
-typedef WIN32_FIND_DATA		native_dir_entry;
 #else
 typedef struct dirent		native_dir_entry;
 #endif

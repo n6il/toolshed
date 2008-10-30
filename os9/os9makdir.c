@@ -8,7 +8,7 @@
 * Comment
 * ----------------------------------------------------------
 *   1             2005/12/22     Robert Gault
-* Added missing Defines for Windows. I'm not sure if _WIN32 is defined
+* Added missing Defines for Windows. I'm not sure if WIN32 is defined
 * on systems other than Windows. This will need to be tested.
 */
 

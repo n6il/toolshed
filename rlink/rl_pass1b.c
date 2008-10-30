@@ -12,11 +12,11 @@
  **********************************************************************/
 
 #include <stdio.h>
-#if defined(UNIX) || defined(__MINGW32__)
+#if defined(UNIX) || defined(WIN32)
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
-#if defined(__MINGW32__)
+#if defined(WIN32)
 #include <winsock2.h>
 #else
 #include <netinet/in.h>

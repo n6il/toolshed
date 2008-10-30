@@ -572,7 +572,7 @@ void mamou_pass(assembler *as)
 
 		if (p != NULL)
 		{
-#ifdef _WIN32
+#ifdef WIN32
 			p++;
 			*p = 0x0A;
 #else

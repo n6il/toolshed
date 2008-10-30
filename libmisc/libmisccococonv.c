@@ -43,7 +43,7 @@ int CoCoToUnixPerms(int attrs)
 	{
 		ret |= S_IXUSR;
 	}
-#if !defined(__MINGW32__)
+#if !defined(WIN32)
 	if (attrs & FAP_PREAD)
 	{
 		ret |= S_IROTH;
@@ -78,7 +78,7 @@ int UnixToCoCoPerms(int attrs)
 	{
 		ret |= FAP_EXEC;
 	}
-#if !defined(__MINGW32__)
+#if !defined(WIN32)
 	if (attrs & S_IROTH)
 	{
 		ret |= FAP_PREAD;
@@ -459,7 +459,7 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
 
 void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 {
-#ifdef _WIN32
+#ifdef WIN32
     int dosEOLCount = 0;
     char *newP;
     int		i;

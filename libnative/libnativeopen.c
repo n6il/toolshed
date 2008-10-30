@@ -196,7 +196,7 @@ error_code _native_close(native_path_id path)
 		
 		if (path->mode & FAM_DIR)
 		{
-#if defined(__MINGW32__)
+#if defined(WIN32)
 			path->dirhandle = NULL;
 #else
 			closedir(path->dirhandle);

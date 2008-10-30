@@ -12,7 +12,7 @@
 #define PREAMBLE 0x00
 #define POSTAMBLE 0xff
 
-#if defined(__linux__) || defined(__MINGW32__)
+#if defined(__linux__) || defined(WIN32)
 static inline int digittoint(int c)
 /* implemented based on OSX man page */
 {

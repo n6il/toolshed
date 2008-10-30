@@ -50,14 +50,13 @@ error_code _native_readdir(native_path_id path, native_dir_entry *dirent)
 {
 
 /*
-	On MINGW dirent is:   struct _finddata_t
-	On VS dirent is:      WIN32_FIND_DATA
+	On WIN32 dirent is:   struct _finddata_t
 	On *nix dirent is:    struct dirent
 */	
 
     error_code	ec = 0;
 
-#if defined(__MINGW32__)
+#if defined(WIN32)
 	struct _finddata_t dp;
 #endif
 
@@ -71,7 +70,7 @@ error_code _native_readdir(native_path_id path, native_dir_entry *dirent)
     }
 
 
-#if defined(__MINGW32__)
+#if defined(WIN32)
 	if (path->dirhandle == 0)
 	{
 		path->dirhandle = (DIR *)_findfirst("*", dirent);
@@ -97,7 +96,7 @@ error_code _native_ncpy_name( native_dir_entry e, u_char *name, size_t len )
 {
 	error_code ec = 0;
 
-#if defined(__MINGW32__)
+#if defined(WIN32)
 	/* typedef struct _finddata_t  native_dir_entry; */
 	strncpy( (char *)name, e.name, len );
 #else

@@ -477,7 +477,7 @@ void NativeToCoCo(char *buffer, int size, char **newBuffer, u_int *newSize)
 
 void CoCoToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 {
-#ifdef _WIN32
+#ifdef WIN32
     int dosEOLCount = 0;
     char *newP;
     int		i;
@@ -599,7 +599,7 @@ EOL_Type DetermineEOLType(char *buffer, int size)
 }
 
 
-#ifdef	_WIN32
+#ifdef	WIN32
 #define	_S_IRGRP	0x0020	/* RG, made this up */
 #define	_S_IXGRP	0x0008	/* ditto */
 #define	_S_IROTH	0x0004	/* ditto */

@@ -55,7 +55,7 @@ error_code _native_truncate(char *pathlist, off_t length)
     error_code	ec = 0;
 	
 	
-#if !defined(__MINGW32__)
+#if !defined(WIN32)
 	ec = truncate(pathlist, length);
 #endif
 
