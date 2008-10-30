@@ -188,7 +188,7 @@ int             main(argc, argv)
 							 * Set the module
 							 * name
 							 */
-							modname = basename(p);
+							modname = (char *)basename(p);
 						}
 					}
 					else

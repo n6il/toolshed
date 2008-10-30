@@ -22,6 +22,7 @@
 #include <netinet/in.h>
 #endif
 #endif
+#undef RELATIVE
 #include "rlink.h"
 
 extern unsigned t_code,
