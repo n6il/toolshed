@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<BorlandProject>
-	<Transactions>
-    <Transaction>2006/07/24 09:06:08.981.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\Project2.bdsproj=C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\mamoucli.bdsproj</Transaction>
-    <Transaction>2006/07/24 09:07:22.961.bdsproj,C:\Documents and Settings\Boisy\My Documents\Borland Studio Projects\mamoucli.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\mamoucli.bdsproj</Transaction>
-    <Transaction>2007/04/19 19:10:17.749.bdsproj,C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\mamoucli.bdsproj=C:\Documents and Settings\Boisy\Desktop\toolshed\build\bds\mamou.bdsproj</Transaction>
-    <Transaction>2007/04/19 19:11:05.532.c,C:\Documents and Settings\Boisy\Desktop\toolshed\mamou\mamou_main.c=C:\Documents and Settings\Boisy\Desktop\toolshed\mamou\mamou.c</Transaction>
-  </Transactions>
-</BorlandProject>
