@@ -19,6 +19,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.6  2008/11/03 15:06:21  robertgault
+ * commented out an #ifndef BDS flag line
+ *
  * Revision 1.5  2008/10/30 15:52:24  boisy
  * Clenaed up warnings in ar2
  *
@@ -184,9 +187,9 @@ short	flags;
 	char			os9Flag = 0;
 	register int	i;
 
-#ifndef BDS
+/* #ifndef BDS
 	flags &= ~NON_OS9_FLAGS;
-#endif
+#endif */
 	for (i = 0; i < (sizeof modeMap / sizeof(MODE_MAP)); i++)
 		if (flags & modeMap[i].unixFlag)
 			{
