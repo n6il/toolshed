@@ -20,6 +20,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.5  2008/11/03 15:02:20  robertgault
+ * added a WIN32 include of gmon.h
+ *
  * Revision 1.4  2008/10/30 15:52:24  boisy
  * Clenaed up warnings in ar2
  *
@@ -44,6 +47,9 @@
 #endif
 #include "arerrs.h"
 #include "lz1.h"
+#ifdef WIN32
+# include <gmon.h>
+#endif
 
 void insert_bit(short code);
 void addentry(WORD c, WORD ent);
