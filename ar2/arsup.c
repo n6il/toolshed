@@ -19,6 +19,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.9  2008/11/03 15:19:56  robertgault
+ * added WIN32 compensation for SYSV
+ *
  * Revision 1.8  2008/10/30 15:52:24  boisy
  * Clenaed up warnings in ar2
  *
@@ -172,7 +175,7 @@ void get_fstat(int pn, FILDES *fs)
 # else
 #  ifdef CKLIB
 	getstat(SS_FD, pn, fs, sizeof(FILDES));
-#  endif CKLIB
+#  endif /* CKLIB */
 # endif /* OSK */
 #endif /* SYSV */
 	}
@@ -188,7 +191,9 @@ void set_fstat(char *pn, FILDES *fs)
 	short			s;
 	short			mode = o2uFmode(fs->fd_attr);
 	struct passwd	*pwdbuf;
+#if !defined(WIN32)
 	struct passwd	*getpwuid();
+#endif
 	struct  {
 		long	a, m;
 		} ubuf;
@@ -196,9 +201,13 @@ void set_fstat(char *pn, FILDES *fs)
 	s = (*p++&0xff);
 	s <<= 8;
 	s |= (*p & 0xff);
+#if !defined(WIN32)
 	pwdbuf = getpwuid(s);
+#endif
 	chmod(pn, mode);
+#if !defined(WIN32)
 	chown(pn, s, pwdbuf ? pwdbuf->pw_gid : s);
+#endif
 
 	ubuf.a = time((long *) 0);
 	ubuf.m = o2uDate(fs->fd_date);

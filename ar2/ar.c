@@ -20,6 +20,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.9  2008/11/03 15:20:19  robertgault
+ * added WIN32 compensation for SYSV
+ *
  * Revision 1.8  2008/10/30 15:52:24  boisy
  * Clenaed up warnings in ar2
  *
@@ -145,8 +148,10 @@ char	**argv;
 	int		n;
 	FILE	*afp;
 
-#if defined(SYSV) || defined(WIN32)
-	setuid(0);
+#if defined(SYSV)
+# if !defined(WIN32)
+ 	setuid(0);
+# endif
 #else
 # ifndef OSK
 	pflinit();
