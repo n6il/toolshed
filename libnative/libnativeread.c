@@ -81,14 +81,16 @@ error_code _native_readdir(native_path_id path, native_dir_entry *dirent)
 	}
 	if (ec == -1)
 #else
-	dirent = readdir(path->dirhandle);
+	native_dir_entry *e = readdir(path->dirhandle);
 
-	if (dirent == NULL)
+	if (e == NULL)
 #endif
 	{
 		return EOS_EOF;
 	}
 	
+	memcpy(dirent, e, sizeof(native_dir_entry));
+
 	return ec;
 }
 
