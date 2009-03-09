@@ -788,7 +788,6 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 			{
 				*largest_free_block = *largest_count;
 			}
-			*largest_count = 0;
 		}
 		else
 		{
@@ -800,9 +799,9 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 	}
 
 	/* one last check on largest free block (here if last sector is free) */
-	if (largest_count > largest_free_block)
+	if (*largest_count > *largest_free_block)
 	{
-		largest_free_block = largest_count;
+		*largest_free_block = *largest_count;
 	}
 
 	strcpy(dname, (char *)sector0.dd_nam);
