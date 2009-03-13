@@ -186,6 +186,11 @@ int os9format(int argc, char **argv)
 					case 'n':	/* disk name */
 						diskName = p + 1;
 						while (*(p + 1) != '\0') p++;
+						// FIX: chop off disk name if too long
+						if (strlen(diskName) > 32)
+						{
+							diskName[32] = '\0';
+						}
 						break;
 
 					case 'l':	/* logical sectors */
