@@ -642,6 +642,12 @@ int TSMakeDirectory(char *p)
 		i = (strchr(p, ',') - p) + 1;
 		
 		
+		/* BUG FIX: go past initial / if there */
+		if (subPath[i] == '/')
+		{
+			i++;
+		}
+
 		/* 3. Walk path and create directory entries as we go */
 
 		do
