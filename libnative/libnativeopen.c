@@ -157,7 +157,7 @@ error_code _native_open(native_path_id *path, char *pathlist, int mode)
 	
     /* 2. Convert passed mode to native file mode. */
 
-    if (mode & (FAM_WRITE | FAM_READ))
+    if ((mode & (FAM_WRITE | FAM_READ)) == (FAM_WRITE | FAM_READ))
     {
         nativeMode = "rb+";
     }

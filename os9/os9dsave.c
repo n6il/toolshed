@@ -226,11 +226,11 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				}
 
 				/* 3. make directory on target */
-				sprintf(command, "makdir %s", newTarget);
+				sprintf(command, "os9 makdir \"%s\"", newTarget);
 				puts(command);
 				if (execute) 
 				{
-					DoFunc(os9makdir, command);
+					system(command);
 				}
 
 				/* 4. call this function again */
@@ -257,11 +257,11 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 					strcat(ropt, "-r");
 				}
 				
-				sprintf(command, "copy %s%s%s %s%s%s %s %s", source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
+				sprintf(command, "os9 copy \"%s%s%s\" \"%s%s%s\" %s %s", source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
 				puts(command);
 				if (execute)
 				{
-					DoFunc(os9copy, command);
+					system(command);
 				}
 			}
 		}
