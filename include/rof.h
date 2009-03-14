@@ -39,7 +39,7 @@ extern "C" {
 typedef struct
 {        
 	/* Sync bytes used by the linker to recognize a ROF */
-	long		h_sync;
+	int				h_sync;
 
 	/* Type/language byte and attribute/revision byte obtained
 	 * from the psect line of the module.  Only meaningful on
