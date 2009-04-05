@@ -1555,7 +1555,7 @@ static int do_indexed(assembler *as, int opcode)
 		if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0))
 	    {
 			pbyte &= 127;
-			pbyte += result & 30;
+			pbyte += result & 31;
 			emit(as, pbyte);
 			as->cumulative_cycles++;
 
