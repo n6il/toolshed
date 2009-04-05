@@ -71,7 +71,8 @@ int main(int argc, char **argv)
         fprintf(stderr, " -lu       force pseudo-ops to print in uppercase\n");
         fprintf(stderr, " -np       suppress 'page' pseudo output\n");
         fprintf(stderr, " -o<file>  output to file\n");
-        fprintf(stderr, " -s        show symbol table\n");
+        fprintf(stderr, " -s        show symbol table (multi-column format)\n");
+        fprintf(stderr, " -sa       show symbol table (assembler format)\n");
 		fprintf(stderr, "Assembler modes (select only one):\n");
         fprintf(stderr, " -m9       OS-9/6809 (default)\n");
         fprintf(stderr, " -mm       Microware RMA\n");
@@ -229,7 +230,14 @@ int main(int argc, char **argv)
 				
                 case 's':
                     /* Symbol table dump */
-                    as.o_show_symbol_table = 1;
+                     if (tolower(argv[j][2]) == 'a')
+                     {
+                        as.o_show_symbol_table = 2;
+                     }
+                  else
+                  {
+                     as.o_show_symbol_table = 1;
+                  }
                     break;
 					
                 case 't':
@@ -385,13 +393,9 @@ int mamou_assemble(assembler *as)
 		}
 		
 		/* Do we show the symbol table? */		
-        if (as->o_show_symbol_table == 1)
+        if (as->o_show_symbol_table != 0)
         {
-            printf("\f");
-
-            symbol_dump_bucket(as->bucket);
-
-            printf("\n");
+            symbol_dump_bucket(as->bucket, as->o_show_symbol_table);
         }
         
         if (as->o_show_cross_reference == 1)

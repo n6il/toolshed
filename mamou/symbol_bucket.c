@@ -323,49 +323,67 @@ int mne_look(assembler *as, char *str, mnemonic *m)
 }
 
 
-static void symbol_dump_bucket_r(struct nlist *ptr);
+static void symbol_dump_bucket_r(struct nlist *ptr, int type);
 static unsigned int	counter;
 
 /*!
 	@function symbol_bucket_dump
 	@discussion Prints the symbol table in alphabetical order
 	@param ptr Pointer to the symbol bucket tree
+   @param type Type of output (1 = columnar, 2 = assembly listing)
  */
-void symbol_dump_bucket(struct nlist *ptr)
+void symbol_dump_bucket(struct nlist *ptr, int type)
 {
-	/* 1. Reset the counter. */	
-	counter = 0;
+   if (type == 1)
+   {
+      printf("\f");
+   }
+   else
+   {
+      printf("* ");
+   }
 
-	/* 2. Print the symbol table heading. */	
-	printf("Symbol table:\n");
+   /* 1. Reset the counter. */	
+   counter = 0;
+
+   /* 2. Print the symbol table heading. */	
+   printf("Symbol table:\n");
 	
 	/* 3. Do the dump. */	
-	symbol_dump_bucket_r(ptr);
+	symbol_dump_bucket_r(ptr, type);
+   
+   printf("\n");
 }
 
-
-static void symbol_dump_bucket_r(struct nlist *ptr)
+static void symbol_dump_bucket_r(struct nlist *ptr, int type)
 {
 	if (ptr != NULL)
 	{
-		symbol_dump_bucket_r(ptr->Lnext);
+		symbol_dump_bucket_r(ptr->Lnext, type);
 		
-		printf("%-10s $%04X", ptr->name, (int)ptr->def);
+      if (type == 1)
+      {
+         printf("%-10s $%04X", ptr->name, (int)ptr->def);
+         
+         counter++;
+         
+         if (counter >= 4)
+         {
+            printf("\n");
+            
+            counter = 0;
+         }
+         else
+         {
+            printf("     ");
+         }
+      }
+      else
+      {
+         printf("%-10s EQU  $%04X\n", ptr->name, (int)ptr->def);
+      }
 		
-		counter++;
-		
-		if (counter >= 4)
-		{
-			printf("\n");
-			
-			counter = 0;
-		}
-		else
-		{
-			printf("     ");
-		}
-		
-		symbol_dump_bucket_r(ptr->Rnext);
+		symbol_dump_bucket_r(ptr->Rnext, type);
 	}
 		
 	return;
