@@ -1545,7 +1545,7 @@ static int do_indexed(assembler *as, int opcode)
 			return 0;
 		}
 
-		if (result == 0 && noOffset == 1)
+		if (result == 0 && ((noOffset == 1) || ((pbyte & 16) != 0)))
 	    {
 			emit(as, pbyte + 0x04);
 
@@ -1915,3 +1915,4 @@ int _bitgen(assembler *as, int opcode)
 }
 
 
+ 
