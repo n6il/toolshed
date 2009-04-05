@@ -1249,7 +1249,7 @@ static int do_indexed(assembler *as, int opcode)
 	int     pbyte;
 	int     j,k;
 	int     predec,pstinc;
-	int	result;
+	int	result, noOffset = 0;
 
 	as->cumulative_cycles += 2;    /* indexed is always 2+ base cycle count */
 	predec = 0;
@@ -1319,7 +1319,16 @@ static int do_indexed(assembler *as, int opcode)
 		return 0;
 	}
 
-	evaluate(as, &result, &as->line.optr, 0);
+	/* check if operand's first char is ',' */
+	if (*as->line.optr == ',')
+	{
+		noOffset = 1;
+		result = 0;
+	}
+	else
+	{
+		evaluate(as, &result, &as->line.optr, 0);
+	}
 	as->line.optr++;
 
 	while (*as->line.optr == '-')
@@ -1536,7 +1545,7 @@ static int do_indexed(assembler *as, int opcode)
 			return 0;
 		}
 
-		if (result == 0)
+		if (result == 0 && noOffset == 1)
 	    {
 			emit(as, pbyte + 0x04);
 
@@ -1546,7 +1555,7 @@ static int do_indexed(assembler *as, int opcode)
 		if ((result >= -16) && (result <= 15) && ((pbyte & 16) == 0))
 	    {
 			pbyte &= 127;
-			pbyte += result & 31;
+			pbyte += result & 30;
 			emit(as, pbyte);
 			as->cumulative_cycles++;
 
