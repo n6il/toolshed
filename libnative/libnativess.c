@@ -73,6 +73,7 @@ error_code _native_ss_size(native_path_id path, int size)
 {
     error_code	ec = 0;
 
+   truncate(path->fd->_file);
 
 	return ec;
 }

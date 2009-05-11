@@ -272,19 +272,14 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 
 	/* 1. Open a path to the virtual disk. */
 
-	ec = _native_open(&path, vdisk, FAM_WRITE);
+   ec = _native_create(&path, vdisk, FAM_WRITE, FAP_READ | FAP_WRITE);
 
-	if (ec != 0)
-	{
-		ec = _native_create(&path, vdisk, FAM_WRITE, FAP_READ | FAP_WRITE);
+   if (ec != 0)
+   {
+      fprintf(stderr, "%s: cannot create virtual disk\n", argv[0]);
 
-		if (ec != 0)
-		{
-			fprintf(stderr, "%s: cannot open virtual disk\n", argv[0]);
-
-			return(ec);
-		}
-	}
+      return(ec);
+   }
 
 	_native_seek(path, 0, SEEK_SET);
 

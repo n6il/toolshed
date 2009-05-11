@@ -88,7 +88,7 @@ error_code _native_create(native_path_id *path, char *pathlist, int mode, int pe
     }
     else if (mode & FAM_WRITE)
     {
-        nativeMode = "ab";
+        nativeMode = "wb";
     }
 
     (*path)->fd = fopen(pathlist, nativeMode);
