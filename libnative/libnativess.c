@@ -73,7 +73,10 @@ error_code _native_ss_size(native_path_id path, int size)
 {
     error_code	ec = 0;
 
+#if defined(__APPLE__) || defined(WIN32) || defined(sun)
    truncate(path->fd->_file);
-
+#else
+   truncate(path->fd->_fileno);
+#endif
 	return ec;
 }
