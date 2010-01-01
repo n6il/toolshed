@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <utime.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
 #include "cocotypes.h"
@@ -74,9 +75,9 @@ error_code _native_ss_size(native_path_id path, int size)
     error_code	ec = 0;
 
 #if defined(__APPLE__) || defined(WIN32) || defined(sun)
-   truncate(path->fd->_file);
+   ftruncate(path->fd->_file, size);
 #else
-   truncate(path->fd->_fileno);
+   ftruncate(path->fd->_fileno, size);
 #endif
 	return ec;
 }

@@ -394,6 +394,11 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	{
 		u_int i;
 
+		if (strlen(diskName) > 32)
+		{
+			diskName[32] = 0;
+		}
+
 		for (i = 0; i < strlen(diskName) - 1; i++)
 		{
 			s0.dd_nam[i] = diskName[i];
