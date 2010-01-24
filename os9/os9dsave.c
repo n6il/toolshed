@@ -15,7 +15,7 @@
 /* globals */
 static u_int buffer_size = 32768;
 
-static error_code do_dsave(char *source, char *target, int execute, int buffsize, int rewrite);
+static error_code do_dsave(char *source, char *target, int execute, int buffsize, int rewrite, int eoltranslate);
 static int DoFunc(int (*func)( int, char *[]), char *command);
 
 /* Help message */
@@ -26,6 +26,7 @@ static char *helpMessage[] =
 	"Options:\n",
 	"     -b=size    size of copy buffer in bytes or K-bytes\n",
 	"     -e         actually execute commands\n",
+    "     -l         perform end of line translation on copy\n",
 	"     -r         force rewrite on copy\n",
 	NULL
 };
@@ -39,6 +40,7 @@ int os9dsave(int argc, char *argv[])
 	int		count = 0;
 	int		rewrite = 0;
 	int		execute = 0;
+	int		eoltranslate = 0;
 	char		*target = NULL;
 	char		*source = NULL;
 	
@@ -71,6 +73,10 @@ int os9dsave(int argc, char *argv[])
 	
 					case 'r':
 						rewrite = 1;
+						break;
+
+					case 'l':
+						eoltranslate = 1;
 						break;
 
 					case 'e':
@@ -128,7 +134,7 @@ int os9dsave(int argc, char *argv[])
 	}
 
 	/* do dsave */
-	ec = do_dsave(source, target, execute, buffer_size, rewrite);
+	ec = do_dsave(source, target, execute, buffer_size, rewrite, eoltranslate);
 	if (ec != 0)
 	{
 		fprintf(stderr, "%s: error %d encountered during dsave\n", argv[0], ec);
@@ -138,7 +144,7 @@ int os9dsave(int argc, char *argv[])
 }
 
 
-static error_code do_dsave(char *source, char *target, int execute, int buffer_size, int rewrite)
+static error_code do_dsave(char *source, char *target, int execute, int buffer_size, int rewrite, int eoltranslate)
 {
 	error_code	ec = 0;
 	static int	level = 0;
@@ -234,7 +240,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				}
 
 				/* 4. call this function again */
-				do_dsave(sourcePathList, newTarget, execute, buffer_size, rewrite);
+				do_dsave(sourcePathList, newTarget, execute, buffer_size, rewrite, eoltranslate);
 
 				/* 5. decrement level indicator */
 				level--;
@@ -255,6 +261,11 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				if (rewrite > 0)
 				{
 					strcat(ropt, "-r");
+				}
+				
+				if (eoltranslate > 0)
+				{
+					strcat(ropt, "-l");
 				}
 				
 				sprintf(command, "os9 copy \"%s%s%s\" \"%s%s%s\" %s %s", source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
