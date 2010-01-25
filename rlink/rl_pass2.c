@@ -182,7 +182,9 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 					DBGPNT((") %4.4x (%4.4x) data: %4.4x, ", offset + ob_cur->Code, offset, scratch));
 
 					if (flag & NEGMASK)
-						result = ~value;
+// BGP - changed from complement to negative because subtractions were one off					
+//						result = ~value;
+						result = -value;
 					else
 						result = value;
 
