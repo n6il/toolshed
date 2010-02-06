@@ -1,0 +1,17 @@
+tylg           equ       $01
+atrv           equ       $80
+
+               mod       eom,name,tylg,atrv,start,0
+
+name           fcs       "bingo"
+test equ 11
+
+start
+ lda #1
+ ldb test,x
+x sex
+ bra x
+
+ emod 
+eom equ *
+ end
