@@ -1,9 +1,11 @@
-tylg           equ       $01
-atrv           equ       $80
+tylg           equ       $11
+atrv           equ       $81
 
-               mod       eom,name,tylg,atrv,start,0
+               mod       eom,name,tylg,atrv,start,200
 
 name           fcs       "bingo"
+
+               fcs       "shot"
 test equ 11
 
 start
