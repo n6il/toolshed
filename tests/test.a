@@ -7,11 +7,14 @@ name           fcs       "bingo"
 
                fcs       "shot"
 test equ 11
+jim set 5
 
 start
  lda #1
+test equ 10
  andcc #44
  mul
+jim set 6
  ldb test,x
 x sex
  bra x
