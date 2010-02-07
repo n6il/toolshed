@@ -27,7 +27,7 @@ nlong             =      -1
 IMM               equ    $12
 DIR               equ    $34
 EXT               equ    $5678
-start             equ    *       set "start" label to the current Program Counter (PC) address
+start             equ    *       ; set "start" label to the current Program Counter (PC) address
 *------------------------------------------------------------------------------
 * automatic Direct Page addressing
 *------------------------------------------------------------------------------
