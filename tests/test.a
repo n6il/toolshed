@@ -10,9 +10,13 @@ test equ 11
 
 start
  lda #1
+ andcc #44
+ mul
  ldb test,x
 x sex
  bra x
+ tsta
+ tst 3,x
 
  emod 
 eom equ *
