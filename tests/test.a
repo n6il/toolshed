@@ -1,4 +1,3 @@
-bingo lda #true&true
 *------------------------------------------------------------------------------
 * CCASM 4.0 6809/6309 cross assembler test source
 * -Includes most of the assembler's functions
