@@ -1,3 +1,4 @@
- psect m_a,$11,1,1,200,start
-start: lda #4
+ psect main1,0,0,0,0,0
+main: leax $00,x
+ rts
  endsect
