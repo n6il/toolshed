@@ -1,5 +1,11 @@
  psect test,$11,$81,0,100,main
 main:
+ lda #ul1
+ ldd #ul1
+ lda ul1
+ lda ul1,pcr
+ lda ul1,x
+ leax ul1,x
  bsr ul1
  rts
  endsect
