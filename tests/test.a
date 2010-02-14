@@ -1,4 +1,6 @@
- psect main1,0,0,0,0,0
-main: leax $00,x
+ psect test,$11,$81,0,100,main
+main:
+ bsr ul1
  rts
  endsect
+

@@ -1,0 +1,14 @@
+ psect test2,0,0,0,0,0
+ vsect dp
+ rmb 3
+v1: equ 333
+ud1: rmb 1
+uc1: fcc "hi"
+ endsect
+ lda #4
+v2: equ 333
+v3: set 333
+ul1: clrb
+ rts
+ endsect
+
