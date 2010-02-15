@@ -1,5 +1,9 @@
-* psect test,$11,$81,0,100,main
- psect test,0,0,0,0,0
+ psect test,$11,$81,0,100,main
+* psect test,0,0,0,0,0
+ csect
+ rmb 8
+ endsect
+ fcb PD.FST
 main:
  lda #ul1
  ldd #ul1

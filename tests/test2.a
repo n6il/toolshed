@@ -14,6 +14,7 @@ ud1: rmb 8
 v2: equ 333
 v3: set 333
 ul1: clrb
+ bra main
  rts
  endsect
 
