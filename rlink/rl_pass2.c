@@ -203,9 +203,11 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 						return 1;
 						break;
 					}
-
+                    
 					if (flag & LOC1BYT)
+                    {
 						data[offset] = result;
+                    }
 					else
 					{
 						data[offset] = result >> 8;
@@ -245,7 +247,9 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 					result = (unsigned) (data[offset] << 8) + data[offset + 1];
 
 				if (flag & NEGMASK)
-					result = ~result;
+// BGP - changed from complement to negative because subtractions were one off					
+//						result = ~result;
+					result = -result;
 				else
 					result = result;
 

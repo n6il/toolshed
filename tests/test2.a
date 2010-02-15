@@ -1,14 +1,14 @@
  psect test2,0,0,0,0,0
  csect
- rmb 4
+ rmb 8
 drk: set 4
 tata: rmb 4
  endsect
  vsect
 uc1: fcc "hi"
- rmb 3
+ rmb 4
 v1: equ 333
-ud1: rmb 1
+ud1: rmb 8
  endsect
  lda #4
 v2: equ 333
