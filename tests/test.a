@@ -1,4 +1,5 @@
- psect test,$11,$81,0,100,main
+* psect test,$11,$81,0,100,main
+ psect test,0,0,0,0,0
 main:
  lda #ul1
  ldd #ul1
