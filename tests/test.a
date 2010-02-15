@@ -1,9 +1,13 @@
  psect test,$11,$81,0,100,main
 * psect test,0,0,0,0,0
+ vsect
+main1 fcc "(***)"
+main2 fcc "(bo3)"
+ endsect
  csect
  rmb 8
  endsect
- fcb PD.FST
+OPTCNT equ PD.OPT
 main:
  lda #ul1
  ldd #ul1
