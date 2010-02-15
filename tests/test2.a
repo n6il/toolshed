@@ -1,4 +1,9 @@
  psect test2,0,0,0,0,0
+ csect
+ rmb 4
+drk: set 4
+tata: rmb 4
+ endsect
  vsect
 uc1: fcc "hi"
  rmb 3
