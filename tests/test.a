@@ -1,11 +1,11 @@
- psect test,$11,$81,0,100,main
-* psect test,0,0,0,0,0
+* psect test,$11,$81,0,100,main
+ psect test,0,0,0,0,0
  vsect
-main1 fcc "(***)"
-main2 fcc "(bo3)"
+*main1 fcc "(***)"
+*main2 fcc "(bo3)"
  endsect
  csect
- rmb 8
+ rmb 9
  endsect
 OPTCNT equ PD.OPT
 main:

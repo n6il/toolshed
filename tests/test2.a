@@ -5,7 +5,7 @@ drk: set 4
 tata: rmb 4
  endsect
  vsect
-uc1: fcc "hi"
+uc1: fcc "z"
  rmb 4
 v1: equ 333
 ud1: rmb 8
