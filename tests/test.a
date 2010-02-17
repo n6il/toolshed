@@ -1,5 +1,5 @@
-* psect test,$11,$81,0,100,main
- psect test,0,0,0,0,0
+ psect test,$11,$81,0,100,main
+* psect test,0,0,0,0,0
  vsect
 *main1 fcc "(***)"
 *main2 fcc "(bo3)"
