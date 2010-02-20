@@ -164,22 +164,21 @@ TEXT section        : +------------------------------+:
                     : : String Literals (ROF n)      :: ? bytes
                     : :..............................::
                     +---------------------------------+
-DATA section (DP)   : +------------------------------+:
-                    : : DP Data (from mainline)      :: ? bytes
-                    : |	Total init DP data size      |: 1 byte
-                    : | Total uninit DP data size    |: 1 byte
+DATA section (DP)   : Initialized DP Data count       : 2 bytes
                     : +------------------------------+:
-                    : +------------------------------+:
-                    : : DP Data (from remaining ROFs):: ? bytes
-                    : :..............................::
+                    : | Init DP Data (from mainline) |: ? bytes
+                    : | Init DP Data (from ROF 1)    |: ? bytes
+                    : | . . . . . . . . . . . . . . .|:
+                    : | Init DP Data (from ROF n)    |: ? bytes
+                    : +------------------------------+: IDpD bytes total
                     +---------------------------------+
-DATA section        : +------------------------------+:
-                    : : Data (from mainline)         :: ? bytes
-                    : |	Total init data size         |: 2 bytes
+DATA section        : Initialized Data count          : 2 bytes
                     : +------------------------------+:
-                    : +------------------------------+:
-                    : : Data (from remaining ROFs)   :: ? bytes
-                    : :..............................::
+                    : | Init Data (from mainline)    |: ? bytes
+                    : | Init Data (from ROF 1)       |: ? bytes
+                    : | . . . . . . . . . . . . . . .|:
+                    : | Init Data (from ROF n)       |: ? bytes
+                    : +------------------------------+: IDat bytes total
                     +---------------------------------+
                     : Data-text Reference count       : 2 bytes
                     : +------------------------------+:
@@ -199,3 +198,38 @@ DATA section        : +------------------------------+:
                     +---------------------------------+
                     | CRC check value                 | 3 bytes
                     +---------------------------------+
+
+
+
+What the address space of the program looks like after it has been loaded and setup by root.a/cstart.a:
+
+Start of Memory ===>     +---------------------------------+
+                         : Initialized DP Data             : (IDpD bytes)
+                         +---------------------------------+
+                         : Uninitialized DP Data           : (UDpD bytes)
+dpsiz (IDpD+UDpD) =>     +---------------------------------+
+                         : Initialized Data                : (IDat bytes)
+                         +---------------------------------+
+                         : Unintialized Data               : (UDat bytes)
+end (dpsiz+IDat+UDat) => +---------------------------------+
+                         :                                 :
+                         :                                 :
+                         :                                 :
+Stack Top is here =>     +---------------------------------+
+                         :                                 :
+                         :                                 :
+
+
+                         . . . . . . . . . . . . . . . . . .
+                         
+
+                         :                                 :
+                         :                                 :
+Code Start        =>     +---------------------------------+
+                         : Code                            :
+                         :                                 :
+                         :                                 :
+                         :                                 :
+Module End here   =>     +---------------------------------+
+
+
