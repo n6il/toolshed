@@ -16,5 +16,7 @@ v3: set 333
 ul1: clrb
  bra main
  rts
+ lda #tata
+ lda #drk
  endsect
 
