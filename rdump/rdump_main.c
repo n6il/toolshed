@@ -341,7 +341,7 @@ void showhead(void)
 		putchar(c);
 	if (ferror(in))
 		ferr(fname);
-	printf("\nTyLa/RvAt:   %02x/%02x\n", mc(hd.h_tylan >> 8), mc(hd.h_tylan));
+	printf("\nTyLa/RvAt:   %02x/%02x\n", mc(o9_int(hd.h_tylan) >> 8), mc(o9_int(hd.h_tylan)));
 	printf("Asm valid:   %s\n", hd.h_valid ? "No" : "Yes");
 	printf("Create date: %.3s %2d, %4d %02d:%02d\n",
 	       &("JanFebMarAprMayJunJulAugSepOctNovDec"[(mc(hd.h_date[1]) - 1) * 3]),
