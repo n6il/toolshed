@@ -9,6 +9,8 @@
  *
  * Thanks for the motivation Allen!
  *
+ * 2/24/2010: Fixed problem with IDat and IDpD ordering of count and
+ * data - Boisy
  **********************************************************************/
 
 #include <stdio.h>
@@ -386,20 +388,20 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 			}
 		}
 
+		/* Dump special linker initialized dp data */
+		if (ob_cur == *ob_start && !omitC)
+		{
+			DBGPNT(("Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ob_cur->fp), ftell(ob_cur->fp) + 2));
+			XXX_body_byte(&obh, (t_idpd >> 8) & 0xff);
+			XXX_body_byte(&obh, t_idpd & 0xff);
+		}
+
 		XXX_body(&obh, data, ob_cur->hd.h_ddata);
 		if (data != NULL)
 		{
 			free(data);
 		}
-
-		/* Dump special linker initialized dp data */
-		if (ob_cur == *ob_start && !omitC)
-		{
-			DBGPNT(("Initialized linker dp data is %4.4lx - %4.4lx\n", ftell(ob_cur->fp), ftell(ob_cur->fp) + 2));
-			XXX_body_byte(&obh, t_idpd);
-			XXX_body_byte(&obh, t_udpd);
-		}
-
+        
 		ob_cur = ob_cur->next;
 	}
 
@@ -500,12 +502,6 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 			}
 		}
 
-		XXX_body(&obh, data, ob_cur->hd.h_data);
-		if (data != NULL)
-		{
-			free(data);
-		}
-
 		/* Dump special linker initialized data */
 		if (ob_cur == *ob_start && !omitC)
 		{
@@ -514,6 +510,12 @@ int             pass2(ob_start, ofile, modname, B09EntPt, extramem, edition, omi
 			XXX_body_byte(&obh, t_idat & 0xff);
 		}
 
+		XXX_body(&obh, data, ob_cur->hd.h_data);
+		if (data != NULL)
+		{
+			free(data);
+		}
+        
 		ob_cur = ob_cur->next;
 	}
 
