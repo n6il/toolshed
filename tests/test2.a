@@ -1,22 +1,13 @@
- psect test2,0,0,0,0,0
- csect
- rmb 8
-drk: set 4
-tata: rmb 4
- endsect
- vsect
-uc1: fcc "z"
- rmb 4
-v1: equ 333
-ud1: rmb 8
- endsect
- lda #4
-v2: equ 333
-v3: set 333
-ul1: clrb
- bra main
- rts
- lda #tata
- lda #drk
- endsect
+ inca
+ incb
+ ince
+ incf
+ incd
+ incw
 
+ deca
+ decb
+ dece
+ decf
+ decd
+ decw

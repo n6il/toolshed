@@ -1,29 +1,6 @@
-* psect test,$11,$81,0,100,main
- psect test,0,0,0,0,0
- vsect
-*main1 fcc "(***)"
-*main2 fcc "(bo3)"
- endsect
- csect
-bob rmb 9
- endsect
- csect
-cat rmb 9
-john set 3
-sw rmb 2
- endsect
-OPTCNT equ PD.OPT
-main:
- lda #ul1
- ldd #ul1
- lda ul1
- lda ul1,pcr
- lda ul1,x
- leax ul1,x
- lbra ul1
+ comb
+ lda #0
+ bcs L01
  rts
- lda #bob
- lda #cat
- lda #sw
- endsect
-
+L01 incb
+ rts
