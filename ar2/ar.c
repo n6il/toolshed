@@ -20,6 +20,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.10  2010/04/04 13:08:56  robertgault
+ * Corrects pointer to integer without cast problems. RG
+ *
  * Revision 1.9  2008/11/03 15:20:19  robertgault
  * added WIN32 compensation for SYSV
  *
@@ -183,18 +186,18 @@ char	**argv;
 		{
 		if ((afp = fopen(archfile, F_RP)) == NULL)	/* try old first	*/
 			if ((afp = fopen(archfile, F_WP)) == NULL)	/* create it	*/
-				fatal(errno, "can't create %s\n", archfile, 0);
+				fatal(errno, "can't create %s\n", *archfile, 0);
 		}
 	else
 		if (command == 'd')
 			{
 			if ((afp = fopen(archfile, F_RP)) == NULL)
-				fatal(errno, "can't find %s\n", archfile, 0);
+				fatal(errno, "can't find %s\n", *archfile, 0);
 			}
 		else
 			{
 			if ((afp = fopen(archfile, F_R)) == NULL)
-				fatal(errno, "can't find %s\n", archfile, 0);
+				fatal(errno, "can't find %s\n", *archfile, 0);
 			}
 
 	proc_cmd(command, afp);				/* process a command			*/
@@ -465,7 +468,7 @@ void update(FILE *afp)
 			if (errno == 214)
 				continue;				/* a directory, we presume		*/
 			else
-				fatal(errno, "can't find %s\n", fnp->fn_name, 0);
+				fatal(errno, "can't find %s\n", *fnp->fn_name, 0);
 
 #if defined(SYSV) || defined(WIN32)
 		if (is_dir(fileno(ifp)))	/*It saves the header block otherwise*/
@@ -489,7 +492,7 @@ void update(FILE *afp)
 		rewind(ifp);
 		head_pos = ftell(afp);			/* save for update				*/
 		if (puthdr(afp, &header) == EOF)	/* skip ahead				*/
-			fatal(errno, "write error on header for %s\n", fnp->fn_name, 0);
+			fatal(errno, "write error on header for %s\n", *fnp->fn_name, 0);
 
 		bytes = head_pos + c4tol(header.a_attr.fd_fsize) + SIZEOF_HEADER;
 		set_fsize(fileno(afp), bytes);	/* make it big enough for all	*/
@@ -499,7 +502,7 @@ void update(FILE *afp)
 		fseek(afp, head_pos, 0);		/* back up to header pos		*/
 /*		if ((fwrite(&header, SIZEOF_HEADER, 1, afp)) == NULL) */
 		if (puthdr(afp, &header) == EOF)
-			fatal(errno, "write error on header for %s\n", fnp->fn_name, 0);
+			fatal(errno, "write error on header for %s\n", *fnp->fn_name, 0);
 
 		fseek(afp, tail_pos, 0);		/* go to end of file			*/
 		if (rmflag)
@@ -579,7 +582,7 @@ int stash_name(char *p)
 	FN		*q;
 
 	if (*p == '/')
-		fatal(1, "absolute path illegal <%s>\n", p, 0);
+		fatal(1, "absolute path illegal <%s>\n", *p, 0);
 
 	q = (FN *) emalloc(sizeof(FN) + strlen(p));
 	q->fn_link = (FN *) 0;
@@ -693,7 +696,7 @@ HEADER	*hp;
 		{
 		*p = '\0';						/* truncate temporarily			*/
 		if (assureDir(hp->a_name))		/* create it if not there		*/
-			fatal(errno, "can't make <%s>\n", hp->a_name, 0);
+			fatal(errno, "can't make <%s>\n", *hp->a_name, 0);
 
 		*p++ = '/';						/* put back the delim			*/
 		}
@@ -703,7 +706,7 @@ HEADER	*hp;
 		sprintf(&buf[strlen(buf)], ".%d", hp->a_stat);	/* make unique	*/
 
 	if ((ofp = fopen(buf, F_W)) == NULL)
-		fatal(errno, "create failure on %s\n", buf, 0);
+		fatal(errno, "create failure on %s\n", *buf, 0);
 
 	set_fsize(fileno(ofp), c4tol(hp->a_attr.fd_fsize));
 	return (ofp);
