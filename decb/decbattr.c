@@ -223,11 +223,11 @@ static void show_attr(decb_file_stat *fstat)
 	
 	switch (fstat->data_type)
 	{
-		case 0:
+		case 255:
 			data_type = "ASCII";
 			break;
 			
-		case 255:
+		case 0:
 			data_type = "Binary";
 			break;
 	}
