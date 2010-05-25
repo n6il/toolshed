@@ -66,10 +66,10 @@ int decbattr(int argc, char *argv[])
                         file_type = 3;
                         break;
                     case 'a':
-                        data_type = 0;
+                        data_type = 255;
                         break;
                     case 'b':
-                        data_type = 255;
+                        data_type = 0;
                         break;
                     case 'h':
                         case '?':
