@@ -20,6 +20,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.11  2010/05/26 23:20:00  aaronwolfe
+ * fix for notdot call at line 534, from Kelly Anderson
+ *
  * Revision 1.10  2010/04/04 13:08:56  robertgault
  * Corrects pointer to integer without cast problems. RG
  *
@@ -531,7 +534,7 @@ int get_names(int ac, char **av, int updating)
 
 	while (ac--)
 		if (!updating || !iswild(*av))
-			if (notdot(av))
+			if (notdot(*av))  /* dereference av - Kelly Anderson - 5/26/10 */
 				found += stash_name(*av++);
 			else
 				printf("Cannot archive %s\n", *av++);
