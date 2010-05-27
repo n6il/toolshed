@@ -20,6 +20,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.8  2010/05/27 03:55:28  aaronwolfe
+ * Files need to be opened in binary mode under Windows too, failing which ftell() and fseek() don't work as expected.  from Christian Lesage
+ *
  * Revision 1.7  2008/10/30 15:52:24  boisy
  * Clenaed up warnings in ar2
  *
@@ -61,7 +64,8 @@
 
 #include "arerrs.h"
 
-#ifdef MSDOS
+/* Files need to be opened in binary mode under Windows too, failing which ftell() and fseek() don't work as expected.  5/26/10 Christian Lesage */
+#if defined (MSDOS) || defined (WIN32)
 #define  F_RP    "r+b"
 #define  F_WP    "w+b"
 #define  F_R     "rb"
