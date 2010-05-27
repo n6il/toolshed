@@ -20,6 +20,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.12  2010/05/27 03:49:11  aaronwolfe
+ * updated table to print a four digit year - kelly anderson
+ *
  * Revision 1.11  2010/05/26 23:20:00  aaronwolfe
  * fix for notdot call at line 534, from Kelly Anderson
  *
@@ -403,6 +406,8 @@ void extract(FILE *afp, int flag)
  * list a table of contents for the archive file
  *  only show files matching the search mask which are current
  *  unless the all flag is set, whereupon we will show old ones too
+ *
+ * 5/26/10 updated to print a four digit year - kelly anderson
  */
 
 void table(FILE *fp)
@@ -416,18 +421,18 @@ void table(FILE *fp)
 	if (fnhead == (FN *) NULL)
 		stash_name("*");				/* fake for special case		*/
 
-	printf("                                                  file    file   stored\n");
-	printf("  file name                   ver    file date    attr    size    size\n");
-	printf("----------------------------- --- -------------- ------   -----   -----\n");
+	printf("                                                    file    file   stored\n");
+	printf("  file name                   ver     file date     attr    size    size\n");
+	printf("----------------------------- --- ---------------- ------   -----   -----\n");
 	while ((gethdr(fp, &header)) != EOF)
 		{
 		for (fnp = fnhead; fnp; fnp = fnp->fn_link)
 			{
 			if ((patmatch(fnp->fn_name, header.a_name, TRUE) == TRUE)
 					&& (header.a_stat == 0 || all == TRUE))
-				printf("%-29s %2d  %02d/%02d/%02d %02d:%02d %s%s %7ld %7ld\n",	/*+ek+*/
+				printf("%-29s %2d  %04d/%02d/%02d %02d:%02d %s%s %7ld %7ld\n",	/*+ek+*/
 					header.a_name, header.a_stat, 
-					header.a_attr.fd_date[0], header.a_attr.fd_date[1], 
+					1900 + (int)header.a_attr.fd_date[0], header.a_attr.fd_date[1],
 					header.a_attr.fd_date[2], header.a_attr.fd_date[3], 
 					header.a_attr.fd_date[4],
 					attrs[(header.a_attr.fd_attr >> 3) & 7],
