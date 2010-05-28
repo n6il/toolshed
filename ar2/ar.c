@@ -20,6 +20,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.15  2010/05/28 00:23:07  aaronwolfe
+ * use SEEK_* throughout for better portability and readability, from Christian Lesage
+ *
  * Revision 1.14  2010/05/28 00:15:06  aaronwolfe
  *  corrects a bug introduced in rev 1.10 that would make the program crash, from Christian Lesage
  *
@@ -393,7 +396,7 @@ void extract(FILE *afp, int flag)
 				break;
 
 		if (fnp == 0)
-			fseek(afp, header.a_size, 1);	/* file not found			*/
+			fseek(afp, header.a_size, SEEK_CUR);	/* file not found			*/
 		else
 			{
 			if (!flag)
@@ -453,7 +456,7 @@ void table(FILE *fp)
 					c4tol(header.a_attr.fd_fsize), header.a_size);
 			}
 
-		fseek(fp, header.a_size, 1);
+		fseek(fp, header.a_size, SEEK_CUR);
 		}
 	}
 /*page*/
@@ -475,12 +478,12 @@ void update(FILE *afp)
 			if (patmatch(fnp->fn_name, header.a_name, TRUE) == TRUE)
 				{
 				++header.a_stat;		/* mark it older				*/
-				fseek(afp, -SIZEOF_HEADER, 1);
+				fseek(afp, -SIZEOF_HEADER, SEEK_CUR);
 				if ((puthdr(afp, &header)) == EOF)
 					fatal(errno, "write failure on delete\n", 0, 0);
 				}
 
-		fseek(afp, header.a_size, 1);
+		fseek(afp, header.a_size, SEEK_CUR);
 		}
 
 	for (fnp = fnhead; fnp; fnp = fnp->fn_link)
@@ -520,12 +523,12 @@ void update(FILE *afp)
 		header.a_size = copy_to(afp, ifp, &header);	/* now copy it		*/
 		fclose(ifp);
 		tail_pos = ftell(afp);			/* save our final position		*/
-		fseek(afp, head_pos, 0);		/* back up to header pos		*/
+		fseek(afp, head_pos, SEEK_SET);			/* back up to header pos		*/
 /*		if ((fwrite(&header, SIZEOF_HEADER, 1, afp)) == NULL) */
 		if (puthdr(afp, &header) == EOF)
 			fatal(errno, "write error on header for %s\n", (int)fnp->fn_name, 0);
 
-		fseek(afp, tail_pos, 0);		/* go to end of file			*/
+		fseek(afp, tail_pos, SEEK_SET);			/* go to end of file			*/
 		if (rmflag)
 			unlink(fnp->fn_name);
 		}
