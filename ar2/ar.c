@@ -20,6 +20,9 @@
  *
  *------------------------------------------------------------------
  * $Log$
+ * Revision 1.13  2010/05/28 00:08:15  aaronwolfe
+ * case-insensitive comparison of the archive suffix (.ar) from Christian Lesage
+ *
  * Revision 1.12  2010/05/27 03:49:11  aaronwolfe
  * updated table to print a four digit year - kelly anderson
  *
@@ -153,8 +156,8 @@ int main(argc, argv)
 int		argc;
 char	**argv;
 	{
-	char	command, *p, *emalloc();
-	int		n;
+	char	command, *p, *emalloc(), lc_suf[SUFSIZ + 1];
+	int		n, i;
 	FILE	*afp;
 
 #if defined(SYSV)
@@ -181,7 +184,14 @@ char	**argv;
 
 	archfile = *argv++;
 	n = strlen(archfile);
-	if ((strcmp(archfile + n - SUFSIZ, suf)) != 0)
+	
+	/* case-insensitive comparison of the archive suffix (.ar) 5/27/10 Christian Lesage */
+	strcpy(lc_suf, archfile + n - SUFSIZ);
+
+	for(i=0; i < SUFSIZ; i++)
+		lc_suf[i] = tolower(lc_suf[i]);
+
+	if ((strcmp(lc_suf, suf)) != 0)
 		archfile = strcat(strcpy(emalloc(n + SUFSIZ + 1), archfile), suf);
 
 	if (get_names(argc -= 3, argv, command == 'u') == 0)
