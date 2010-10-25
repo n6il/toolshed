@@ -2759,7 +2759,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INSTALL_PATH = "$(CONFIGURATION_BUILD_DIR)";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 				SKIP_INSTALL = NO;
 				USER_HEADER_SEARCH_PATHS = ../../include;
 			};
@@ -2779,7 +2779,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INSTALL_PATH = "$(HOME)/bin";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 				SKIP_INSTALL = NO;
 				USER_HEADER_SEARCH_PATHS = ../../include;
 			};
