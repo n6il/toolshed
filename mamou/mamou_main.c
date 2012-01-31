@@ -171,6 +171,7 @@ int main(int argc, char **argv)
                     if (as.include_index + 1 == INCSIZE)
                     {
                         /* Reached our capacity */
+						fprintf(stderr,"Include file limit exceeded\n");
                         break;
                     }
                     p = &argv[j][2];
