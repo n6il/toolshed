@@ -18,6 +18,7 @@ static char *helpMessage[] =
     "Syntax: padrom {[<opts>]} <padsize> {<file> [<...>]} {[<opts>]}\n",
     "Usage:  Pad a file to a specific length.\n",
     "Options:\n",
+    "     -b          place padding at the beginning of the file\n",
     "     -c[=]<n>    character to pad (n=dec, %bin, 0oct or $hex)\n",
     NULL
 };
@@ -29,6 +30,7 @@ int os9padrom(int argc, char **argv)
     char *p = NULL;
     int i;
     int padSize = 0;
+    int padAtStart = 0;
     char padChar = '\xff';
     char *file = NULL;
 
@@ -56,6 +58,10 @@ int os9padrom(int argc, char **argv)
 
                 switch(*p)
                 {
+                    case 'b':
+                        padAtStart = 1;
+                        break;
+	
                     case 'c':
                         if (*(++p) == '=')
                         {
@@ -106,7 +112,7 @@ int os9padrom(int argc, char **argv)
 				error_code tse;
 				
                 file = argv[i];
-                tse = TSPadROM(file, padSize, padChar);
+                tse = TSPadROM(file, padSize, padChar, padAtStart);
 				if (tse != 0)
 				{
 					char errorstr[TS_MAXSTR];

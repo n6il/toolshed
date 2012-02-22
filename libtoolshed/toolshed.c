@@ -109,7 +109,7 @@ error_code TSDelete(char *pathlist)
 
 
 
-error_code TSPadROM(char *pathlist, int padSize, char padChar)
+error_code TSPadROM(char *pathlist, int padSize, char padChar, int padAtStart)
 {
     error_code	ec = 0;
     coco_path_id path;
@@ -117,7 +117,7 @@ error_code TSPadROM(char *pathlist, int padSize, char padChar)
     u_int fileSize;
 
 
-    ec = _coco_open(&path, pathlist, FAM_WRITE);
+    ec = _coco_open(&path, pathlist, FAM_READ | FAM_WRITE);
 
     if (ec != 0)
     {
@@ -141,14 +141,46 @@ error_code TSPadROM(char *pathlist, int padSize, char padChar)
         return EOS_PADROM;
     }
 
-    _coco_seek(path, fileSize, SEEK_SET);
-
-    for (j = 0; j < padSize - fileSize; j++)
-    {
-        u_int size = 1;
-
-        _coco_write(path, &padChar, &size);
-    }
+	if (padAtStart == 0)
+	{
+		_coco_seek(path, fileSize, SEEK_SET);
+	
+		for (j = 0; j < padSize - fileSize; j++)
+		{
+			u_int size = 1;
+	
+			_coco_write(path, &padChar, &size);
+		}
+	}
+	else
+	{
+		// read contents
+		char *contents = malloc(fileSize);
+		if (contents != NULL)
+		{
+			u_int size = fileSize;
+			
+			ec = _coco_read(path, contents, &size);
+			
+			if (ec == 0)
+			{
+				_coco_seek(path, 0, SEEK_SET);
+				
+				for (j = 0; j < padSize - fileSize; j++)
+				{
+					u_int size = 1;
+			
+					_coco_write(path, &padChar, &size);
+				}
+				
+				size = fileSize;
+				
+				_coco_write(path, contents, &fileSize);
+			}
+			
+			free(contents);
+		}
+	}
 
     _coco_close(path);
 

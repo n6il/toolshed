@@ -161,6 +161,21 @@ void eword(assembler *as, int wd)
 
 
 /*!
+ @function eword_little_endian
+ @discussion Emit a word to the code file
+ @param as The assembler state structure
+ @param wd Word to emit
+ */
+void eword_little_endian(assembler *as, int wd)
+{
+	emit(as, lobyte(wd));
+	emit(as, hibyte(wd));
+    
+	return;
+}
+
+
+/*!
 	@function emit
 	@discussion Emit a byte to the code file
 	@param as The assembler state structure

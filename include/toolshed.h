@@ -17,7 +17,7 @@ extern "C" {
 
 void TSReportError(error_code te, char *errorstr);
 
-error_code TSPadROM(char *pathlist, int padSize, char padChar);
+error_code TSPadROM(char *pathlist, int padSize, char padChar, int padAtStart);
 int TSDirectory(char *pathlist);
 int TSIsDirectory(char *pathlist);
 error_code TSRename(char *pathlist, char *new_name);

@@ -382,6 +382,7 @@ void decb_trailer_emit(assembler *as, u_int exec);
 void emit(assembler *as, int byte);
 void error(assembler *as, char *str);
 void eword(assembler *as, int wd);
+void eword_little_endian(assembler *as, int wd);
 void equad(assembler *as, int qwd);
 void f_record(assembler *as);
 void fatal(char *str);
@@ -405,6 +406,7 @@ int	_else(assembler *as),
 	_equ(assembler *as),
 	_even(assembler *as),
 	_fdb(assembler *as),
+	_fdbs(assembler *as),
 	_fcb(assembler *as),
 	_fcc(assembler *as),
 	_fcr(assembler *as),

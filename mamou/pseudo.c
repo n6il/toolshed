@@ -1525,7 +1525,7 @@ int _rmq(assembler *as)
  *****************************************************************************/
 #pragma mark Fill Constant Data
 
-static int _fill_constant(assembler *as, int size);
+static int _fill_constant(assembler *as, int size, int byteswapped);
 
 
 /*!
@@ -1533,7 +1533,7 @@ static int _fill_constant(assembler *as, int size);
 	@discussion Fill constant data
 	@param as The assembler state structure
  */
-int _fill_constant(assembler *as, int size)
+int _fill_constant(assembler *as, int size, int byteswapped)
 {
 	int	result;
 	
@@ -1565,7 +1565,14 @@ int _fill_constant(assembler *as, int size)
 				{
 					error(as, "value truncated");
 				}
-				eword(as, result);
+				if (byteswapped == 0)
+				{
+     				eword(as, result);
+     			}
+     			else
+				{
+     				eword_little_endian(as, result);
+     			}
 				break;
 				
 			case 4:
@@ -1593,7 +1600,7 @@ int _fill_constant(assembler *as, int size)
  */
 int _fcb(assembler *as)
 {
-	return _fill_constant(as, 1);
+	return _fill_constant(as, 1, 0);
 }
 
 
@@ -1604,7 +1611,18 @@ int _fcb(assembler *as)
  */
 int _fdb(assembler *as)
 {
-	return _fill_constant(as, 2);
+	return _fill_constant(as, 2, 0);
+}
+
+
+/*!
+	@function _fdbs
+	@discussion Fill double bytes swapped (little endian)
+	@param as The assembler state structure
+ */
+int _fdbs(assembler *as)
+{
+	return _fill_constant(as, 2, 1);
 }
 
 
@@ -1615,7 +1633,7 @@ int _fdb(assembler *as)
  */
 int _fqb(assembler *as)
 {
-	return _fill_constant(as, 4);
+	return _fill_constant(as, 4, 0);
 }
 
 

@@ -46,6 +46,7 @@ struct pseudo_opcode pseudo[] = {
 	{"fcs",		FC,		HAS_OPERAND_WITH_DELIMITERS,	_fcs,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"fcz",		FC,		HAS_OPERAND_WITH_DELIMITERS,	_fcz,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"fdb",		FC,		HAS_OPERAND,					_fdb,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
+	{"fdbs",		FC,		HAS_OPERAND,					_fdbs,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"fill",	FC,		HAS_OPERAND,					_fill,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"fqb",		FC,		HAS_OPERAND,					_fqb,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"fzb",		FC,		HAS_OPERAND,					_zmb,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
