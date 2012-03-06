@@ -89,7 +89,9 @@ error_code _native_readdir(native_path_id path, native_dir_entry *dirent)
 		return EOS_EOF;
 	}
 	
+#ifndef WIN32
 	memcpy(dirent, e, sizeof(native_dir_entry));
+#endif
 
 	return ec;
 }

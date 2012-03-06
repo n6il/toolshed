@@ -10,6 +10,9 @@ DIRS		= libnative librbf libcoco libdecb libmisc libcecb libsys  \
 		libtoolshed os9 mamou decb cecb rma rlink rdump makewav tocgen
 # ar2
 
+export CC=gcc
+export CFLAGS=-DWIN32 -mno-cygwin
+
 all:
 	$(foreach dir, $(DIRS), (echo $(dir); cd $(dir); make);)
 

@@ -6,7 +6,7 @@ vpath %.h ../../../tocgen
 CFLAGS += -I../../../include
 LDFLAGS += -L../libtoolshed -L../libcoco -L../libnative -L../librbf -L../libdecb \
 -L../libcecb -L../libmisc -L../libsys -ltoolshed -lcoco -lnative -lrbf -ldecb -lcecb \
--lmisc -lsys -lm 
+-lmisc -lsys
 
 tocgen: tocgen_main.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
