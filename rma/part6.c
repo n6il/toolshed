@@ -171,7 +171,7 @@ l1f63()
 			for (s_ref = entry->wrd; s_ref;)
 			{
 				OptBPtr->ETyp = s_ref->RfTyp;
-				SetArow(OptBPtr->RAddr = s_ref->r_offset);
+				SetArow((void*)(OptBPtr->RAddr = (void*)s_ref->r_offset));
 				++OptBPtr;
 				s_ref = s_ref->NxtRef;
 			}
@@ -179,7 +179,7 @@ l1f63()
 		else
 		{
 			OptBPtr->ETyp = 0;
-			(OptBPtr++)->RAddr = entry;
+			(OptBPtr++)->RAddr = (void*)entry;
 			SetArow(entry);
 		}
 	}
@@ -312,7 +312,7 @@ void
 				while (var2 && (d0791 < var1))
 				{
 					--var1;
-					if ((var2->r_offset != var1->RAddr))
+					if ((var2->r_offset != (void*)var1->RAddr))
 					{
 						break;
 					}
@@ -382,7 +382,7 @@ RefCreat(myref, rtyp, adrs)	/* L21c9()  */
 	/* new = getmem(5); */
 	new = (struct ref_str *) getmem(sizeof(struct ref_str));
 	new->RfTyp = rtyp;
-	new->r_offset = adrs;
+	new->r_offset = (void*)adrs;
 	new->NxtRef = myref->wrd;
 	myref->wrd = new;
 }
@@ -605,7 +605,7 @@ getmem(memreq)
 	int             memgot;
 
 #ifndef COCO
-	if ((memgot = malloc(memreq)))
+	if ((memgot = (int)malloc(memreq)))
 	{
 #else
 	if ((memgot = sbrk(memreq)) != -1)
