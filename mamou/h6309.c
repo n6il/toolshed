@@ -1914,5 +1914,3 @@ int _bitgen(assembler *as, int opcode)
 	return 0;
 }
 
-
- 
