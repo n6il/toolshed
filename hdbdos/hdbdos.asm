@@ -71,6 +71,11 @@
 ************** MAJOR SOURCE RENOVATIONS  *************
 *                                                       BGP 01/19/2012
 * All ROMs now built from a single source file
+*
+************** HDB-DOS 1.4 MODIFICATIONS *************
+*                                                       BGP 04/18/2012
+* Added DWREAD/DWWRITE vectors
+*
 
 * DSKCON Equates
 DCSEC          equ       $ED                 DSKCON Sector
@@ -3649,7 +3654,7 @@ DOSIN2         ldd       #(6*256)+$3B        6 "RTI" opcodes
 
 * HDB-DOS Version
 VMAJOR         equ       1
-VMINOR         equ       3
+VMINOR         equ       4
 VREV           equ       0
 
 
@@ -3711,6 +3716,10 @@ PORT           fdb       DATAADDR            Interface base address
 CCODE          fcb       TDELAY              IDE: startup delay / SCSI: wakeup delay
 DEFID          fcb       0
 
+               IFNE      DW
+               fdb       DWRead
+               fdb       DWWrite
+               ENDC
 
 ****************************************
 * OBJECT CODE STARTS HERE
