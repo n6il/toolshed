@@ -202,7 +202,7 @@ l1780(parm)
 	SmblDsc = reg;
 	l143e();
 	l20a4((short) nmbr_int);
-	Adrs_Ptr = &nmbr_int;	/* Gotta fake it here, first pt to long value */
+	Adrs_Ptr = (void*)&nmbr_int;	/* Gotta fake it here, first pt to long value */
 #ifdef COCO
 	++Adrs_Ptr;		/* no??? then bump to second half go get an
 				 * int     */
@@ -237,7 +237,7 @@ do_comon()
 	{
 		SmblDsc->s_ofst = nmbr_int;
 	}
-	Adrs_Ptr = &nmbr_int;
+	Adrs_Ptr = (void*)&nmbr_int;
 #ifdef COCO
 	++Adrs_Ptr;
 #endif
@@ -745,7 +745,7 @@ l1ae2()
 	if ((OptBPtr = d0791))
 	{
 		d0027 = nmbr_int;
-		Adrs_Ptr = &nmbr_int;
+		Adrs_Ptr = (void*)&nmbr_int;
 #ifdef COCO
 		++Adrs_Ptr;
 #endif

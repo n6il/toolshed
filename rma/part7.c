@@ -329,7 +329,7 @@ l257e()
 		{
 			nmbr_int = *(int *) S_Addrs;
 			OptBPtr->ETyp = d005f;
-			(OptBPtr++)->RAddr = d007c;
+			(OptBPtr++)->RAddr = (void*)d007c;
 			IsExtrn = 1;
 		}
 		break;

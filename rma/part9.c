@@ -209,7 +209,7 @@ addMac(parm)
 	reg->m_ptr = macfp2;
 	reg->PrevMpos = ftell(macfp2);
 	reg->fi1 = d00e0;
-	reg->fi2 = d00e2;
+	reg->fi2 = (int)d00e2;
 	macfp2 = parm->MWrkFil;
 	fseek(macfp2, parm->MacStart, BEGIN);
 	if (InMacro == 0)
@@ -217,7 +217,7 @@ addMac(parm)
 		++d00da;
 	}
 	d00e0 = d00da;
-	d00e2 = l34a8();
+	d00e2 = (void*)l34a8();
 	MacFlag = 1;
 }
 
@@ -237,8 +237,8 @@ decMac()
 	macfp2 = reg->m_ptr;
 	fseek(macfp2, reg->PrevMpos, BEGIN);
 	d00e0 = reg->fi1;
-	l35df(d00e2);
-	d00e2 = reg->fi2;
+	l35df((void*)d00e2);
+	d00e2 = (void*)reg->fi2;
 }
 
 #ifdef __STDC__
@@ -343,12 +343,12 @@ l34a8()
 	arglen = 59;
 	if (d00e8)
 	{
-		reg = d00e8;
-		d00e8 = *d00e8;
+		reg = (void*)d00e8;
+		d00e8 = (void*)*d00e8;
 	}
 	else
 	{
-		reg = getmem(61);
+		reg = (void*)getmem(61);
 	}
 	SkipSpac();
 	oprand = SrcChar;
@@ -409,7 +409,7 @@ endloop:
 		e_report("too many args");
 	}
 	*var1 = MArgCnt;
-	return var1;
+	return (int)var1;
 }
 
 #ifdef __STDC__
@@ -423,7 +423,7 @@ l35df(parm)
 
 #endif
 {
-	*parm = d00e8;
+	*parm = (int)d00e8;
 	d00e8 = parm;
 }
 
@@ -487,7 +487,7 @@ closmac()
 	if (macfp1)
 	{
 		fclose(macfp1);
-		unlink(&TmpNam);
+		unlink((void*)&TmpNam);
 	}
 }
 

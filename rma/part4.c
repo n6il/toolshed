@@ -590,7 +590,7 @@ l1389()				/* Good module: compiles correctly */
 			{
 				register struct symblstr *reg;
 
-				reg = (--OptBPtr)->RAddr;
+				reg = (void*)(--OptBPtr)->RAddr;
 				rtyp = reg->smbltyp | d0063 | OptBPtr->ETyp;
 
 				if ((reg->w1 & 0x42) == 0)
@@ -632,7 +632,7 @@ l143e()
 		{
 			if (l149b(reg) == 0)
 			{
-				if (l1541(reg->RAddr))
+				if (l1541((void*)reg->RAddr))
 				{
 					var1 = reg;
 					while (++var1 < OptBPtr)
@@ -661,14 +661,14 @@ l149b(op)
 	int             var3;
 	register struct ref_ent *regopt = op;
 
-	if ((var2 = regopt->RAddr)->w1 & 2)
+	if ((var2 = (void*)regopt->RAddr)->w1 & 2)
 	{
 		/* Next line may be a kludge, FIX LATER */
 		var3 = var2->smbltyp | regopt->ETyp;
 		var1 = regopt;
 		while (++var1 < OptBPtr)
 		{
-			if ((var2 = var1->RAddr)->w1 & 2)
+			if ((var2 = (void*)var1->RAddr)->w1 & 2)
 			{
 
 				/*
@@ -816,7 +816,7 @@ pc_rel()			/* originally  l1602() */
 		++NumBytes;
 #ifndef COCO
 		--d0033;
-		nptr = &d0033;
+		nptr = (void*)&d0033;
 		/* nptr += sizeof(d0033)-2; *//* int part */
 
 		/*
