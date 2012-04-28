@@ -90,6 +90,9 @@ error_code _decb_seeksector(decb_path_id path, int track, int sector)
 	offset *= 256;
 	offset += path->disk_offset;
 
+	if(path->hdbdos_offset)
+		offset *= 2;
+
 
 	/* 2. Seek to offset. */
 
@@ -122,6 +125,9 @@ error_code _decb_seekgranule(decb_path_id path, int granule)
 	
 	offset += path->disk_offset;
 	
+	if(path->hdbdos_offset)
+		offset *= 2;
+
 
 	/* 4. Seek to granule. */
 	

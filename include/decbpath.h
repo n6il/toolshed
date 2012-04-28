@@ -80,7 +80,8 @@ typedef struct _decb_path_id
 	unsigned int	filepos;		/* file position */
 	FILE			*fd;			/* file path pointer */
 	int				israw;			/* No file I/O possible, just get/set sector and granule */
-	int				disk_offset;	/* Offset HDB-DOS */
+	long int		disk_offset;	/* Offset for drive number */
+	long int		hdbdos_offset;	/* Offset and flag for HDB-DOS */
 } *decb_path_id;
 
 

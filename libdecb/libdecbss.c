@@ -111,7 +111,21 @@ error_code _decb_ss_granule(decb_path_id path, int granule, char *buffer)
 
 	/* 2. Write buffer to granule. */
 	
-	fwrite(buffer, 1, 2304, path->fd);
+	if(path->hdbdos_offset)
+	{
+		int count;
+
+		for(count = 0; count < 2304; count += 256)
+		{
+			fwrite(&buffer[count], 1, 256, path->fd);
+			/* skip unused 1/2 of sector */
+			fseek(path->fd, 256, SEEK_CUR);
+		}
+	}
+	else
+	{
+		fwrite(buffer, 1, 2304, path->fd);
+	}
 	
 
 	/* 3. Return status. */

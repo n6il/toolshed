@@ -179,8 +179,22 @@ error_code _decb_gs_granule(decb_path_id path, int granule, char *buffer)
 	
 
 	/* 2. Read granule into buffer. */
-	
-	fread(buffer, 1, 2304, path->fd);
+
+	if(path->hdbdos_offset)
+	{
+		int count;
+
+		for(count = 0; count < 2304; count += 256)
+		{
+			fread(&buffer[count], 1, 256, path->fd);
+			/* skip unused 1/2 of sector */
+			fseek(path->fd, 256, SEEK_CUR);
+		}
+	}
+	else
+	{
+		fread(buffer, 1, 2304, path->fd);
+	}
 	
 
 	/* 3. Return status. */

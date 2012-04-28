@@ -81,6 +81,7 @@ error_code _decb_create(decb_path_id *path, char *pathlist, int mode, int file_t
 	
 	
 	(*path)->disk_offset = 161280 * (*path)->drive;
+	(*path)->disk_offset += (*path)->hdbdos_offset;
 	
 	
 	/* 4. At this point, sector and granule function will work - Load FAT */
@@ -347,6 +348,7 @@ error_code _decb_open(decb_path_id *path, char *pathlist, int mode)
 
 
 	(*path)->disk_offset = 161280 * (*path)->drive;
+	(*path)->disk_offset += (*path)->hdbdos_offset;
 	
 	
 	/* 6. At this point, sector and granule function will work - Load FAT */
@@ -481,10 +483,11 @@ static int _decb_cmp(decb_dir_entry *entry, char *name)
  * the path descriptor.
  *
  * Valid pathlist examples:
- *	foo,			Opens foo for raw access
- *	foo,:2			Opens third disk in foo for raw access
- *	foo,bar.bas		Opens file bar.bas in disk image foo
- *	foo,bar.bin:1	Opens file bar.bin in second disk image in file foo
+ * foo,				 	Opens foo for raw access
+ * foo,:2				Opens third disk in foo for raw access
+ * foo,bar.bas			Opens file bar.bas in disk image foo
+ * foo,bar.bin:1		Opens file bar.bin in second disk image in file foo
+ * foo,bar.bin:0+12345  Opens file bar.bin in first disk at OS9 offset 12345
  */
 
 static int validate_pathlist(decb_path_id *path, char *pathlist)
@@ -520,6 +523,15 @@ static int validate_pathlist(decb_path_id *path, char *pathlist)
 			strcpy((*path)->filename, p);
 			(*path)->drive = atoi(q + 1);
 			*q = ':';
+
+			q = strchr(p, '+');
+		    if (q != NULL)
+		    {
+		    	if(strncmp(q + 1, "0x", 2) == 0 || strncmp(q + 1, "0X", 2) == 0)
+	 				(*path)->hdbdos_offset = strtol(q + 3, (char **) NULL, 16) * 256;
+	 			else
+	 				(*path)->hdbdos_offset = atoi(q + 1) * 256;
+	 		}
 		}
 		else
 		{
