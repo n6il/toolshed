@@ -20,7 +20,10 @@
 
           IFNE BECKER
 * NOTE: There is no timeout currently on here...
-DWRead    pshs   cc,d,x,u
+DWRead    clra                          ; clear Carry (no framing error)
+          deca                          ; clear Z flag, A = timeout msb ($ff)
+          tfr       cc,b
+          pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
           leau   ,x 
           ldx    #$0000
           orcc   #IntMasks
@@ -30,14 +33,18 @@ loop@     ldb    $FF41
           ldb    $FF42
           stb    ,u+
           abx
-          leay   -1,y
+          leay   ,-y
           bne    loop@
 
           tfr    x,y
-          puls   cc
-          andcc  #^Carry
-          orcc   #Zero
-          puls   d,x,u,pc
+          ldb    #0
+          lda    #3
+          leas      1,s                 ; remove timeout msb from stack
+          inca                          ; A = status to be returned in C and Z
+          ora       ,s                  ; place status information into the..
+          sta       ,s                  ; ..C and Z bits of the preserved CC
+          leay      ,x                  ; return checksum in Y
+          puls      cc,dp,x,u,pc        ; restore registers and return
 
           ELSE
           IFNE BAUD38400

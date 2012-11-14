@@ -1,11 +1,13 @@
 HDBSCSI	= hdbtc3.rom hdbkenton.rom hdblrtech.rom hdbd4n1.rom hdbdhdii.rom
 HDBIDE  = hdblba.rom hdbchs.rom
-HDBDW   = hdbdw3cc1.rom hdbdw3cc2.rom hdbdw3cc3.rom # hdbdw4cc3.rom
+HDBDW   = hdbdw3cc1.rom hdbdw3cc2.rom hdbdw3cc3.rom hdbdw3bck.rom hdbdw3bc3.rom # hdbdw4cc3.rom
 HDBROM  = $(HDBSCSI) $(HDBIDE) $(HDBDW)
 HDBBIN	= hdbtc3.bin hdbkenton.bin hdblrtech.bin hdbd4n1.bin hdbdhdii.bin \
-	hdblba.bin hdbchs.bin hdbdw3cc1.bin hdbdw3cc2.bin hdbdw3cc3.bin
+	hdblba.bin hdbchs.bin hdbdw3cc1.bin hdbdw3cc2.bin hdbdw3cc3.bin \
+	hdbdw3bck.bin hdbdw3bc3.bin
 HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
-	hdblba.wav hdbchs.wav hdbdw3cc1.wav hdbdw3cc2.wav hdbdw3cc3.wav
+	hdblba.wav hdbchs.wav hdbdw3cc1.wav hdbdw3cc2.wav hdbdw3cc3.wav \
+	hdbdw3bck.wav hdbdw3bc3.wav
 
 ALLOBJS         = preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)
 
@@ -135,6 +137,30 @@ hdbdw3cc3.bin: preload postload hdbdw3cc3.rom
 hdbdw3cc3.wav: hdbdw3cc3.bin
 	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
 	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3C3
+	rm hdbtmp
+
+# DW3 CoCo Becker
+hdbdw3bck.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
+	mamou -aDW -aLevel1 -aBECKER -q -mr ../cocoroms/ecb_equates.asm hdbdos.asm -o$@
+
+hdbdw3bck.bin: preload postload hdbdw3bck.rom
+	cat preload hdbdw3bck.rom postload > $@
+
+hdbdw3bck.wav: hdbdw3bck.bin
+	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
+	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3BK
+	rm hdbtmp
+
+# DW3 CoCo 3 Becker
+hdbdw3bc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
+	mamou -aDW -aLevel=2 -aBECKER -q -mr ../cocoroms/ecb_equates.asm hdbdos.asm -o$@
+
+hdbdw3bc3.bin: preload postload hdbdw3bc3.rom
+	cat preload hdbdw3bc3.rom postload > $@
+
+hdbdw3bc3.wav: hdbdw3bc3.bin
+	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
+	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3B3
 	rm hdbtmp
 
 clean:
