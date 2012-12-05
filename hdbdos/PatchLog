@@ -1,7 +1,12 @@
 Year/Mo/Da - Who        - Discription of Changes
 ------------------------------------------------------------------------------
-2012/11/13 - David Ladd - Fixed Becker read routine related to stack 
+2012/11/13 - David Ladd - Fixed Becker read routine related to stack
+ 
 2012/12/02 - David Ladd - Duplicated Becker code in both dwread.asm and
                           dwwrite.asm files and changed the ports. This is to
                           allow use of the parallelport of the J&M CP FDC to
                           interface with a DLP-USB245M FT245BM Demo Board.
+
+2012/12/04 - David Ladd - Updated makefile to compile the new Becker and J&M
+                          CP FDC's parallel port routines.
+
