@@ -16,15 +16,21 @@
 *
 
 
+          IFNE JMCPBCK
+DWWrite   pshs      d,cc              ; preserve registers
+          orcc      #$50                ; mask interrupts
+txByte    
+          lda       ,x+                
+          sta       $FF44
+          leay      -1,y                ; decrement byte counter
+          bne       txByte              ; loop if more to send
+
+          puls      cc,d,pc           ; restore registers and return
+
+          ELSE
           IFNE BECKER
 DWWrite   pshs      d,cc              ; preserve registers
           orcc      #$50                ; mask interrupts
-;          ldu       #BBOUT              ; point U to bit banger out register
-;          lda       3,u                 ; read PIA 1-B control register
-;          anda      #$f7                ; clear sound enable bit
-;          sta       3,u                 ; disable sound output
-;          fcb       $8c                 ; skip next instruction
-
 txByte    
           lda       ,x+                
           sta       $FF42
@@ -32,7 +38,6 @@ txByte
           bne       txByte              ; loop if more to send
 
           puls      cc,d,pc           ; restore registers and return
-
 
           ELSE
           IFNE H6309-1
@@ -191,3 +196,5 @@ tx0040    stb       -1,u                ; send bit
           ENDC
           ENDC
           ENDC
+          ENDC
+
