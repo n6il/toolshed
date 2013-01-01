@@ -135,7 +135,7 @@ hdbdw3cc1.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
 	mamou -aDW -aLevel=1 -aBAUD38400 -q -mr ../cocoroms/ecb_equates.asm hdbdos.asm -o$@
 
 hdbdw3cc1.bin: preload postload hdbdw3cc1.rom
-	cat preload hdbdw3cc2.rom postload > $@
+	cat preload hdbdw3cc1.rom postload > $@
 
 hdbdw3cc1.wav: hdbdw3cc1.bin
 	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
