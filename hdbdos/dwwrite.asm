@@ -16,6 +16,18 @@
 *
 
 
+          IFNE JMCPBCK
+DWWrite   pshs      d,cc              ; preserve registers
+          orcc      #$50                ; mask interrupts
+txByte    
+          lda       ,x+                
+          sta       $FF44
+          leay      -1,y                ; decrement byte counter
+          bne       txByte              ; loop if more to send
+
+          puls      cc,d,pc           ; restore registers and return
+
+          ELSE
           IFNE BECKER
 DWWrite   pshs      d,cc              ; preserve registers
           orcc      #$50                ; mask interrupts
@@ -32,9 +44,10 @@ txByte
           bne       txByte              ; loop if more to send
 
           puls      cc,d,pc           ; restore registers and return
-		ENDC
+          ENDC
+          ENDC
 
-          IFEQ BECKER
+          IFEQ BECKER+JMCPBCK
           IFEQ BAUD38400+H6309
 *******************************************************
 * 57600 (115200) bps using 6809 code and timimg
