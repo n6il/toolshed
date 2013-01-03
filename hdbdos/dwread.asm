@@ -23,7 +23,7 @@ DWRead    clra                          ; clear Carry (no framing error)
           deca                          ; clear Z flag, A = timeout msb ($ff)
           tfr       cc,b
           pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
-          leau   ,x 
+          leau   ,x
           ldx    #$0000
           orcc   #IntMasks
 loop@     ldb    $FF4C
@@ -51,7 +51,7 @@ DWRead    clra                          ; clear Carry (no framing error)
           deca                          ; clear Z flag, A = timeout msb ($ff)
           tfr       cc,b
           pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
-          leau   ,x 
+          leau   ,x
           ldx    #$0000
           orcc   #IntMasks
 loop@     ldb    $FF41

@@ -168,7 +168,7 @@ hdbdw3cc3.wav: hdbdw3cc3.bin
 
 # DW3 CoCo Becker
 hdbdw3bck.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	mamou -aDW -aLevel1 -aBECKER -q -mr ../cocoroms/ecb_equates.asm hdbdos.asm -o$@
+	mamou -aDW -aLevel=1 -aBECKER -q -mr ../cocoroms/ecb_equates.asm hdbdos.asm -o$@
 
 hdbdw3bck.bin: preload postload hdbdw3bck.rom
 	cat preload hdbdw3bck.rom postload > $@
@@ -204,7 +204,7 @@ hdbdw3jc3.wav: hdbdw3jc3.bin
 
 # DW3 CoCo J&M CP FDC Becker
 hdbdw3jc2.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	mamou -aDW -aLevel1 -aJMCPBCK -q -mr ../cocoroms/ecb_equates.asm hdbdos.asm -o$@
+	mamou -aDW -aLevel=1 -aJMCPBCK -q -mr ../cocoroms/ecb_equates.asm hdbdos.asm -o$@
 
 hdbdw3jc2.bin: preload postload hdbdw3jc2.rom
 	cat preload hdbdw3bck.rom postload > $@

@@ -19,8 +19,8 @@
           IFNE JMCPBCK
 DWWrite   pshs      d,cc              ; preserve registers
           orcc      #$50                ; mask interrupts
-txByte    
-          lda       ,x+                
+txByte
+          lda       ,x+
           sta       $FF44
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
@@ -37,8 +37,8 @@ DWWrite   pshs      d,cc              ; preserve registers
 ;          sta       3,u                 ; disable sound output
 ;          fcb       $8c                 ; skip next instruction
 
-txByte    
-          lda       ,x+                
+txByte
+          lda       ,x+
           sta       $FF42
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
@@ -114,7 +114,7 @@ tx0010    stb       ,u++                ; send bit
           bne       tx0010              ; loop until 7th data bit has been sent
           leau      ,u
           stb       ,u                  ; send bit 7
-          lda       ,u++                
+          lda       ,u++
           ldb       #$02                ; value for stop bit (MARK)
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
