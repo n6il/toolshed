@@ -108,7 +108,7 @@ PIA1Base       equ       $FF20
 DATAADDR       equ       PIA1Base
 TDELAY         equ       8                   Retries in the case of DriveWire
 MAXDN          equ       255
-               endc      
+               endc
 
                cond      IDE
 * IDE Command Opcode Equates
@@ -127,10 +127,10 @@ ACK            equ       0                   Necessary because used as SCSI cond
 
                cond      USELBA
 DEVBYT         equ       %11100000
-               endc      
+               endc
                cond      USECHS
 DEVBYT         equ       %10100000
-               endc      
+               endc
 
 * IDE status Register Equates
 BUSY           equ       %10000000           Drive busy
@@ -155,7 +155,7 @@ DEVHED         equ       6                   Device/Heads
 STATUS         equ       7                   Status when read
 CMD            equ       7                   Command when write
 LATCH          equ       8                   Latch (2nd 8 bits of 16 bit word)
-               endc      
+               endc
 
                cond      SCSI
 * SCSI command Opcode Equates
@@ -174,7 +174,7 @@ BUSY           equ       8                   1 = Unit Busy
 * Misc Equates
 MAXDN          equ       8                   Maximum number of SCSI drives (0-7)
 TDELAY         equ       $0A                 SCSI bus timeout delay
-               endc      
+               endc
 
                cond      TC3                 Cloud-9 TC^3 SCSI
 * TC^3 SCSI Status Register Equates
@@ -191,7 +191,7 @@ DATAADDR       equ       $FF70               Bi-directional data port
 DATARW         equ       0                   Data read/write
 STATUS         equ       1                   Read-only SCSI status
 SELECT         equ       1                   Set (-SEL)ECT D-Flop
-               endc      
+               endc
 
                cond      LRTECH              LR-Tech
 * LR-Tech SCSI Status Register Equates
@@ -211,7 +211,7 @@ DATARW         equ       0                   Data read/write
 STATUS         equ       1                   Read-only SCSI status
 SELECT         equ       2                   Set (-SEL)ECT D-Flop
 SCSIRESET      equ       3                   Send SCSI -RST
-               endc      
+               endc
 
                cond      KENTON              Ken-Ton SCSI
 * Ken-Ton SCSI Status Register Equates
@@ -231,7 +231,7 @@ DATARW         equ       0                   Data read/write
 STATUS         equ       1                   Read-only SCSI status
 SELECT         equ       2                   Set (-SEL)ECT D-Flop
 SCSIRESET      equ       3                   Send SCSI -RST
-               endc      
+               endc
 
 
                cond      DHDII               Disto Hard Disk II
@@ -252,7 +252,7 @@ DATARW         equ       0                   Data read/write
 STATUS         equ       -2                  Read SASI status
 SELECT         equ       -1                  Write -SEL pulse
 SCSIRESET      equ       -2                  Write -RST pulse
-               endc      
+               endc
 
                cond      D4N1                Disto 4-N-1 SCSI
 * Disto 4-N-1 SCSI Status Register Equates
@@ -272,7 +272,7 @@ DATARW         equ       0                   Data read/write
 STATUS         equ       -2                  Read SASI status
 SELECT         equ       -1                  Write -SEL pulse
 SCSIRESET      equ       -2                  Write -RST pulse
-               endc      
+               endc
 
 
 * Disk Color BASIC 1.1

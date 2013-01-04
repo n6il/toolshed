@@ -10,3 +10,8 @@ Year/Mo/Da - Who        - Discription of Changes
 2012/12/04 - David Ladd - Updated makefile to compile the new Becker and J&M
                           CP FDC's parallel port routines.
 
+2013/01/03 - David Ladd - Updated makefile to correct for a typo related to
+                          Becker and J&M CP FDC's routines.  Also fixed
+                          Becker routine and added J&M CP FDC's routines back
+                          into the dwread.asm and dwwrite.asm files after a
+                          accidental overwrite.
