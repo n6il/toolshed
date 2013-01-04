@@ -61,7 +61,7 @@ do_aim()
 		if (*SrcChar == ',')
 		{
 			++SrcChar;
-			++(char *) opr_ptr;	/* Bump union ptr by one byte */
+			opr_ptr = ((char *) opr_ptr) + 1;	/* Bump union ptr by one byte */
 			/* to allow for extra byte    */
 			return bit_stuf();
 		}
