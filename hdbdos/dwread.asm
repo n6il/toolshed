@@ -44,7 +44,7 @@ loop@     ldb    $FF51
           puls      cc,dp,x,u,pc        ; restore registers and return
 
           ELSE
-          
+
           IFNE JMCPBCK
 * NOTE: There is no timeout currently on here...
 DWRead    clra                          ; clear Carry (no framing error)
@@ -103,7 +103,7 @@ loop@     ldb    $FF41
           ENDC
           ENDC
 
-          IFEQ BECKER+JMCPBCK
+          IFEQ BECKER+JMCPBCK+ARDUINO
           IFNE BAUD38400
 *******************************************************
 * 38400 bps using 6809 code and timimg

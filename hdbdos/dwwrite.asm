@@ -71,7 +71,7 @@ txByte
           ENDC
           ENDC
 
-          IFEQ BECKER+JMCPBCK
+          IFEQ BECKER+JMCPBCK+ARDUINO
           IFEQ BAUD38400+H6309
 *******************************************************
 * 57600 (115200) bps using 6809 code and timimg

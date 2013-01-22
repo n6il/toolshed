@@ -1,17 +1,21 @@
 Year/Mo/Da - Who        - Discription of Changes
 ------------------------------------------------------------------------------
-2012/11/13 - David Ladd - Fixed Becker read routine related to stack
- 
-2012/12/02 - David Ladd - Duplicated Becker code in both dwread.asm and
-                          dwwrite.asm files and changed the ports. This is to
-                          allow use of the parallelport of the J&M CP FDC to
-                          interface with a DLP-USB245M FT245BM Demo Board.
-
-2012/12/04 - David Ladd - Updated makefile to compile the new Becker and J&M
-                          CP FDC's parallel port routines.
+2013/01/22 - David Ladd - Updated dwread.asm and dwwrite.asm to include the
+                          ARDUINO into the IFEQ BECKER+JMCPBCK to now make
+                          it IFEQ BECKER+JMCPBCK+ARDUINO
 
 2013/01/03 - David Ladd - Updated makefile to correct for a typo related to
                           Becker and J&M CP FDC's routines.  Also fixed
                           Becker routine and added J&M CP FDC's routines back
                           into the dwread.asm and dwwrite.asm files after a
                           accidental overwrite.
+ 
+2012/12/04 - David Ladd - Updated makefile to compile the new Becker and J&M
+                          CP FDC's parallel port routines.
+
+2012/12/02 - David Ladd - Duplicated Becker code in both dwread.asm and
+                          dwwrite.asm files and changed the ports. This is to
+                          allow use of the parallelport of the J&M CP FDC to
+                          interface with a DLP-USB245M FT245BM Demo Board.
+
+2012/11/13 - David Ladd - Fixed Becker read routine related to stack

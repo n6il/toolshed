@@ -3,7 +3,7 @@ MERGE		= cat
 SOFTLINK	= ln -s
 RM		= rm
 MAKE		= make
-CFLAGS		= -Dunix -DUNIX -I. -g -I../../../include -Wall
+CFLAGS		= -Dunix -DUNIX -O3 -static -I. -g -I../../../include -Wall
 ASM		= rma
 
 %.l: %.r
