@@ -3848,6 +3848,21 @@ CtlrOk         lbsr      GETMAX              Compute maximum no. of drives
 *               puls      a,cc                Carry is clear on pull
                endc      
 
+               cond      ARDUINO
+* setup PIA PORTA (read)
+               clr       $FF51
+               clr       $FF50
+               lda       #$2C
+               sta       $FF51
+
+* setup PIA PORTB (write)
+               clr       $FF53
+               lda       #$FF
+               sta       $FF52
+               lda       #$2C
+               sta       $FF53
+               endc
+
 ITSOK          jsr       >BEEP               Send a beep
                cond      DW-1
                bra       BOOTUP              Try AUTOEXEC
@@ -5023,6 +5038,9 @@ SIGNON         fcc       "HDB-DOS "
                fcc       "4-N-1"
                endc      
                cond      DW
+               cond      ARDUINO
+               fcc       "DW3 ARDUINO"
+               ELSE
                cond      DW4
                fcc       "DW4 COCO "
                else      
@@ -5035,6 +5053,7 @@ SIGNON         fcc       "HDB-DOS "
                fcc       "1"
                else      
                fcc       "2"
+               endc      
                endc      
                endc      
                endc      

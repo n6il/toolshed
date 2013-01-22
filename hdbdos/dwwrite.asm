@@ -16,6 +16,30 @@
 *
 
 
+          IFNE ARDUINO
+DWWrite   pshs      d,cc              ; preserve registers
+          orcc      #$50                ; mask interrupts
+txByte
+          lda       ,x+
+          sta       $FF52
+          mul
+          mul
+          mul
+          mul
+          mul
+          mul
+          mul
+          mul
+          mul
+          mul
+          mul
+          leay      -1,y                ; decrement byte counter
+          bne       txByte              ; loop if more to send
+
+          puls      cc,d,pc           ; restore registers and return
+
+          ELSE
+
           IFNE JMCPBCK
 DWWrite   pshs      d,cc              ; preserve registers
           orcc      #$50                ; mask interrupts
@@ -159,6 +183,7 @@ tx0040    stb       -1,u                ; send bit
           puls      cc,d,u,pc           ; restore registers and return
 
 
+          ENDC
           ENDC
           ENDC
           ENDC
