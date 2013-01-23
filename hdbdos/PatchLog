@@ -1,5 +1,10 @@
 Year/Mo/Da - Who        - Discription of Changes
 ------------------------------------------------------------------------------
+2013/01/23 - David Ladd - Updated dwread.asm and dwwrite.asm so that the 6309
+                          code was in the 6309 labeled area and moved the
+                          6809 57600bps code to the default area.  Also fixed
+                          a ENDC that was in the wrong location.
+
 2013/01/22 - David Ladd - Updated dwread.asm and dwwrite.asm to include the
                           ARDUINO into the IFEQ BECKER+JMCPBCK to now make
                           it IFEQ BECKER+JMCPBCK+ARDUINO
