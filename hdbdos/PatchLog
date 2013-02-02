@@ -1,5 +1,9 @@
 Year/Mo/Da - Who        - Discription of Changes
 ------------------------------------------------------------------------------
+2013/02/01 - David Ladd - Updated hdbdos.asm so that when building for becker
+                          port the text in the startup of HDBDOS will say
+                          BECKER rather then DW3.
+
 2013/01/23 - David Ladd - Updated dwread.asm and dwwrite.asm so that the 6309
                           code was in the 6309 labeled area and moved the
                           6809 57600bps code to the default area.  Also fixed

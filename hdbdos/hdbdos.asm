@@ -5043,9 +5043,13 @@ SIGNON         fcc       "HDB-DOS "
                ELSE
                cond      DW4
                fcc       "DW4 COCO "
-               else      
+               else
+               cond      BECKER
+               fcc       "BECKER COCO "
+               else
                fcc       "DW3 COCO "
-               endc      
+               endc
+               endc
                ifgt      Level-1
                fcc       "3"
                else      
