@@ -47,10 +47,10 @@ int os9copy(int argc, char *argv[])
 	char *buffer;
 	u_int buffer_size = 32768;
 
-	
-	
+
+
     /* 1. Walk command line for options. */
-	
+
     for (i = 1; i < argc; i++)
     {
         if (argv[i][0] == '-')
@@ -76,7 +76,7 @@ int os9copy(int argc, char *argv[])
                         }
                         p = q;
                         break;
-	
+
                     case 'l':
                         eolTranslate = 1;
                         break;
@@ -98,12 +98,12 @@ int os9copy(int argc, char *argv[])
 						}
 						p = q;
                         break;
-						
+
                     case 'h':
                     case '?':
                         show_help(helpMessage);
                         return(0);
-	
+
                     default:
                         fprintf(stderr, "%s: unknown option '%c'\n", argv[0], *p);
                         return(0);
@@ -111,10 +111,10 @@ int os9copy(int argc, char *argv[])
             }
         }
     }
-	
+
 
     /* 2. Allocate memory for the copy buffer. */
-	
+
     buffer = (char *)malloc(buffer_size);
 
     if (buffer == NULL)
@@ -126,66 +126,66 @@ int os9copy(int argc, char *argv[])
 
 
     /* 3. Count non option arguments. */
-	
+
     for (i = 1, count = 0; i < argc; i++)
     {
         if (argv[i] == NULL)
 		{
             continue;
 		}
-		
+
         if (argv[i][0] == '-')
 		{
             continue;
 		}
-		
+
         count++;
     }
 
     if (count == 0)
     {
         show_help(helpMessage);
-		
+
         return 0;
     }
 
 
     /* 4. Walk backwards and get the destination first. */
-	
+
     for (i = argc - 1; i > 0; i--)
     {
 		error_code ec;
 		coco_path_id tmp_path;
-		
-		
+
+
         if (argv[i][0] != '-')
         {
             desttarget = argv[i];
 
-			
+
             /* 1. Determine if dest is native */
 
 			ec = _coco_open(&tmp_path, desttarget, FAM_DIR | FAM_READ);
-			
+
 //			_coco_gs_pathtype(desttarget, &type);
-			
+
 
 			if (ec == 0)
 			{
 				targetDirectory = YES;
 
-				_coco_close(tmp_path);			
+				_coco_close(tmp_path);
 			}
 			else
 			{
 				targetDirectory = NO;
 			}
-			
+
 #if 0
             if (type == NATIVE)
             {
                 /* Determine if this is a directory. */
-				
+
                 if  (stat(desttarget, &sb) == 0)
                 {
                     if ((sb.st_mode & S_IFDIR) != 0)
@@ -204,17 +204,17 @@ int os9copy(int argc, char *argv[])
                     /* These is either a file system error or
                         the target is a file that will be created by
                         this copy. */
-					   
+
                         targetDirectory = NO;
                 }
             }
             else if (type == OS9)
             {
                 /* Determine if this is a  directory. */
-				
+
 
                 ec = _coco_open(&destpath, desttarget, FAM_DIR | FAM_READ);
-				
+
                 if (ec == 0)
                 {
                     targetDirectory = YES;
@@ -224,7 +224,7 @@ int os9copy(int argc, char *argv[])
                     targetDirectory = NO;
                 }
 
-				_coco_close(destpath);					
+				_coco_close(destpath);
             }
 #endif
             break;
@@ -237,22 +237,22 @@ int os9copy(int argc, char *argv[])
         show_help(helpMessage);
         return(0);
     }
-	
+
     /* Now look for the source files  */
     for (j = 1 ; j < i; j++)
     {
         if (argv[j][0] == '-')
             continue;
-		
+
         if (argv[j] == NULL)
             continue;
 
         strcpy(df, desttarget);
-		
+
         if (targetDirectory == YES)
-        { 
+        {
             /* OK, we need to add the filename to the end of the directory path */
-			
+
             if (strchr(df, ',') != NULL)
             {
                 /* OS-9 directory */
@@ -268,7 +268,7 @@ int os9copy(int argc, char *argv[])
                 if (df[strlen(df) - 1] != '/' )
                     strcat(df, "/");
             }
-			
+
             strcat(df, ExtractFilename(argv[j]));
         }
 
@@ -276,7 +276,7 @@ int os9copy(int argc, char *argv[])
 
         if (ec != 0)
         {
-            fprintf(stderr, "%s: error %d\n", argv[0], ec);
+            fprintf(stderr, "%s: error %d on file %s\n", argv[0], ec, argv[j]);
         }
     }
 
@@ -289,30 +289,26 @@ int os9copy(int argc, char *argv[])
 static char *ExtractFilename( char *path )
 {
     /* This works for both native file paths and os9 file paths */
-	
+
     char *a, *b;
-	
+
     a = strchr(path, ',');
-	
+
     if (a == NULL)
     {
         /* Native file */
         a = strrchr(path, '/');
-		
+
         if (a == NULL)
             return path;
-		
+
         return a + 1;
     }
-	
+
     b = strrchr(a, '/');
-	
+
     if (b == NULL)
         return a + 1;
-	
+
     return b + 1;
 }
-
-
-
-
