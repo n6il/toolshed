@@ -145,7 +145,8 @@ int os9copy(int argc, char *argv[])
     if (count == 0)
     {
         show_help(helpMessage);
-
+	free(buffer);
+	buffer=NULL;
         return 0;
     }
 
@@ -235,6 +236,8 @@ int os9copy(int argc, char *argv[])
     {
         printf("Error: two or more sources requires target to be a directory.\n\n" );
         show_help(helpMessage);
+	free(buffer);
+	buffer=NULL;
         return(0);
     }
 
@@ -280,7 +283,11 @@ int os9copy(int argc, char *argv[])
         }
     }
 
-
+    if(buffer != NULL)
+    {
+	free(buffer);
+	buffer=NULL;
+    }
     return 0;
 }
 
