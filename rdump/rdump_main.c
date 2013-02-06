@@ -80,6 +80,8 @@ int main(argc, argv)
 {
 	register char  *p;
 
+	fprintf(stderr, "RDUMP IS DEPRECATED! USE LWTOOLS INSTEAD!!!\n");
+
 	while (--argc > 0)
 	{
 		if (*(p = *++argv) == '-')
