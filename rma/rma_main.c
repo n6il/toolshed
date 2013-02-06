@@ -35,6 +35,8 @@ main(argc, argv)
 {
 	char          **rd_fil;
 
+	fprintf(stderr, "RMA IS DEPRECATED! USE LWTOOLS INSTEAD!!!\n");
+
 	/* Start off by inserting current directory as a place to look for includes. */
 	incdirs[0] = ".";
 	inccount++;

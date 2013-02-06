@@ -40,6 +40,7 @@ int main(int argc, char **argv)
 
     mamou_init_assembler(&as);
  
+	fprintf(stderr, "MAMOU IS DEPRECATED! USE LWTOOLS INSTEAD!!!\n");
 	sprintf(product_name, "The Mamou Assembler Version %02d.%02d",
 			VERSION_MAJOR, VERSION_MINOR);
 	

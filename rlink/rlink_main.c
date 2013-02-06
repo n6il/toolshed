@@ -60,6 +60,8 @@ int             main(argc, argv)
 	                lfile_count,
 	                i;
 
+	fprintf(stderr, "RLINK IS DEPRECATED! USE LWTOOLS INSTEAD!!!\n");
+
 	modname = NULL;
 	ofile = NULL;
 	B09EntPt = NULL;
