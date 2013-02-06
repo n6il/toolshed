@@ -62,12 +62,13 @@ error_code _native_gs_eof(native_path_id path)
 
 		return ec;
 	}
-        
+
 	fread(&c, 1, 1, path->fd);
 
 	if (feof(path->fd) != 0)
 	{
 		ec = EOS_EOF;
+		return ec;
 	}
 
 	ungetc(c, path->fd);
