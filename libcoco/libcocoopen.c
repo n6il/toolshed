@@ -22,49 +22,55 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, coco_file_
 
 
 	/* 1. Allocate memory for the path id. */
-	
+
 	*path = malloc(sizeof(struct _coco_path_id));
-	
+
 	if (*path == NULL)
 	{
 		return EOS_BPNAM;
 	}
-	
-	
+
+
     /* 2. Determine the pathlist type. */
-	
+
     ec = _coco_identify_image(pathlist, &(*path)->type);
-		
+
     if (ec != 0)
     {
+	free(*path);
+	*path=NULL;
         return ec;
     }
 
 
     /* 3. Call appropriate create function. */
-	
+
 	switch ((*path)->type)
 	{
 		case NATIVE:
 			ec = _native_create(&((*path)->path.native), pathlist, mode, fstat->perms);
 			break;
-			
+
 		case OS9:
 			ec = _os9_create(&((*path)->path.os9), pathlist, mode, fstat->perms);
 			break;
-			
+
 		case DECB:
 				ec = _decb_create(&((*path)->path.decb), pathlist, mode, fstat->file_type, fstat->data_type);
 			break;
-		
+
 		case CECB:
 				ec = _cecb_create(&((*path)->path.cecb), pathlist, mode,
 					fstat->file_type, fstat->data_type, fstat->gap_flag, fstat->ml_load_address, fstat->ml_exec_address);
 			break;
-		
+
 	}
 
-	
+	if( ec != 0)
+	{
+		free(*path);
+		*path=NULL;
+	}
 	return ec;
 }
 
@@ -80,7 +86,7 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, coco_file_
  * 1. imagename,@     (considered to be a 'raw' open of the image)
  * 2. imagename,      (considered to be an open of the root directory)
  * 3. imagename,file  (considered to be a file or directory open within the image)
- * 4. imagename       (considered to be a native open) 
+ * 4. imagename       (considered to be a native open)
  *
  * The presence of a comma in the pathlist indicates that at the least, a non-native open will
  * be performed.
@@ -88,51 +94,57 @@ error_code _coco_create(coco_path_id *path, char *pathlist, int mode, coco_file_
 error_code _coco_open(coco_path_id *path, char *pathlist, int mode)
 {
     error_code	ec = 0;
-	
+
 
 	/* 1. Allocate memory for the path id. */
-	
+
 	*path = malloc(sizeof(struct _coco_path_id));
-	
+
 	if (*path == NULL)
 	{
 		return EOS_BPNAM;
 	}
-	
-	
+
+
     /* 2. Determine the pathlist type. */
-	
+
     ec = _coco_identify_image(pathlist, &(*path)->type);
-		
+
     if (ec != 0)
     {
+	free(*path);
+	*path=NULL;
         return ec;
     }
 
 
     /* 3. Call appropriate create function. */
-	
+
 	switch ((*path)->type)
 	{
 		case NATIVE:
 			ec = _native_open(&((*path)->path.native), pathlist, mode);
 			break;
-			
+
 		case OS9:
 			ec = _os9_open(&((*path)->path.os9), pathlist, mode);
 			break;
-			
+
 		case DECB:
 			ec = _decb_open(&((*path)->path.decb), pathlist, mode);
 			break;
-		
+
 		case CECB:
 			ec = _cecb_open(&((*path)->path.cecb), pathlist, mode);
 			break;
-			
+
 	}
-	
-	
+
+	if( ec != 0)
+	{
+		free(*path);
+		*path=NULL;
+	}
 	return ec;
 }
 
@@ -149,7 +161,7 @@ error_code _coco_close(coco_path_id path)
 
 
     /* 1. Call appropriate close function. */
-	
+
 	switch (path->type)
 	{
 		case NATIVE:
@@ -159,19 +171,19 @@ error_code _coco_close(coco_path_id path)
 		case OS9:
 			ec = _os9_close(path->path.os9);
 			break;
-			
+
 		case DECB:
 			ec = _decb_close(path->path.decb);
 			break;
-		
+
 		case CECB:
 			ec = _cecb_close(path->path.cecb);
 	}
-	
-	
+
+
 	free(path);
-	
-	
+
+
 	return ec;
 }
 
@@ -187,61 +199,61 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
     char *p;
     char *tmppathlist;
 	FILE *fp;
-	
-	
+
+
     if (strchr(pathlist, ',') == NULL)
     {
         /* 1. No native/coco delimiter in pathlist, it's native. */
-		
+
 		*type = NATIVE;
-		
+
 		return ec;
     }
-	
-	
+
+
     /* 2. Check validity of pathlist. */
-	
+
     tmppathlist = strdup(pathlist);
-	
+
     p = strtok(tmppathlist, ",");
-	
+
     if (p == NULL)
     {
         free(tmppathlist);
-		
+
         return EOS_BPNAM;
     }
-	
+
 	/* 2a. Check for a colon. */
-	
+
 	if (strchr(pathlist, ':') != NULL)
 	{
 		/* 2a. There is a colon; it is a DECB image */
-		
+
 		*type = DECB;
-		
+
 		return ec;
 	}
-	
+
 	/* 2b. Check for .cas file extension. */
 	if( strendcasecmp( p, CAS_FILE_EXTENSION ) == 0 )
 	{
 		*type = CECB;
-		
+
 		return ec;
 	}
-	
+
     /* 3. Determine if this is an OS-9, DECB or CECB image. */
-	
+
 	fp = fopen(tmppathlist, "r");
 
 	if (fp != NULL)
 	{
 		u_char sector_buffer[256];
-		
-		
+
+
 		/* 1. Read sector 0. */
-		
+
 		if (fread(sector_buffer, 1, 256, fp) < 256)
 		{
 			ec = EOS_BPNAM;
@@ -251,24 +263,24 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 			Lsn0_sect   os9_sector = (Lsn0_sect)sector_buffer;
 			int dir_sector_offset;
 			int bps = 256;
-			
+
 			/* 0. Look for WAV file marker */
-			
+
 			if( strncmp( (char *)sector_buffer,"RIFF",4) == 0 )
 				*type = CECB;
 			else
 			{
 				/* 1. Look for markers that this is an OS-9 disk image. */
-				
+
 				/* First, assume bps value is valid and get it */
-				
+
 				if (int1(os9_sector->dd_lsnsize) > 0)
 				{
 					bps = int1(os9_sector->dd_lsnsize) * 256;
 				}
-				
+
 				/* Then, check out the dir sector for .. and . entries. */
-				
+
 				dir_sector_offset = (int3(os9_sector->dd_dir) + 1) * bps;
 
 				fseek(fp, dir_sector_offset, SEEK_SET);
@@ -283,30 +295,30 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 						sector_buffer[32] == 0xAE)
 					{
 						/* 1. This is likely an OS-9 disk image. */
-						
+
 						*type = OS9;
 					}
 					else
 					{
 						/* 1. This is probably a DECB disk image. */
-						
+
 						*type = DECB;
 					}
 				}
 			}
 		}
-		
+
 		fclose(fp);
 	}
 	else
 	{
 		ec = EOS_BPNAM;
 	}
-	
-	
+
+
     free(tmppathlist);
-	
-	
+
+
     return ec;
 }
 
@@ -322,28 +334,28 @@ error_code _coco_open_read_whole_file(coco_path_id *path, char *pathlist, int mo
 	error_code ec = 0;
 	u_int size2, size3;
 	u_char *buffer2;
-	
+
 	ec = _coco_open( path, pathlist, mode );
 	if( ec != 0 )
 		return ec;
-		
+
 	*size = 0;
 	size3 = BLOCKSIZE;
 	*buffer = malloc( size3 );
-	
+
 	if( *buffer == NULL )
 		return -1;
-	
+
 	while( _coco_gs_eof(*path) == 0 )
 	{
 		while( (*size + BLOCKSIZE) > size3 )
 		{
 			size3 += BLOCKSIZE;
 			buffer2 = realloc( *buffer, size3);
-			
+
 			if( buffer2 == NULL )
 				return -1;
-				
+
 			*buffer = buffer2;
 		}
 
