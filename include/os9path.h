@@ -39,9 +39,9 @@ typedef struct
 /* disk file entry in directory structure */
 typedef struct
 {
-#define	D_NAMELEN	28
+#define	D_NAMELEN	29
 	u_char	name[D_NAMELEN],
-		res[1],
+/*		res[1], */
 		lsn[3];
 } os9_dir_entry;
 
@@ -192,4 +192,3 @@ unsigned int NextHighestMultiple(unsigned int value, unsigned int multiple);
 #define FAP_DIR		0x80
 
 #endif	/* _OS9PATH_H */
-

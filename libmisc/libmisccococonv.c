@@ -18,10 +18,10 @@
 static EOL_Type DetermineEOLType(char *buffer, int size);
 
 
-int CoCoToUnixPerms(int attrs)			
+int CoCoToUnixPerms(int attrs)
 {
 	int ret = 0;
-	
+
 	if (attrs & FAP_DIR)
 	{
 		ret = S_IFDIR;
@@ -30,7 +30,7 @@ int CoCoToUnixPerms(int attrs)
 	{
 		ret = S_IFREG;
 	}
-	
+
 	if (attrs & FAP_READ)
 	{
 		ret |= S_IRUSR;
@@ -57,15 +57,15 @@ int CoCoToUnixPerms(int attrs)
 		ret |= S_IXOTH;
 	}
 #endif
-			
+
 	return ret;
 }
 
 
-int UnixToCoCoPerms(int attrs)			
+int UnixToCoCoPerms(int attrs)
 {
 	int ret = 0;
-	
+
 	if (attrs & S_IRUSR)
 	{
 		ret |= FAP_READ;
@@ -92,7 +92,7 @@ int UnixToCoCoPerms(int attrs)
 		ret |= FAP_PEXEC;
 	}
 #endif
- 			
+
 	return ret;
 }
 
@@ -208,10 +208,10 @@ void CStringToDECBString(u_char *filename, u_char *ext, u_char *string)
 void DECBStringToCString(u_char *filename, u_char *ext, u_char *string)
 {
 	int count = 0;
-	
-	
+
+
 	/* 1. Copy filename. */
-	
+
 	while (*filename != ' ' && count++ < 8)
 	{
 		*(string++) = *(filename++);
@@ -219,15 +219,15 @@ void DECBStringToCString(u_char *filename, u_char *ext, u_char *string)
 
 
 	/* 2. If an extension exists, add it. */
-	
+
 	if (ext[0] != ' ')
 	{
 		*(string++) = '.';
-		
+
 		count = 0;
-	
+
 		/* 1. Copy extension. */
-	
+
 		while (*ext != ' ' && count++ < 3)
 		{
 			*(string++) = *(ext++);
@@ -246,7 +246,7 @@ error_code UnixToCoCoError(int ec)
     {
 		case 0:
 			return 0;
-			
+
 		case ENOTDIR:
 		case EPERM:
         case EACCES:
@@ -289,7 +289,7 @@ int CoCoToUnixError(error_code ec)
     {
 		case 0:
 			return 0;
-			
+
 		case EOS_FNA:
             return(EACCES);
 
@@ -326,8 +326,8 @@ static EOL_Type DetermineEOLType(char *buffer, int size)
 {
     EOL_Type eol = 0;
     int i;
-    
-    
+
+
 	/* Scan to determine EOL ending type */
 
 	for (i = 0; i < size; i++)
@@ -375,12 +375,12 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
 
 
 	eolMethod = DetermineEOLType(buffer, size);
-    
+
     switch (eolMethod)
     {
         case EOL_UNIX:
             /* Change all occurences of 0x0A to 0x0D */
-            
+
             for(i = 0; i < size; i++)
             {
                 if (buffer[i] == 0x0A)
@@ -395,16 +395,16 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
             }
 
             memcpy(*newBuffer, buffer, size);
-            
+
             *newSize = size;
-            
+
             break;
 
         case EOL_DOS:
             /* Things are a bit more involved here. */
-            
+
             /* We will strip all 0x0As out of the buffer, leaving the 0x0Ds. */
-            
+
             {
                 int dosEOLCount = 0;
                 char *newP;
@@ -427,16 +427,16 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
                 */
 
                 *newSize = size - dosEOLCount;
-                
+
                 *newBuffer = (char *)malloc(*newSize);
-                
+
                 if (*newBuffer == NULL)
                 {
                     return;
                 }
 
                 newP = *newBuffer;
-                
+
                 for (i = 0; i < size; i++)
                 {
 					if (buffer[i] != 0x0A)
@@ -452,7 +452,7 @@ void NativeToDECB(char *buffer, int size, char **newBuffer, u_int *newSize)
             return;
     }
 
-    
+
     return;
 }
 
@@ -468,7 +468,7 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
     /* Things are a bit more involved here. */
 
     /* We will add 0x0As after all 0x0Ds. */
-            
+
 
     /* 1. First we count up the number of 0x0D Disk BASIC line endings. */
 
@@ -484,17 +484,17 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
     /* 2. Now we allocate a buffer to hold the current size +
         'dosEOLCount' bytes.
     */
-    
+
 	*newSize = size + dosEOLCount;
     *newBuffer = (char *)malloc(*newSize);
-                
+
     if (*newBuffer == NULL)
 	{
         return;
     }
 
     newP = *newBuffer;
-    
+
     for (i = 0; i < size; i++)
     {
         *newP = buffer[i];
@@ -511,7 +511,7 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
 
 
     /* Change all occurences of 0x0D to 0x0A */
-            
+
 	for(i = 0; i < size; i++)
     {
         if (buffer[i] == 0x0D)
@@ -525,9 +525,9 @@ void DECBToNative(char *buffer, int size, char **newBuffer, u_int *newSize)
     {
         return;
     }
-            
+
     memcpy(*newBuffer, buffer, size);
-            
+
     *newSize = size;
 #endif
 

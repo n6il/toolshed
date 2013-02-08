@@ -55,7 +55,7 @@ error_code _os9_rename_ex(char *pathlist, char *new_name, os9_dir_entry *dentry)
 
         return(EOS_IA);
     }
-			
+
 	/* See if another file in this directory has the same name as our destination */
 
 	while ((ec = _os9_gs_eof(parent_path)) == 0)
@@ -131,5 +131,3 @@ error_code _os9_rename_ex(char *pathlist, char *new_name, os9_dir_entry *dentry)
 
 	return(ec);
 }
-
-

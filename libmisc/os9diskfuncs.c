@@ -58,4 +58,3 @@ void show_attrs(int attr_byte)
         }
     }
 }
-

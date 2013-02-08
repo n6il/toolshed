@@ -20,7 +20,7 @@ error_code _os9_ss_attr(os9_path_id path, int perms)
 
 
     ec = _os9_gs_fd(path, sizeof(fd_stats), &fdbuf);
-	
+
     if (ec == 0)
     {
         fdbuf.fd_att = perms;
@@ -41,7 +41,7 @@ error_code _os9_ss_fd(os9_path_id path, int count, fd_stats *fdbuf)
     {
         /* seek to FD LSN of pathlist */
         fseek(path->fd, path->pl_fd_lsn * path->bps, SEEK_SET);	
-	
+
         /* write the file descriptor sector */
         size = sizeof(fd_stats);
         if (count < size)
@@ -51,7 +51,7 @@ error_code _os9_ss_fd(os9_path_id path, int count, fd_stats *fdbuf)
         fwrite(fdbuf, 1, size, path->fd);
     }
 
-	
+
     return(ec);
 }
 

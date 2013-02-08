@@ -36,17 +36,17 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
 
 
 	/* 1. Check the mode. */
-	
+
     if ((path->mode & FAM_DIR) != 0 || (path->mode & FAM_READ) == 0)
     {
         /* 1. Must use _os9_readdir. */
-		
+
         return EOS_BMODE;
     }
 
 
     /* 2. Treat raw path differently. */
-	
+
 	if (path->israw == 1)
     {
         unsigned int  disksize = int3(path->lsn0->dd_tot) * path->bps;
@@ -68,7 +68,7 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
 
     /* 2. Seek to FD LSN of pathlist */
 
-    fseek(path->fd, path->pl_fd_lsn * path->bps, SEEK_SET);	
+    fseek(path->fd, path->pl_fd_lsn * path->bps, SEEK_SET);
 
 
     /* 3. Read the file descriptor sector */
@@ -91,9 +91,9 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
     if (path->filepos >= filesize)
     {
         /* 1. End of file reached. */
-		
+
 		*size = 0;
-		
+
         return EOS_EOF;
     }
 
@@ -120,7 +120,7 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
         if (accum_size > path->filepos)
         {
             /* 1. This is the sector! */
-			
+
             accum_size -= int2(segptr[i].num) * path->bps;
             break;
         }
@@ -138,7 +138,7 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
          *    large, because we couldn't find a sector.
          */
 		*size = 0;
-		
+
         return 1;
     }
 
@@ -147,7 +147,7 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
      *
      * i == segment entry to start
      */
-	 
+
     bytes_left = *size;
 
     while (bytes_left > 0 && i != NUM_SEGS && int3(segptr[i].lsn) != 0)
@@ -156,18 +156,18 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
 
 
         /* 1. Seek to sector where segment starts and compute the segment size. */
-		
+
         fseek(path->fd, int3(segptr[i].lsn) * path->bps, SEEK_SET);
         seg_size_bytes = int2(segptr[i].num) * path->bps;
 
 
         /* 2. Seek within segment to offset. */
-		
+
         fseek(path->fd, path->filepos - (accum_size - seg_size_bytes), SEEK_CUR);
 
 
         /* 3. Compute read size for this segment. */
-		
+
         read_size = accum_size - path->filepos;
 
         if (read_size > bytes_left)
@@ -181,7 +181,7 @@ error_code _os9_read(os9_path_id path, void *buffer, u_int *size)
         bytes_left -= read_size;
         i++;
     }
-	
+
 
     return ec;
 }
@@ -196,7 +196,7 @@ error_code _os9_readdir(os9_path_id path, os9_dir_entry *dirent)
     if (!(path->mode & FAM_DIR))
     {
         /* 1. Must be a directory. */
-		
+
         ec = EOS_BMODE;
     }
 	else
@@ -205,15 +205,15 @@ error_code _os9_readdir(os9_path_id path, os9_dir_entry *dirent)
 		int temp_mode = path->mode;
 
 		/* 1. Temporarily turn off FAM_DIR so that read won't fail. */
-		
+
 		path->mode &= ~FAM_DIR;
 		path->mode |= FAM_READ;
-		
+
         ec = _os9_read(path, dirent, &size);
 
 		path->mode = temp_mode;
     }
-	
+
 
     return ec;
 }
@@ -222,10 +222,10 @@ error_code _os9_ncpy_name( os9_dir_entry e, u_char *name, size_t len )
 {
 	error_code ec = 0;
 	u_char	c_name[D_NAMELEN];
-	
+
 	memcpy( c_name, e.name, D_NAMELEN );
 	OS9StringToCString( c_name );
-	
+
 	strncpy( (char *)name, (const char *)c_name, len );
 
 	return ec;
