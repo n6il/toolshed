@@ -32,7 +32,7 @@ static char *helpMessage[] =
 	"                  0 = BASIC program\n",
 	"                  1 = BASIC data file\n",
 	"                  2 = machine-language program\n",
-	"                  3 = text editor source file\n",	
+	"                  3 = text editor source file\n",
 	"     -[a|b]     data type (a = ASCII, b = binary)\n",
 	"     -[g|n]     gap flag (g = gaps, n = no gaps)\n",
 	"     -d<n>      load address\n",
@@ -61,7 +61,7 @@ int cecbcopy(int argc, char *argv[])
 
 
     /* 1. Walk command line for options. */
-	
+
     for (i = 1; i < argc; i++)
     {
         if (argv[i][0] == '-')
@@ -73,35 +73,35 @@ int cecbcopy(int argc, char *argv[])
                     case '0':
 						file_type = 0;
                         break;
-	
+
                     case '1':
 						file_type = 2;
                         break;
-	
+
                     case '2':
 						file_type = 2;
                         break;
-	
+
                     case '3':
 						file_type = 3;
                         break;
-	
+
                     case 'a':
 						data_type = 255;
 						break;
-	
+
                     case 'g':
 						gap = 255;
 						break;
-	
+
                     case 'n':
 						gap = 0;
 						break;
-	
+
                     case 'b':
 						data_type = 0;
 						break;
-	
+
                     case 'l':
                         eolTranslate = 1;
                         break;
@@ -109,38 +109,40 @@ int cecbcopy(int argc, char *argv[])
 					case 't':
 						tokTranslate = 1;
 						break;
-					
+
 					case 'k':
 						tokTranslate = -1;
 						break;
-					
+
 					case 'c':
 						binary_concat = 1;
 						break;
-					
+
 					case 's':
 						s_record = 1;
 						break;
-					
+
 					case 'f':
 						s_record = -1;
 						break;
-					
+
 					case 'd':
-						p++;
+						p=p+1;
 						ml_load_address = strtol(p, &p, 0);
+						p=p-1;
 						break;
 
 					case 'e':
-						p++;
+						p=p+1;
 						ml_exec_address = strtol(p, &p, 0);
+						p=p-1;
 						break;
 
                     case 'h':
                     case '?':
                         show_help(helpMessage);
                         return(0);
-	
+
                     default:
                         fprintf(stderr, "%s: unknown option '%c'\n", argv[0], *p);
                         return(0);
@@ -150,61 +152,61 @@ int cecbcopy(int argc, char *argv[])
     }
 
     /* 2. Count non option arguments. */
-	
+
     for (i = 1, count = 0; i < argc; i++)
     {
         if (argv[i] == NULL)
 		{
             continue;
 		}
-		
+
         if (argv[i][0] == '-')
 		{
             continue;
 		}
-		
+
         count++;
     }
 
     if (count == 0)
     {
         show_help(helpMessage);
-		
+
         return 0;
     }
 
 
     /* 3. Walk backwards and get the destination first. */
-	
+
     for (i = argc - 1; i > 0; i--)
     {
 		error_code ec;
 		coco_path_id tmp_path;
-		
-		
+
+
         if (argv[i][0] != '-')
         {
             desttarget = argv[i];
 
-			
+
             /* 1. Determine if dest is native */
 
 			ec = _coco_open(&tmp_path, desttarget, FAM_DIR | FAM_READ);
-			
+
 //			_coco_gs_pathtype(desttarget, &type);
-			
+
 
 			if (ec == 0)
 			{
 				targetDirectory = YES;
 
-				_coco_close(tmp_path);			
+				_coco_close(tmp_path);
 			}
 			else
 			{
 				targetDirectory = NO;
 			}
-			
+
             break;
         }
     }
@@ -215,31 +217,31 @@ int cecbcopy(int argc, char *argv[])
         show_help(helpMessage);
         return(0);
     }
-	
+
     /* Now look for the source files  */
     for (j = 1 ; j < i; j++)
     {
         if (argv[j][0] == '-')
             continue;
-		
+
         if( argv[j] == NULL )
             continue;
 
 		memset(df, 0, 256);
-		
-		
+
+
         if (targetDirectory == YES)
-        { 
+        {
             /* OK, we need to add the filename to the end of the directory path */
-			
+
             if ((p = strchr(desttarget, ',')) != NULL)
             {
 				if (*(p + 1) == ':')
 				{
 					strncpy(df, desttarget, p - desttarget + 1);
-				
+
 					strcat(df, GetFilename(argv[j]));
-					
+
 					strcat(df, p + 1);
 				}
 				else
@@ -253,10 +255,9 @@ int cecbcopy(int argc, char *argv[])
 		{
 			strcpy(df, desttarget);
 		}
-		
-		
-        ec = CopyCECBFile(argv[j], df, eolTranslate, tokTranslate, s_record, binary_concat, file_type, data_type, gap,
-																							ml_load_address, ml_exec_address);
+
+
+        ec = CopyCECBFile(argv[j], df, eolTranslate, tokTranslate, s_record, binary_concat, file_type, data_type, gap, ml_load_address, ml_exec_address);
 
         if (ec != 0)
         {
@@ -272,41 +273,39 @@ int cecbcopy(int argc, char *argv[])
 static char *GetFilename(char *path)
 {
     /* This works for both native file paths and os9 file paths */
-	
+
     char *a, *b;
-	
+
     a = strchr(path, ',');
-	
+
     if (a == NULL)
     {
         /* Native file */
         a = strrchr(path, '/');
-		
+
         if (a == NULL)
 		{
             return path;
 		}
-		
+
         return a + 1;
     }
-	
+
     b = strrchr(a, '/');
-	
+
     if (b == NULL)
 	{
         return a + 1;
 	}
-	
+
     return b + 1;
 }
 
 
 
 #define BLOCKSIZE 256
-	
-static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate,
-								int s_record, int binary_concat, int file_type, int data_type, int gap,
-								int ml_load_address, int ml_exec_address )
+
+static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, int tokTranslate, int s_record, int binary_concat, int file_type, int data_type, int gap, int ml_load_address, int ml_exec_address )
 {
     error_code	ec = 0;
     coco_path_id path, destpath;
@@ -316,7 +315,6 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 	_path_type path_type;
 	coco_file_stat fstat;
 
-	
     /* 1. Open a path to the srcfile. */
 
 	ec = _coco_open_read_whole_file( &path, srcfile, FAM_READ, &buffer, &buffer_size );
@@ -325,10 +323,10 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 	{
         return ec;
 	}
-	
+
 	/* 2. Apply meta data */
 
-	_coco_gs_fd(path, &fstat);	
+	_coco_gs_fd(path, &fstat);
 
 	if( (file_type == -1 ) && (tokTranslate == 1) )
 		file_type = 0;
@@ -372,10 +370,10 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 				free( buffer );
 				buffer = decode_buffer;
 				buffer_size = decode_size;
-			
+
 				if( file_type == -1 )
 					file_type = 2;
-				
+
 				if( data_type == -1 )
 					data_type = 0;
 
@@ -386,14 +384,14 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 				return -1;
 		}
 	}
-	
+
 	if( binary_concat == 1 )
 	{
 		u_char *binconcat_buffer;
 		u_int binconcat_size;
 
 		ec = _decb_binconcat(buffer, buffer_size, &binconcat_buffer, &binconcat_size);
-		
+
 		if( ec == 0 )
 		{
 			free( buffer );
@@ -403,9 +401,9 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 		else
 			return -1;
 	}
-	
+
 	_coco_identify_image( dstfile, &path_type );
-	
+
 	if( (path_type == CECB) && (gap == 0x00) && (file_type == 2) && (data_type == 0) )
 	{
 		/* only one segment allowed */
@@ -413,15 +411,15 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 		u_char *extracted_buffer;
 		u_int extracted_buffer_size;
 		u_int load_address, exec_address;
-		
+
 		count = _decb_count_segements( buffer, buffer_size );
-		
+
 		if( (count == 0) || (count > 1) )
 		{
 			fprintf( stderr, "Error copying multiple segement binary to single segement file.\n" );
 			return -1;
 		}
-		
+
 		ec = _decb_extract_first_segment( buffer, buffer_size, &extracted_buffer, &extracted_buffer_size, &load_address, &exec_address );
 
 		if( ec == 0 )
@@ -432,24 +430,25 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 
 			if( ml_load_address == -1 )
 				ml_load_address = load_address;
-				
+
 			if( ml_exec_address == -1 )
 				ml_exec_address = exec_address;
+
 		}
 		else
 			return -1;
 	}
-	
+
 	if( file_type == -1 )
 		fstat.file_type = fstat.file_type;
 	else
 		fstat.file_type = file_type;
-		
+
 	if( data_type == -1 )
 		fstat.data_type = fstat.data_type;
 	else
 		fstat.data_type = data_type;
-	
+
 	if( gap == -1 )
 		fstat.gap_flag = fstat.gap_flag;
 	else
@@ -467,9 +466,9 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 
 
     /* 3. Attempt to create the destfile. */
-	
+
 	ec = _coco_create(&destpath, dstfile, mode, &fstat);
-		
+
     if (ec != 0)
     {
         _coco_close(path);
@@ -510,7 +509,7 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 				buffer += 3;
 				buffer_size -= 3;
 			}
-		
+
 			ec = _decb_detoken( buffer, buffer_size, (char **)&detokenize_buffer, &detokenize_size);
 
 			if( ec == 0 )
@@ -521,15 +520,15 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 			}
 			else
 				return -1;
-		
+
 		}
 	}
-		
+
 	if (eolTranslate == 1)
 	{
 		char *translation_buffer;
 		u_int new_translation_size;
-		
+
 		if (path->type == NATIVE )
 		{
 			/* source is native, destination is coco */
@@ -543,7 +542,7 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 		else if (path->type != NATIVE )
 		{
 			/* source is coco, destination is native */
-			
+
 			DECBToNative((char *)buffer, buffer_size, &translation_buffer, &new_translation_size);
 
 			free(buffer);
@@ -556,7 +555,7 @@ static error_code CopyCECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 
 	if( buffer != NULL )
 		free( buffer );
-		
+
     _coco_close(path);
     _coco_close(destpath);
 

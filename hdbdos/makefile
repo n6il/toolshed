@@ -13,11 +13,14 @@ HDBBIN	= hdbtc3.bin hdbkenton.bin hdblrtech.bin hdbd4n1.bin hdbdhdii.bin \
 HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
 	hdblba.wav hdbchs.wav hdbdw3cc1.wav hdbdw3cc2.wav hdbdw3cc3.wav \
 	hdbdw3bck.wav hdbdw3bc3.wav hdbdw3jc3.wav hdbdw3jc2.wav hdbdw4cc3.wav \
-	hdbdw4cc2.wav hdbdw3arduino.wav
+	hdbdw4cc2.wav hdbdw3arduino.wav \
+	hdbdw3bck.cas hdbdw3bc3.cas
 
 ALLOBJS         = preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)
 
 AS	= mamou 
+MERGE	= cat 
+WAVE	= makewav 
 
 all: $(ALLOBJS)
 
@@ -183,6 +186,10 @@ hdbdw3bck.wav: hdbdw3bck.bin
 	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3BK
 	rm hdbtmp
 
+hdbdw3bck.cas: hdbdw3bck.bin
+	cecb bulkerase $@
+	cecb copy -2 -b -g $< $@,HDBDW3BK
+
 # DW3 CoCo 3 Becker
 hdbdw3bc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
 	$(AS) -aDW -aLevel=2 -aBECKER -q -mr $+ -o$@
@@ -194,6 +201,11 @@ hdbdw3bc3.wav: hdbdw3bc3.bin
 	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
 	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3B3
 	rm hdbtmp
+
+hdbdw3bc3.cas: hdbdw3bc3.bin
+	cecb bulkerase $@
+	cecb copy -2 -b -g $< $@,HDBDW3B3
+
 
 # DW3 CoCo 3 J&M CP FDC Becker
 hdbdw3jc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
