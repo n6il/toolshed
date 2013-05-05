@@ -92,7 +92,7 @@ int main(int argc, char **argv)
     {
         if (*argv[j] == '-')
         {
-            switch (tolower(argv[j][1]))
+            switch (argv[j][1])
             {
 				case 'm':
 					switch (tolower(argv[j][2]))
