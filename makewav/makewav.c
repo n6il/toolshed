@@ -56,6 +56,7 @@ char            in_filename[MAXPATHLEN];
 int             verbose;
 unsigned short  start_address;
 unsigned short  exec_address;
+int             cas;
 
 unsigned char  *buffer_1200,
                *buffer_2400;
@@ -114,17 +115,25 @@ int             fwrite_audio_byte(int byte, FILE * output)
 	int             result = 0,
 	                j;
 
-	for (j = 0; j < 8; j++)
+	if (cas)
 	{
-		if (((byte >> j) & 0x01) == 0)
+		fputc(byte, output);
+		result = 1;
+	}
+	else
+	{
+		for (j = 0; j < 8; j++)
 		{
-			fwrite(buffer_1200, buffer_1200_length, 1, output);
-			result += buffer_1200_length;
-		}
-		else
-		{
-			fwrite(buffer_2400, buffer_2400_length, 1, output);
-			result += buffer_2400_length;
+			if (((byte >> j) & 0x01) == 0)
+			{
+				fwrite(buffer_1200, buffer_1200_length, 1, output);
+				result += buffer_1200_length;
+			}
+			else
+			{
+				fwrite(buffer_2400, buffer_2400_length, 1, output);
+				result += buffer_2400_length;
+			}
 		}
 	}
 
@@ -169,7 +178,13 @@ int             fwrite_audio_repeat_byte(int length, char byte, FILE * output)
 
 int             fwrite_audio_silence(int length, FILE * output)
 {
-	return fwrite_repeat_byte(length, 0x80, FILE * output)
+	int		result = 0;
+
+	if (!cas)
+	{
+		result = fwrite_repeat_byte(length, 0x80, output);
+	}
+	return result;
 }
 
 unsigned char   Checksum_Buffer(unsigned char *buffer, int count)
@@ -214,6 +229,7 @@ int             main(int argc, char **argv)
 	verbose = 0;
 	start_address = 0;
 	exec_address = 0;
+	cas = 0;
 	
 	if (argc < 2)
 	{
@@ -238,6 +254,7 @@ int             main(int argc, char **argv)
 		fprintf(stderr, " -d<val>    Start address (default: 0x%04x)\n", start_address );
 		fprintf(stderr, " -e<val>    Execution address (default: 0x%04x)\n", exec_address );
 		fprintf(stderr, " -o<string> Output file name for WAV file (default: %s)\n", out_filename);
+		fprintf(stderr, " -k         Output in CAS format instead of WAV\n");
 		fprintf(stderr, " -v         Print information about the conversion (default: off)\n\n");
 		fprintf(stderr, "For <val> use 0x prefix for hex, 0 prefix for octal and no prefix for decimal.\n");
 
@@ -292,6 +309,9 @@ int             main(int argc, char **argv)
 				break;
 			case 'e':
 				exec_address = strtoul(&(argv[j][2]), NULL, 0);
+				break;
+			case 'k':
+				cas = 1;
 				break;
 			default:
 				/* Bad option */
@@ -537,23 +557,26 @@ int             main(int argc, char **argv)
 							4;			/* data chunk size */
 	int             sample_count = 0;
 
-	/* Set up WAV file format header */
+	if (!cas)
+	{
+		/* Set up WAV file format header */
 
-	fwrite("RIFF", 4, 1, output);
-	fwrite_le_int(headers_size - 8, output);
-	fwrite("WAVE", 4, 1, output);
+		fwrite("RIFF", 4, 1, output);
+		fwrite_le_int(headers_size - 8, output);
+		fwrite("WAVE", 4, 1, output);
 
-	fwrite("fmt ", 4, 1, output);
-	fwrite_le_int(16, output);	/* chunk size */
-	fwrite_le_short(1, output);	/* compression code: uncompressed */
-	fwrite_le_short(1, output);	/* number of channels */
-	fwrite_le_int(sample_rate, output);	/* sample rate */
-	fwrite_le_int(sample_rate * 1, output);	/* average bytes per second */
-	fwrite_le_short(1, output);	/* block align */
-	fwrite_le_short(8, output);	/* significant bits per sample */
+		fwrite("fmt ", 4, 1, output);
+		fwrite_le_int(16, output);	/* chunk size */
+		fwrite_le_short(1, output);	/* compression code: uncompressed */
+		fwrite_le_short(1, output);	/* number of channels */
+		fwrite_le_int(sample_rate, output);	/* sample rate */
+		fwrite_le_int(sample_rate * 1, output);	/* average bytes per second */
+		fwrite_le_short(1, output);	/* block align */
+		fwrite_le_short(8, output);	/* significant bits per sample */
 
-	fwrite("data", 4, 1, output);
-	fwrite_le_int(0, output);	/* chunk size */
+		fwrite("data", 4, 1, output);
+		fwrite_le_int(0, output);	/* chunk size */
+	}
 
 	/* Color BASIC and Micro Color BASIC */
 	/* Leader */
@@ -624,11 +647,14 @@ int             main(int argc, char **argv)
 	sample_count += fwrite_audio("\x55\x3c\xff\x00\xff\x55", 6, output);
 	sample_count += fwrite_audio_silence(sample_rate * 2, output);			/* 2 seconds of silence */
 
-	/* Go back and fix up WAV format file size headers */
-	fseek(output, 4, SEEK_SET);
-	fwrite_le_int(headers_size + sample_count - 8, output);
-	fseek(output, 40, SEEK_SET);
-	fwrite_le_int(sample_count, output);
+	if (!cas)
+	{
+		/* Go back and fix up WAV format file size headers */
+		fseek(output, 4, SEEK_SET);
+		fwrite_le_int(headers_size + sample_count - 8, output);
+		fseek(output, 40, SEEK_SET);
+		fwrite_le_int(sample_count, output);
+	}
 
 	fclose(output);
 	fclose(srec);
