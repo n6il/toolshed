@@ -221,8 +221,8 @@ int             main(int argc, char **argv)
 	sample_rate = 11250;
 	binary = 0;
 	decb = 0;
-	memset(filename, 0, 8);
-	strncpy(filename, "FILE", 8);
+	memset(filename, ' ', 8);
+	strncpy(filename, "FILE", 4);
 	file_type = 2;
 	data_type = 0;
 	strncpy(out_filename, "file.wav", MAXPATHLEN);
@@ -280,8 +280,14 @@ int             main(int argc, char **argv)
 				decb = 1;
 				break;
 			case 'n':
-				memset(filename, 0, 8);
-				strncpy(filename, &(argv[j][2]), 8);
+				memset(filename, ' ', 8);
+				{
+					int len = strlen(&argv[j][2]);
+
+					if (len > 8)
+						len = 8;
+					strncpy(filename, &(argv[j][2]), len);
+				}
 				break;
 			case '0':
 				file_type = 0;
