@@ -109,28 +109,36 @@ void            fwrite_le_short(unsigned short data, FILE * output)
 	fwrite(&use_data, 2, 1, output);
 }
 
-int             fwrite_audio(char *buffer, int total_length, FILE * output)
+int             fwrite_audio_byte(int byte, FILE * output)
+{
+	int             result = 0,
+	                j;
+
+	for (j = 0; j < 8; j++)
+	{
+		if (((byte >> j) & 0x01) == 0)
+		{
+			fwrite(buffer_1200, buffer_1200_length, 1, output);
+			result += buffer_1200_length;
+		}
+		else
+		{
+			fwrite(buffer_2400, buffer_2400_length, 1, output);
+			result += buffer_2400_length;
+		}
+	}
+
+	return result;
+}
+
+int             fwrite_audio(char *buffer, int length, FILE * output)
 {
 	int             result = 0,
 	                i;
 
-	for (i = 0; i < total_length; i++)
+	for (i = 0; i < length; i++)
 	{
-		int             j;
-
-		for (j = 0; j < 8; j++)
-		{
-			if (((buffer[i] >> j) & 0x01) == 0)
-			{
-				fwrite(buffer_1200, buffer_1200_length, 1, output);
-				result += buffer_1200_length;
-			}
-			else
-			{
-				fwrite(buffer_2400, buffer_2400_length, 1, output);
-				result += buffer_2400_length;
-			}
-		}
+		result += fwrite_audio_byte(buffer[i], output);
 	}
 
 	return result;
@@ -154,7 +162,7 @@ int             fwrite_audio_repeat_byte(int length, char byte, FILE * output)
 	                result = 0;
 
 	for (i = 0; i < length; i++)
-		result += fwrite_audio(&byte, 1, output);
+		result += fwrite_audio_byte(byte, output);
 
 	return result;
 }
@@ -171,7 +179,7 @@ unsigned char   Checksum_Buffer(unsigned char *buffer, int count)
 	return result;
 }
 
-void            Build_Sinusoidal_Bufer(unsigned char *buffer, int length)
+void            Build_Sinusoidal_Buffer(unsigned char *buffer, int length)
 {
 	double          increment = (PI * 2.0) / length;
 
@@ -502,7 +510,7 @@ int             main(int argc, char **argv)
 		return -1;
 	}
 
-	Build_Sinusoidal_Bufer(buffer_1200, buffer_1200_length);
+	Build_Sinusoidal_Buffer(buffer_1200, buffer_1200_length);
 
 	buffer_2400 = malloc(buffer_2400_length);
 
@@ -512,7 +520,7 @@ int             main(int argc, char **argv)
 		return -1;
 	}
 
-	Build_Sinusoidal_Bufer(buffer_2400, buffer_2400_length);
+	Build_Sinusoidal_Buffer(buffer_2400, buffer_2400_length);
 
 	int             headers_size = 4 +	/* RIFF */
 							4 +			/* Data size */
@@ -553,19 +561,19 @@ int             main(int argc, char **argv)
 							Checksum_Buffer((unsigned char *) &start_address, 2) +
 							Checksum_Buffer((unsigned char *) &exec_address, 2);
 
-	sample_count += fwrite_audio("\x55\x3c", 2, output);	/* Block ID */
-	sample_count += fwrite_audio("\x00", 1, output);	/* Header block */
-	sample_count += fwrite_audio("\x0f", 1, output);	/* Block length */
-	sample_count += fwrite_audio(filename, 8, output);	/* File name */
-	sample_count += fwrite_audio((char *) &file_type, 1, output);	/* 0: BASIC, 1: Data, 2: M/L */
-	sample_count += fwrite_audio((char *) &data_type, 1, output);	/* 0: binary, ff: ASCII */
-	sample_count += fwrite_audio("\x00", 1, output);	/* 0: no gaps, ff: gaps) */
-	sample_count += fwrite_audio_repeat_byte(1, start_address >> 8, output);	/* Start address MSB */
-	sample_count += fwrite_audio_repeat_byte(1, start_address & 0xFF, output);	/* Start address LSB */
-	sample_count += fwrite_audio_repeat_byte(1, exec_address >> 8, output);		/* Execute address MSB */
-	sample_count += fwrite_audio_repeat_byte(1, exec_address & 0xFF, output);	/* Execute address LSB */
-	sample_count += fwrite_audio((char *) &checksum, 1, output);	/* checksum */
-	sample_count += fwrite_audio("\x55", 1, output);	/* End of block ID */
+	sample_count += fwrite_audio("\x55\x3c", 2, output);		/* Block ID */
+	sample_count += fwrite_audio_byte('\x00', output);		/* Header block */
+	sample_count += fwrite_audio_byte('\x0f', output);		/* Block length */
+	sample_count += fwrite_audio(filename, 8, output);		/* File name */
+	sample_count += fwrite_audio_byte(file_type, output);		/* 0: BASIC, 1: Data, 2: M/L */
+	sample_count += fwrite_audio_byte(data_type, output);		/* 0: binary, ff: ASCII */
+	sample_count += fwrite_audio_byte('\x00', output);		/* 0: no gaps, ff: gaps) */
+	sample_count += fwrite_audio_byte(start_address >> 8, output);	/* Start address MSB */
+	sample_count += fwrite_audio_byte(start_address & 0xFF, output);/* Start address LSB */
+	sample_count += fwrite_audio_byte(exec_address >> 8, output);	/* Execute address MSB */
+	sample_count += fwrite_audio_byte(exec_address & 0xFF, output);	/* Execute address LSB */
+	sample_count += fwrite_audio_byte(checksum, output);		/* checksum */
+	sample_count += fwrite_audio_byte('\x55', output);		/* End of block ID */
 
 	/* Leader for data blocks */
 	sample_count += fwrite_repeat_byte(sample_rate / 2, 0x80, output);	/* half second of silence */
@@ -585,8 +593,8 @@ int             main(int argc, char **argv)
 
 		sample_count += fwrite_audio("\x55\x3c\x01\xff", 4, output);	/* Block header, data block and length */
 		sample_count += fwrite_audio(&(buffer[i * 0xff]), 0xff, output);	/* data */
-		sample_count += fwrite_audio((char *) &checksum, 1, output);	/* checksum */
-		sample_count += fwrite_audio("\x55", 1, output);	/* End of block ID */
+		sample_count += fwrite_audio_byte(checksum, output);	/* checksum */
+		sample_count += fwrite_audio_byte('\x55', output);	/* End of block ID */
 	}
 
 	/* Last data block */
@@ -600,13 +608,13 @@ int             main(int argc, char **argv)
 		sample_count += fwrite_repeat_byte((double)sample_rate * 0.003, 0x80, output);	/* .003 seconds of silence */
 
 		sample_count += fwrite_audio("\x55\x3c\x01", 3, output);	/* Block header, data block and length */
-		sample_count += fwrite_audio((char *) &last_block_size, 1, output);	/* Block Length */
+		sample_count += fwrite_audio_byte(last_block_size, output);	/* Block Length */
 		sample_count += fwrite_audio(&(buffer[0xff * full_blocks]), last_block_size, output);	/* data */
-		sample_count += fwrite_audio((char *) &checksum, 1, output);	/* checksum */
-		sample_count += fwrite_audio("\x55", 1, output);	/* End of block ID */
+		sample_count += fwrite_audio_byte(checksum,  output);	/* checksum */
+		sample_count += fwrite_audio_byte('\x55', output);	/* End of block ID */
 	}
 
-	/* Eof block */
+	/* EOF block */
 	sample_count += fwrite_repeat_byte((double)sample_rate * 0.003, 0x80, output);	/* .003 seconds of silence */
 	sample_count += fwrite_audio("\x55\x3c\xff\x00\xff\x55", 6, output);
 	sample_count += fwrite_repeat_byte(sample_rate * 2, 0x80, output);	/* 2 seconds of silence */
