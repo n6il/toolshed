@@ -1,7 +1,7 @@
 
 DEPENDS		= ./Makefile
 
-AS		= mamou -q
+AS		= mamou -r -q
 ASOUT		= -o
 ECHO		= echo
 

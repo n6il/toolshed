@@ -370,7 +370,7 @@ FailMsg  fcc    /FAILED/
 FailMLen equ    *-FailMsg
 
 csize    equ   *-Entry
-eom      equ   *
+eom      equ   *-Top
 
 * Fill pattern
          IFEQ   BIN
@@ -397,19 +397,19 @@ eom      equ   *
          fdb	$FEF7
          fdb	$FEFA
          fdb	$FEFD
-         fdb	Entry+Top
+         fdb	Entry
 
          ELSE
 
 * CoCo 1/2 ROM vectors
-         fdb	Entry+Top
+         fdb	Entry
          fdb	$0100
          fdb	$0103
          fdb	$010F
          fdb	$010C
          fdb	$0106
          fdb	$0109
-         fdb	Entry+Top
+         fdb	Entry
 
          ENDC
          ENDC
