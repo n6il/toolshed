@@ -167,6 +167,11 @@ int             fwrite_audio_repeat_byte(int length, char byte, FILE * output)
 	return result;
 }
 
+int             fwrite_audio_silence(int length, FILE * output)
+{
+	return fwrite_repeat_byte(length, 0x80, FILE * output)
+}
+
 unsigned char   Checksum_Buffer(unsigned char *buffer, int count)
 {
 	unsigned char   result;
@@ -552,7 +557,7 @@ int             main(int argc, char **argv)
 
 	/* Color BASIC and Micro Color BASIC */
 	/* Leader */
-	sample_count += fwrite_repeat_byte(sample_rate * seconds, 0x80, output);	/* seconds of silence */
+	sample_count += fwrite_audio_silence(sample_rate * seconds, output);	/* seconds of silence */
 	sample_count += fwrite_audio_repeat_byte(128, 0x55, output);	/* leader */
 
 	/* Header block */
@@ -576,7 +581,7 @@ int             main(int argc, char **argv)
 	sample_count += fwrite_audio_byte('\x55', output);		/* End of block ID */
 
 	/* Leader for data blocks */
-	sample_count += fwrite_repeat_byte(sample_rate / 2, 0x80, output);	/* half second of silence */
+	sample_count += fwrite_audio_silence(sample_rate / 2, output);	/* half second of silence */
 	sample_count += fwrite_audio_repeat_byte(128, 0x55, output);	/* leader */
 
 	/* Full data blocks */
@@ -589,7 +594,7 @@ int             main(int argc, char **argv)
 		unsigned char   checksum = 1 + 0xff +
 		Checksum_Buffer((unsigned char *) &(buffer[i * 0xff]), 0xff);
 
-		sample_count += fwrite_repeat_byte((double)sample_rate * 0.003, 0x80, output);	/* .003 seconds of silence */
+		sample_count += fwrite_audio_silence((double)sample_rate * 0.003, output);	/* .003 seconds of silence */
 
 		sample_count += fwrite_audio("\x55\x3c\x01\xff", 4, output);	/* Block header, data block and length */
 		sample_count += fwrite_audio(&(buffer[i * 0xff]), 0xff, output);	/* data */
@@ -605,7 +610,7 @@ int             main(int argc, char **argv)
 		unsigned char   checksum = 1 + last_block_size +
 		Checksum_Buffer((unsigned char *) &(buffer[0xff * full_blocks]), last_block_size);
 
-		sample_count += fwrite_repeat_byte((double)sample_rate * 0.003, 0x80, output);	/* .003 seconds of silence */
+		sample_count += fwrite_audio_silence((double)sample_rate * 0.003, output);	/* .003 seconds of silence */
 
 		sample_count += fwrite_audio("\x55\x3c\x01", 3, output);	/* Block header, data block and length */
 		sample_count += fwrite_audio_byte(last_block_size, output);	/* Block Length */
@@ -615,9 +620,9 @@ int             main(int argc, char **argv)
 	}
 
 	/* EOF block */
-	sample_count += fwrite_repeat_byte((double)sample_rate * 0.003, 0x80, output);	/* .003 seconds of silence */
+	sample_count += fwrite_audio_silence((double)sample_rate * 0.003, output);	/* .003 seconds of silence */
 	sample_count += fwrite_audio("\x55\x3c\xff\x00\xff\x55", 6, output);
-	sample_count += fwrite_repeat_byte(sample_rate * 2, 0x80, output);	/* 2 seconds of silence */
+	sample_count += fwrite_audio_silence(sample_rate * 2, output);			/* 2 seconds of silence */
 
 	/* Go back and fix up WAV format file size headers */
 	fseek(output, 4, SEEK_SET);
