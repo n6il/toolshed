@@ -47,6 +47,7 @@ static inline int digittoint(int c)
 int             seconds;
 int             sample_rate;
 int             binary;
+int             decb;
 char            filename[9];
 unsigned char   file_type;
 unsigned char   data_type;
@@ -60,6 +61,14 @@ unsigned char  *buffer_1200,
                *buffer_2400;
 int             buffer_1200_length,
                 buffer_2400_length;
+
+#define VERIFY(COND, MSG) \
+	do { \
+	  if (!(COND)) { \
+		fprintf(stderr, "%s: Error: %s\n", argv[0], MSG); \
+		exit (1); \
+          } \
+	} while(0);
 
 unsigned short  swap_short(unsigned short in)
 {
@@ -183,6 +192,7 @@ int             main(int argc, char **argv)
 	seconds = 2;
 	sample_rate = 11250;
 	binary = 0;
+	decb = 0;
 	memset(filename, 0, 8);
 	strncpy(filename, "FILE", 8);
 	file_type = 2;
@@ -205,6 +215,7 @@ int             main(int argc, char **argv)
 		fprintf(stderr, " -l<val>    Length for silent leader (default %d seconds)\n", seconds);
 		fprintf(stderr, " -s<val>    Sample rate for WAV file (default %d samples per second)\n", sample_rate);
 		fprintf(stderr, " -r         Treat input file as raw binary, not an S Record file.\n" );
+		fprintf(stderr, " -c         Input file has DECB header\n" );
 		fprintf(stderr, " -n<string> Filename to encode in header (default: %s)\n", filename);
 		fprintf(stderr, " -[0-2]     File type (default %d)\n", file_type);
 		fprintf(stderr, "            0 = BASIC program\n");
@@ -234,6 +245,9 @@ int             main(int argc, char **argv)
 				break;
 			case 'r':
 				binary = 1;
+				break;
+			case 'c':
+				decb = 1;
 				break;
 			case 'n':
 				memset(filename, 0, 8);
@@ -335,6 +349,7 @@ int             main(int argc, char **argv)
 	/* Load buffer with all data from file */
 
 	char           *buffer = malloc(total_length);
+	char           *pbuffer = buffer;		/* for free'ing later */
 	int             byte = 0;
 
 	if (buffer == NULL)
@@ -419,6 +434,35 @@ int             main(int argc, char **argv)
 		}
 	}
 	
+	/* Only supports DECB binaries with one preamble and a postamble */
+	if (decb)
+	{
+		int decb_len;
+		unsigned char *ubuf = (unsigned char *) buffer;
+
+		VERIFY(total_length > 10, "DECB file too short");
+		VERIFY(ubuf[0] == 0, "Wrong DECB magic");
+		decb_len = ubuf[1] * 256 + ubuf[2];
+		VERIFY(total_length == decb_len + 10, "Wrong DECB block length");
+		if ( start_address == 0 )
+			start_address = ubuf[3] * 256 + ubuf[4];
+		VERIFY(ubuf[5 + decb_len] == 0xFF &&
+		       ubuf[6 + decb_len] == 0x00 &&
+		       ubuf[7 + decb_len] == 0x00, "Bad DECB postamble");
+		if ( exec_address == 0)
+			exec_address = ubuf[8 + decb_len] * 256 + ubuf[9 + decb_len];
+		buffer += 5;
+		total_length -= 10;
+	}
+
+	if ( file_type == 2 &&
+	     ( exec_address < start_address ||
+	       exec_address > start_address + total_length ))
+	{
+		fprintf(stderr, "Warning: Exec address is outside code segment\n");
+	}
+
+
 	FILE           *output = fopen(out_filename, "w+");
 
 	if (output == NULL)
@@ -575,7 +619,7 @@ int             main(int argc, char **argv)
 	fclose(srec);
 	free(buffer_1200);
 	free(buffer_2400);
-	free(buffer);
+	free(pbuffer);
 	
 	return 0;
 }
