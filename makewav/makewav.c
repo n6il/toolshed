@@ -54,8 +54,8 @@ unsigned char   data_type;
 char            out_filename[MAXPATHLEN];
 char            in_filename[MAXPATHLEN];
 int             verbose;
-short           start_address;
-short           exec_address;
+unsigned short  start_address;
+unsigned short  exec_address;
 
 unsigned char  *buffer_1200,
                *buffer_2400;
@@ -222,8 +222,8 @@ int             main(int argc, char **argv)
 		fprintf(stderr, "            1 = BASIC data file\n");
 		fprintf(stderr, "            2 = Machine language program\n");
 		fprintf(stderr, " -[a|b]     Data type (a = ASCII, b=binary (default: %s)\n", data_type == 0 ? "binary" : "ASCII");
-		fprintf(stderr, " -d<val>    Start address (default: 0x%x)\n", start_address );
-		fprintf(stderr, " -e<val>    Execution address (default: 0x%x)\n", exec_address );
+		fprintf(stderr, " -d<val>    Start address (default: 0x%04x)\n", start_address );
+		fprintf(stderr, " -e<val>    Execution address (default: 0x%04x)\n", exec_address );
 		fprintf(stderr, " -o<string> Output file name for WAV file (default: %s)\n", out_filename);
 		fprintf(stderr, " -v         Print information about the conversion (default: off)\n\n");
 		fprintf(stderr, "For <val> use 0x prefix for hex, 0 prefix for octal and no prefix for decimal.\n");
@@ -275,10 +275,10 @@ int             main(int argc, char **argv)
 				verbose = 1;
 				break;
 			case 'd':
-				start_address = strtol(&(argv[j][2]), NULL, 0);
+				start_address = strtoul(&(argv[j][2]), NULL, 0);
 				break;
 			case 'e':
-				exec_address = strtol(&(argv[j][2]), NULL, 0);
+				exec_address = strtoul(&(argv[j][2]), NULL, 0);
 				break;
 			default:
 				/* Bad option */
@@ -560,9 +560,9 @@ int             main(int argc, char **argv)
 		printf( "Encoded filename: %s\n", filename );
 		printf( "File type: 0x%x\n", file_type );
 		printf( "Data type: 0x%x\n", data_type );
-		printf( "Start address: 0x%x\n", start_address );
-		printf( "Exec address: 0x%x\n", exec_address );
-		printf( "End address: 0x%x\n", start_address+total_length );
+		printf( "Start address: 0x%04x\n", start_address );
+		printf( "Exec address:  0x%04x\n", exec_address );
+		printf( "End address:   0x%04x\n", start_address + total_length );
 	}
 	
 	/* Leader for data blocks */
