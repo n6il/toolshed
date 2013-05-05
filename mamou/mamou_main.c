@@ -53,11 +53,11 @@ int main(int argc, char **argv)
 		fprintf(stderr, "%s\n", product_copyright);
 		fprintf(stderr, "\n");
 		fprintf(stderr, "General options:\n");
-        fprintf(stderr, " -a<sym>[=<val>] assign val to sym\n");
+        fprintf(stderr, " -D<sym>[=<val>] assign val to sym\n");
         fprintf(stderr, " -d        debug mode\n");
         fprintf(stderr, " -e        enhanced 6309 assembler mode\n");
 		fprintf(stderr, " -ee       enhanced 6309 and X9 assembler mode\n");
-        fprintf(stderr, " -i<dir>   additional include directories\n");
+        fprintf(stderr, " -I<dir>   additional include directories\n");
         fprintf(stderr, " -p        don't assemble, just parse\n");
         fprintf(stderr, " -q        quiet mode\n");
         fprintf(stderr, " -x        suppress warnings and errors\n");
@@ -77,8 +77,8 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Assembler modes (select only one):\n");
         fprintf(stderr, " -m9       OS-9/6809 (default)\n");
         fprintf(stderr, " -mm       Microware RMA\n");
-        fprintf(stderr, " -mb       Disk BASIC\n");
-		fprintf(stderr, " -mr       ROM Absolute\n");
+        fprintf(stderr, " -mb       Disk BASIC (short form -b)\n");
+		fprintf(stderr, " -mr       ROM Absolute (short form -r)\n");
 		fprintf(stderr, "Object generation options (select only one):\n");
         fprintf(stderr, " -tb       binary object output (default)\n");
         fprintf(stderr, " -th       hex object output\n");
@@ -121,6 +121,15 @@ int main(int argc, char **argv)
 					}
 					break;
 					
+                case 'r':
+                        as.o_asm_mode = ASM_ROM;
+                        break;
+
+                case 'b':
+                        as.o_asm_mode = ASM_DECB;
+                        break;
+
+                case 'D':
                 case 'a':
                     /* Symbol define */
                     p = &argv[j][2];
@@ -167,6 +176,7 @@ int main(int argc, char **argv)
 					if (tolower(argv[j][2]) == 'e') as.o_cpuclass = CPU_X9;
 						break;	
 					
+                case 'I':
                 case 'i':
                     /* Include directive */
                     if (as.include_index + 1 == INCSIZE)
