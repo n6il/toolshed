@@ -89,10 +89,10 @@ dw4doscc3.bin:	dw3dos.asm
 dw4doscc2.bin:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DBIN=1 -b -DDW4=1
 
-dw4doscc3.wav:	dw3doscc3.bin
+dw4doscc3.wav:	dw4doscc3.bin
 	$(MAKEWAV) -o$@ -nDW3DOSC3 $<
 
-dw4doscc2.wav:	dw3doscc2.bin
+dw4doscc2.wav:	dw4doscc2.bin
 	$(MAKEWAV) -o$@ -nDW3DOSC2 $<
 
 # DW3DOS Tracks
