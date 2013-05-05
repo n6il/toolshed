@@ -55,6 +55,7 @@ void insert_bit(short code);
 void addentry(WORD c, WORD ent);
 void writebuf(int cnt, FILE *fp);
 void lz1_init(int direction);
+char *emalloc(size_t);
 
 /*page*/
 /*

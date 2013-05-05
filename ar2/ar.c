@@ -156,13 +156,13 @@ int		rmflag = 0;				/* don't rm file after save			*/
 int		zflag = FALSE;			/* true if names come from stdin	*/
 /*page*/
 
-char	*emalloc();
+char	*emalloc(size_t);
 
 int main(argc, argv)
 int		argc;
 char	**argv;
 	{
-	char	command, *p, *emalloc(), lc_suf[SUFSIZ + 1];
+	char	command, *p, lc_suf[SUFSIZ + 1];
 	int		n, i;
 	FILE	*afp;
 
@@ -841,7 +841,7 @@ HEADER	*hp;
  */
 
 char	*emalloc(n)
-int		n;
+size_t		n;
 	{
 	char	*p;
 
