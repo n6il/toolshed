@@ -14,7 +14,6 @@ all:
 install: all
 	cp ar2/ar2 os9/os9 mamou/mamou cecb/cecb decb/decb tocgen/tocgen \
            cocofuse/cocofuse makewav/makewav $(INSTALLDIR)
-#	as6809/as6809 aslink/aslink $(INSTALLDIR)
 
 package: all
 	rm -rf toolshed$(RELEASE)
