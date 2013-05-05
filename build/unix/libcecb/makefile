@@ -6,11 +6,11 @@ vpath %.c ../../../libcecb
 CFLAGS	+= -g -I../../../include -Wall
 
 %.a:
-	ar -r $@ $^
-	ranlib $@
+	$(AR) -r $@ $^
+	$(RANLIB) $@
 
 libcecb.a:	libcebcopen.o libcecbgs.o libcecbwav.o \
                 libcecbcas.o libcecbread.o libcecbwrite.o
 
 clean:
-	rm *.o *.a
+	$(RM) *.o *.a

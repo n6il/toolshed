@@ -6,12 +6,12 @@ vpath %.c ../../../libdecb
 CFLAGS	+= -g -I../../../include -Wall
 
 %.a:
-	ar -r $@ $^
-	ranlib $@
+	$(AR) -r $@ $^
+	$(RANLIB) $@
 
 libdecb.a:	libdecbgs.o libdecbkill.o libdecbopen.o libdecbread.o libdecbrename.o \
             libdecbseek.o libdecbss.o libdecbread.o libdecbwrite.o libdecbtokenize.o \
             libdecbbinconcat.o libdecbsrec.o
 
 clean:
-	rm *.o *.a
+	$(RM) *.o *.a

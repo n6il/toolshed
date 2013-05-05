@@ -13,7 +13,7 @@ $(BINARY):	$(OBJS)
 	$(CC) $(OBJS) $(LIBS) -o $@
 
 clean:
-	rm $(BINARY) *.o
+	$(RM) $(BINARY) $(BINARY).exe *.o
 
 install: $(BINARY)
 	cp $(BINARY) $(HOME)/bin

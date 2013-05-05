@@ -1,6 +1,8 @@
+# Makefile for casm
+include ../rules.mak
 SDIR	=	../../../casm/src
 ODIR	=	.
-GCC	=	@gcc -Wall -O3
+CFLAGS	=	-Wall -O3
 
 SRC	=	as.c cmdline.c context.c cpu.c do9.c error.c eval.c export.c ffwd.c \
 		input.c label.c macro.c parse.c \
@@ -27,20 +29,20 @@ SRC	:=	$(SRC:%.c=$(SDIR)/%.c
 
 $(ODIR)/casm: $(OBJ)
 	@echo Linking...
-	$(GCC) -o $(ODIR)/casm $(OBJ)
+	$(CC) -o $(ODIR)/casm $(OBJ)
 
 
 $(ODIR)/%.o: $(SDIR)/%.c $(HEADERS)
 	@echo compiling $<
-	$(GCC) -c $< -o $@
+	$(CC) -c $< -o $@
 
 $(ODIR):
 	@mkdir $(ODIR)
 
 clean:
 	@echo Cleaning...
-	@rm -rf $(OBJ)
-	@rm -rf casm
+	@$(RM) $(OBJ)
+	@$(RM) casm
 
 install: $(ODIR)/casm
 	cp $(ODIR)/casm $(HOME)/bin

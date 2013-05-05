@@ -13,4 +13,4 @@ os9:	os9copy.o os9dsave.o os9gen.o os9modbust.o os9dcheck.o os9dump.o \
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm *.o os9
+	$(RM) *.o os9 os9.exe

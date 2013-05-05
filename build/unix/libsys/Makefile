@@ -6,10 +6,10 @@ vpath %.c ../../../libsys
 CFLAGS	+= -I../../../include -Wall
 
 %.a:
-	ar -r $@ $^
-	ranlib $@
+	$(AR) -r $@ $^
+	$(RANLIB) $@
 
 libsys.a:	crc.o prsnam.o
 
 clean:
-	rm *.o *.a
+	$(RM) *.o *.a

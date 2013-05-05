@@ -10,4 +10,4 @@ cecb:	cecbbulkerase.o cecbdir.o cecbfstat.o cecb_main.o cecbcopy.o ../os9/os9dum
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm *.o cecb
+	$(RM) *.o cecb cecb.exe

@@ -15,7 +15,7 @@ $(BINARY):	$(OBJS)
 $(OBJS):	Makefile
 
 clean:
-	rm $(BINARY) *.o
+	$(RM) $(BINARY) $(BINARY).exe *.o
 
 install: $(BINARY)
 	cp $(BINARY) $(HOME)/bin

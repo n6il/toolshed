@@ -12,7 +12,7 @@ mamou:		mamou_main.o evaluator.o pseudo.o h6309.o ffwd.o \
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm *.o mamou
+	$(RM) *.o mamou mamou.exe
 
 install: mamou
 	cp mamou $(HOME)/bin

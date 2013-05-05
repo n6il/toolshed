@@ -11,4 +11,4 @@ $(BINARY):	$(BINARY).o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm *.o $(BINARY)
+	$(RM) *.o $(BINARY)
