@@ -18,230 +18,198 @@ HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
 
 ALLOBJS         = preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)
 
-AS	= mamou 
-MERGE	= cat 
-WAVE	= makewav 
+#AS		= mamou -r -q
+AS		= lwasm -r --pragma=condundefzero,nodollarlocal
+MERGE		= cat
+MAKEWAV		= makewav -r -c
+CECB		= cecb
 
 all: $(ALLOBJS)
 
 preload: preload.asm
-	$(AS) -q $< -mr -opreload
+	$(AS) $< -opreload
 
 postload: postload.asm
-	$(AS) -q $< -mr -opostload
+	$(AS) $< -opostload
 
 # TC^3 SCSI
 hdbtc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aSCSI -aTC3 -q -mr $+ -o$@
+	$(AS) -DSCSI -DTC3 $+ -o$@
 
 hdbtc3.bin: preload hdbtc3.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbtc3.wav: hdbtc3.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBTC3
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBTC3 $<
 
 # Ken-Ton SCSI
 hdbkenton.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aSCSI -aKENTON -q -mr $+ -o$@
+	$(AS) -DSCSI -DKENTON $+ -o$@
 
 hdbkenton.bin: preload hdbkenton.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbkenton.wav: hdbkenton.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBKENTN
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBKENTN $<
 
 # LRTech SCSI
 hdblrtech.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aSCSI -aLRTECH -q -mr $+ -o$@
+	$(AS) -DSCSI -DLRTECH $+ -o$@
 
 hdblrtech.bin: preload hdblrtech.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdblrtech.wav: hdblrtech.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBLRTCH
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBLRTCH $<
 
 # Disto 4-N-1 SCSI
 hdbd4n1.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aSCSI -aD4N1 -q -mr $+ -o$@
+	$(AS) -DSCSI -DD4N1 $+ -o$@
 
 hdbd4n1.bin: preload hdbd4n1.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbd4n1.wav: hdbd4n1.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBD4N1
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBD4N1 $<
 
 # Disto HD-II
 hdbdhdii.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aSCSI -aDHDII -q -mr $+ -o$@
+	$(AS) -DSCSI -DDHDII $+ -o$@
 
 hdbdhdii.bin: preload hdbdhdii.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdhdii.wav: hdbdhdii.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDHDII
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDHDII $<
 
 # IDE LBA
 hdblba.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aIDE -aUSELBA -q -mr $+ -o$@
+	$(AS) -DIDE -DUSELBA $+ -o$@
 
 hdblba.bin: preload hdblba.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdblba.wav: hdblba.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBLBA
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBLBA $<
 
 # IDE CHS
 hdbchs.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aIDE -aUSECHS -q -mr $+ -o$@
+	$(AS) -DIDE -DUSECHS $+ -o$@
 
 hdbchs.bin: preload hdbchs.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbchs.wav: hdbchs.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBCHS
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBCHS $<
 
 # DW4 CoCo 3
 hdbdw4cc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=2 -aDW4 -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=2 -DDW4 $+ -o$@
 
 hdbdw4cc3.bin: preload hdbdw4cc3.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw4cc3.wav: hdbdw4cc3.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3C3
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3C3 $<
 
 # DW4 CoCo 2
 hdbdw4cc2.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=1 -aDW4 -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=1 -DDW4 $+ -o$@
 
 hdbdw4cc2.bin: preload hdbdw4cc2.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw4cc2.wav: hdbdw4cc2.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3C3
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3C3 $<
 
 # DW3 CoCo 1
 hdbdw3cc1.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=1 -aBAUD38400 -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=1 -DBAUD38400 $+ -o$@
 
 hdbdw3cc1.bin: preload hdbdw3cc1.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw3cc1.wav: hdbdw3cc1.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3C1
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3C1 $<
 
 # DW3 CoCo 2
 hdbdw3cc2.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=1 -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=1 $+ -o$@
 
 hdbdw3cc2.bin: preload hdbdw3cc2.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw3cc2.wav: hdbdw3cc2.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3C2
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3C2 $<
 
 # DW3 CoCo 3
 hdbdw3cc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=2 -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=2 $+ -o$@
 
 hdbdw3cc3.bin: preload hdbdw3cc3.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw3cc3.wav: hdbdw3cc3.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3C3
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3C3 $<
 
 # DW3 CoCo Becker
 hdbdw3bck.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=1 -aBECKER -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=1 -DBECKER $+ -o$@
 
 hdbdw3bck.bin: preload hdbdw3bck.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw3bck.wav: hdbdw3bck.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3BK
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3BK $<
 
 hdbdw3bck.cas: hdbdw3bck.bin
-	cecb bulkerase $@
-	cecb copy -2 -b -g $< $@,HDBDW3BK
+	$(CECB) bulkerase $@
+	$(CECB) copy -2 -b -g $< $@,HDBDW3BK
 
 # DW3 CoCo 3 Becker
 hdbdw3bc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=2 -aBECKER -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=2 -DBECKER $+ -o$@
 
 hdbdw3bc3.bin: preload hdbdw3bc3.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw3bc3.wav: hdbdw3bc3.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3B3
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3B3 $<
 
 hdbdw3bc3.cas: hdbdw3bc3.bin
-	cecb bulkerase $@
-	cecb copy -2 -b -g $< $@,HDBDW3B3
+	$(CECB) bulkerase $@
+	$(CECB) copy -2 -b -g $< $@,HDBDW3B3
 
 
 # DW3 CoCo 3 J&M CP FDC Becker
 hdbdw3jc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=2 -aJMCPBCK -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=2 -DJMCPBCK $+ -o$@
 
 hdbdw3jc3.bin: preload hdbdw3jc3.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw3jc3.wav: hdbdw3jc3.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3J3
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3J3 $<
 
 # DW3 CoCo J&M CP FDC Becker
 hdbdw3jc2.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=1 -aJMCPBCK -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=1 -DJMCPBCK $+ -o$@
 
 hdbdw3jc2.bin: preload hdbdw3jc2.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw3jc2.wav: hdbdw3jc2.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3J2
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3J2 $<
 
 # DW3 Arduino (Boisy)
 hdbdw3arduino.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -aDW -aLevel=1 -aARDUINO -q -mr $+ -o$@
+	$(AS) -DDW -DLevel=1 -DARDUINO $+ -o$@
 
 hdbdw3arduino.bin: preload hdbdw3arduino.rom postload 
-	cat $+ > $@
+	$(MERGE) $+ > $@
 
 hdbdw3arduino.wav: hdbdw3arduino.bin
-	dd if=$< bs=1 skip=5 of=hdbtmp count=8240
-	makewav hdbtmp -r -d0x4fd0 -e0x4fd0 -o$@ -nHDBDW3ARD
-	rm hdbtmp
+	$(MAKEWAV) -o$@ -nHDBDW3ARD $<
 
 
 clean:
