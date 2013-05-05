@@ -16,8 +16,10 @@ all:
 	$(foreach dir, $(DIRS), (cd $(dir); $(MAKE));)
 
 install: all
-	cp ar2/ar2 os9/os9 mamou/mamou cecb/cecb decb/decb tocgen/tocgen \
-           cocofuse/cocofuse makewav/makewav $(INSTALLDIR)
+	$(INSTALL) -d $(INSTALLDIR)
+	$(INSTALL) ar2/ar2 os9/os9 mamou/mamou cecb/cecb decb/decb \
+	    tocgen/tocgen makewav/makewav $(INSTALLDIR)
+	-$(INSTALL) cocofuse/cocofuse $(INSTALLDIR)
 
 package: all
 	rm -rf toolshed$(RELEASE)
@@ -31,4 +33,4 @@ package: all
 
 clean:
 	$(foreach dir, $(DIRS), (cd $(dir); $(MAKE) clean);)
-	rm -f $(PACKAGENAME)
+	$(RM) $(PACKAGENAME)
