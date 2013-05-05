@@ -455,6 +455,16 @@ int             main(int argc, char **argv)
 		total_length -= 10;
 	}
 
+	if( verbose )
+	{
+		printf( "Encoded filename: %s\n", filename );
+		printf( "File type: 0x%x\n", file_type );
+		printf( "Data type: 0x%x\n", data_type );
+		printf( "Start address: 0x%04x\n", start_address );
+		printf( "Exec address:  0x%04x\n", exec_address );
+		printf( "End address:   0x%04x\n", start_address + total_length );
+	}
+	
 	if ( file_type == 2 &&
 	     ( exec_address < start_address ||
 	       exec_address > start_address + total_length ))
@@ -555,16 +565,6 @@ int             main(int argc, char **argv)
 	sample_count += fwrite_audio((char *) &checksum, 1, output);	/* checksum */
 	sample_count += fwrite_audio("\x55", 1, output);	/* End of block ID */
 
-	if( verbose )
-	{
-		printf( "Encoded filename: %s\n", filename );
-		printf( "File type: 0x%x\n", file_type );
-		printf( "Data type: 0x%x\n", data_type );
-		printf( "Start address: 0x%04x\n", start_address );
-		printf( "Exec address:  0x%04x\n", exec_address );
-		printf( "End address:   0x%04x\n", start_address + total_length );
-	}
-	
 	/* Leader for data blocks */
 	sample_count += fwrite_repeat_byte(sample_rate / 2, 0x80, output);	/* half second of silence */
 	sample_count += fwrite_audio_repeat_byte(128, 0x55, output);	/* leader */
