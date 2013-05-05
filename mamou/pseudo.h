@@ -53,6 +53,7 @@ struct pseudo_opcode pseudo[] = {
 	{"fzd",		FC,		HAS_OPERAND,					_zmd,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"fzq",		FC,		HAS_OPERAND,					_zmq,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"if",		IF,		HAS_OPERAND,					_ifne,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
+	{"ifdef",	IF,		HAS_OPERAND,					_ifne,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"ifeq",	IF,		HAS_OPERAND,					_ifeq,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"ifge",	IF,		HAS_OPERAND,					_ifge,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
 	{"ifgt",	IF,		HAS_OPERAND,					_ifgt,		RMA_PSECT | RMA_VSECT | RMA_CSECT},
