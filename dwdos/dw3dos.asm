@@ -38,17 +38,15 @@
          ttl   DriveWire 3 DOS Command
 
          ifp1  
-         IFNE  BIN
 IntMasks equ   $50
 Carry    equ   1
 PIA0Base equ   $FF00
 PIA1Base equ   $FF20
 DAT.Regs equ   $FFA0
 E$NotRdy equ   246
-         ELSE
-         use   defsfile
-         ENDC
-         use   ../defs/dwdefs.d
+Vi.PkSz  equ   0
+V.SCF    equ   0
+         use   ../hdbdos/dwdefs.d
          endc  
 
 * Set up Level definition for low level read/write routines
@@ -307,11 +305,11 @@ ReadErr  comb
 ReadEx	 puls  d,x,y,pc
 
          IFEQ  DW4-1
-         use   ../level1/modules/dw4read.asm 
-         use   ../level1/modules/dw4write.asm 
+         use   ../hdbdos/dw4read.asm 
+         use   ../hdbdos/dw4write.asm 
          ELSE
-         use   ../level1/modules/dwread.asm 
-         use   ../level1/modules/dwwrite.asm 
+         use   ../hdbdos/dwread.asm 
+         use   ../hdbdos/dwwrite.asm 
          ENDC
 
          IFEQ  CoCo-3

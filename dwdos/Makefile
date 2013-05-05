@@ -1,12 +1,9 @@
-include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./Makefile
-BF68L1		= $(LEVEL1)/coco/bootfiles
-MD68L1		= $(LEVEL1)/coco/modules
-BF68L2		= $(LEVEL2)/coco3/bootfiles
-MD68L2		= $(LEVEL2)/coco3/modules
-BF63L2		= $(LEVEL2)/coco3_6309/bootfiles
-MD63L2		= $(LEVEL2)/coco3_6309/modules
+
+AS		= mamou -q
+ASOUT		= -o
+ECHO		= echo
 
 ROMS		= dw3dos_mb_cc3.rom dw3dos_mb_cc2.rom dw3dos_mb_cc1.rom \
 		dw3dos_dsk_cc3.rom dw3dos_dsk_cc2.rom dw3dos_dsk_cc1.rom \
