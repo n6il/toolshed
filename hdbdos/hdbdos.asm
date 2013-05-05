@@ -90,7 +90,7 @@ FATS           equ       $800
 
 SKIP2          equ       $8C
 
-               cond      DW
+               IFDEF     DW
 Vi.PkSz        equ       0
 V.SCF          equ       0
                use       dwdefs.d
@@ -108,9 +108,9 @@ PIA1Base       equ       $FF20
 DATAADDR       equ       PIA1Base
 TDELAY         equ       8                   Retries in the case of DriveWire
 MAXDN          equ       255
-               endc
+               ENDC
 
-               cond      IDE
+               IFDEF     IDE
 * IDE Command Opcode Equates
 RSTR           equ       $10                 Recalibrate
 STSTOP         equ       $10                 Recalibrate
@@ -125,12 +125,12 @@ MAXDN          equ       2                   Max. no. of IDE drives
 TDELAY         equ       $C0                 IDE startup timeout delay
 ACK            equ       0                   Necessary because used as SCSI conditional
 
-               cond      USELBA
+               IFDEF     USELBA
 DEVBYT         equ       %11100000
-               endc
-               cond      USECHS
+               ENDC
+               IFDEF     USECHS
 DEVBYT         equ       %10100000
-               endc
+               ENDC
 
 * IDE status Register Equates
 BUSY           equ       %10000000           Drive busy
@@ -155,9 +155,9 @@ DEVHED         equ       6                   Device/Heads
 STATUS         equ       7                   Status when read
 CMD            equ       7                   Command when write
 LATCH          equ       8                   Latch (2nd 8 bits of 16 bit word)
-               endc
+               ENDC
 
-               cond      SCSI
+               IFDEF     SCSI
 * SCSI command Opcode Equates
 RSTR           equ       1                   Re-zero unit
 RDET           equ       3                   Request Sense
@@ -174,9 +174,9 @@ BUSY           equ       8                   1 = Unit Busy
 * Misc Equates
 MAXDN          equ       8                   Maximum number of SCSI drives (0-7)
 TDELAY         equ       $0A                 SCSI bus timeout delay
-               endc
+               ENDC
 
-               cond      TC3                 Cloud-9 TC^3 SCSI
+               IFDEF     TC3                 Cloud-9 TC^3 SCSI
 * TC^3 SCSI Status Register Equates
 REQ            equ       $01                 1 = Request asserted
 BSY            equ       $02                 1 = Controller busy
@@ -191,9 +191,9 @@ DATAADDR       equ       $FF70               Bi-directional data port
 DATARW         equ       0                   Data read/write
 STATUS         equ       1                   Read-only SCSI status
 SELECT         equ       1                   Set (-SEL)ECT D-Flop
-               endc
+               ENDC
 
-               cond      LRTECH              LR-Tech
+               IFDEF     LRTECH              LR-Tech
 * LR-Tech SCSI Status Register Equates
 REQ            equ       $01                 1 = Request asserted
 BSY            equ       $02                 1 = Controller busy
@@ -211,9 +211,9 @@ DATARW         equ       0                   Data read/write
 STATUS         equ       1                   Read-only SCSI status
 SELECT         equ       2                   Set (-SEL)ECT D-Flop
 SCSIRESET      equ       3                   Send SCSI -RST
-               endc
+               ENDC
 
-               cond      KENTON              Ken-Ton SCSI
+               IFDEF     KENTON              Ken-Ton SCSI
 * Ken-Ton SCSI Status Register Equates
 REQ            equ       $01                 1 = Request asserted
 BSY            equ       $02                 1 = Controller busy
@@ -231,10 +231,10 @@ DATARW         equ       0                   Data read/write
 STATUS         equ       1                   Read-only SCSI status
 SELECT         equ       2                   Set (-SEL)ECT D-Flop
 SCSIRESET      equ       3                   Send SCSI -RST
-               endc
+               ENDC
 
 
-               cond      DHDII               Disto Hard Disk II
+               IFDEF     DHDII               Disto Hard Disk II
 * Disto SASI status Register Equates
 REQ            equ       $80                 1 = Request asserted
 BSY            equ       $01                 1 = Controller busy
@@ -252,9 +252,9 @@ DATARW         equ       0                   Data read/write
 STATUS         equ       -2                  Read SASI status
 SELECT         equ       -1                  Write -SEL pulse
 SCSIRESET      equ       -2                  Write -RST pulse
-               endc
+               ENDC
 
-               cond      D4N1                Disto 4-N-1 SCSI
+               IFDEF     D4N1                Disto 4-N-1 SCSI
 * Disto 4-N-1 SCSI Status Register Equates
 REQ            equ       $80                 1 = Request asserted
 BSY            equ       $01                 1 = Controller busy
@@ -272,7 +272,7 @@ DATARW         equ       0                   Data read/write
 STATUS         equ       -2                  Read SASI status
 SELECT         equ       -1                  Write -SEL pulse
 SCSIRESET      equ       -2                  Write -RST pulse
-               endc
+               ENDC
 
 
 * Disk Color BASIC 1.1
@@ -3716,7 +3716,7 @@ PORT           fdb       DATAADDR            Interface base address
 CCODE          fcb       TDELAY              IDE: startup delay / SCSI: wakeup delay
 DEFID          fcb       0
 
-               IFNE      DW
+               IFDEF     DW
                fdb       DWRead
                fdb       DWWrite
                ENDC
@@ -3736,26 +3736,26 @@ HDINIT         ldx       #SIGNON-1           Point to sign-on
 
                ldd       #$FFFF              "DIRECT" line number
                std       <$68                Set BASIC "DIRECT" mode
-               cond      IDE
+               IFDEF     IDE
 *         ldd   #$0101    
                std       NHEADS              To prevent CHS routine product from being 0!
-               endc      
+               ENDC      
 
                ldd       #$5503              Warm start flag & drive # R.G.
                sta       <$71                Enable warm start
                stb       MAXDRV              Set Max Drive
 
-               cond      DW-1
+               IFNE      DW-1
                ldu       PORT                Get port address
-               cond      IDE+TC3-1
+               IFNE      IDE+TC3-1
                clr       SCSIRESET,u         Reset controller
-               endc      
+               ENDC      
 
 * Here we attempt to detect the presense of the controller or
 * device by writing to a verification address and reading back
 * to see if the read matched the write.
 
-               cond      IDE
+               IFDEF     IDE
 * Default ID is always MASTER
                clr       IDNUM               save MASTER as ID number
 
@@ -3780,9 +3780,9 @@ HDINIT         ldx       #SIGNON-1           Point to sign-on
 CnChk          lda       ERR,u
                cmpa      #$01                device 0 passed?
                bne       FAIL
-               endc      
+               ENDC      
 
-               cond      SCSI
+               IFDEF     SCSI
 * Set up default ID
                ldb       DEFID               get default ID
                stb       IDNUM               save it as ID number
@@ -3805,27 +3805,27 @@ a@             jsr       >REZERO             Reset drive to 00
                tst       <DCSTAT             Any errors?
                bne       a@
 
-               endc      
+               ENDC      
 
 * If we are here, the hard disk is on-line and ready
 CtlrOk         lbsr      GETMAX              Compute maximum no. of drives
                tst       <DCSTAT             errors?
                bne       FAIL
-               endc      
+               ENDC      
 
 * Initialize DriveWire
-               cond      DW
+               IFDEF     DW
                lbsr      GETMAX              Compute maximum no. of drives
 
 * Turbo Mode for DW4
-               cond      DW4
+               IFDEF     DW4
                lda       #$E6                turbo notification command
                sta       VCMD
                ldy       #1
                jsr       >SENDY              tell server we want turbo mode
                ldx       #$8000              delay counter
                jsr       $D7F3               delay while server changes baud rate
-               endc      
+               ENDC      
 
 *               pshs      cc                  then push CC on stack
 *               orcc      #IntMasks
@@ -3846,9 +3846,9 @@ CtlrOk         lbsr      GETMAX              Compute maximum no. of drives
 *               ldy       #0001
 *               lbsr      DWWrite
 *               puls      a,cc                Carry is clear on pull
-               endc      
+               ENDC      
 
-               cond      ARDUINO
+               IFDEF     ARDUINO
 * setup PIA PORTA (read)
                clr       $FF51
                clr       $FF50
@@ -3861,10 +3861,10 @@ CtlrOk         lbsr      GETMAX              Compute maximum no. of drives
                sta       $FF52
                lda       #$2C
                sta       $FF53
-               endc
+               ENDC
 
 ITSOK          jsr       >BEEP               Send a beep
-               cond      DW-1
+               IFNE      DW-1
                bra       BOOTUP              Try AUTOEXEC
 
 * From this point floppies are enabled
@@ -3873,7 +3873,7 @@ FAIL2          clr       <DCDRV              Insure drive 0 boot
                bsr       PRINT2
                ldb       #$04
                jsr       >DCLOSE
-               endc      
+               ENDC      
 
 * Test for SHIFT key, skip autoboot if pressed
 BOOTUP         lda       #$7F                Shift bit mask
@@ -4008,9 +4008,9 @@ a@             tfr       d,x                 Put lo-word in X
 * Get DSKCON opcode and branch accordingly
 
                lda       <DCOPC              Get DSKCON command
-               cond      SCSI
+               IFDEF     SCSI
                beq       RESTOR2             Seek drive to LSN 0
-               endc      
+               ENDC      
                suba      #2                  Read?
                beq       RBLOCK              Go if read opcode
                deca                          Write opcode?
@@ -4021,7 +4021,7 @@ a@             tfr       d,x                 Put lo-word in X
 
 * Frequently Used Commands
 
-               cond      SCSI
+               IFDEF     SCSI
 REZERO         lda       #SEEK               Fast seek to LSN 0
                bsr       a@
                lda       #RSTR               Rezero opcode
@@ -4038,7 +4038,7 @@ RESTOR2        lda       #SEEK               Seek to LSN 0
                tfr       x,y                 Clear Y (Reserved)
                fcb       SKIP2
 
-               endc      
+               ENDC      
 
 RBLOCK         lda       #RBLK               Read a block
                fcb       SKIP2
@@ -4055,7 +4055,7 @@ FINIS          puls      u,y,x,d,pc          Done, restore & return
 * SCSI/IDE/DW START HERE
 ****************************************
 
-               cond      DW
+               IFDEF     DW
 SETUP          sta       <VCMD               Store command byte
                lda       IDNUM               Get drive number
                std       <VCMD+1             Store that and bits 23-16 of LSN
@@ -4065,12 +4065,12 @@ SETUP          sta       <VCMD               Store command byte
 * Exit: X = address of read/write buffer
 SEND           ldy       #5
 SENDY          ldx       #$FFD6              coco 2 normal speed address
-               ifgt      Level-1
+               IFGT      Level-1
                lda       >$FFFC              MSB of NMI vector
                cmpa      #$FE                coco 3 uses FExx page
                bne       SETSPD              branch if not coco 3
                leax      3,x                 coco 3 fast speed address
-               endc      
+               ENDC      
 SETSPD         sta       ,x                  set speed
                ldd       <DCBPT              get read/write buffer
                ldx       #256                sector size
@@ -4150,19 +4150,19 @@ HREAD          bsr       SEND
                sta       VCMD
                bra       HREAD               and try getting sector again
 
-               cond      DW4
+               IFDEF     DW4
                use       dw4write.asm
                use       dw4read.asm
-               else      
+               ELSE      
                use       dwwrite.asm
                use       dwread.asm
-               endc      
+               ENDC      
 
                setdp     $00
 
-               endc      
+               ENDC      
 
-               cond      IDE
+               IFDEF     IDE
 * SETUP - Setup the Command Packet
 * Setup VCMD with command, LSN and option byte
 * Entry: A = Command Code
@@ -4278,7 +4278,7 @@ b@             lda       STATUS,u            get status byte from drive
                lsla                          else put DRDY bit 6 into bit 7
                bpl       a@                  and try again if clear
 
-               cond      USELBA
+               IFDEF     USELBA
 * LBA mode is easy... just put the LSN out in the registers
                ldb       <VCMD+1
                stb       CYLHI,u
@@ -4287,9 +4287,9 @@ b@             lda       STATUS,u            get status byte from drive
                sta       CYLLO,u
                ldb       #$01
                stb       SECTCN,u
-               endc      
+               ENDC      
 
-               cond      USECHS
+               IFDEF     USECHS
 * CHS is hard... we have to compute the CHS value based on the LSN 
                ldd       NHEADS              get heads and sectors
                mul                           multiply
@@ -4321,14 +4321,14 @@ B@             leay      1,y
                tfr       y,d
                orb       DRVSEL
                stb       DEVHED,u
-               endc      
+               ENDC      
 
                lda       ,x
                sta       CMD,u               Lastly, push the command to the drive
                clrb                          clear carry
                rts       
 
-               endc      
+               ENDC      
 
 ******** END OF IDE
 
@@ -4336,7 +4336,7 @@ B@             leay      1,y
 
 ******** START OF SCSI
 
-               cond      SCSI
+               IFDEF     SCSI
 * SETUP - Setup the Command Packet
 *
 * Sets up VCMD with command, LSN and option byte
@@ -4454,10 +4454,10 @@ SEND           bsr       WAITRQ              Wait for -REQ asserted
 * Wait for controller to assert -REQ
 
 WAITRQ         lda       STATUS,u            Read SCSI status
-               cond      ACK
+               IFDEF     ACK
                bita      #ACK                -ACK asserted?
                bne       WAITRQ
-               endc      
+               ENDC      
                bita      #REQ                -REQ asserted?
                beq       WAITRQ              No, check again
                rts                           Yes, return
@@ -4500,7 +4500,7 @@ INSTAT         bsr       WAITRQ              Wait for -REQ asserted
                lda       <DCSTAT             Restore status
                rts                           Return with status
 
-               endc      
+               ENDC      
 
 ******** END OF SCSI
 
@@ -4654,22 +4654,22 @@ DCLOSE         bsr       HCLOSE              Close all disk files
 
 * Park drive in landing zone
 DPARK                    
-               cond      SCSI
+               IFDEF     SCSI
                bsr       RECAL               Rezero drive
                jsr       >PARK               Park it
                bra       b@                  Check for error & return
-               endc      
+               ENDC      
 ** Recalibrate (rezero) drive
 RECAL          jsr       <$9F                Drive number specified?
                beq       a@                  No, just park
                bsr       DSET05              Yes, get number & setup
 a@             jsr       $A5C7               ?SN ERROR if more chars
                bsr       HCLOSE              Close all disk files
-               cond      SCSI
+               IFDEF     SCSI
                jsr       >REZERO             Reset drive to (00)
 b@             tst       <DCSTAT             Any errors?
                bne       IOERR               Yes, ?IO ERROR
-               endc      
+               ENDC      
                rts                           Return
 
 * Close all files
@@ -4698,15 +4698,15 @@ DSET05         jsr       $B70B               Evaluate argument
                bra       IOERR
 GOBACK         rts       
 
-               cond      DW
+               IFDEF     DW
 GETMAX         clr       <DCSTAT
                ldx       #VCMD
                ldd       #$FFFF              for DriveWire, assume maximum size ($FFFFFF)
                std       1,x
                sta       3,x
-               endc      
+               ENDC      
 
-               cond      SCSI
+               IFDEF     SCSI
 * GETMAX (SCSI)
 GETMAX         lda       #RCAPY              Read Capacity command
                clrb                          RESERVED
@@ -4723,9 +4723,9 @@ GETMAX         lda       #RCAPY              Read Capacity command
                tst       <DCSTAT             Any errors?
                bne       GOBACK
                ldx       #VCMD
-               endc      
+               ENDC      
 
-               cond      IDE
+               IFDEF     IDE
 * GETMAX (IDE)
 GETMAX                   
                ldd       #$0600              Get buffer #0 address
@@ -4737,7 +4737,7 @@ GETMAX
                tst       <DCSTAT
                bne       GOBACK
                ldy       <DCBPT
-               cond      USELBA
+               IFDEF     USELBA
                ldx       #NCYLS
                lda       99,y                Get mode byte
                bita      #%00000010          LBA mode?
@@ -4748,8 +4748,8 @@ GETMAX
                stb       1,x
                lda       120,y
                sta       3,x
-               endc      
-               cond      USECHS
+               ENDC      
+               IFDEF     USECHS
                ldx       #VCMD
                ldd       2,y                 Get cylinder count
                exg       a,b
@@ -4786,8 +4786,8 @@ XMU20          lda       NCYLS
                mul       
                addd      ,x
                std       ,x
-               endc      
-               endc      
+               ENDC      
+               ENDC      
 
 * Subtract HDB-DOS start sector from available sectors
 CALCOS         ldu       #HDBHI
@@ -4988,16 +4988,16 @@ FREMSG         fcc       "  FREE="
 DRVMSG         fcc       "DRIVE="
                fcb       STOP2
 
-               cond      DW-1
+               IFNE      DW-1
 FAILED         equ       *
-               cond      USELBA
+               IFDEF     USELBA
                fcc       "LBA "
-               endc      
+               ENDC      
                fcc       "HARD DRIVE NOT FOUND"
                fcb       CR
                fcb       CR
                fcb       STOP2
-               endc      
+               ENDC      
 
 
 * AUTOEXEC Filename
@@ -5010,57 +5010,57 @@ NAMBUF         fcc       "AUTOEXEC"          FILENAME
 
 SIGNON         fcc       "HDB-DOS "
                fcb       VMAJOR+$30,$2E,VMINOR+$30
-               cond      VREV
+               IFNE      VREV
                fcb       VREV
-               endc      
+               ENDC      
                fcb       $20
-               cond      IDE
-               cond      USELBA
+               IFDEF     IDE
+               IFDEF     USELBA
                fcc       "LBA"
-               endc      
-               cond      USECHS
+               ENDC      
+               IFDEF     USECHS
                fcc       "IDE"
-               endc      
-               endc      
-               cond      TC3
+               ENDC      
+               ENDC      
+               IFDEF     TC3
                fcc       "TC^3"
-               endc      
-               cond      KENTON
+               ENDC      
+               IFDEF     KENTON
                fcc       "KENTON"
-               endc      
-               cond      LRTECH
+               ENDC      
+               IFDEF     LRTECH
                fcc       "LRTECH"
-               endc      
-               cond      DHDII
+               ENDC      
+               IFDEF     DHDII
                fcc       "HD-II"
-               endc      
-               cond      D4N1
+               ENDC      
+               IFDEF     D4N1
                fcc       "4-N-1"
-               endc      
-               cond      DW
-               cond      ARDUINO
+               ENDC      
+               IFDEF     DW
+               IFDEF     ARDUINO
                fcc       "DW3 ARDUINO"
                ELSE
-               cond      DW4
+               IFDEF     DW4
                fcc       "DW4 COCO "
-               else
-               cond      BECKER
+               ELSE
+               IFDEF     BECKER
                fcc       "BECKER COCO "
-               else
+               ELSE
                fcc       "DW3 COCO "
-               endc
-               endc
-               ifgt      Level-1
+               ENDC
+               ENDC
+               IFGT      Level-1
                fcc       "3"
-               else      
-               ifne      BAUD38400
+               ELSE      
+               IFDEF     BAUD38400
                fcc       "1"
-               else      
+               ELSE      
                fcc       "2"
-               endc      
-               endc      
-               endc      
-               endc      
+               ENDC      
+               ENDC      
+               ENDC      
+               ENDC      
 *	fcc	" (C) 2002 AE"
                fcb       CR,CR
                fcb       STOP2
