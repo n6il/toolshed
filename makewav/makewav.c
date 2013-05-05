@@ -201,7 +201,7 @@ int             main(int argc, char **argv)
 		fprintf(stderr, "a WAV file. The format will match Microsoft's Color BASIC and Micro\n");
 		fprintf(stderr, "Color BASIC cassette format.\n");
 		fprintf(stderr, "\n");
-		fprintf(stderr, "General options:\n");
+		fprintf(stderr, "Usage: %s [options] input-file\n", argv[0]);
 		fprintf(stderr, " -l<val>    Length for silent leader (default %d seconds)\n", seconds);
 		fprintf(stderr, " -s<val>    Sample rate for WAV file (default %d samples per second)\n", sample_rate);
 		fprintf(stderr, " -r         Treat input file as raw binary, not an S Record file.\n" );
