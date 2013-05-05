@@ -76,6 +76,7 @@ Top      equ   $8000
          lbra  Entry
          fill  $FF,9*256	spaced out to prevent CoCo 3 BASIC ROM patches
          ELSE
+         IFNE  DOSTRACK
          fcc   /OS/
          bra   PreEntry
          fdb   $1205
@@ -91,6 +92,7 @@ PreCopy  ldu   ,x++
          subd  #$0002
          bpl   PreCopy
          jmp   $2000
+         ENDC
          ENDC
 
 * Entry point
@@ -415,5 +417,5 @@ eom      equ   *-Top
          ENDC
          ENDC
 
-         end   PreEntry
+         end   Entry
 
