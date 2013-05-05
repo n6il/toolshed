@@ -83,7 +83,7 @@ Top      equ   $8000
 * address and execute from there, since the boot track we pull
 * from DriveWire will need to reside at $2600 (and we are now!)
 PreEntry
-         leax  Entry,pcr
+         leax  >Entry,pcr
          ldy   #$2000
          ldd   #csize
 PreCopy  ldu   ,x++
