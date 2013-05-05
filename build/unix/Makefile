@@ -4,7 +4,11 @@ include rules.mak
 vpath %.c ../../mamou:../../os9
 
 PACKAGENAME	= toolshed$(RELEASE).tgz
+ifneq ($(DESTDIR),)
+INSTALLDIR	= $(DESTDIR)/usr/bin
+else
 INSTALLDIR	= $(HOME)/bin
+endif
 DIRS		= libtoolshed libnative libcecb librbf libcoco libdecb libmisc libsys \
 		ar2 os9 mamou decb tocgen cocofuse makewav libcecb cecb
 
