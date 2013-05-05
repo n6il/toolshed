@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-DEPENDS		= ./makefile
+DEPENDS		= ./Makefile
 BF68L1		= $(LEVEL1)/coco/bootfiles
 MD68L1		= $(LEVEL1)/coco/modules
 BF68L2		= $(LEVEL2)/coco3/bootfiles
