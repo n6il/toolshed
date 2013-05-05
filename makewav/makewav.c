@@ -560,8 +560,10 @@ int             main(int argc, char **argv)
 	sample_count += fwrite_audio((char *) &file_type, 1, output);	/* 0: BASIC, 1: Data, 2: M/L */
 	sample_count += fwrite_audio((char *) &data_type, 1, output);	/* 0: binary, ff: ASCII */
 	sample_count += fwrite_audio("\x00", 1, output);	/* 0: no gaps, ff: gaps) */
-	sample_count += fwrite_audio((char *) &start_address, 2, output);	/* Start address */
-	sample_count += fwrite_audio((char *) &exec_address, 2, output);	/* Execute address */
+	sample_count += fwrite_audio_repeat_byte(1, start_address >> 8, output);	/* Start address MSB */
+	sample_count += fwrite_audio_repeat_byte(1, start_address & 0xFF, output);	/* Start address LSB */
+	sample_count += fwrite_audio_repeat_byte(1, exec_address >> 8, output);		/* Execute address MSB */
+	sample_count += fwrite_audio_repeat_byte(1, exec_address & 0xFF, output);	/* Execute address LSB */
 	sample_count += fwrite_audio((char *) &checksum, 1, output);	/* checksum */
 	sample_count += fwrite_audio("\x55", 1, output);	/* End of block ID */
 
