@@ -338,9 +338,16 @@ int             main(int argc, char **argv)
 		printf("Copyright (C) 2007 tim lindner\n\n");
 	}
 
-	/* Open S Record file */
+	/* Open S Record or binary file */
 
-	FILE           *srec = fopen(in_filename, "r");
+	const char     *mode;
+
+	if (binary)
+		mode = "rb";
+	else
+		mode = "r";
+
+	FILE           *srec = fopen(in_filename, mode);
 
 	if (srec == NULL)
 	{
