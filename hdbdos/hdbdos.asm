@@ -473,7 +473,7 @@ LC0C2          tfr       A,B                 COPY ACCA TO ACCB
                bsr       LC0F0               GO INITIALIZE THE FLOPPY DISK CONTROLLER
                andcc     #$AF                TURN ON IRQ AND FIRQ
 *	LDX	#LC139-1	POINT X TO DISK BASIC COPYRIGHT MESSAGE
-               ldx       #$C138
+               ldx       #LC139-1            COPYRIGHT MESSAGE - 1
 LC0DC          jsr       STRINOUT            PRINT COPYRIGHT MESSAGE TO SCREEN
                ldx       #DKWMST             GET DISK BASIC WARM START ADDRESS
                stx       RSTVEC              SAVE IT IN RESET VECTOR
@@ -489,8 +489,8 @@ LC0F0          clr       NMIFLG              RESET NMI FLAG
                clr       DSKREG              RESET DISK CONTROL REGISTER
                lda       #$D0                FORCE INTERRUPT COMMAND OF 1793
                sta       FDCREG              SEND IT TO 1793
-               nop       
-               lbsr      $CD01
+LC101          nop       
+               lbsr      LCD01
 *	EXG	A,A	* DELAY
 *	EXG	A,A	* DELAY SOME MORE
                lda       FDCREG              GET 1793 STATUS (CLEAR REGISTER)
@@ -511,7 +511,8 @@ LC113          fdb       DVEC0,DVEC1,DVEC2
                fdb       DVEC12,DVEC13,DVEC14
                fdb       DVEC15,DVEC12
 *	FDB	DVEC17,DVEC18
-               fdb       DVEC17,RUNM
+               fdb       DVEC17
+               fdb       RUNM
 * DISK BASIC COPYRIGHT MESSAGE
 LC139          fcc       'DISK EXTENDED COLOR BASIC 1.1'
                fcb       CR
@@ -1169,7 +1170,7 @@ LC6E5          ldb       #2*26               'NE' ERROR
 * KILL COMMAND
 KILL           jsr       >LC935              GET FILENAME.EXT FROM BASIC
                jsr       >LA5C7              'SYNTAX' ERROR IF MORE CHARACTERS ON LINE
-               jsr       >LC79D              GET VALID FAT DATA
+LC6F5          jsr       >LC79D              GET VALID FAT DATA
                bsr       LC68C               TEST FOR FILE NAME MATCH IN DIRECTORY
                bsr       LC6E5               MAKE SURE THE FILE EXISTED
 LC6FC          lda       #$FF                * MATCH FILE TYPE = $FF; THIS WILL CAUSE AN 'AO'
@@ -1437,7 +1438,7 @@ LC8B2          andcc     #$AF                ENABLE IRQ & FIRQ
                lda       $FF00
                coma      
                anda      #$7F
-               beq       $C8C2
+               beq       LC8C2
 
 *	CLR	PIA0+2	STROBE ALL KEYS (COLUMN STROBE)
 *	LDA	PIA0	READ KEYBOARD ROWS
@@ -1510,13 +1511,13 @@ LC945          sta       ,U+                 STORE A BLANK IN FILE NAME
                jsr       >L8748              EVALUATE A STRING EXPRESSION
                leau      ,X                  POINT U TO START OF STRING
 
-               bra       $C96A               Jump around patch
-FIXBUG         lbne      $CB97               Continue old code
+               bra       LC96A               Jump around patch
+FIXBUG         lbne      LCB97               Continue old code
                puls      u,x,d               -DITTO-
                cmpu      $94A                Is buffer end > pointer?
-               lblo      $CBB4               No, continue old code
+               lblo      LCBB4               No, continue old code
                ldx       #$989               Yes, reset start of buffer
-               lbra      $CBC0               Store start of random buffer
+               lbra      LCBC0               Store start of random buffer
 *	CMPB	#$02	* aHECK LENGTH OF STRING AND
 *	BLO	LC96A	* BRANCH IF < 2
 *	LDA	$01,U	= GET 2ND CHARACTER IN STRING AND
@@ -1665,7 +1666,7 @@ LCA50          sta       DRUNFL              RUN FLAG (0 = DON'T RUN, 2 = RUN)
                ldb       #'R                 *
                jsr       >LB26F              *IS NEXT CHAR 'R'? RUN AFTER LOAD
                jsr       >LA5C7              SYNTAX ERROR IF ANY MORE CHARS ON LINE
-               lda       #$03                *SET FLAGS TO RUN AND CLOSE ALL FILES
+LCA67          lda       #$03                *SET FLAGS TO RUN AND CLOSE ALL FILES
                sta       DRUNFL              *BEFORE THE FILE IS RUN
 LCA6C          bsr       LCA07               GRAB FCB FOR INPUT FILE
                lda       DASCFL              *CHECK ASCII FLAG AND BRANCH
@@ -1899,7 +1900,7 @@ DVEC3          lbra      ATARI
                fcb       $12,$12,$12
 *DVEC3	TST	DEVNUM	CHECK DEVICE NUMBER
 *	LBLE	XVEC3	BRANCH TO EX BASIC IF NOT A DISK FILE
-               leas      $02,S               POP RETURN OFF STACK
+LCC22          leas      $02,S               POP RETURN OFF STACK
 * SEND A CHARACTER IN ACCA TO A DISK FILE. A CARRIAGE RETURN WILL RESET THE
 * PRINT POSITION AND CONTROL CODES WILL NOT INCREMENT THE PRINT POSITION.
 LCC24          pshs      X,B,A               SAVE REGISTERS
@@ -1998,26 +1999,26 @@ LCCC5          puls      U                   SAVE TOP OF STACK
 *	BSR	LCD1B	SEND BLANK TO CONSOLE OUT
                ldb       #$03                NUMBER CHARACTERS TO PRINT
                jsr       >LB9A2              SEND EXTENSION TO CONSOLE OUT
-               bsr       $CD1B               Print a space
+               bsr       LCD1B               Print a space
                ldx       ,s                  Get directory pointer
                ldb       $0D,x               Get first gran in dir entry
-               bsr       $CD1E               Count granules, result to A
+               bsr       LCD1E               Count granules, result to A
                tfr       A,B                 Put data in B
                cmpb      #10                 Is it a 2 digit number?
                bhs       a@                  Yes, do not add filler space
-               bsr       $CD1B               Add filler space
+               bsr       LCD1B               Add filler space
 a@             clra                          Zero top of D
                jsr       $BDCC               Print decimal D to screen
                jsr       >DCOUNT             Columnize directory
                bra       b@                  Continue old code
-PCCFA          jsr       $CEAF
-               jmp       [$A002]
-               pshs      cc,dp,d,x,y,u
+PCCFA          jsr       >LCEAF
+LCCFD          jmp       [$A002]
+LCD01          pshs      cc,dp,d,x,y,u
                lbra      PD2A0
 b@             puls      X
 LCD08          leax      <$20,x
                cmpx      #$700
-               blo       $CCC5
+               blo       LCCC5
                ldb       <$ED
                incb      
                cmpb      #19
@@ -2246,10 +2247,10 @@ FREE           jsr       >LB143              * NUMBER TYPE CHECK
                jsr       >LB70E              *EVALUATE NUMERIC EXPRESSION AND RETURN VALUE IN ACCB
                bsr       HITEST              Test for > max drive
                stb       <DCDRV              Drive number
-               jsr       $C79D               Test file allocation table
+               jsr       >LC79D               Test file allocation table
                jsr       >BRIAN
                jmp       $B4F3
-               pshs      x
+LCEAF          pshs      x
                ldx       6,s
                lda       $C,x
                anda      #1
@@ -2282,7 +2283,7 @@ DRIVE          jmp       >DRVCHK
                nop       
 *DRIVE	JSR	EVALEXPB	EVALUATE EXPR; RETURN VALUE IN ACCB
 *	CMPB	#$03	MAX DRIVE NUMBER = 3
-               lbhi      LA61F               'DEVICE #' ERROR IF DRIVE NUMBER > 3
+LCECA          lbhi      LA61F               'DEVICE #' ERROR IF DRIVE NUMBER > 3
                stb       DEFDRV              SAVE DEFAULT DRIVE NUMBER
                rts       
 * EVALUATE EXPRESSION RAM VECTOR
@@ -2438,7 +2439,7 @@ RENAME
                nop       
 *	LDX	CHARAD	* SAVE CURRENT INPUT POINTER
 *	PSHS	X	* ON THE STACK
-               bsr       LD056               GET FILENAME OF SOURCE FILE
+LD01F          bsr       LD056               GET FILENAME OF SOURCE FILE
                lda       DCDRV               * SAVE DRIVE NUMBER
                pshs      A                   * ON THE STACK
                bsr       LD051               SYNTAX CHECK FOR 'TO' AND GET NEW FILENAME
@@ -2464,7 +2465,7 @@ LD051          ldb       #$A5                'TO' TOKEN
                jsr       >LB26F              SYNTAX CHECK FOR 'TO'
 LD056          jmp       >LC935              GET FILENAME FROM BASIC
 LD059          jsr       >LC68C              SCAN DIRECTORY FOR FILENAME
-               ldb       #33*2               'FILE ALREADY EXISTS' ERROR
+LD05C          ldb       #33*2               'FILE ALREADY EXISTS' ERROR
                tst       V973                CHECK FOR A MATCH
                lbne      LAC46               'AE' ERROR IF FILE IN DIRECTORY
                rts       
@@ -2722,7 +2723,7 @@ LD249          cmpb      FCBACT              CHECKED ALL FILES?
                rts       
 * GET DRIVE NUMBER FROM BASIC - USE THE DEFAULT DRIVE IF NONE GIVEN
 LD24F          ldb       DEFDRV              GET DEFAULT DRIVE NUMBER
-               jsr       GETCCH              GET NEXT INPUT CHAR
+LD252          jsr       GETCCH              GET NEXT INPUT CHAR
                beq       LD25F               USE DEFAULT DRIVE NUMBER IF NONE GIVEN
 LD256          jsr       EVALEXPB            EVALUATE EXPRESSION
                jsr       >HITEST
@@ -2732,7 +2733,7 @@ LD256          jsr       EVALEXPB            EVALUATE EXPRESSION
 *	CMPB	#$03	4 DRIVES MAX
 *	LBHI	LA61F	'DEVICE NUMBER ERROR' IF > 3
 LD25F          stb       DCDRV               STORE IN DSKCON VARIABLE
-               rts       
+LD261          rts       
 * BACKUP COMMAND
 BACKUP         lbeq      LA61F               DEVICE NUMBER ERROR IF NO DRIVE NUMBERS GIVEN
                jsr       >L95AC              RESET SAM DISPLAY PAGE AND VOG MODE
@@ -2761,9 +2762,9 @@ a@             inc       2,s                 Bump up track count
                bhs       a@                  No, add another track
                dec       2,s                 Normalize to zero
                lbeq      $AC44               ?OM ERROR if no free RAM
-               bra       $D2A4
+               bra       LD2A4
 PD2A0          puls      cc,dp,d,x,y,u
-               bra       $D261
+               bra       LD261
 
 *LD27B	LDS	#DBUF0+255	PUT STACK AT TOP OF DBUF0
 *	PSHS	B	SAVE DESTINATION DRIVE NUMBER ON STACK
@@ -2899,7 +2900,7 @@ LD3A0          lda       ,-X                 * GET A CHARACTER FROM FILENAME.
 * PULL FILENAME.EXT AND DRIVE NUMBER FROM (X) TO RAM
 LD3AD          lda       ,X+                 * GET DRIVE NUMBER AND SAVE
                sta       DCDRV               * IT IN DSKCON VARIABLE
-               ldb       #11                 11 BYTES IN FILENAME AND EXTENSION
+LD3B1          ldb       #11                 11 BYTES IN FILENAME AND EXTENSION
                ldu       #DNAMBF             POINT U TO DISK NAME BUFFER
                jmp       >LA59A              MOVE FILENANE.EXT FROM (X) TO DNAMBF
 * COPY
@@ -3160,7 +3161,7 @@ LD58F          ldx       #DBUF0              POINT X TO I/O BUFFER (DBUF0)
 DSKINI         lbeq      LA61F               BRANCH TO 'DN' ERROR IF NO DRIVE NUMBER SPECIFIED
                jmp       >DSKINI2
 *	JSR	>LD256	CALCULATE DRIVE NUMBER
-               ldb       #$04                SKIP FACTOR DEFAULT VALUE
+LD5A0          ldb       #$04                SKIP FACTOR DEFAULT VALUE
                jsr       GETCCH              GET CURRENT INPUT CHAR FROM BASiC
                beq       LD5B2               BRANCH IF END OF LINE
                jsr       >LB738              SYNTAX CHECK FOR COMMA AND EVALUATE EXPRESSION
@@ -3223,7 +3224,7 @@ LD612          lda       #$50                = GET STEP IN COMMAND
 *LD612	LDA	#$53	= GET STEP IN COMMAND
                sta       FDCREG              = AND SEND IT TO THE 1793
                nop       
-               lbsr      $CD01
+               lbsr      LCD01
 *	EXG	A,A	* DELAY AFTER ISSUING COMMAND TO 1793
 *	EXG	A,A	*
                jsr       >LD7D1              CHECK DRIVE READY
@@ -3401,7 +3402,7 @@ DSKCON         jmp       >DSKCON2
                nop       
 *DSKCON	PSHS	U,Y,X,B,A	SAVE REGISTERS
 *	LDA	#$05	* GET RETRY COUNT AND
-               pshs      A                   * SAVE IT ON THE STACK
+LD763          pshs      A                   * SAVE IT ON THE STACK
 LD765          clr       RDYTMR              RESET DRIVE NOT READY TIMER
                ldb       DCDRV               GET DRIVE NUMBER
                ldx       #LD89D              POINT X TO DRIVE ENABLE MASKS
@@ -3457,7 +3458,7 @@ LD7B8          jsr       >TRKTBL
 *	LDA	#$03	* RESTORE HEAD TO TRACK 0, UNLOAD THE HEAD
                sta       FDCREG              * AT START, 30 MS STEPPING RATE
                nop       
-               lbsr      $CD01
+               lbsr      LCD01
 *	EXG	A,A	=
 *	EXG	A,A	= WAIT FOR 1793 TO RESPOND TO COMMAND
                bsr       LD7D1               WAIT TILL DRIVE NOT BUSY
@@ -3470,7 +3471,7 @@ LD7D0          rts
 LD7D1          ldx       ZERO                GET ZERO TO X REGISTER - LONG WAIT
 LD7D3          leax      -1,X                DECREMENT LONG WAIT COUNTER
                beq       LD7DF               lF NOT READY BY NOW, FORCE INTERRUPT
-               lbsr      $C101               Delay, then LDA $FF48
+               lbsr      LC101               Delay, then LDA $FF48
 *	LDA	FDCREG	* GET 1793 STATUS AND TEST
                bita      #$01                * BUSY STATUS BIT
                bne       LD7D3               BRANCH IF BUSY
@@ -3478,7 +3479,7 @@ LD7D3          leax      -1,X                DECREMENT LONG WAIT COUNTER
 LD7DF          lda       #$D0                * FORCE INTERRUPT COMMAND - TERMINATE ANY COMMAND
                sta       FDCREG              * IN PROCESS. DO NOT GENERATE A 1793 INTERRUPT REQUEST
                nop       
-               lbsr      $CD01
+               lbsr      LCD01
 *	EXG	A,A	* WAIT BEFORE READING 1793
 *	EXG	A,A	*
                lda       FDCREG              RESET INTRQ (FDC INTERRUPT REQUEST)
@@ -3515,7 +3516,7 @@ LD7FB          lda       #$A0                $A0 IS WRITE FLAG (1793 WRITE SECTO
 *	LDA	#$17	* SEEK COMMAND FOR 1793: DO NOT LOAD THE
                sta       FDCREG              * HEAD AT START, VERIFY DESTINATION TRACK,
                nop       
-               lbsr      $CD01
+               lbsr      LCD01
 *	EXG	A,A	* 30 MS STEPPING RATE - WAIT FOR
 *	EXG	A,A	* VALID STATUS FROM 1793
                bsr       LD7D1               WAIT TILL NOT BUSY
@@ -3541,7 +3542,7 @@ LD82C          lda       DSEC                GET SECTOR NUMBER DESIRED
                orcc      #$50                DISABLE FIRQ,IRQ
                stb       FDCREG              * SEND READ/WRITE COMMAND TO 1793: SINGLE RECORD, COMPARE
                nop       
-               lbsr      $CD01
+               lbsr      LCD01
 *	EXG	A,A	* FOR SIDE 0, NO 15 MS DELAY, DISABLE SIDE SELECT
 *	EXG	A,A	* COMPARE, WRITE DATA ADDRESS MARK (FB) - WAIT FOR STATUS
                cmpb      #$80                WAS THIS A READ?
@@ -3618,20 +3619,20 @@ LD8CD          jmp       >L8955              JUMP TO EXTENDED BASIC'S IRQ HANDLE
 DOSCOM         swi3                          user hook
                ldd       #$200               Read, drive 0
                std       <DCOPC              Tell DSKCON
-               jsr       $D252               DOS (drive number)?
+               jsr       >LD252               DOS (drive number)?
                jsr       $A5C7               ?SN ERROR if more chars
                ldd       #(34*256)+1         track 34, sector 1
                std       <DCTRK              Tell DSKCON
                ldd       #DBUF0              DOS buffer
                std       <DCBPT              Tell DSKCON
-               jsr       $D6F2               Read disk into buffer
+               jsr       >LD6F2               Read disk into buffer
                ldd       DBUF0               Get first 2 bytes
                cmpd      #('O*256)+'S        "OS" header?
                lbne      DOAUTO              No, try AUTOEXEC
 a@             ldd       #DOSBUF
                std       <DCBPT
                ldb       #18
-b@             jsr       $D6F2
+b@             jsr       >LD6F2
                inc       <DCSEC              Sector
                inc       <DCBPT              Pointer
                decb                          Proceed through track
@@ -3642,7 +3643,7 @@ b@             jsr       $D6F2
 DOSINI         pshs      d,x                 Save registers
 DOSIN2         ldd       #(6*256)+$3B        6 "RTI" opcodes
                ldx       #$100               Point to SWI vectors
-               jsr       $D6C2               Store 6 RTIs
+               jsr       >LD6C2               Store 6 RTIs
                puls      d,x,pc              Restore & return
 
                fcb       $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
@@ -3730,7 +3731,7 @@ HDINIT         ldx       #SIGNON-1           Point to sign-on
 
                ldd       #(9*256)+0          Write 9 bytes of 0...
                ldx       #INTFLG             ...Into our RAM (clear it)
-               jsr       $D6C2               Erase our RAM; write regA bytes of regB data to regX
+               jsr       >LD6C2               Erase our RAM; write regA bytes of regB data to regX
                ldx       #$A0E2              Warm start BASIC
                pshs      x                   Save off for later RTS
 
@@ -3792,7 +3793,7 @@ CnChk          lda       ERR,u
 * SCSI controllers are usually available as soon as power
 * is applied, so we do not loop, we just check once to see
 * if they are available.
-               jsr       $D7F0               Reset delay
+               jsr       >LD7F0               Reset delay
                sta       DATARW,u            Write to port to verify controller exists
                cmpa      DATARW,u            Is interface there?
                bne       FAIL                No, set up for floppy
@@ -3824,7 +3825,7 @@ CtlrOk         lbsr      GETMAX              Compute maximum no. of drives
                ldy       #1
                jsr       >SENDY              tell server we want turbo mode
                ldx       #$8000              delay counter
-               jsr       $D7F3               delay while server changes baud rate
+               jsr       >LD7F3               delay while server changes baud rate
                ENDC      
 
 *               pshs      cc                  then push CC on stack
@@ -3890,19 +3891,19 @@ BOOTUP         lda       #$7F                Shift bit mask
 * No SHIFT key, see if the drive is working
                ldb       #6                  Move 6 bytes
                ldx       #DTEST              Read, D=0, T=0, S=1, B=$600
-               ldu       $C006               Point to DSKCON variables
+               ldu       DSKVAR              Point to DSKCON variables
                jsr       $A59A               Move (B) From X to U
                ldb       <DCDRV              Get current drive
                stb       <DCDRV              Store for DSKCON
-               jsr       [$C004]             Try to read disk
+               jsr       [DCNVEC]            Try to read disk
                tst       <DCSTAT             Did we get an I/O error?
                bne       BASICBYE            Yes, just go to BASIC
 
 * Try to find & run the AUTOEXEC.BAS file
 * If file is MACHINE CODE, do not try to run it!
 DOAUTO         ldx       #NAMBUF             Point to "AUTOEXEC.BAS"
-               jsr       $D3B1               Get it into diskname buffer
-               jsr       $C68C               See if it exists
+               jsr       >LD3B1               Get it into diskname buffer
+               jsr       >LC68C               See if it exists
                tst       $973                Is it there? Existing file sector#
                beq       BASICBYE            No, goto BASIC
                ldx       $974                Yes, point to dir data
@@ -3912,14 +3913,14 @@ DOAUTO         ldx       #NAMBUF             Point to "AUTOEXEC.BAS"
                lda       <DCDRV              Get DSKCON drive #
                sta       $95A                And make it default drive for BASIC
                leas      2,s
-               jmp       $CA67               No, go run it!
+               jmp       LCA67               No, go run it!
 BASICBYE       rts       
 
 
 * This is DSKINI for the hard drive
-DSKINI2        jsr       $D256               Evaluate drive number
+DSKINI2        jsr       >LD256               Evaluate drive number
                cmpb      HDFLAG              Is it a hard disk?
-               lbcs      $D5A0               No, goto old code
+               lbcs      LD5A0               No, goto old code
 
                jsr       $A5C7               ?SN ERROR if more chars
                jsr       >HCLOSE             Close all disk files
@@ -3943,7 +3944,7 @@ PRINT2         jmp       $B99C               Print it and return
 
 * This erases all sectors of a hard disk with $FFs
 * R.G. One less byte used with the next command more clock cycles used
-ERASE          jsr       $CCFD               However, $CCFD is jmp [$A002]
+ERASE          jsr       >LCCFD               However, $CCFD is jmp [$A002]
 ERASE2         lda       #3                  DSKCON Write opcode
                sta       <DCOPC              Tell DSKCON
                ldd       #(34*256)+18        Begin at track 34, sector 18
@@ -3951,8 +3952,8 @@ ERASE2         lda       #3                  DSKCON Write opcode
                ldd       #(0*256)+$FF        Buffer fill 256 bytes of $FF
                ldx       #DBUF0              Point to buffer
                stx       <DCBPT              Tell DSKCON where it is
-               jsr       $D6C2               Fill buffer with $FF'S
-a@             jsr       $D6F2               Write & verify a sector of $FF'S
+               jsr       >LD6C2               Fill buffer with $FF'S
+a@             jsr       >LD6F2               Write & verify a sector of $FF'S
                dec       <DCSEC              Decrement sector count
                bne       a@                  Go until sector = 0
                lda       #18                 Reset sector variable...
@@ -3965,7 +3966,7 @@ a@             jsr       $D6F2               Write & verify a sector of $FF'S
 
 * DSKCON goes here for floppy drives
 DSK20          lda       #3                  Original..... (WAS lda #5)
-               jmp       $D763               DSKCON code
+               jmp       LD763               DSKCON code
 
 * DSKCON now enters here
 DSKCON2        pshs      d,x,y,u             Save registers
@@ -4585,7 +4586,7 @@ b@             tst       ,x                  Any files active?
                leax      <$4A,x              Yes, bump to next FAT...
                decb                          ...decrement counter
                bne       b@                  Try next table
-               jmp       $C504               None left, ?OB ERROR
+               jmp       LC504               None left, ?OB ERROR
 c@             sta       2,x                 Store drive number
 d@             puls      d,pc                Pull registers & return
 
@@ -4632,7 +4633,7 @@ DRVCHK         cmpa      #$88                "ON" token?
                jsr       $B70B               Evaluate argument
                jsr       $A5C7               ?SN ERROR if more chars
                cmpb      MAXDRV              Valid number requested?
-               jmp       $CECA               Store default drive & return
+               jmp       LCECA               Store default drive & return
 
 
 * Enable 0-3 hard drive or floppy
@@ -4674,10 +4675,10 @@ b@             tst       <DCSTAT             Any errors?
 
 * Close all files
 HCLOSE         pshs      d,u,x,y             Save registers
-               jsr       $CAE9               Close all files
+               jsr       DVEC7               Close all files
                puls      d,u,x,y,pc          Restore & return
 
-IOERR          jmp       $D709
+IOERR          jmp       LD709
 
 * Select Device ID number
 DNUM           jsr       <$9F                Parse over "#"
@@ -4718,7 +4719,7 @@ GETMAX         lda       #RCAPY              Read Capacity command
                stx       <DCBPT              Tell DSKCON
                leax      2,x                 Point past command
                ldd       #(8*256)+0          Write 8 bytes of 0
-               jsr       $D6C2               Write rest of command
+               jsr       >LD6C2               Write rest of command
                lbsr      EXECMD              Execute command
                tst       <DCSTAT             Any errors?
                bne       GOBACK
@@ -4824,14 +4825,14 @@ DUN            rts                           Return
 
 * The DIR command enters here
 
-DIRCHK         jsr       $D24F               Get first drive number
+DIRCHK         jsr       >LD24F               Get first drive number
                jsr       $A5C7               Any more chars?
 DNAME          bsr       SETVAR              Select track & sector 17
                lda       #2                  Read opcode
                sta       <DCOPC              Tell DSKCON
                ldx       #DBUF0              Point to buffer
                stx       <DCBPT              Tell DSKCON
-               jsr       $D6F2               Read diskname
+               jsr       >LD6F2               Read diskname
                lda       ,x                  Get first character
                beq       DUN                 NULL? Exit
                coma                          Invert
@@ -4839,13 +4840,13 @@ DNAME          bsr       SETVAR              Select track & sector 17
                bsr       SENDCR              Send a C/R
 a@             lda       ,x+                 Get a character
                beq       DUN                 Exit if done
-               jsr       $CCFD               R.G. See above jmp [$A002] 
+               jsr       >LCCFD               R.G. See above jmp [$A002] 
                bra       a@                  And get another
 
 
 * More of directory code.
 BOISY          beq       a@
-               lbcs      $CCBB
+               lbcs      LCCBB
 a@             lda       $01D4
                cmpa      $01D5
                beq       b@
@@ -4861,7 +4862,7 @@ b@             ldx       #DRVMSG-1           DRIVE=
                clra      
                jsr       $BDCC
 SENDCR         jmp       $B958
-BRIAN          jsr       $C755
+BRIAN          jsr       >LC755
                leax      6,x
                clr       ,-s
                ldb       #$44
@@ -4881,12 +4882,12 @@ SETVAR         ldd       #$1111
 RENAME2        cmpa      #$CF                "DRIVE" token?
                bne       NONAME              No, continue old code
                jsr       <$9F                Yes, parse over it
-               jsr       $D256               Get drive number
+               jsr       >LD256               Get drive number
                jsr       $B26D               Sytax check for comma
                ldd       #(0*256)+$FF        Write 256 bytes of $FF
                ldx       #DBUF0              Point to buffer
                stx       <DCBPT              Tell DSKCON where buffer is
-               jsr       $D6C2               Go fill buffer
+               jsr       >LD6C2               Go fill buffer
                jsr       $8748               Evaluate string (DISKNAME)
                jsr       $A5C7               ?SN ERROR if more chars
                tstb                          See if NULL string ("")
@@ -4897,22 +4898,22 @@ RENAME2        cmpa      #$CF                "DRIVE" token?
 NULL           bsr       SETVAR              Select track & sector
                lda       #3                  Write opcode
                sta       <DCOPC              DSKCON opcode write
-DOIO           jmp       $D6F2               Write buffer to disk
+DOIO           jmp       LD6F2               Write buffer to disk
 NONAME         ldx       <$A6                Continue...
                pshs      X                   ...old code
-               jmp       $D01F               Jump back into old code
+               jmp       LD01F               Jump back into old code
 
 
 
 * Patch to allow RUNM command
 
 RUNM           cmpa      #'M                 "RUNM"?
-               lbne      $CA3E               No, continue old code
+               lbne      DVEC18              No, continue old code
                pshs      CC
                orcc      #$50                Yes, shut off interrupts
                ldx       #$A545              ...EXEC
                stx       1,s
-               jsr       $CFC1               Do a LOADM...
+               jsr       >LCFC1               Do a LOADM...
                clr       $FF40               Shut off drive motor(s)...
                puls      cc,pc               ...EXEC
 
@@ -4927,20 +4928,20 @@ COPtst         ldx       <$A6                Get basic input pointer
                puls      X                   Restore input pointer
                stx       <$A6                Restore pointer
                tst       <$6                 Expression numeric?
-               lbeq      $D256               Yes, evaluate drive number
+               lbeq      LD256               Yes, evaluate drive number
                ldx       #$954               No, point at ext. buffer
-               jmp       $C938               And get filename string
+               jmp       LC938               And get filename string
 
 
 * Allow "COPY" command to overwrite existing file
 
-AETEST         jsr       $C68C               Scan dir for filename
+AETEST         jsr       >LC68C               Scan dir for filename
                tst       $973                Already exist?
                beq       AE10                No, just return
 ASK            lda       <$1A,s              R.G. stack holds data for COPY $1A=26 is part of Source Name
                cmpa      $0D,s
                bne       a@
-               jmp       $D05C
+               jmp       LD05C
 a@             lda       <$68                Get BASIC line # MSB
                inca                          Direct mode ($FF)?
                bne       d@                  No, just overwrite
@@ -4951,8 +4952,8 @@ a@             lda       <$68                Get BASIC line # MSB
                leas      <$26,s              No, remove temp variables
                ldx       #ABTMSG-1           "ABORTED" message
 b@             jmp       $B99C               Print it & return
-c@             jsr       $CCFD               R.G. See above print Y
-d@             jmp       $C6F5               Kill dest file & return
+c@             jsr       >LCCFD               R.G. See above print Y
+d@             jmp       LC6F5               Kill dest file & return
 
 
 * Get a keypress, beq if it's a "Y"
@@ -5075,7 +5076,7 @@ DTEST          fdb       $0200               Read, drive 0
 ATARI          tst       <$6F
                beq       A@
                blt       C@
-               jmp       $CC22
+               jmp       LCC22
 A@             cmpa      #$07
                bne       B@
                jsr       >BEEP
@@ -5096,7 +5097,7 @@ FLEXKY         lda       <$6F                Get device number
                bne       JMPOUT              No, go to original code
                nega                          Yes, flag buffer in use
                sta       INTFLG              Store flag
-JMPOUT         jmp       $C5BC               Jump to old code
+JMPOUT         jmp       DVEC4               Jump to old code
 KEY            pshs      X,B                 Save registers
                ldx       7,s                 Where are we coming from?
                cmpx      #$A39D              The idle loop?
@@ -5174,7 +5175,7 @@ EXIT           puls      b,x                 Restore registers
                rts                           Return
 LINCLS         clr       [1,s]               Zero out last byte
                lda       #95                 ASCII "_" (was "@")
-               jsr       $CCFD               Print it
+               jsr       >LCCFD               Print it
                jsr       $B958               Send a C/R (NEXT LINE)
                ldb       #1                  Reset BASIC's character count
                stb       ,s                  Store new count
