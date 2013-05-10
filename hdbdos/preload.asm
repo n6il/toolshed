@@ -1,7 +1,40 @@
-L0000    fcb   $00,$20,$30,$4F,$D0,$1A,$50,$B6   . 0OP.P6
-L0008    fcb   $FF,$FE,$81,$8C,$27,$12,$8E,$80   ....'...
-L0010    fcb   $00,$B7,$FF,$DE,$A6,$84,$B7,$FF   .7.^&.7.
-L0018    fcb   $DF,$A7,$80,$8C,$E0,$00,$26,$F1   _'..`.&q
-L0020    fcb   $8E,$50,$00,$CE,$C0,$00,$A6,$80   .P.N@.&.
-L0028    fcb   $A7,$C0,$8C,$70,$00,$26,$F7,$BD   '@.p.&w=
-L0030    fcb   $A9,$28,$7E,$C0,$02
+* This preloader code should be 0x30 bytes long (+ 5 bytes preamble)
+* The preloader is loaded at 0x4fd0 and the appended hdbdos is thus
+* loaded at 0x5000.
+* When run, the preloader copies the code from 0x5000 to 0xc000 and
+* executes it there.
+
+* DECB binary file preamble
+
+	fcb     $00		Preamble flag
+	fdb	$2030		Length of data block
+	fdb	$4FD0		Load address
+
+* Entry point from Basic
+
+	org	$4fd0		This code covers $4fd0-$4fff
+	orcc	#$50		Disable interrupts
+	lda	>$fffe		Check RESET vector
+	cmpa	#$8c		Points to ??? Basic
+	beq	reloc
+
+* Copy ROMs to RAM
+
+	ldx	#$8000		Start of ROM
+copyrom	sta	>$ffde		Switch to ROM page
+	lda	,x
+	sta	>$ffdf		Switch to RAM page
+	sta	,x+
+	cmpx	#$e000		End of ROM
+	bne	copyrom
+
+* Relocate HDBDOS
+
+reloc	ldx	#$5000		Copy from loaded address
+	ldu	#$c000		to ROMPAK area
+copyhdb	lda	,x+
+	sta	,u+
+	cmpx	#$7000
+	bne	copyhdb
+	jsr	>$a928		Color Basic CLEAR SCREEN
+	jmp	>$c002		Start HDBDOS

@@ -1,1 +1,4 @@
-L0000    fcb   $FF,$00,$00,$4F,$D0
+* DECB binary file postamble
+	fcb   $FF	Postamble flag
+	fdb   $0000
+	fdb   $4FD0	EXEC address
