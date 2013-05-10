@@ -1564,7 +1564,7 @@ LC99D          com       $02,S               TOGGLE DRIVE FLAG
                lbsr      NUMCAL
                lda       <DCDRV
                cmpa      >MAXDRV
-               lbhi      $a61f
+               lbhi      LA61F
 
 *	LDA	,U++	ASCII VALUE OF DRIVE NUMBER TO ACCA
 *	SUBB	#$02	DECREMENT STRING LENGTH BY 2 FOR DRIVE (:X)
@@ -2008,11 +2008,11 @@ LCCC5          puls      U                   SAVE TOP OF STACK
                bhs       a@                  Yes, do not add filler space
                bsr       LCD1B               Add filler space
 a@             clra                          Zero top of D
-               jsr       $BDCC               Print decimal D to screen
+               jsr       LBDCC               Print decimal D to screen
                jsr       >DCOUNT             Columnize directory
                bra       b@                  Continue old code
 PCCFA          jsr       >LCEAF
-LCCFD          jmp       [$A002]
+LCCFD          jmp       [CHROUT]
 LCD01          pshs      cc,dp,d,x,y,u
                lbra      PD2A0
 b@             puls      X
@@ -2249,7 +2249,7 @@ FREE           jsr       >LB143              * NUMBER TYPE CHECK
                stb       <DCDRV              Drive number
                jsr       >LC79D               Test file allocation table
                jsr       >BRIAN
-               jmp       $B4F3
+               jmp       LB4F3
 LCEAF          pshs      x
                ldx       6,s
                lda       $C,x
@@ -2257,7 +2257,7 @@ LCEAF          pshs      x
                adda      #$2E
                puls      x,pc
 HITEST         cmpb      >MAXDRV
-               lbhi      $A61F
+               lbhi      LA61F
                rts       
                fcb       $12,$12             ,$12
 
@@ -2749,7 +2749,7 @@ BACKUP         lbeq      LA61F               DEVICE NUMBER ERROR IF NO DRIVE NUM
 
 LD27B                    
                pshs      B                   Save destination drive
-               jsr       $A5C7               ?SN ERROR if more chars
+               jsr       LA5C7               ?SN ERROR if more chars
                jsr       >HCLOSE             Close all disk files
                clr       ,-s                 Setup a track counter
                lda       #35                 Copy 35 tracks
@@ -2761,7 +2761,7 @@ a@             inc       2,s                 Bump up track count
                cmpx      <$1F                Bottom of RAM yet?
                bhs       a@                  No, add another track
                dec       2,s                 Normalize to zero
-               lbeq      $AC44               ?OM ERROR if no free RAM
+               lbeq      LAC44               ?OM ERROR if no free RAM
                bra       LD2A4
 PD2A0          puls      cc,dp,d,x,y,u
                bra       LD261
@@ -2858,7 +2858,7 @@ LD326          bne       LD35E               RETURN IF DRIVE NUMBERS NOT EQUAL
                clr       DSKREG              CLEAR DSKREG - TURN OFF ALL DISK MOTORS
                clr       DRGRAM              CLEAR DSKREG RAM IMAGE
                pshs      A                   SAVE SOURCE/DESTINATION FLAG ON STACK
-               jsr       >$A910
+               jsr       >CLS
 *	JSR	>LA928	CLEAR SCREEN
                ldx       #LD35F              POINT X TO 'INSERT SOURCE' MESSAGE
                ldb       #13                 13 BYTES IN MESSAGE
@@ -3194,9 +3194,9 @@ LD5CE          inca                          * INCREMENT PHYSICAL SECTOR NUMBER 
                ldx       <$1F                Get bottom of RAM
                leax      6280,x              Add in 1 track
                cmpx      ,s++                Enough room?
-               lbhi      $AC44               No, ?OM ERROR
+               lbhi      LAC44               No, ?OM ERROR
                jsr       >HCLOSE             Close all disk files
-               jsr       $95AC               Reset SAM
+               jsr       L95AC               Reset SAM
                clr       <DCOPC              Rezero drive
 *	LDX	#DFLBUF+$1888-2	GET TOP OF RAM USED BY DSKINI
 *	CMPX	MEMSIZ	IS IT > CLEARED AREA?
@@ -3620,7 +3620,7 @@ DOSCOM         swi3                          user hook
                ldd       #$200               Read, drive 0
                std       <DCOPC              Tell DSKCON
                jsr       >LD252               DOS (drive number)?
-               jsr       $A5C7               ?SN ERROR if more chars
+               jsr       LA5C7               ?SN ERROR if more chars
                ldd       #(34*256)+1         track 34, sector 1
                std       <DCTRK              Tell DSKCON
                ldd       #DBUF0              DOS buffer
@@ -3665,7 +3665,7 @@ VREV           equ       0
 STOP2          equ       0
 
 * FlexiKey and Directory Equates
-GETKEY         equ       $A1B1
+GETKEY         equ       LA1B1
 HLDPTR         equ       $1D1
 INSERT         equ       $1D2
 WHLINE         equ       $1D3
@@ -3732,7 +3732,7 @@ HDINIT         ldx       #SIGNON-1           Point to sign-on
                ldd       #(9*256)+0          Write 9 bytes of 0...
                ldx       #INTFLG             ...Into our RAM (clear it)
                jsr       >LD6C2               Erase our RAM; write regA bytes of regB data to regX
-               ldx       #$A0E2              Warm start BASIC
+               ldx       #LA0E2              Warm start BASIC
                pshs      x                   Save off for later RTS
 
                ldd       #$FFFF              "DIRECT" line number
@@ -3892,7 +3892,7 @@ BOOTUP         lda       #$7F                Shift bit mask
                ldb       #6                  Move 6 bytes
                ldx       #DTEST              Read, D=0, T=0, S=1, B=$600
                ldu       DSKVAR              Point to DSKCON variables
-               jsr       $A59A               Move (B) From X to U
+               jsr       LA59A               Move (B) From X to U
                ldb       <DCDRV              Get current drive
                stb       <DCDRV              Store for DSKCON
                jsr       [DCNVEC]            Try to read disk
@@ -3922,7 +3922,7 @@ DSKINI2        jsr       >LD256               Evaluate drive number
                cmpb      HDFLAG              Is it a hard disk?
                lbcs      LD5A0               No, goto old code
 
-               jsr       $A5C7               ?SN ERROR if more chars
+               jsr       LA5C7               ?SN ERROR if more chars
                jsr       >HCLOSE             Close all disk files
 
                lda       <$68                Get line number MSB
@@ -3933,13 +3933,13 @@ DSKINI2        jsr       >LD256               Evaluate drive number
                bsr       PRINT2              Print it
                clra                          Zero top of D
                ldb       <DCDRV              Get drive number
-               jsr       $BDCC               Print it
+               jsr       LBDCC               Print it
                ldx       #RDYMSG-1           "ARE YOU SURE? (Y/N)"
                bsr       PRINT2              Print it
                jsr       >GETY               Go look for the "Y" key
                beq       ERASE               Yes, go erase hard disk
                ldx       #ABTMSG-1           Not Y, aborted
-PRINT2         jmp       $B99C               Print it and return
+PRINT2         jmp       STRINOUT            Print it and return
 
 
 * This erases all sectors of a hard disk with $FFs
@@ -4514,14 +4514,14 @@ INSTAT         bsr       WAITRQ              Wait for -REQ asserted
 BEEP           pshs      u,x,d               PRESERVE REGISTERS
                ldd       #208*256+1          SOUND PITCH AND DURATION
                sta       $008C               STORE SOUND PARAMS
-               jsr       $A951               CALL COLOR BASIC SOUND ROUTINE
+               jsr       LA951               CALL COLOR BASIC SOUND ROUTINE
                puls      d,x,u,pc            RESTORE REGISTERS AND RETURN
 
 *BEEP           pshs      u,x,d,cc            Save registers
 *               orcc      #$50                Interrupts off
 *               clrb                          SOURCE	Zero is 6 bit DAC
-*               jsr       $A9A2               Select sound source in B
-*               jsr       $A976               Set "AUDIO ON"
+*               jsr       LA9A2               Select sound source in B
+*               jsr       LA976               Set "AUDIO ON"
 *               ldb       #$A0                Beep duration
 **         ldx   #$FF20     Read PIA (DAC Port)
 *
@@ -4535,7 +4535,7 @@ BEEP           pshs      u,x,d               PRESERVE REGISTERS
 *               decb                          Decrement duration count
 *               bne       FLIP                Not done, do more
 *
-*               jsr       $A974               Do "AUDIO OFF"
+*               jsr       LA974               Do "AUDIO OFF"
 *               puls      cc,d,u,x,pc         Restore registers & return
 
 DELAY          pshs      b                   Save B (tone duration)
@@ -4561,11 +4561,11 @@ COL5           lda       #5                  Five columns
 
 NEWCOL         lda       DIR1                Get column value
                sta       DIR2                Reset column counter
-               jmp       $B958               Send a C/R & return
+               jmp       LB958               Send a C/R & return
 
 DCOUNT         dec       DIR2                Decrement column counter
                beq       NEWCOL              All done, send a C/R
-               jmp       $B9AC               Else send a space
+               jmp       LB9AC               Else send a space
 
 * Point X TO Drive FAT, ?OB ERROR if none left
 
@@ -4612,7 +4612,7 @@ a@             decb
                adca      #0
                puls      d                   Restore string length & number
                beq       a@                  ?FC ERROR if > 255
-FCERR          jmp       $B44A
+FCERR          jmp       LB44A
 b@             rts                           Return
 
 
@@ -4630,8 +4630,8 @@ DRVCHK         cmpa      #$88                "ON" token?
                beq       DNUM                Yes, set SCSI or IDE ID
 
 * If here, must be a drive number
-               jsr       $B70B               Evaluate argument
-               jsr       $A5C7               ?SN ERROR if more chars
+               jsr       LB70B               Evaluate argument
+               jsr       LA5C7               ?SN ERROR if more chars
                cmpb      MAXDRV              Valid number requested?
                jmp       LCECA               Store default drive & return
 
@@ -4644,11 +4644,11 @@ DRIVEF         ldb       #4                  Offset of 4 = floppies
                beq       a@                  Go if no argument
                tstb                          "DRIVE ON" command?
                beq       a@                  Yes, argument not allowed
-               jsr       $B70B               No, evaluate argument
+               jsr       LB70B               No, evaluate argument
                incb                          Correct it
                cmpb      #4                  Legal number?
                bhi       FCERR               No, ?FC ERROR
-a@             jsr       $A5C7               ?SN ERROR if more chars
+a@             jsr       LA5C7               ?SN ERROR if more chars
 DCLOSE         bsr       HCLOSE              Close all disk files
                stb       HDFLAG              Store hard drive flag
                rts                           Return
@@ -4664,7 +4664,7 @@ DPARK
 RECAL          jsr       <$9F                Drive number specified?
                beq       a@                  No, just park
                bsr       DSET05              Yes, get number & setup
-a@             jsr       $A5C7               ?SN ERROR if more chars
+a@             jsr       LA5C7               ?SN ERROR if more chars
                bsr       HCLOSE              Close all disk files
                IFDEF     SCSI
                jsr       >REZERO             Reset drive to (00)
@@ -4682,10 +4682,10 @@ IOERR          jmp       LD709
 
 * Select Device ID number
 DNUM           jsr       <$9F                Parse over "#"
-DSET05         jsr       $B70B               Evaluate argument
+DSET05         jsr       LB70B               Evaluate argument
                cmpb      #MAXDN-1            Legal?
                bhi       FCERR               No, ?FC ERROR
-               jsr       $A5C7               ?SN ERROR if more chars
+               jsr       LA5C7               ?SN ERROR if more chars
                jsr       HCLOSE              Close all disk files
                lda       IDNUM               Get current ID
                pshs      a                   And save it on stack
@@ -4826,7 +4826,7 @@ DUN            rts                           Return
 * The DIR command enters here
 
 DIRCHK         jsr       >LD24F               Get first drive number
-               jsr       $A5C7               Any more chars?
+               jsr       LA5C7               Any more chars?
 DNAME          bsr       SETVAR              Select track & sector 17
                lda       #2                  Read opcode
                sta       <DCOPC              Tell DSKCON
@@ -4852,16 +4852,16 @@ a@             lda       $01D4
                beq       b@
                bsr       SENDCR
 b@             ldx       #DRVMSG-1           DRIVE=
-               jsr       $B99C
+               jsr       STRINOUT
                clra      
                ldb       <$EB
-               jsr       $BDCC
+               jsr       LBDCC
                ldx       #FREMSG-1           FREE=
-               jsr       $B99C
+               jsr       STRINOUT
                bsr       BRIAN
                clra      
-               jsr       $BDCC
-SENDCR         jmp       $B958
+               jsr       LBDCC
+SENDCR         jmp       LB958
 BRIAN          jsr       >LC755
                leax      6,x
                clr       ,-s
@@ -4883,17 +4883,17 @@ RENAME2        cmpa      #$CF                "DRIVE" token?
                bne       NONAME              No, continue old code
                jsr       <$9F                Yes, parse over it
                jsr       >LD256               Get drive number
-               jsr       $B26D               Sytax check for comma
+               jsr       LB26D               Sytax check for comma
                ldd       #(0*256)+$FF        Write 256 bytes of $FF
                ldx       #DBUF0              Point to buffer
                stx       <DCBPT              Tell DSKCON where buffer is
                jsr       >LD6C2               Go fill buffer
-               jsr       $8748               Evaluate string (DISKNAME)
-               jsr       $A5C7               ?SN ERROR if more chars
+               jsr       L8748               Evaluate string (DISKNAME)
+               jsr       LA5C7               ?SN ERROR if more chars
                tstb                          See if NULL string ("")
                beq       NULL                Null, copy nothing
                ldu       <DCBPT              Point U to disk buffer
-               jsr       $A59A               Copy string to disk buffer
+               jsr       LA59A               Copy string to disk buffer
                clr       ,u                  NULL terminator
 NULL           bsr       SETVAR              Select track & sector
                lda       #3                  Write opcode
@@ -4911,7 +4911,7 @@ RUNM           cmpa      #'M                 "RUNM"?
                lbne      DVEC18              No, continue old code
                pshs      CC
                orcc      #$50                Yes, shut off interrupts
-               ldx       #$A545              ...EXEC
+               ldx       #LA545              ...EXEC
                stx       1,s
                jsr       >LCFC1               Do a LOADM...
                clr       $FF40               Shut off drive motor(s)...
@@ -4922,7 +4922,7 @@ RUNM           cmpa      #'M                 "RUNM"?
 
 COPtst         ldx       <$A6                Get basic input pointer
                pshs      X                   Save it
-               jsr       $B156               Evaluate expression
+               jsr       LB156               Evaluate expression
                ldx       #$1A9               Start of string stack
                stx       <$0B                Reset string stack
                puls      X                   Restore input pointer
@@ -4951,7 +4951,7 @@ a@             lda       <$68                Get BASIC line # MSB
                beq       c@                  Yes, overwrite file
                leas      <$26,s              No, remove temp variables
                ldx       #ABTMSG-1           "ABORTED" message
-b@             jmp       $B99C               Print it & return
+b@             jmp       STRINOUT            Print it & return
 c@             jsr       >LCCFD               R.G. See above print Y
 d@             jmp       LC6F5               Kill dest file & return
 
@@ -5084,9 +5084,9 @@ B@             cmpa      #$0C
                bne       C@
                pshs      u,x,y,b,a,cc
                clra      
-               jsr       $A910
+               jsr       CLS
                puls      u,x,y,b,a,cc
-C@             jmp       $8273
+C@             jmp       XVEC3               Console out
 
 * FlexiKey Copyright (C) 1984 by Colin J. Stearman
 * Source code reproduced from Rainbow - October 1984
@@ -5100,7 +5100,7 @@ FLEXKY         lda       <$6F                Get device number
 JMPOUT         jmp       DVEC4               Jump to old code
 KEY            pshs      X,B                 Save registers
                ldx       7,s                 Where are we coming from?
-               cmpx      #$A39D              The idle loop?
+               cmpx      #LA39A+3            The idle loop?
                beq       INIDLE              Yes, do FlexiKey
                puls      b,x                 No, restore registers...
                bra       JMPOUT              ...and go to old code
@@ -5176,7 +5176,7 @@ EXIT           puls      b,x                 Restore registers
 LINCLS         clr       [1,s]               Zero out last byte
                lda       #95                 ASCII "_" (was "@")
                jsr       >LCCFD               Print it
-               jsr       $B958               Send a C/R (NEXT LINE)
+               jsr       LB958               Send a C/R (NEXT LINE)
                ldb       #1                  Reset BASIC's character count
                stb       ,s                  Store new count
                ldx       #BASBFR             Point to BASIC line input buffer
