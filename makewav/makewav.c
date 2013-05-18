@@ -592,9 +592,13 @@ int             main(int argc, char **argv)
 	}
 
 	/* Color BASIC and Micro Color BASIC */
-	/* Leader */
-	sample_count += fwrite_audio_silence(sample_rate * seconds, output);	/* seconds of silence */
-	sample_count += fwrite_audio_repeat_byte(128, 0x55, output);	/* leader */
+
+	if (!cas)
+	{
+		/* Leader */
+		sample_count += fwrite_audio_silence(sample_rate * seconds, output);	/* seconds of silence */
+		sample_count += fwrite_audio_repeat_byte(128, 0x55, output);	/* leader */
+	}
 
 	/* Header block */
 	unsigned char   checksum = 0 + 0x0f + Checksum_Buffer((unsigned char *) filename, 8) +
@@ -616,9 +620,12 @@ int             main(int argc, char **argv)
 	sample_count += fwrite_audio_byte(checksum, output);		/* checksum */
 	sample_count += fwrite_audio_byte('\x55', output);		/* End of block ID */
 
-	/* Leader for data blocks */
-	sample_count += fwrite_audio_silence(sample_rate / 2, output);	/* half second of silence */
-	sample_count += fwrite_audio_repeat_byte(128, 0x55, output);	/* leader */
+	if (!cas)
+	{
+		/* Leader for data blocks */
+		sample_count += fwrite_audio_silence(sample_rate / 2, output);	/* half second of silence */
+		sample_count += fwrite_audio_repeat_byte(128, 0x55, output);	/* leader */
+	}
 
 	/* Full data blocks */
 	int             full_blocks = total_length / 0xff;
