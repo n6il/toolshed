@@ -609,10 +609,10 @@ int             main(int argc, char **argv)
 	sample_count += fwrite_audio_byte(file_type, output);		/* 0: BASIC, 1: Data, 2: M/L */
 	sample_count += fwrite_audio_byte(data_type, output);		/* 0: binary, ff: ASCII */
 	sample_count += fwrite_audio_byte('\x00', output);		/* 0: no gaps, ff: gaps) */
-	sample_count += fwrite_audio_byte(start_address >> 8, output);	/* Start address MSB */
-	sample_count += fwrite_audio_byte(start_address & 0xFF, output);/* Start address LSB */
 	sample_count += fwrite_audio_byte(exec_address >> 8, output);	/* Execute address MSB */
 	sample_count += fwrite_audio_byte(exec_address & 0xFF, output);	/* Execute address LSB */
+	sample_count += fwrite_audio_byte(start_address >> 8, output);	/* Load address MSB */
+	sample_count += fwrite_audio_byte(start_address & 0xFF, output);/* Load address LSB */
 	sample_count += fwrite_audio_byte(checksum, output);		/* checksum */
 	sample_count += fwrite_audio_byte('\x55', output);		/* End of block ID */
 
