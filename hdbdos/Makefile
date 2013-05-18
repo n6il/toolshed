@@ -19,7 +19,7 @@ HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
 ALLOBJS         = preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)
 
 #AS		= mamou -r -q
-AS		= lwasm -r --pragma=condundefzero,nodollarlocal
+AS		= lwasm -r --pragma=condundefzero,nodollarlocal,noindex0tonone
 MERGE		= cat
 MAKEWAV		= makewav -r -c
 CECB		= cecb
