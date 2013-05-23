@@ -1,0 +1,166 @@
+.so header
+.tl /CLIBT.L/Kreider OS-9 C Library/CLIBT.L/
+.db
+The following functions are additions to the Kreider CLIB.L functions
+described earlier, and all the functions contained in that library are
+also present here. The purpose of this additional library is to provide
+the transcentental math functions. All the remaining functions perform in
+exactly the same manner as in the CLIB.L library, but are rewritten here for
+increased speed in execution, although resulting in a larger output file.
+.ed
+.sh NAME
+.bb
+Transcentental Math C Library
+.eb
+.sh SYNOPSIS
+.db
+rad()
+
+deg()
+
+double acos(x)
+double x;
+
+double asin(x)
+double x;
+
+double atan(x)
+double x;
+
+double cos(x)
+double x;
+
+double sin(x)
+double x;
+
+double tan(x)
+double x;
+
+double acosh(x)
+double x;
+
+double asinh(x)
+double x;
+
+double atanh(x)
+double x;
+
+double cosh(x)
+double x;
+
+double sinh(x)
+double x;
+
+double tanh(x)
+double x;
+
+double pow(x,y)
+double x,y;
+
+double exp(x)
+double x;
+
+double antilg(x)
+double x;
+
+double log10(x)
+double x;
+
+double log(x)
+double x;
+
+double sqrt(x)
+double x;
+
+double sqr(x)
+double x;
+
+double inv(x)
+double x;
+
+double dabs(x)
+double x;
+
+double dexp(x,i)
+double x;
+int i;
+.eb
+.sh DESCRIPTION
+.db
+The various transcendental math functions are implemented here using the \fBCORDIC\fP method. Accuracy is to sixteen (16) decimal places. The four basic
+math functions are rewritten to optimize for speed at the expense of output
+program length. This gives at least a factor of two speed improvement over
+the standard Microware C library.
+
+Externally, all number look just like a normal C double, but internally,
+an extra byte is used to permit an exponent range of 511.
+.ed
+.bb
+RAD() changes the trigometric functions to radians.
+
+DEG() changes the trigometric functions to degrees.
+
+ACOS(x) returns the arc cosine of X.
+
+ASIN(x) returns the arc sine of X.
+
+ATAN(x) returns the arc tangent of X.
+
+COS(x) returns the cosine of X.
+
+SIN(x) returns the sine of X.
+
+TAN(x) returns the tangent of X.
+
+ACOSH(x) returns the arc hyperbolic cosine of X.
+
+ASINH(x) returns the arc hyperbolic sine of X.
+
+ATANH(x) returns the arc hyperbolic tangent of X.
+
+COSH(x) returns the hyperbolic cosine of X.
+
+SINH(x) returns the hyperbolic sine of X.
+
+TANH(x) returns the hyperbolic tangent of X.
+
+POW(x,y) returns the value of X taken to the power of Y.
+
+EXP(x) returns E to the X power.
+
+ANTILG(x) returns 10 to the X power.
+
+LOG10(x) returns logarithm base 10 of X.
+
+LOG(x) returns the logarithm base E of X.
+
+SQRT(x) returns the square root of X.
+
+SQR(x) returns the square of X.
+
+INV(x) returns the value of 1 (one) divided by X.
+
+DABS(x) returns the absolute value of X.
+
+DEXP(x,i) returns the value of X multiplied by 2 to the i power.
+          This is a VERY QUICK function.
+.eb
+.sh NOTE
+.db
+The following errors are returned by each of the above functions if an error
+occurs and are placed in the global variable \fIerrno.\f
+.ed
+.bb
+These error numbers should be added to ERRNO.H:
+
+     EFPOVR  40      Floating point overflow
+     EDIVERR 41      Divide by zero error
+     EINTERR 42      Overflow on conversion of a double integer
+     EFPUND  43      Floating point underflow (does not abort
+                     the program). Zero is returned.
+     EILLARG 44      Illegal function argument, e.g  sqrt(-1)
+.eb
+.sh SEE ALSO
+.bb
+math().
+.eb

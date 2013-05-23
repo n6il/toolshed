@@ -1,0 +1,31 @@
+.so header
+.tl /GS_OPT(2)/Kreider OS-9 C Library/GS_OPT(2)/
+.sh NAME
+.bb
+_gs_opt - get file descriptor options
+.eb
+.sh SYNOPSIS
+.bb
+#include <sgstat.h>
+.sp
+int _gs_opt(path, buffer)
+int path;
+struct sgbuf *buffer;
+.eb
+.sh DESCRIPTION
+.db
+This function copies the options section of the path descriptor opened on \fIpath\fP into the buffer pointer to by \fIbuffer.\fP The structure \fBSGBUF\fP in \fBSGSTAT.H\fP provides a convenient means to access the individual option values.
+.PP
+If \fIpath\fP is invalid, this function returns -1 as its value and the error code
+is placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+Be sure the buffer is large enough to hold all the options. Declaring the
+buffer as a type "struct sgbuf" is perfectly safe as this structure is
+predefined to be large enough for all the device descriptor options.
+.ed
+.sh SEE ALSO
+.bb
+I$GetStt system call - Microware Manual, getstat(), _ss_opt().
+.eb

@@ -1,0 +1,85 @@
+#!/usr/bin/perl
+use File::Basename;
+
+
+my $extraLibs;
+
+qx(rm ctestdisk.os9);
+qx(cp $ENV{NITROS9DIR}/6809l2/nos96809l2_80d.dsk ctestdisk.os9);
+#qx(cp nos96809l2.dsk ctestdisk.os9);
+
+# This program will compile and then copy the tests to an os9 disk image.
+
+$temp = qx(find -L ../test -type f -name "*.c" -print0 | xargs -0 -n 1 echo);
+
+# Convert into a proper perl array
+@tempfiles = split( /\n/, $temp );
+
+foreach $file (@tempfiles)
+{
+	printf $file.":\n";
+	
+	$extraLibs = "";
+	
+	if( index( $file, "cgfx.l" ) != -1 )
+	{
+		$extraLibs .= " -l=../lib/cgfx.l";
+	}
+	
+	if( substr(basename($file),-4) eq "_t.c" )
+	{
+		$temp =  "c3 -q -o -l=../lib/clibt.l $file -f=".substr(basename($file),0,-2).$extraLibs;
+	}
+	else
+	{
+		$temp =  "c3 -q -o $file -f=".substr(basename($file),0,-2).$extraLibs;
+	}
+	
+	$temp = qx($temp);
+	
+	$temp =  "os9 copy -o=0 ".substr(basename($file),0,-2)." ctestdisk.os9,CMDS/";
+	$temp = qx($temp);
+	
+	$temp =  "os9 attr -e -pe ctestdisk.os9,CMDS/".substr(basename($file),0,-2);
+	$temp = qx($temp);
+	
+	$temp =  "rm ".substr(basename($file),0,-2);
+	$temp = qx($temp);
+
+	if( substr(basename($file),-4) eq "_n.c" )
+	{
+		printf "   must be tested by hand\n";
+	}
+}
+
+open( F, ">", "startup" );
+printf F "echo *** Automatic testing disk\n";
+printf F "echo *** If all test run successfully\n";
+printf F "echo *** you'll see a **success**\n";
+printf F "echo\n";
+printf F "-X\n";
+printf F "Onerr goto lab1\n";
+
+foreach $file (@tempfiles)
+{
+	# _n.c files can not be tested becuase of unsupported functionality
+	next if( substr(basename($file),-4) eq "_n.c" );
+
+	printf F "echo testing ".substr(basename($file),0,-2)."\n";
+	printf F substr(basename($file),0,-2)."\n";
+}
+
+printf F "echo\n";
+printf F "echo **success**\n";
+printf F "*lab1\n";
+printf F "X\n\n";
+
+close( F );
+
+$temp =  "os9 copy -o=0 -r -l startup ctestdisk.os9,startup";
+$temp = qx($temp);
+print $temp."\n";
+
+qx( rm startup );
+
+printf "You can now use ctestdisk.os9 in MESS or on a real Color Computer 3\n\n";

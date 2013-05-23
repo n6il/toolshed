@@ -1,0 +1,21 @@
+.so header
+.tl /ABS(3C)/Kreider OS-9 C Library/ABS(3C)/
+.sh NAME
+.bb
+abs - interger absolute value
+.eb
+.sh SYNOPSIS
+.bb
+abs(i)
+int i;
+.eb
+.sh DESCRIPTION
+.db
+The \fBABS\fP function returns the absolute value of its integer operand.
+.ed
+.sh CAVEATS
+.db
+Applying the \fBABS\fP function to the most negative integer generates a
+result which is the most negative integer. That is, abs(0x80000000)
+returns 0x80000000 as a result.
+.ed

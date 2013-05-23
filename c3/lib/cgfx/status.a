@@ -1,0 +1,166 @@
+*******************************************
+* System Status Functions                 *
+* Copyright (c) 1989 by Mike Sweet        *
+*******************************************
+* Updated for the new C ABI on     *
+* 12/31/2005 by tim lindner        *
+************************************
+
+ ifp1
+* use /dd/defs/os9defs.a
+ endc
+
+ psect status,0,0,0,0,0
+
+* _gs_crsr(path,horpos,verpos)
+* int path,*horpos,*verpos;
+
+_gs_crsr:
+ pshs y,b
+ lbsr _Flush
+ puls a
+ ldb #SS.Cursr
+ bra g0
+
+* _gs_scsz(path,horsiz,versiz)
+* int path,*horsiz,*versiz;
+
+_gs_scsz:
+ pshs y,b
+ lbsr _Flush
+ puls a
+ ldb #SS.ScSiz
+g0
+ os9 I$GetStt
+ stx [4,s]
+ sty [6,s]
+ puls y
+ bcs os9err0
+ clra
+ clrb
+ rts
+
+* _gs_palt(path,palbuf)
+* int path;
+* char *palbuf;
+
+_gs_palt:
+ pshs y,b
+ lbsr _Flush
+ puls a
+ ldx 4,s
+ ldb #SS.Palet
+ os9 I$GetStt
+ puls y,pc
+
+* char *_ss_mgpb(path,grpnum,bufnum,mapflag,size)
+* int path,grpnum,bufnum,mapflag,*size;
+
+_ss_mgpb:
+ pshs y,b
+ lbsr _Flush
+ lda 6,s grp num
+ ldb 8,s buf num
+ tfr d,x
+ ldy 9,s map flag
+ puls a path
+ ldb #SS.MpGPB
+ os9 I$SetStt
+ sty [10,s] *size
+ puls y
+ bcc noerr0
+ clra
+ std errno,y
+ clrb
+ rts
+noerr0 tfr x,d
+ rts
+
+* _gs_styp(path,type)
+* int path,*type;
+
+_gs_styp: pshs b
+ lbsr _Flush
+ puls a
+ ldb #SS.ScTyp
+ os9 I$GetStt
+ bcc noerr1
+
+os9err0
+ clra
+ std errno,y
+ ldd #-1
+ rts
+noerr1 ldx 4,s
+ sta 1,x
+ clr ,x
+ clra
+ clrb
+ rts
+
+* _gs_fbrg(path,fore,back,bord)
+* int path,*fore,*back,*bord;
+
+_gs_fbrg:
+ pshs b
+ lbsr _Flush
+ puls a path
+ ldb #SS.FBRgs
+ os9 I$GetStt
+ bcs os9err0
+ stx [6,s] store border reg
+ ldx 2,s load fore pointer
+ sta 1,x store msb of fore
+ clr ,x clear msb of fore
+ clra clear msb of back
+ std [4,s] store reg in back
+ clrb clear return value
+ rts
+
+* _ss_gip(path,msres,msport,kbdstrt,kbdrpt)
+* int path,msres,msport,kbdstrt,kbdrpt;
+
+_ss_gip:
+ pshs y,b
+ lda 6,s
+ ldb 8,s
+ tfr d,x
+ lda 10,s
+ ldb 12,s
+ tfr d,y
+ puls a
+ ldb #SS.GIP
+ os9 I$SetStt
+ puls y
+
+os9err1 bcc noerr2
+ clra
+ std errno,y
+ ldd #-1
+ rts
+noerr2 clra
+ clrb
+ rts
+
+* _ss_dfpl(path,palbuf)
+* int path;
+* char *palbuf;
+
+_ss_dfpl:
+ ldx 2,s
+ tfr b,a
+ ldb #SS.DfPal
+ os9 I$SetStt
+ bra os9err1
+
+* _ss_mtyp(path,montype)
+* int path,montype;
+
+_ss_mtyp:
+ ldx 2,s
+ tfr b,a
+ ldb #SS.Montr
+ os9 I$SetStt
+ bra os9err1
+
+ endsect

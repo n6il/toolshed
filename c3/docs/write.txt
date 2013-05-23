@@ -1,0 +1,38 @@
+.so header
+.tl /WRITE(3S)/Kreider OS-9 C Library/WRITE(3S)/
+.sh NAME
+.bb
+write, writeln - write to a file or device
+.eb
+.sh SYNOPSIS
+.bb
+write(pn, buffer, count)
+char *buffer;
+int pn, count;
+.sp
+writeln(pn, buffer, count)
+char *buffer
+int pn, count;
+.eb
+.sh DESCRIPTION
+.db \fBWRITE\fP and \fBWRITELN\fP write to the path number \fIpn\fP which must be a value returned by \fIopen(), create(), creat(),\fP or \fIdup(),\fP or should be 0 (stdin), 1 (stdout), or 2 (stderr).
+.sp \fIBuffer\fP should point to an area of memory from which \fIcount\fP bytes are to be written. Write returns the actual number of bytes written
+and if this is different from \fIcount,\fP an error has occured.
+.sp
+Writes in multiples of 256 bytes to a file offset boundries of 256 bytes are
+the most efficient.
+.sp \fBWRITE causes no "line-editing" to occur on the output.\f
+.bo
+WRITELN
+causes line-editing and only writes up to the first "\\n" (newline) in the
+buffer if this is found before \fIcount\fP is exhausted. For a full description of the actions of these calls, the reader
+is referred to the OS-9 documentation.
+.ed
+.sh DIAGNOSTICS
+.db
+A -1 is returned if \fIpn\fP is a bad path number, if \fIcount\fP is ridiculous, or upon a physical I/O error.
+.ed
+.sh SEE ALSO
+.bb
+create(), creat(), dup(), open()
+.eb

@@ -1,0 +1,198 @@
+.so header
+.tl /SETSTAT(3S)/Kreider OS-9 C Library/SETSTAT(3S)/
+.sh NAME
+.bb
+OS-9 set status system calls.
+.eb
+.sh SYNOPSIS
+.bb
+#include <os9.h>
+#include <sgstat.h>
+
+setstat(SS_OPT, filenum, buffer)
+int code, filenum;
+struct sgbuf *buffer;
+
+setstat(SS_SIZE, filenum, size)
+int code, filenum;
+long *size;
+
+setstat(SS_RESET, filenum, code)
+int code, filenum, code;
+
+setstat(SS_WTRK, filenum, buffer, track_number, side/density)
+int code, filenum;
+char *buffer;
+int track_number, side/density;
+
+setstat(SS_FRZ, filenum)
+int code, filenum;
+
+setstat(SS_SQD, filenum)
+int code, filenum;
+
+setstat(SS_DCMD, code, filenum, parm1, parm2, parm3)
+int code, code, filenum, parm1, parm2, parm3;
+
+#include <direct.h>
+setstat(SS_FD, filenum, buffer)
+int code, filenum;
+struct fildes *buffer;
+
+setstat(SS_TICK, filenum, count)
+int code, filenum, count;
+
+setstat(SS_LOCK, filenum, position)
+int code, filenum;
+long position;
+
+setstat(SS_RELEA, filenum)
+int code, filenum;
+
+setstat(SS_BLKRD, filenum, buffer, track_sector, track_den)
+int code, filenum;
+char *buffer;
+int track_sector, track_den/side/density;
+
+setstat(SS_BLKWR, filenum, buffer, track_sector, track_den)
+int code, filenum;
+char *buffer;
+int track_sector, track_den/side/density;
+
+setstat(SS_SSIG, filenum, code)
+int code, filenum, code;
+.eb
+.sh DESCRIPTION
+.db
+Most of these calls are equivalent to the \fB_SS_XXX\fP calls described elsewhere
+in these documents. While the \fB_SS_XXX\fP calls are provided for compatibility
+with source code generated for OSK systems, the calls listed below are those
+normally used with 6809/OS-9.
+.sp
+The following descriptions do not include the full syntax for each function
+call. See the list above under Synopsis.
+.sp \fBSETSTAT(SS_OPT)\fP copies the buffer pointed to be \fIbuffer\fP into the options section of the path descriptor opened.
+.sp
+Generally, a program will fetch the options with the \fBGETSTAT(SS_OPT)\fP function, change the desired values, and then update the path options with the \fBSETSTAT(SS_OPT)\fP function. The structures \fBSGBUF declared in\f
+.ul
+SGSTAT.H
+provides a convenient means to access the individual option values.
+.sp
+If an error occurs, a -1 is returned and the appropriate error code is
+placed in \fIerrno.\f
+.sp
+It is a common practice to preserve a copy of the original path descriptor
+options so a program can restore them prior to exiting. The option changes
+take effect on the currently open path and any path created with the \fBI$DUP\fP system call.
+.sp \fBSETSTAT(SS_SIZE)\fP is used to change the size of a file opened on \fIfilenum.\fP The size change is immediate.
+.sp
+If the size of the file is decreased, the freed sectors are returned to the
+system. If the size is increased, sectors are added to the file with the
+contents of those sectors being undefined.
+.sp
+If an error occurs, this function returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.sp
+This function works only on \fBRBF\fP devices.
+.sp \fBGETSTAT(SS_RESET)\fP restores the disk drive head to Track 00 in preparation for formatting and
+error recovery.
+.sp
+If an error occurs, this function returns -1 as its value and the error code
+is placed in the global variable \fIerrno.\f
+.sp
+This call works only on \fBRBF\fP devices.
+.sp \fBSETSTAT(SS_WRTK)\fP performs a write-track operation on a disk drive. It is essentially
+a direct hook into the driver's write-track entry point.
+.sp \fItrack_number\fP is the desired track number to write, and \fIside/density\fP is the desired side of the disk upon
+which to write. When the write is performed, the image contained in and
+pointed to by \fIbuffer\fP is written out to the disk.
+.sp
+If an error occurs, the value -1 is returned and the error code is
+placed in the global variable \fIerrno.\f
+.sp
+This function works only on \fBRBF\fP devices. Additional information on how it
+works can be obtained from examining the FORMAT utility or a device driver.
+.sp \fBWARNING!\fP If \fItrack_number\fP is set to zero when this function is called, the
+entire disk, floppy or hard disk, will be formatted.
+.sp \fBSETSTAT(SS_FRZ)\fP inhibits the reading of LSN 0 variables which define the disk format. This
+enables the reading of non-standard disks.
+.sp
+This is a very little used function that has been deleted from most new
+documentation and, in fact, is not supported by Microware any more. It is
+included in this library solely for compatibility with older programs that
+may call it. Consult your manuals for an explanation of its use.
+.sp \fBSETSTAT(SS_SPT)\fP sets a different number of tracks so that non-standard disks can be read.
+This is not an often used call, as with \fBSS_FRZ\fP above.
+Consult your manual for more details.
+.sp
+This call does not return any information.
+.sp \fBSETSTAT(SS_SQD)\fP starts the power down sequence for hard drives that have this feature. Since
+this sequence is hardware dependent, consult your user documents for more
+details. The device that is opened with \fIfilenum\fP will be the device the sequence works on.
+.sp
+This call does not return any information.
+.sp \fBSETSTAT(SS_DCMD)\fP sends direct commands to the disk controller for specific instructions. Since
+parameters and commands are also hardware dependent, consult your disk
+controller's documentation and the specifications for the disk controller
+chip.
+.sp
+The exit conditions of this call vary depending on the hardware device.
+.sp \fBSETSTAT(SS_FD)\fP places a copy of the \fBRBF\fP file descriptor sector of the file
+opened into the buffer pointed to by \fIbuffer.\fP A maximum of \fIcount\fP bytes are copied. The structure \fBFILDES,\fP declared in \fBDIRECT.H,\fP provides a
+convenient method to access the file descriptor information.
+.sp 
+If and error occurs, this function returns -1 as its value and the error code
+is placed in the global variable \fIerrno.\fP 
+Be sure the buffer is large enough to hold all the options, or at least \fIcount\fP bytes. This call is effective only on \fBRBF\fP devices. Declaring the buffer
+as type "struct fildes" is perfectly safe as this structure is predefined to
+be large enough to hold all the file descriptor information.
+.sp \fBSETSTAT(SS_TICK)\fP may be used to cause an error (E$LOCK) to be returned to the process
+if the conflict still exists after a specific number of clock ticks have
+elapsed.
+.sp
+The argument \fIcount\fP specifies the number of ticks to wait if the record-lock
+conflict occurs with the file open on \fIpath.\fP A tick count of zero (the default
+on \fBRBF\fP devices), causes a sleep until the record is released. A tick count of
+one means if the record is not released immediately, an error is to be
+returned.
+.sp
+If an error occurs, the value -1 is returned and the error code is
+placed in the global variable \fIerrno.\f
+.sp \fBSETSTAT(SS_LOCK)\fP locks out a file open on \fIfilenum\fP at the offset from the file beginning at offset \fIposition,\fP so another process cannot read past that point.
+.sp
+If an error occurs, the function returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.sp \fBSETSTAT(SS_RELEA)\fP releases a file that was locked using \fBSS_LOCK\fP above.
+.sp \fBSETSTAT(SS_BLKRD)\fP reads one block of data from a disk file opened on \fIfilenum.\fP The parameters passed determine
+the actual sector number and side of the disk. The data is read into a buffer
+pointed to by \fIbuffer.\f
+.sp
+This function is VERY hardware dependent and the user should know the size of
+a disk block on his/her system before using it. Typically, on an
+8-bit machine, the block size will be 256 bytes while a 16-bit machine will
+usually have a block size of 512 bytes. UNIX hardware has a block size of
+1024 bytes. In addition, not all device drivers support this call. Again,
+be sure before you use it.
+.sp
+Consult your hardware documentation for more details.
+.sp \fB\fP SETSTAT(SS_BLKWR)
+is the reverse of \fBSS_BLKRD\fP above, writing out one block of data.
+.sp \fBSETSTAT(SS_SSIG)\fP sets up a signal to be sent to the calling process when an interactive
+device has data ready. When data is received on the device indicates by \fIfilenum,\fP the signal \fIcode\fP is sent to the calling process.
+.sp \fBSS_SSIG\fP must be called each time the signal is sent if it is to be used again.
+.sp
+The device is considered busy, and will return an error, if any read request
+arrives before the signal is sent. Write requests are allowed to the device
+while in this state.
+.sp
+If an error occurs, the function returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+All the above calls require an OS-9 path number for \fIfilenum, and NOT a\fP C iob file descriptor pointer.
+.ed
+.sh SEE ALSO
+.bb
+I$GetStt system call - Microware Manual, _gs_xxx calls
+.eb

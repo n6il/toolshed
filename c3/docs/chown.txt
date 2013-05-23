@@ -1,0 +1,22 @@
+.so header
+.tl /CHOWN(3S)/Kreider OS-9 C Library/CHOWN(3S)/
+.sh NAME
+.bb
+chown - change the ownership of a file
+.eb
+.sh SYNOPSIS
+.bb
+chown(fname, ownerid)
+char *fname;
+int ownerid;
+.eb
+.sh DESCRIPTION
+.db \fBCHOWN\fP changes the ownership of a file by changing the owner ID associated
+with the file in the file descriptor. Only the super user has acces to
+this call.
+.PP \fIFname\fP is a pointer to a the file name that is to be changes. \fIOwnerid\fP is the user ID of the new file owner.
+.ed
+.sh DIAGNOSTICS
+.db
+A zero is returned from a successful call. -1 is returned on error.
+.ed

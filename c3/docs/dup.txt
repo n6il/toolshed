@@ -1,0 +1,59 @@
+.so header
+.tl /DUP(3S)/Kreider OS-9 C Library/DUP(3S)/
+.sh NAME
+.bb
+dup - duplicate an open path number
+.eb
+.sh SYNOPSIS
+.bb
+dup(pn)
+int pn;
+.eb
+.sh DESCRIPTION
+.db \fBDUP\fP takes the path number \fIpn\fP as returned from an \fIopen(),\fP creat(),
+or \fIcreate()\fP call and returns another path number associated with the same
+file.
+.PP \fBDUP\fP is often used to duplicate the standard paths (stdin, stdout, stderr)
+prior to forking a new process. The new process will then have these paths
+for its use.
+.ed
+.sh EXAMPLE
+.bb
+To use DUP to copy the standard paths:
+.sp
+fork (cmd, parms, path)
+char *cmd, *parms;
+int path;
+
+{
+    int i;
+    int save[3];
+
+    for (i = 0; i <= 2; i++)
+        save[i] = dup (i);
+
+    for (i = 0; i <= 2; i++)
+        close (i);
+
+    for (i = 0; i <= 2; i++)
+        dup (path);
+
+    close (path);
+
+    os9fork (cmd, strlen(parms), parms, 1, 1, 0);
+
+    for (i = 0; i <= 2; i++) {
+        close (i);
+        dup (save[i]);
+        close (save[i]);
+    }
+.eb
+.sh DIAGNOSTICS
+.db
+A -1 is returned if the call fails because there are too many opened files
+or the path number is invalid.
+.ed
+.sh SEE ALSO
+.bb
+open(), creat(), create(), close()
+.eb

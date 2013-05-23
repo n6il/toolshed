@@ -1,0 +1,43 @@
+.so header
+.tl /HTOI(3C)/Kreider OS-9 C Library/HTOI(3C)/
+.sh NAME
+.bb
+htoi, htol, itoa, utoa, ltoa -- type conversions
+.eb
+.sh SYNOPSIS
+.bb
+int htoi(s)
+char *s;
+.sp
+long htol(s)
+char *s;
+.sp
+char *itoa(n, s)
+int n;
+char *s,
+.sp
+char utoa(n, s)
+int n;
+char *s;
+.sp
+char *ltoa(n, s)
+long n;
+char *s;
+.eb
+.sh DESCRIPTION
+.db \fBHTOI\fP converts a string representing a hexadecimal number into an integer.
+.PP \fBHTOL\fP converts a string representing a hexadecimal number into a long integer.
+.PP \fBITOA\fP converts an integer number N to the corresponding \fBASCII\fP characters and returns a pointer to the string \fIs.\f
+.PP \fBUTOA\fP converts an unsigned integer number \fIn\fP to the corresponding \fBASCII\fP characters and returns a pointer to the string \fIs.\f
+.PP \fBLTOA\fP converts a long number \fIn\fP to the corresponding \fBASCII\fP characters and returns a pointer to the string \fIs.\f
+.ed
+.sh NOTE
+.db
+These functions are extensions to the ATOF, ATOL, and ATOI functions.
+They perform in the same manner, except
+for the type of conversion.
+.ed
+.sh SEE ALSO
+.bb
+atof(), atoi(), atol()
+.eb

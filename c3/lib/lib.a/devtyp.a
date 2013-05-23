@@ -1,0 +1,35 @@
+
+* returns the device type for 'pn'
+
+ psect devtyp_a,0,0,0,0,0
+
+ ifp1
+* use ../defs/os9defs.a
+ endc
+
+isatty:
+*tfr d,d get pn
+ bsr devtyp check it out
+ std -2,s was it zero?
+ beq _2 yup; return TRUE
+ clrb aka false (A already clear)
+ rts
+
+_2 incb aka TRUE
+ rts
+
+
+devtyp:
+ tfr b,a get pn
+ clrb aka SS.OPT
+ leas -32,s buffer space
+ leax ,s
+ os9 I$GetStt
+ lda ,s get dev type, preserve error in b
+ leas 32,s
+ lbcs _os9err
+ tfr a,b copy device type
+ clra make int
+ rts
+
+ endsect

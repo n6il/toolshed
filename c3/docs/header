@@ -1,0 +1,59 @@
+.*
+.*   These are the macros for MROFF printing of the "C" Library docs
+.*
+.*      Set the page margins
+.*
+.m1 3
+.m2 2
+.m3 4
+.m4 3
+.lt 56
+.rm 64
+.po 8
+.nj
+.*
+.*      This is the Block Start macro
+.*
+.de bb
+.nf
+.in +5
+.sp 1
+..
+.*
+.*      This is the Block End macro
+.*
+.de eb
+.in -5
+.fi
+.sp 1
+..
+.*
+.*      This starts a descriptive block (justification and filling on)
+.*
+.de db
+.in +5
+.sp 1
+..
+.*
+.*      This ends a descriptive block
+.*
+.de ed
+.in -5
+.sp 1
+..
+.*
+.*      The starts a section header
+.*
+.de sh
+.ft B
+.sp 1
+\\$*
+.ft P
+..
+.*
+.*      paragraph start macro
+.*
+.de PP
+.ne 5
+.sp
+..

@@ -1,0 +1,34 @@
+.so header
+.tl /FREAD(3C)/Kreider OS-9 C Library/FREAD(3C)/
+.sh NAME
+.bb
+fread, fwrite - read/write binary data
+.eb
+.sh SYNOPSIS
+.bb
+fread(ptr, sizeof(item), nitems, fp)
+FILE *fp;
+.sp
+fwrite(ptr, sizeof(item), nitems, fp)
+FILE *fp;
+.eb
+.sh DESCRIPTION
+.db
+The \fBfread\fP function reads into a buffer beginning at \fIptr, nitems\fP of data of the type \fIitem\fP from the input file pointer \fIfp.\fP It returns the number of items actually read.
+.PP
+The \fBfwrite\fP function writes, at most, \fInitems\fP of data of the type \fIitem\fP beginning at \fIptr\fP to the named output file \fIfp.\fP It returns the number of items actually written.
+.PP
+In both cases, the type \fIitem\fP refers to either a char, int, or unsigned data type. Care must be taken to
+insure the correct values are used. If, for example, 10 bytes of type \fIchar\fP are to be written, then this is the same amount of data going to the output
+stream as 5 bytes of type \fIint.\f
+.ed
+.sh DIAGNOSTICS
+.db
+Both functions return a \fInull\fP at end of file or if an error occurs. To insure the correct data is read
+or written, the returned number of type \fIitem\fP should be compared to what was intended. If there is a difference, an error
+has occured.
+.ed
+.sh SEE ALSO
+.bb
+read(), write(), fopen(), getc(), putc(), printf(), scanf()
+.eb

@@ -1,0 +1,18 @@
+.so header
+.tl /ASETUID(3C)/Kreider OS-9 C Library/ASETUID(3C)/
+.*
+.sh NAME
+.bb
+asetuid - sets the user ID number
+.eb
+.sh SYNOPSIS
+.bb
+asetuid(uid)
+.eb
+.sh DESCRIPTION
+.db \fBASETUID\fP sets the user ID number for the current task. Unlike \fIsetuid(),\fP this call can be used even if the user is not the Super User.
+.ed
+.sh SEE ALSO
+.bb
+setuid(), getuid (Microware Manual)
+.eb

@@ -1,0 +1,97 @@
+FD.Att equ 0 FD offset to attr
+FD.Own equ 1 FD offset to owner
+FD.Date equ 3 FD offset to date
+
+Bufsize equ 16 FD info bytes
+
+
+ psect change,0,0,2,0,0
+
+* chown(fname,owner)
+chown: pshs d,y,u save registers
+ leas -Bufsize,s reserve buffer space
+ os9 F$ID get user ID
+ tfr y,d copy user id
+ tsta super user group?
+ bne baduser bra if not
+ ldx Bufsize,s get file name ptr
+ bsr openfile open file and read FD
+ bcs chexit bra if error
+ pshs b save mode
+ os9 I$Close close the file
+ ldd Bufsize+9,s get the new owner id
+ std FD.Own,x modify the FD
+ puls a retrieve mode
+ ora #WRITE. add write access
+ ldx Bufsize,s get file name ptr
+ os9 I$Open open the file
+ bcs chexit can't open for write
+ ldb #SS.FD write FD code
+ leax 0,s get buffer ptr
+ os9 I$SetStt write the FD
+ bcs chexit bra if error
+ os9 I$Close close the file
+
+* carry set is error exit, clear for normal
+chexit leas Bufsize+2,s return scratch & file name ptr
+ puls y,u restore regs
+ lbra _sysret return to caller
+
+baduser ldb #E$FNA get error code
+ orcc #Carry
+ bra chexit
+
+*
+* open file and fetch file FD
+* entered with file name ptr in X
+* Bufsize buffer is at 2,s
+*
+openfile leay 0,x save file name ptr
+ lda #READ. read mode
+ pshs a save mode
+ os9 I$Open open the file
+ bcc openf10 branch if no error
+ cmpb #E$FNA file not accessible?
+ bne openf.a branch if not problem
+ lda #DIR.+READ. try as directory
+ sta 0,s save mode
+ leax 0,y
+ os9 I$Open try again
+ bcc openf10 branch if no error
+openf.a leas 1,s dump mode
+ orcc #Carry
+ rts
+
+openf10 leax 3,s get buffer address
+ ldy #Bufsize and size
+ ldb #SS.FD read FD code
+ os9 I$GetStt read the FD
+ bcc open.c
+ stb 0,s put error code in mode
+open.c puls b,pc
+
+
+* chmod(fname,perm)
+chmod: pshs y,u save registers
+ tfr d,x copy file name ptr
+ leas -Bufsize,s reserve buffer space
+ bsr openfile open file and read FD
+ bcs chexit bra if error
+ pshs a,y save path number & buffer size
+ os9 F$ID get user ID
+ tfr y,d copy user ID
+ tsta super user group?
+ beq chmod.a yes, he can do it
+ cmpa FD.Own,x same group?
+chmod.a puls a,y retrieve path number & buffer size
+ bne baduser no, return error
+ ldb Bufsize+7,s get the new attributes
+ stb FD.Att,x update FD
+ ldb #SS.FD write FD code
+ os9 I$SetStt write the FD
+ bcs chexit bra if error
+ os9 I$Close close the file
+ bra chexit and exit
+
+ ends
+

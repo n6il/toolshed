@@ -1,0 +1,52 @@
+.so header
+.tl /CRC(3S)/Kreider OS-9 C Library/CRC(3S)/
+.sh NAME
+.bb
+crc - compute the cyclic redundancy count of a module
+.eb
+.sh SYNOPSIS
+.bb
+crc(start, count, accum)
+char *start;
+int count;
+char accum[3];
+.eb
+.sh DESCRIPTION
+.db
+This call accumulates a crc into a three byte array at \fIaccum[3]\fP for the \fIcount\fP bytes starting at \fIstart.\fP All three bytes of \fIaccum\fP should be
+initialized to 0xFF before the first call to \fBCRC.\fP However, repeated calls
+can be subsequently made to cover an entire module. If the result is to be
+used as an OS-9 module crc, it should have its bytes complemented before
+insertion at the end of the module. An example follows:
+.bb
+/*
+**  Calculate a module's CRC and insert it at the end.
+**
+**  The pointer passed in mod_desc is address of
+**  the beginning of the module already in memory.
+*/
+
+#include <module.h>
+
+chg_crc(mod_desc)
+char *mod_desc;
+{
+    int count;
+    char accum[3];
+    char *old_crc;
+
+    old_crc = (char *) mod_desc + mod_desc->m_size - 3;
+    count = mod_desc->msize - 3;
+
+    accum[0] = 0xff;
+    accum[1] = 0xff;
+    accum[2] = 0xff;
+
+    crc (mod_desc, count, accum);
+
+    *old_crc++ = ~accum[0];
+    *old_crc++ = ~accum[1];
+    *old_crc = ~accum[2];
+}
+.eb
+.ed

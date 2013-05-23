@@ -1,0 +1,35 @@
+.so header
+.tl /GS_DEVN(2)/Kreider OS-9 C Library/GS_DEVN(2)/
+.sh NAME
+.bb
+_gs_devn - get device name
+.eb
+.sh SYNOPSIS
+.bb
+int _gs_devn(path, buffer)
+int path;
+char *buffer;
+.eb
+.sh DESCRIPTION
+.db
+This function determines the name of the device opened on a path. The argument \fIpath\fP is the OS-9 path number of the opened path and \fIbuffer\fP is a pointer to a
+character array into which the null-terminated device name will be placed.
+.PP
+The device name returned is in "OS9 format", that is, the last byte of the
+name will have the high bit set. Also, there is no NULL terminator on the
+string. The best method to handle this returned value is:
+.bb
+        _gs_devn(path, buffer);
+        strhcpy(newbuff, buffer);
+.eb
+If PATH is invalid, this function returns -1 as its value and the error code
+is placed in the global variable ERRNO.
+.ed
+.sh NOTE
+.db
+Be sure to reserve at least 32 characters to receive the device name.
+.ed
+.sh SEE ALSO
+.bb
+I$GetStt system call - Microware Manual, fopen(), open().
+.eb

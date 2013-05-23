@@ -1,0 +1,21 @@
+ nam C Support Routines
+ ttl Time system calls
+
+*
+* Time system calls
+*
+
+
+ psect time_a,0,0,1,0,0
+
+* setime(buffer)
+setime: tfr d,x
+ os9 F$STime call os9
+ lbra _sysret usual return
+
+* getime(buffer)
+getime: tfr d,x
+ os9 F$Time call os9
+ lbra _sysret
+
+ endsect

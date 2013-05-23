@@ -1,0 +1,191 @@
+ psect sets_a,0,0,0,0,0
+ nam sets_a
+
+*
+* char *allocset()
+*    {
+*    return (malloc(32));
+*    }
+
+allocset:
+ ldd #1
+ pshs d
+ ldd #32
+ lbsr calloc
+ puls x,pc
+
+
+* 
+* addc2set(s, c)
+* char  *s, c;
+*    {
+*    s[(c >> 3) & 0x1f] |= (1 << (c & 7));
+*    }
+
+addc2set:
+ bsr setup
+ orb a,x
+ stb a,x
+ tfr x,d
+ rts
+
+
+*
+* adds2set(s, p)
+* char  *s, *p;
+*    {
+*    while (*p++)
+*       s[(*p >> 3) & 0x1f] |= (1 << (*p & 7));
+*    }
+
+adds2set:
+ pshs u
+ ldu 4,s
+ tfr d,x
+ bra addl2
+
+addl1 bsr setupa
+ orb a,x
+ stb a,x
+addl2 lda ,u+
+ bne addl1
+ tfr u,d
+ puls u,pc
+
+ pag
+* 
+* rmfmset(s, c)
+* char  *s, c;
+*    {
+*    s[(c >> 3) & 0x1f] &= ~(1 << (c & 7));
+*    }
+
+rmfmset:
+ bsr setup
+ comb
+ andb a,x
+ stb a,x
+ clrb
+ tfr x,d
+ rts
+
+
+* 
+* smember(s, c)
+* char  *s, c;
+*    {
+*    return (s[(c >> 3) & 0x1f] & (1 << (c & 7)));
+*    }
+
+smember:
+ bsr setup
+ andb a,x
+ clra
+ rts
+
+
+*
+* common code to figure out the bit and byte offsets
+*
+
+setup tfr d,x get pointer
+ lda 5,s get c
+setupa pshs a
+ ldb #1 set bit mask
+ anda #7 0 <= c <= 7
+ beq setup2
+setup1 aslb
+ deca
+ bne setup1
+setup2 puls a get char again
+ asra
+ asra
+ asra divide by 8 bits/char
+ anda #$1f
+ rts
+
+ pag
+*
+* dupset(s)
+* char  s[];
+*   {
+*   return(copyset(allocset(), s);
+*   }
+
+dupset: pshs d
+ bsr allocset
+ bsr copyset
+ puls x,pc
+
+
+*
+* copyset(s1, s2)
+* char   s1[], s2[];
+*    {
+*    int   j;
+*
+*    for (j = 31; j >= 0; j--)
+*       s1[j] = s2[j];
+*    return (s1);
+*    }
+
+copyset:
+ pshs u
+ tfr d,x
+ ldu 4,s
+ ldb #32
+_1 lda ,u+
+ sta ,x+
+ decb
+ bne _1
+ leax -32,x
+ tfr x,d
+ puls u,pc
+ pag
+
+sunion:
+ pshs u
+ ldx 4,s
+ tfr d,u
+ ldb #32
+_2 lda ,x+
+ ora ,u
+ sta ,u+
+ decb
+ bne _2
+ leau -32,u
+ tfr u,d
+ puls u,pc
+
+
+sinterse:
+ pshs u
+ tfr d,u
+ ldx 4,s
+ ldb #32
+_3 lda ,x+
+ anda ,u
+ sta ,u+
+ decb
+ bne _3
+ leau -32,u
+ tfr u,d
+ puls u,pc
+
+
+sdiffere:
+ pshs u
+ tfr d,u
+ ldx 4,s
+ ldb #32
+_4 lda ,x+
+ eora ,u
+ sta ,u+
+ decb
+ bne _4
+ leau -32,u
+ tfr u,d
+ puls u,pc
+
+
+ endsect

@@ -1,0 +1,28 @@
+.so header
+.he /SS_LOCK(2)/Kreider OS-9 C Library/SS_LOCK(2)/
+.sh NAME
+.bb
+_ss_lock - set file lock status
+.eb
+.sh SYNOPSIS
+.bb
+int _ss_lock(path, locksize)
+int path;
+long locksize;
+.eb
+.sh DESCRIPTION
+.db \fBSS_LOCK\fP locks out a section of a file open on \fIpath\fP from the current file
+position up to the number of bytes specified by \fIlocksize.\f
+.sp
+If the locksize is zero, all locks (record lock, EOF lock, and file lock)
+are removed. If a locksize of 0xFFFFFFFF is requested, the entire file is
+locked regardless of where in the file the file pointer is. This is a special
+type of file lock that remains in effect until released by \fI_ss_lock(path,0),\fP a read or write of zero or more bytes, or the file is closed.
+.sp
+If an error occurs, the function returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call, Microware manual.
+.eb

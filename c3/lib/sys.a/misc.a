@@ -1,0 +1,44 @@
+*
+* Miscellaneous system calls
+*
+* tjl  08/05/2005  Moved file to version 2 C ABI.
+
+* use ../../defs/os9defs.a
+ psect misc_a,0,0,1,0,0
+
+* lock(flag)
+lock: rts
+
+* pause()
+pause: ldx #0
+ clrb
+ os9 F$Sleep
+ lbra _os9err
+
+* sync()
+sync: rts
+
+* crc(start,count,accum)
+crc: pshs y,u save reg. variable and data pointer
+ tfr d,x  *ldx 6,s get start pointer
+ ldy 6,s  *ldy 8,s get byte count
+ ldu 8,s  *ldu 10,s get address of accumulator
+ os9 F$CRC call os9
+ puls y,u,pc no error output
+
+* prerr(fildes,error)
+prerr: tfr b,a   *lda 3,s get path number
+ ldb 3,s   *ldb 5,s get error code
+ os9 F$PErr call os9
+ lbcs _os9err
+ rts
+
+* tsleep(ticks)
+tsleep:
+ tfr d,x   *ldx 2,s get sleep time
+ os9 F$Sleep call os9
+ lbcs _os9err
+ tfr x,d return ticks remaining in d reg
+ rts
+ endsect
+

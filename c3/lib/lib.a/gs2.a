@@ -1,0 +1,58 @@
+*
+* handler for _gs_rdy, _gs_opt, _gs_opt, _gs_devnm
+*
+
+* ifp1
+* use ../../defs/os9defs.a
+* endc
+
+* Converted November 20, 2005 to new ABI
+
+ psect gs2,0,0,1,0,0
+
+_gs_rdy:
+ tfr b,a get pn
+ ldb #SS.Ready
+ os9 I$GetStt
+ lbcs _os9err
+ clra make 16 bits
+ rts
+
+
+_gs_eof:
+ tfr b,a get pn
+ ldb #SS.EOF
+ bra gs1
+
+_gs_opt:
+ tfr b,a get pn
+ ldb #SS.Opt
+ ldx 2,S buffer ptr
+gs1 os9 I$GetStt
+ bra gs4
+
+_gs_devn:
+ tfr b,a get pn
+ ldb #SS.DevNm
+ ldx 2,S buffer ptr
+ os9 I$GetStt
+ bcs gs4 if error
+gs2 lda ,X+ get a char
+ bpl gs2 if not terminator
+ anda #$7f fix it up
+ sta -1,X
+ clr ,X and terminate
+ rts
+
+
+_gs_gfd:
+ pshs Y we need this
+ tfr b,a get pn
+ ldb #SS.FD
+ ldx 4,S buffer
+ ldy 6,S count
+ os9 I$GetStt
+ puls Y
+gs4 lbra _sysret
+
+ ends

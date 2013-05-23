@@ -1,0 +1,32 @@
+.so header
+.tl /SS_SSIG(2)/Kreider OS-9 C Library/SS_SSIG(2)/
+.sh NAME
+.bb
+_ss_ssig - set a signal 
+.eb
+.sh SYNOPSIS
+.bb
+int _ss_ssig(path, sigcode)
+int path;
+short sigcode;
+.eb
+.sh DESCRIPTION
+.db \fBSS_SSIG\fP sets up a signal to be sent to the calling process when an interactive
+device has data ready. When data is received on the device indicates by \fIpath,\fP the signal \fIsigcode\fP is sent to the calling process.
+.sp \fBSS_SSIG\fP must be called each time the signal is sent if it is to be used again.
+.sp
+The device is considered busy, and will return an error, if any read request
+arrives before the signal is sent. Write requests are allowed to the device
+while in this state.
+.sp
+If an error occurs, the function returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+This feature exists only on \fBSCF\fP devices.
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call, Microware manual, _ss_rel().
+.eb

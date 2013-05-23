@@ -1,0 +1,33 @@
+.so header
+.tl /SETBUF(3C)/Kreider OS-9 C Library/SETBUF(3C)/
+.sh NAME
+.bb
+setbuf - fix file buffer
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+setbuf (fp, buffer)
+FILE *fp;
+char *buffer;
+.eb
+.sh DESCRIPTION
+.db
+When the first character is written to or read from a file after it has been
+opened by \fBFOPEN(),\fP a buffer is obtained from the system, if required, and assigned to the file
+pointer \fIfp. \fBSETBUF\fP may be used to forestall this automatic buffer assignment by assigning a user\fP buffer to the file.
+.sp \fBSETBUF\fP must be used after the file has been opened and before any I/O has taken place.
+.sp
+The buffer must be of sufficient size and a value for a manifest constant, \fBBUFSIZ,\fP is defined in the header file for use in declaration.
+.sp
+If the \fIbuffer\fP argument is \fINULL\fP (0), the file stream becomes unbuffered and characters are read or written
+singly.
+.sp
+NOTE that the standard error output defaults to unbuffered while the standard
+output default to buffered output.
+.ed
+.sh SEE ALSO
+.bb
+fopen(), getc(), putc()
+.eb

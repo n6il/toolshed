@@ -1,0 +1,44 @@
+
+ nam C CORDIC Transcendentals
+ ttl Double Precision Tangent Function
+
+ psect dtan_a,0,0,0,0,0
+
+
+***************
+* Subroutine _ccdtan
+*   Trigonometric Tangent
+
+_ccdtan: lbsr _ccdtrig call trig function
+ pshs b,u save x sign & register
+ eora 0,s get result sign
+ sta 0,s save it
+ leau _ccXacc,y get result ptr
+ lbsr _ccdnorm normalize it
+ lda 7,u zero divisor?
+ bne tan.a
+ leax _flacc,y get accumulator ptr
+ ldd #$7FFF return large number
+ std 0,x
+ lda #$FF
+ std 2,x
+ std 4,x
+ std 6,x
+ bra tan.b
+tan.a leau _ccYacc,y get result ptr
+ lbsr _ccdnorm normalize it
+ ldx 6,u move result to stack
+ ldd 4,u
+ pshs d,x
+ ldx 2,u
+ ldd 0,u
+ pshs d,x
+ leax _ccXacc,y get divisor ptr
+ lbsr _ddiv call divide
+tan.b lda 0,x replace sign
+ ora ,s+
+ sta 0,x
+ puls u,pc
+
+
+ ends

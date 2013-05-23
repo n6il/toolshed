@@ -1,0 +1,26 @@
+.so header
+.tl /QSORT(3C)/Kreider OS-9 C Library/QSORT(3C)/
+.sh NAME
+.bb
+qsort - quick sort
+.eb
+.sh SYNOPSIS
+.bb
+qsort(base, nel, size, compar)
+char *base;
+int (*compar)();
+.eb
+.sh DESCRIPTION
+.db
+The \fBQSORT\fP subroutine is an implementation of the quick-sort algorithm.
+The first argument is a pointer to the base of the data;
+the second is the number of elements;
+the third is the size of an element in bytes;
+the last is the name of the comparison routine
+to be called with two arguments which are pointers
+to the elements being compared.
+The \fIcompar()\fP routine must return an integer less than, equal to,
+or greater than 0
+according as the first argument is to be considered
+less than, equal to, or greater than the second.
+.ed

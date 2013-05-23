@@ -1,0 +1,96 @@
+********** findstr_a **********
+
+* Converted to new ABI on December 4, 2005
+
+* 12-04-05 tjl Removed findastr from exported symbols.
+*              It doesn't follow the new C ABI and it
+*              was never documented. It also isn't used
+*              anywhere else in the library.
+               
+ psect findstr_a,0,0,1,0,0
+
+*** findstr(pos,s,pat)
+*    searches s for pat from pos thru null on s
+*    returns pos of match or null
+*     stack   *pat
+*              *s
+*              ret
+*               u
+*         ->    y
+*     reg d    pos
+
+findstr:
+ pshs y,u
+ bsr lodregs set up pointers
+ bra findst2
+
+findst1 bsr findcom
+findst2 ldb ,x check for done
+ bne findst1
+ bra findast2 if no match
+
+
+findcom pshs x,y *s, *pat
+ bsr findastr
+ puls x,y
+ bne findst3 if hit
+ leau 1,u bump pos count
+ leax 1,x bump actual pos
+ rts try again
+
+findst3 tfr u,d copy position
+ puls x,y,u,pc waste return & exit
+
+
+*** findnstr(pos,s,pat,size)
+*    same as above but quits at size
+*    stack   size
+*            *pat
+*             *s
+*             ret
+*              u
+*        ->    y
+
+findnstr: pshs y,u
+ bsr lodregs set up pointers
+findnst1 bsr findcom look & fix pointers
+findnst2 cmpu 10,s check done
+ ble findnst1
+ bra findast2 if no match
+
+
+lodregs tfr d,u pos
+*tfr u,d copy pos
+ ldx 8,s *s
+ leax d,x new pos
+ leax -1,x adjust for base 1
+ ldy 10,s *pat
+ rts
+ pag
+*** findastr(s1, s2)
+*    checks for start of s1 same as s2 to null on s2
+*    returns TRUE if there
+*    stack   *s2
+*            *s1
+*            ret
+*             u
+*        ->   y
+
+findastr pshs y,u
+ ldu 6,s *s1
+ ldx 8,s *s2
+ bra findast3
+
+findast1 cmpb ,u+
+ beq findast3
+findast2 clra ret FALSE if not here
+ clrb
+ puls y,u,pc
+
+
+findast3 ldb ,x+ char from s2
+ bne findast1 not end
+ ldd #$0001 ret TRUE 'cause its here
+ puls y,u,pc
+
+ endsect

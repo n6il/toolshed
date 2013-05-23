@@ -1,0 +1,48 @@
+.so header
+.tl /CHMOD(3S)/Kreider OS-9 C Library/CHMOD(3S)/
+.sh NAME
+.bb
+chmod - change access permissions of a file
+.eb
+.sh SYNOPSIS
+.bb
+#include <modes.h>
+.sp
+chmod(fname, perm)
+char *fname;
+int perm;
+.eb
+.sh DESCRIPTION
+.db \fBCHMOD\fP changes the permission bits in the path descriptor associated with
+a file. \fIFname\fP must be a pointer to a file name, and \fIperm\fP should contain the desired access mode number.
+.PP
+The allowable access numbers are defined in the file <modes.h> and are as
+follows:
+.bb
+/* File Modes */
+.sp
+#define  S_IFMT    0xff     /* mask for file type */
+#define  S_IFDIR   0x80     /* directory */
+.sp
+/* Permissions */
+.sp
+#define  S_IPRM    0xff     /* mask for permission bits */
+#define  S_IREAD   0x01     /* owner read */
+#define  S_IWRITE  0x02     /* owner write */
+#define  S_IEXEC   0x04     /* owner execute */
+#define  S_IOREAD  0x08     /* public read */
+#define  S_IOWRITE 0x10     /* public write */
+#define  S_IOEXEC  0x20     /* public execute */
+#define  S_ISHARE  0x40     /* sharable */
+.eb
+Only the owner or the super user may change the permissions of a file.
+.ed
+.sh DIAGNOSTICS
+.db
+A successful call returns a \fInull.\fP A -1 is returned if the caller is
+not entitled to change permissions on that file, or \fIfname\fP cannot be found.
+.ed
+.sh SEE ALSO
+.bb
+OS-9 command "attr"
+.eb

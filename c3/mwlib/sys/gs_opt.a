@@ -1,0 +1,13 @@
+ nam OS-9 C Support
+ ttl GetStat - Options
+
+ psect gsopt_a,0,0,0,0,0
+
+_gs_opt: tfr b,a get path number
+ ldb #SS.Opt get function code
+ ldx 2,s get buffer ptr
+ OS9 I$GetStt call system
+ lbra _sysret
+
+ ends
+

@@ -1,0 +1,39 @@
+*********************************
+* 8 x 8 Divide
+
+* OTHER MODULES NEEDED: none
+
+* ENTRY: A = divisor
+*        B = dividend
+
+*  EXIT: A = remainder
+*        B = quotient
+
+ nam 8x8 bit Divide
+ ttl Assembler Library Module
+
+
+ psect DIV88,0,0,0,0,0
+
+DIV88:
+ PSHS A save divisor
+ LDA #8 bit counter
+ PSHS A
+ CLRA initialize remainder
+
+div1
+ ASLB shift dividend & quotient
+ ROLA
+ CMPA 1,S trial subtraction needed
+ BLO div2
+ SUBA 1,S
+ INCB
+
+div2
+ DEC 0,S count down # of bits
+ BNE div1
+ LEAS 2,S clean up stack
+ RTS
+
+ endsect
+ 

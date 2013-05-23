@@ -1,0 +1,14 @@
+ nam OS-9 C Support
+ ttl SetStat - Options
+
+ psect ssopt_a,0,0,0,0,0
+
+*	_ss_opt(path,buffer)
+_ss_opt: tfr b,a get path number
+ ldb #SS.Opt get function code
+ ldx 2,s get buffer ptr
+ OS9 I$SetStt call system
+ lbra _sysret
+
+ ends
+

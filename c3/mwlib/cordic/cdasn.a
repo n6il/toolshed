@@ -1,0 +1,64 @@
+
+ nam C CORDIC Transendentals 
+ ttl Double Precision ArcSine Function
+
+exponent equ 7
+ 
+ psect dasn_a,0,0,0,0,0
+
+
+***************
+* Subroutine _ccdasn
+*   Trigonometric ArcSine
+stacked set 0
+_ccdasn: lbsr _ccsign 
+stacked set stacked+1
+sign set -stacked
+ ldb exponent,x
+ bne asn.a bra if not zero
+ leax _flacc,y return zero
+ clra
+ clrb
+ std 0,x
+ std 2,x
+ std 4,x
+ std 6,x
+ puls a,pc
+asn.a cmpb #$81 compare arg to one
+ bhi asnerr
+ bne asn.b
+ ldd 0,x
+ bne asnerr
+ ldd 2,x
+ bne asnerr
+ ldd 4,x
+ bne asnerr
+ lda 6,x
+ bne asnerr
+ lbra retpi2
+asn.b ldu 6,x move arg to stack
+ ldd 4,x
+ pshs d,u
+ ldu 2,x
+ ldd 0,x
+ pshs d,u 
+stacked set stacked+8
+ leax 0,s get arg address
+ lbsr _arcsub
+ leax _flacc,y get x coordiante value
+ leau _ccXacc,y
+ lbsr _ccdmove
+ lbsr _ccddenor
+ leax 0,s get original arg address
+ lbsr _atansub
+ lda 0,u get result sign byte
+ ora stacked+sign,s or in sign
+ sta 0,u
+ leax 0,u return pointer to result
+asn.c leas stacked,s
+ rts
+
+asnerr clrb
+ os9 F$Exit
+
+ ends

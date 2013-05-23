@@ -1,0 +1,23 @@
+ psect mktemp_a,0,0,2,0,0
+
+*        mktemp(string)    (string ends in XXXXX)
+mktemp: pshs d,u
+ tfr d,u
+mktemp2 ldb ,u+
+ beq mktemp4
+ cmpb #'X
+ bne mktemp2
+ leau -1,u
+ pshs u
+ ldd #5 wipe X's
+mktemp3 sta ,u+
+ decb
+ bne mktemp3
+ puls u
+ lbsr getpid
+ pshs u
+ lbsr itoa
+ leas 2,s
+mktemp4 puls pc,u,d
+
+ endsect

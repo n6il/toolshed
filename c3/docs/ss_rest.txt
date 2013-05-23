@@ -1,0 +1,22 @@
+.so header
+.tl /SS_REST(2)/Kreider OS-9 C Library/SS_REST(2)/
+.sh NAME
+.bb
+_ss_rest - restore disk drive head to track zero
+.eb
+.sh SYNOPSIS
+.bb
+int _ss_rest(path)
+int path;
+.eb
+.sh DESCRIPTION
+.db \fBSS_REST\fP causes an \fBRBF\fP device to restore the disk head to track zero. It is
+usually used prior to disk formatting and for error recovery.
+.sp
+If an error occurs, the function returns -1 and the appropriate error code is
+placed in the global variable \fIerrno.\f
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call - Microware manual.
+.eb

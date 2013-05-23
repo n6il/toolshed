@@ -1,0 +1,56 @@
+.so header
+.he /MEMORY(3C)/Kreider OS-9 C Library/MEMORY(3C)/
+.sh NAME
+.bb
+memccpy, memchr, memcmp, memcpy, memset -- memory operations
+.eb
+.sh SYNOPSIS
+.bb
+#include <memory.h>
+
+char *memccpy (s1, s2, c, n)
+char *s1, *s2;
+int c, n;
+
+char *memchr (s, c, n)
+char *s;
+int c, n;
+
+int memcmp (s1, s2, n)
+char *s1, *s2;
+int n;
+
+char *memcpy (s1, s2, n)
+char *s1, *s2;
+int n;
+
+char *memset (s, c, n)
+char *s;
+int c, n;
+.eb
+.sh DESCRIPTION
+.db
+These functions operate as efficiently as possible on memory areas (arrays
+of characters bounded by a count, not terminated by a null character).
+They do not check for the overflow of any receiving memory area.
+.sp \fBMEMCCPY\fP copies characters from memory area \fIS2\fP into \fIs1,\fP stopping after the first occurrence of character \fIc\fP has been copied, or after \fIn\fP characters have
+been copied, whichever comes first. It returns a pointer to the character
+after the copy of \fIc\fP in \fIs1,\fP or a \fInull\fP pointer if \fIc\fP was not found in the first \fIn\fP characters of \fIs2.\f
+.sp \fBMEMCHR\fP returns a pointer to the first occurrence of character \fIc\fP in the first \fIn\fP characters of memory area \fIs,\fP or a \fInull\fP pointer if \fIc\fP does not occur.
+.sp \fBMEMCMP\fP compares its arguments, looking at the first \fIn\fP characters only, and
+returns an integer less than, equal to, or greater than 0, according as \fIs1\fP is lexicographically less than, equal to, or greater than \fIs2.\f
+.sp \fBMEMCPY\fP copies \fIn\fP characters from memory area \fIs2\fP to \fIs1.\fP It returns \fIs1.\f
+.sp \fBMEMSET\fP sets the first \fIn\fP characters in memory area \fIs\fP to the value of character \fIc.\fP It returns \fIs.\f
+.ed
+.sh NOTE
+.db
+For user convenience, all these functions are declared in the optional \fBMEMORY.H header file.\f
+.ed
+.sh BUGS
+.db \fBMEMCMP\fP uses native character comparison, which is unsigned on some machines.
+Thus, the sign of the value returned when one of the characters has its high
+order bit set is implementation-dependent.
+.sp
+Character movement is performed differently in different implementations.
+Thus, overlapping moves may yield surprises.
+.ed

@@ -1,0 +1,16 @@
+ psect clconvert_a,0,0,1,0,0
+_litol:
+ leax _flacc,y
+ std 2,x
+ tfr a,b
+ sex
+ tfr a,b
+ std 0,x
+ rts
+_lutol:
+ leax _flacc,y
+ std 2,x
+ clr 0,x
+ clr 1,x
+ rts
+ endsect

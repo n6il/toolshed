@@ -1,0 +1,20 @@
+ psect strlen_a,0,0,1,0,0
+
+* Converted to new ABI on December 4, 2005
+
+*** strlen(s)
+*    returns count of non-null characters in "s"
+*    stack   s
+*           ret
+*        ->  u
+
+strlen:
+ tfr d,x
+ ldd #$ffff
+strlen1 addb #1
+ adca #0
+ tst ,x+
+ bne strlen1
+ puls pc
+
+ endsect

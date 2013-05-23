@@ -1,0 +1,37 @@
+*
+* File i/o system calls
+*
+* tjl  08/05/2005  Moved file to version 2 C ABI.
+
+* use ../../defs/os9defs.a
+ psect write_a,0,0,3,0,0
+
+* write(fd,buf,count)
+write:
+ pshs y save data pointer
+ ldy 6,s   *ldy 8,s get count
+ beq write10
+ tfr b,a   *lda 5,s get file number
+ ldx 4,s   *ldx 6,s get buffer address
+
+ os9 I$Write
+
+write1 bcc write10
+ puls y
+ lbra _os9err
+
+write10 tfr y,d
+ puls y,pc
+
+* writeln(fildes,buffer,count)
+writeln: pshs y save data pointer
+
+ ldy 6,s   *ldy 8,s get count
+ beq write10
+ tfr b,a   *lda 5,s get path number
+ ldx 4,s   *ldx 6,s get buffer address
+
+ os9 I$WritLn call os9
+ bra write1
+
+ endsect

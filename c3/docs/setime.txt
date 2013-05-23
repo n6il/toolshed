@@ -1,0 +1,32 @@
+.so header
+.tl /SETIME(3S)/Kreider OS-9 C Library/SETIME(3S)/
+.sh NAME
+.bb
+setime, getime - set and get system time
+.eb
+.sh SYNOPSIS
+.bb
+#include <time.h>
+.sp
+setime(buffer)
+getime(buffer)
+.sp
+struct sgtbuf *buffer;      /* defined in time.h */
+.eb
+.sh DESCRIPTION
+.db \fBSETIME\fP sets the system time depending on the values in the structure \fIbuffer\fP as defined in \fBTIME.H.\fP These values must be set prior to calling \fBSETIME\fP or the system time will be set to an unknown state.
+.sp \fBGETIME\fP reads the system time and returns the information in the structure \fIbuffer.\fP Reading the structure elements will then yield the desired values.
+.sp
+An example to read the time structure might be:
+.bb
+struct sgtbuf timepacket;
+.sp
+getime(timepacket);
+printf("The year is: %d\n", timepacket.t_year);
+printf("The day is:  %d\n", timepacket.t_day);
+.eb
+.ed
+.sh SEE ALSO
+.bb
+time(), ctime(), time(), o2utime(), u2otime()
+.eb

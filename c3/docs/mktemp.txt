@@ -1,0 +1,29 @@
+.so header
+.tl /MKTEMP(3C)/Kreider OS-9 C Library/MKTEMP(3C)/
+.sh NAME
+.bb
+mktemp - make a unique file name
+.eb
+.sh SYNOPSIS
+.bb
+char *mktemp(name)
+char *name;
+.eb
+.sh DESCRIPTION
+.db
+The \fBMKTEMP\fP subroutine replaces \fIname\fP by a unique file name, and returns the
+address of the name.
+The name should look like a file name with five trailing
+X's, which will be replaced with the
+current process ID.
+.ed
+.sh EXAMPLE
+.db
+If instance, if \fIname\fP points to "fo
+.XXXXX", and the process ID is 351, the returned value points
+at the same place as \fIname,\fP but it is now "foo.351".
+.ed
+.sh SEE ALSO
+.bb
+getpid()
+.eb

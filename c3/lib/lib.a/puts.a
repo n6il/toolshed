@@ -1,0 +1,43 @@
+********** puts_a **********
+
+* Converted to new ABI on December 6, 2005
+
+ psect puts_a,0,0,1,0,0
+
+*** puts(s)
+*    put null term. string to std out adding '\n'
+*    no return, no error
+*    stack  ret
+*            u
+*            fp
+*        ->  *s (or c)
+
+puts: pshs u
+ leax _iob+13,y stdout fp
+ pshs x stack fp
+ bsr fputs
+ ldb #$0d CR ('\n')
+ lbsr putc
+ puls x,u,pc
+
+
+*** fputs(s,fp)
+*    puts null term. string to fp
+*    no error, no return
+*    stack    fp
+*            ret
+*        ->   u
+
+fputs: pshs u
+ tfr d,u *s
+ ldx 4,s get fp
+ clra
+ pshs x stack fp
+ bra fputs1
+
+fputs2 lbsr putc
+fputs1 ldb ,u+
+ bne fputs2
+ puls x,u,pc
+
+ endsect

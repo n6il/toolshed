@@ -1,0 +1,27 @@
+ psect clcompare_a,0,0,1,0,0
+
+Carry equ %00000001
+
+_lcmpr:
+ ldd 2,s
+ cmpd 0,x
+ bne _lcmnd
+
+ ldd 4,s
+ cmpd 2,x
+
+ beq _lcmnd
+ blo test
+ lda #1
+ andcc #^Carry
+ bra _lcmnd
+
+test clra
+ cmpa #1
+_lcmnd pshs cc
+ ldd 1,s
+ std 5,s
+ puls cc
+ leas 4,s
+ rts
+ endsect

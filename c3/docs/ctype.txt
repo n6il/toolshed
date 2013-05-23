@@ -1,0 +1,57 @@
+.so header
+.tl /CTYPE(3C)/Kreider OS-9 C Library/CTYPE(3C)/
+.sh NAME
+.bb
+isalpha, isupper, islower, isdigit, isalnum, isspace, ispunct,
+isprint, iscntrl, isascii, - character classification macros
+.eb
+.sh SYNOPSIS
+.bb
+#include <ctype.h>
+.sp
+isalpha(c)
+.sp
+etc....
+.eb
+.sh DESCRIPTION
+.db
+These macros classify character-coded integer values according to their ascii
+value using fast table look-up.
+.PP
+All macros return non-zero for true and zero for false.
+.PP
+The macro \fBISASCII\fP provides a correct result for all integer values.
+The rest provide a result for EOF and values in the character range outlined
+in the table below, however, the result will be unpredictable for characters
+outside the range -1 to 127.
+.bb
+isalpha     c is a letter
+
+isupper     c is an uppercase letter
+
+islower     c is a lowercase letter
+
+isdigit     c is a digit
+
+isalnum     c is an alphanumeric character
+
+isspace     c is a space, tab, carriage return, new line,
+              or formfeed
+
+ispunct     c is a punctuation character (neither control,
+              alphanumeric, nor a space)
+
+isprint     c is a printable character, code 32 (space)
+              through 126 (tilde)
+
+iscntrl     c is a delete character (127) or ordinary
+              control character (less than 32) except
+              for space characters
+
+isascii     c is an ASCII character, code less than 128
+.eb
+.ed
+.sh SEE ALSO
+.bb
+toascii(), toupper(), tolower(), _toupper(), _tolower()
+.eb

@@ -1,0 +1,35 @@
+.so header
+.he /SS_ATTR(2)/Kreider OS-9 C Library/SS_ATTR(2)/
+.sh NAME
+.bb
+_ss_attr - set file attributes
+.eb
+.sh SYNOPSIS
+.bb
+#include <modes.h>
+
+int _ss_attr(path, attr)
+int path;
+short attr;
+.eb
+.sh DESCRIPTION
+.db \fBSS_ATTR\fP changes a disk file's attributes. The current attributes of a file
+can be determined with the \fB_GS_GFD\fP function. The attributes of a file can be
+changed only by the owner of the file or the super user.
+.sp
+The attributes as selected in the word \fIattr\fP are set in the file opened on \fIpath.\fP The header file \fBMODES.H\fP defines the valid mode values used in \fIattr.\f
+.sp
+If an error occurs, the function returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+This function is effective even if the owner or super user does not have
+write permission to the file. It is not permitted to set the directory bit of
+a non-directory file, or to clear the directory bit of a directory that is
+not empty.
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call, Microware manual.
+.eb

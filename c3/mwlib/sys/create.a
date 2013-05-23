@@ -1,0 +1,8 @@
+create: tfr d,x
+ lda 3,s mode
+ ldb 5,s attributes
+ OS9 I$Create create
+ lbcs _os9err
+ tfr a,b
+ clra
+ rts

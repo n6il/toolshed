@@ -1,0 +1,45 @@
+.so header
+.he /READ(3S)/Kreider OS-9 C Library/READ(3S)/
+.sh NAME
+.bb
+read, readln - read from a file
+.eb
+.sh SYNOPSIS
+.bb
+read(pn, buffer, count)
+char *buffer;
+int pn, count;
+.sp
+readln(pn, buffer, count)
+char *buffer;
+int pn, count;
+.eb
+.sh DESCRIPTION
+.db
+The path number \fIpn\fP is an integer which is one of the standard path number
+0, 1, or 2, or the path number returned from a successful call to \fIopen(), creat(), create(),\fP or \fIdup(). Buffer\fP is a pointer to memory space
+with at least \fIcount\fP bytes of memory into which \fBREAD\fP and \fBREADLN\fP will put the data from the file.
+.sp
+It is guaranteed that at most \fIcount\fP bytes will be read from the file, but
+often less will be, either because, for \fBREADLN,\fP the file represents a
+terminal and input stops at the end of a line, or for both, the end-of-file
+marker has been reached.
+.sp \fBREADLN\fP causes "line editing" such as echoing to take place and returns once
+the first '\\n' is encountered in the input stream, or the number of bytes
+requested in \fIcount\fP has been reached. \fBREADLN\fP is the preferred call for reading from the user's terminal.
+.sp \fBREAD\fP does not cause any line editing. See the OS-9 manual for a fuller
+description of the actions of these call.
+.ed
+.sh DIAGNOSTICS
+.db \fBREAD\fP and \fBREADLN\fP return the number of bytes actually read (0 at EOF), or -1
+for a physical I/O error, a bad path number, or a ridiculous \fIcount.\fP The actual error (physical I/O or otherwise) can be determined by
+examining the global variable \fIerrno.\f
+.sp
+.sh NOTE:
+EOF is not considered an error, and no error indication is returned.
+Zero is returned on EOF.
+.ed
+SEE ALSO
+.bb
+open(), creat(), create(), dup()
+.eb

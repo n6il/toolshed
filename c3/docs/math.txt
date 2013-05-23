@@ -1,0 +1,38 @@
+.so header
+.he /MATH(3C)/Kreider OS-9 C Library/MATH(3C)/
+.sh NAME
+.bb
+rand, srand, unmin, unmax, max, min - Math functions
+.eb
+.sh SYNOPSIS
+.bb
+int rand()
+
+/* void */ srand(n)
+unsigned n;
+
+int max(v1, v2)
+int min(v1, v2)
+int v1, v2;
+
+int unmax(v1, v2)
+int unmin(v1, v2)
+unsigned v1, v2;
+.eb
+.sh DESCRIPTION
+.db \fBRAND\fP returns a random number in the range of 0 -> 32767. \fBSRAND\fP seeds the random number generator and returns nothing. \fBSRAND\fP uses the dual table method
+proposed by Knuth.
+.sp \fBMAX\fP and \fBMIN\fP select either the larger of the smaller of variables \fIv1\fP and \fIv2. \fBUNMAX\fP and \fBUNMIN\fP perform the same function, but on unsigned numbers. Each of\fP these functions returns a type INTEGER number.
+.ed
+.sh EXAMPLE
+.bb
+To seed the random number generator, use the value returned from \fBTIME():\f
+.sp
+    long time();
+
+    srand ((unsigned) time(0));
+.eb
+.sh SEE ALSO
+.bb
+clibt.l Transentental Math library.
+.eb

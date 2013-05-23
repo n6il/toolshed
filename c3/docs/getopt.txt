@@ -1,0 +1,110 @@
+.so header
+.tl /GETOPT(3C)/Kreider OS-9 C Library/GETOPT(3C)/
+.sh NAME
+.bb
+getopt - Get an option letter from argument vector
+.eb
+.sh SYNOPSIS
+.bb
+int getopt (argc, argv, optstring)
+int argc;
+char **argv, *optstring;
+.sp
+extern char *optarg;
+extern int optind, opterr;
+.eb
+.sh DESCRIPTION
+.db \fBGETOPT\fP returns the next option letter in \fIargv\fP that matches a letter in \fIoptstring. Optstring\fP is a string of recognized option letters; if a letter
+is followed by a colon, the option is expected to have an argument that
+may or may not be separated from it by white space. \fIOptarg\fP is set to point to the start of the option argument on return from \fBGETOPT.\f
+.PP \fBGETOPT\fP places in \fIoptind\fP the \fIargv\fP index of the next argument to be
+processed. Because \fIoptind\fP is external, it is normally initialized to zero
+automatically before the first call to \fBGETOPT.\fP
+.pp
+When all options have been processed (i.e., up to the first non-option
+argument), \fBGETOPT\fP returns \fIEOF.\fP The special option -- may be used to
+delimit the end of the options; \fIEOF\fP will be returned, and -- will be
+skipped.
+.ed
+.sh DIAGNOSTICS
+.db \fBGETOPT\fP prints an error message on the stderr path and returns a question mark
+(?) when it encounters an option letter not included in \fIoptstring.\fP This error message may be disabled by setting \fIopterr\fP to a non-zero value.
+.ed
+.sh EXAMPLE
+.db
+The following code fragment shows how one might process the arguments for a
+command that can take the mutually exclusive options a and b, and the
+options f and o, both of which require arguments:
+.bb
+main (argc, argv)
+int argc;
+char **argv;
+{
+.in +5
+int c;
+extern char *optarg;
+extern int optind;
+\&.
+\&.
+\&.
+\&.
+while ((c = getopt(argc, argv, "abf:o:")) != EOF)
+.in +5
+switch (c) {
+case 'a':
+.in +5
+if (bflg)
+.in +5
+errflg++;
+.in -5
+else
+.in +5
+aflg++;
+.in -5
+break;
+.in -5
+case 'b':
+.in +5
+if (aflg)
+.in +5
+errflg++;
+.in -5
+else
+.in +5
+bproc();
+.in -5
+break;
+.in -5
+case 'f':
+.in +5
+ifile = optarg;
+break;
+.in -5
+case 'o':
+.in +5
+ofile = optarg;
+break;
+.in -5
+case '?':
+.in +5
+errflg++;
+.in -5
+}
+.in -5
+if (errflg) {
+.in +5
+fprintf(stderr, "Usage:... ");
+exit (2);
+.in -5
+}
+for ( ; optind < argc; optind++) {
+.in +5
+if (access(argv[optind], 4)) {
+.in -5
+\&.
+\&.
+\&.
+.in -5
+}
+.eb
+.ed

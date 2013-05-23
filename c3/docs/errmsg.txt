@@ -1,0 +1,44 @@
+.so header
+.tl /_ERRMSG(3C)/Kreider OS-9 C Library/_ERRMSG(3C)/
+.sh NAME
+.bb
+_errmsg() - Print an error message
+.eb
+.sh SYNOPSIS
+.bb
+int _errmsg(nerr, msg[,arg1, arg2, arg3])
+int nerr;
+char *msg;
+.eb
+.sh DESCRIPTION
+.db
+This function displays an error message on the standard error path along with
+the name of the program. The message string \fImsg\fP is displayed in the
+following format:
+.sp
+.in +5
+prog: <message text>
+.sp
+.in -5
+Note: \fIProg\fP is the module name of the program and \fB<message text>\fP is the string passed as \fImsg.\fP
+.pp
+For added flexibility in the message printing, the \fImsg\fP string can be a
+conversion string suitable for \fIprintf()\fP with up to 3 additional arguments of
+any type. The argument \fInerr\fP is returned as the value of the functions so \fI_errmsg\fP can be used as a parameter to a function such as \fIexit()\fP or \fIprerr().\f
+.ed
+.sh EXAMPLE
+.bb
+Assume the program calling the function is named "foobar":
+.sp
+Call:   _errmsg(1,"programmed message\n");
+Prints: foobar: programmed message
+.sp
+Call:   exit(_errmsg(errno,"unknown option '%c'\n",'q'));
+Prints: foobar: unknown option 'q'
+.sp
+Then exits with the error code in errno.
+.eb
+.sh SEE ALSO
+.bb
+printf(), _prgname().
+.eb

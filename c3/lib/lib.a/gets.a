@@ -1,0 +1,78 @@
+********** gets_a **********
+
+* Converted to new ABI on December 6, 2005
+
+ psect gets_a,0,0,1,0,0
+
+*** gets(s)
+*    get string from stdin to (not thru) '\n'
+*    returns s if successful or null
+*    stack  ret
+*            u
+*        ->  d
+
+gets: pshs d,u
+ tfr d,u *s
+ bra gets2
+
+gets1 stb ,u+
+gets2 leax _iob,y
+ tfr x,d
+ lbsr getc
+ cmpb #$0D
+ beq gets4 quit on CR
+ cmpd #-1
+ bne gets1 loop if no error
+ clra ret null on error
+ clrb
+ puls pc,u,x
+
+gets4 clr 0,u terminate string
+gets5 puls pc,u,d
+
+ pag
+*** fgets(s,n,fp)
+*     copy n-1 max bytes from fp to s
+*     return s if successful else null
+*     if n=0, it gets to fgets3 w/ *s in d instead
+
+*   stack    fp
+*            n
+*           ret
+*            u
+*            *s
+*        ->  *s
+*      of result of getc
+
+fgets: pshs d,u
+ tfr d,x *s
+ clr ,x in case we bail early
+ ldu 6,s n
+ beq fgets4 in case of null count
+ pshs x save in temp
+ bra fgets2
+
+fgets1 ldx ,s
+ stb ,x+
+ stx ,s
+ cmpb #$0D
+ beq fgets3 if found EOL
+fgets2 leau -1,u count off
+ stu -2,s
+ beq fgets3 if got n-1 chars
+ ldd 10,s fp
+ lbsr getc
+ cmpd #-1
+ bne fgets1 get another char
+fgets3 clr [,s] terminate w/null
+ cmpd #-1
+ bne fgets4
+ clra ret null on error
+ clrb
+ bra fgets5
+
+fgets4 ldd 2,s ret *s
+fgets5 leas 4,s clear temp counter
+ puls u,pc
+
+ endsect

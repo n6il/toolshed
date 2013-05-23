@@ -1,0 +1,29 @@
+.so header
+.tl /CLOSE(3S)/Kreider OS-9 C Library/CLOSE(3S)/
+.sh NAME
+.bb
+close - close a file
+.eb
+.sh SYNOPSIS
+.bb
+close(pn)
+int pn;
+.eb
+.sh DESCRIPTION
+.db \fBCLOSE\fP closes an already opened file as described by the path number \fIpn,\fP which is the path number returned from an \fIopen(),\fP creat(),
+create()
+or \fIdup()\fP call.
+.sp
+Termination of a process always closes all opened files automatically, but
+it is necessary to close files where multiple files are opened by the process
+and it is desired to re-use the path numbers to avoid exceeding the process
+or system path number limit.
+.ed
+.sh DIAGNOSTICS
+.db
+This call does not return anything.
+.ed
+.sh SEE ALSO
+.bb
+creat(), create(), open(), dup().
+.eb

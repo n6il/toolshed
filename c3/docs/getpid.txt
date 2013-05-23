@@ -1,0 +1,20 @@
+.so header
+.tl /getpid(3S)/Kreider OS-9 C Library/getpid(3S)/
+.sh NAME
+.bb
+getpid - get a process ID
+.eb
+.sh SYNOPSIS
+.bb
+getpid()
+.eb
+.sh DESCRIPTION
+.db
+A number unique to the currently running process is often useful in creating
+names for temporary files and many other uses. This call returns the process'
+system ID number as returned to its parent by \fIos9fork().\f
+.ed
+.sh SEE ALSO
+.bb
+os9fork()
+.eb

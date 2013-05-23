@@ -1,0 +1,34 @@
+.so header
+.he /GS_RDY(2)/Kreider OS-9 C Library/GS_RDY(2)/
+.sh NAME
+.bb
+_gs_rdy - get path status
+.eb
+.sh SYNOPSIS
+.bb
+int _gs_rdy(path)
+int path;
+.eb
+.sh DESCRIPTION
+.db
+This function checks an \fBSCF\fP device opened on \fIpath\fP to see if data is waiting to
+be read. Read requests to OS9 will wait until enough bytes have been read to
+satisfy the bytecount given, thereby suspending the program until the read is
+finished.
+.sp
+A program can use this function to determine the number of bytes, if any, are
+waiting to be read, and then issue a read request for only the number of bytes
+actually received.
+.sp
+If \fIpath\fP is invalid, no data is available to be read, or the device is not an \fBSCF\fP device, a -1 is returned and the appropriate error code is placed in \fIerrno.\fP Otherwise, the number of bytes available to be read is returned.
+.ed
+.sh NOTE
+.db
+This call is effective only on \fISCF\fP devices. This function is not intended for
+use with buffered I/O calls (like getc()), and unpredictable results will
+likely occur. This call works best with low-level I/O functions.
+.ed
+.sh SEE ALSO
+.bb
+I$GetStt system call - Microware Manual, getstat(), read(), readln().
+.eb

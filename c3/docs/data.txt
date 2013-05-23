@@ -1,0 +1,53 @@
+.so header
+.tl /DATA MODULES(3C)/Kreider OS-9 C Library/DATA MODULES(3C)/
+.*
+.sh NAME
+.bb
+datlink, dunlink, lockdata, unlkdata -- Data module operations.
+.eb
+.sh SYNOPSIS
+.bb
+int datlink(name, datptr, space)
+char *name, *datptr;
+int *space;
+.sp
+int dunlink(datptr)
+char *datptr;
+.sp
+int lockdata(datptr)
+char *datprt;
+.sp
+int unlkdata(datptr)
+char *datptr;
+.eb
+.sh DESCRIPTION
+.db \fBDATLINK\fP loads (if necessary) and links the file \fIname.\f
+.ul
+Datptr
+is set to
+the address of the data section. \fISpace\fP is set to the free space available. \fBDATLINK\fP returns (-1) if an error, \fInull\fP for a successful link, and 1 if a load
+was required. If a 1 is returned, that means you are the first user of 
+that data module.
+.PP \fBDUNLINK\fP unlinks the module belonging to \fIDATPTR.\fP A (-1) is returned if an
+error occurs, or a \fInull\fP if no error.
+.PP \fBLOCKDATA\fP attempts to lock the data module \fI(datptr\fP is considered to be the
+lock byte) by changing the lock byte, which is normally -1, to a \fInull. \fBLOCKDATA\fP returns a process stack level on failure, or a\f
+.ul 2
+null.
+ERRNO
+is not set.
+.PP \fBUNLKDATA\fP unlocks the data module. It returns a (-1) on any attempt to unlock
+a module that has not already been locked.
+.PP
+A \fInull\fP is returned upon success.
+.ed
+.sh NOTE
+.db
+A data module is considered locked when it is loaded. It must be set for use
+by a call to \fBUNLKDATA\fP after the original loader is finished with any
+initialization required. A user can determine if they are the original owner
+by the value returned during the \fBDATLINK\fP call.
+.PP
+In all cases, \fIdatptr\fP points to the lock byte. User
+free space begins at \fIdatptr\fP + 1.
+.ed

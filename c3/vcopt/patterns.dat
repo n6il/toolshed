@@ -1,0 +1,494 @@
+* remove ttl instructions
+ ttl {n1}
+
+1
+
+******************************************************************
+* comparison of two chars pointed to by two variables on the stack
+******************************************************************
+{l1} ldb [{n1},s]
+ sex
+ pshs d
+ ldb [{n2},s]
+ sex
+ cmpd ,s++
+
+1
+{l1} ldb [{n2-2},s]
+ sex
+ cmpb [{n1},s]
+
+******
+{l1} std {n1},s
+ ldd {n2},s
+
+n2==n1
+{l1} std {n1},s
+
+*****************************
+* push stack allocations down
+*****************************
+{l1} leas {n1:n1<0},s
+ leax {n2},y
+
+1
+{l1} leax {n2},y
+ leas {n1},s
+
+{l1} leas {n1:n1<0},s
+ leax {n2}+{n3},y
+
+1
+{l1} leax {n2}+{n3},y
+ leas {n1},s
+
+{l1} leas {n1:n1<0},s
+ ldd {n2},s
+
+1
+{l1} ldd {n2+n1},s
+ leas {n1},s
+
+{l1} leas {n1:n1<0},s
+ subd {n2},y
+
+1
+{l1} subd {n2},y
+ leas {n1},s
+
+{l1} leas {n1:n1<0},s
+ clra
+
+1
+{l1} clra
+ leas {n1},s
+
+{l1} leas {n1:n1<0},s
+ clrb
+
+1
+{l1} clrb
+ leas {n1},s
+
+{l1} leas {n1:n1<0},s
+ ldd #{n2}
+
+1
+{l1} ldd #{n2}
+ leas {n1},s
+
+{l1} leas {n1:n1<0},s
+ ldd {n2},y
+
+1
+{l1} ldd {n2},y
+ leas {n1},s
+
+*****************************
+* push stack deallocations up
+*****************************
+{l1} stx {n2},y
+ leas {n1:n1>0},s
+
+1
+{l1} leas {n1},s
+ stx {n2},y
+
+{l1} leax {n1},y
+ leas {n2:n2>0},s
+
+1
+{l1} leas {n2},s
+ leax {n1},y
+
+{l1} std {n1},y
+ leas {n2:n2>0},s
+
+1
+{l1} leas {n2},s
+ std {n1},y
+
+{l1} clrb
+ leas {n1:n1>0},s
+
+1
+{l1} leas {n1},s
+ clrb
+
+{l1} clra
+ leas {n1:n1>0},s
+
+1
+{l1} leas {n1},s
+ clra
+
+*****************************
+* optimize stack manipulation
+*****************************
+{l1} subd 0,s
+ leas 2,s
+
+1
+{l1} subd ,s++
+
+{l1} leas -2,s
+ stx 0,s
+
+1
+{l1} pshs x
+
+{l1} leas -2,s
+ std 0,s
+
+1
+{l1} pshs d
+
+ std {n1},s
+{l1} leas {n2:n1+1<n2},s
+
+1
+{l1} leas {n2},s
+
+{l1} leas {n1},s
+ pshs x
+
+1
+{l1} leas {n1-2},s
+ stx 0,s
+
+{l1} leas {n1},s
+ pshs d
+
+1
+{l1} leas {n1-2},s
+ std 0,s
+
+****************************
+* optimizations using tags *
+****************************
+*
+*************************
+* set information about d
+*************************
+*
+* if d is loaded immediate with a label.
+{l1} ldd #{t1*:!isnum t1}
+! dis {t2*}
+
+1
+{l1} ldd #{t1}
+* dis #{t1}
+
+*
+* if d is loaded immediate with a number, set value of a
+*
+{l1} ldd #{n1:isnum n1}
+! ais {t1*}
+
+1
+{l1} ldd #{n1}
+* ais {(n1>>8) & 255}
+
+* if d is loaded immediate with a number, set value of b
+********************************************************
+{l1} ldd #{n1:isnum n1}
+! bis {t1*}
+
+1
+{l1} ldd #{n1}
+* bis {n1&255}
+
+* if d is loaded with number relative to x
+******************************************
+{l1} ldd {n1:isnum n1},x
+! dis {t1*}
+
+1
+{l1} ldd {n1},x
+* dis {n1},x
+
+* if d is loaded with label relative to y
+*****************************************
+{l1} ldd {n1:!(isnum n1) && (strlen n1)>1},y
+! dis {t1*}
+
+1
+{l1} ldd {n1},y
+* dis {n1},y
+
+* if d is loaded with number relative to s
+******************************************
+{l1} ldd {n1:isnum n1},s
+! dis {t1*}
+
+1
+{l1} ldd {n1},s
+* dis {n1},s
+
+****************************************
+* a is not used if d is loaded immediate
+****************************************
+! a notused
+{l1} ldd #{n1}
+
+1
+* a notused
+{l1} ldd #{n1}
+
+****************************************
+* b is not used if d is loaded immediate
+****************************************
+! b notused
+{l1} ldd #{n1}
+
+1
+* b notused
+{l1} ldd #{n1}
+
+*************************
+* set information about x
+*************************
+{l1} leax {n1},y
+! xis &{n2:n1==n2},y
+
+1
+{l1} leax {n1},y
+* xis &{n1},y
+
+******************************
+* tag conditional branch lines
+******************************
+! cond branch
+{l1} beq {t1}
+
+1
+* cond branch
+{l1} beq {t1}
+
+**********************
+! cond branch
+{l1} bne {t1}
+
+1
+* cond branch
+{l1} bne {t1}
+
+**********************************************
+* pass value of d through a conditional branch
+**********************************************
+& dis {t1*}
+& cond branch
+ {t2*}
+! dis {t3*}
+
+1
+ {t2}
+* dis {t1}
+
+********************************
+* pass value of d through a leax
+********************************
+& dis {t1*}
+ leax {t2*}
+! dis {t3*}
+
+1
+ leax {t2}
+* dis {t1}
+
+***********************************************
+* pass value of d if relative to y through leas
+***********************************************
+& dis {n1},y
+ leas {n2},s
+! dis {n3},y
+
+1
+ leas {n2},s
+* dis {n1},y
+
+***********************************************
+* pass value of d if relative to y through pshs
+***********************************************
+& dis {n1},y
+ pshs {t1*}
+! dis {n2:n2==n1},y
+
+1
+ pshs {t1}
+* dis {n1},y
+
+**************************************************
+* pass value of d if relative to y through stx n,s
+**************************************************
+& dis {n1},y
+ stx {n2},s
+! dis {n3:n3==n1},y
+
+1
+ stx {n2},s
+* dis {n1},y
+
+***********************************************************************
+* if d already contains the value it is being loaded with, and the next
+* statement is not a conditional branch, remove the load, remove tags.
+***********************************************************************
+& dis {n1},y
+ ldd {n2:n2==n1},y
+& cc not used
+
+1
+#
+
+*******************************
+* pass value of x through a stx
+*******************************
+& xis {t1*}
+ stx {n1},y
+! xis {t2*:t2==t1}
+
+1
+ stx {n1},y
+* xis {t1}
+
+*********************************************************************
+* if x already contains the value it is being leax'd with, remove the
+* leax and remove tags.
+*********************************************************************
+& xis &{n1},y
+ leax {n2:n2==n1},y
+
+1
+#
+
+**************************
+* pass information about b
+**************************
+{l1} ldb {t1*}
+! bis {t2*:t2==t1}
+
+1
+{l1} ldb {t1}
+* bis {t1}
+
+***********
+& bis {t1*}
+ sex
+! bis {t2*:t2==t1}
+
+1
+ sex
+* bis {t1}
+
+********
+& bis {t1*}
+ cmpb [{n1},s]
+! bis {t2*:t2==t1}
+
+1
+ cmpb [{n1},s]
+* bis {t1}
+
+*********
+& bis {t1*}
+ beq {l1}
+! bis {t2*:t2==t1}
+
+1
+ beq {l1}
+* bis {t1}
+
+*********
+& bis [{n1},s]
+ ldb [{n2},s]
+& cc not used
+
+n1==n2
+#
+
+**************************************
+* pass infomation about sign extension
+**************************************
+{l1} sex
+! sexed
+
+1
+{l1} sex
+* sexed
+
+********
+& sexed
+ cmpb [{n1},s]
+! sexed
+
+1
+ cmpb [{n1},s]
+* sexed
+
+*********
+& sexed
+ beq {l1}
+! sexed
+
+1
+ beq {l1}
+* sexed
+
+********
+& sexed
+ sex
+
+1
+#
+
+*******
+! a not used
+{l1} sex
+
+1
+* a not used
+{l1} sex
+
+********
+! a not used
+{l1} cmpb [{n1},s]
+& a not used
+
+1
+* a not used
+{l1} cmpb [{n1},s]
+
+********
+& cond branch
+! a not used
+{l1} {t1*}
+& a not used
+
+1
+* a not used
+{l1} {t1}
+
+********
+{l1} sex
+& a not used
+
+1
+#
+{l1}
+
+********
+! cc not used
+{l1} subd {t1*}
+
+1
+* cc not used
+{l1} subd {t1}
+
+********
+! cc not used
+{l1} sex
+
+1
+* cc not used
+{l1} sex
+

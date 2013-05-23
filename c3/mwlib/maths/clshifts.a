@@ -1,0 +1,35 @@
+ psect clshifts_a,0,0,1,0,0
+_lshl:
+ ldx 2,s
+ pshs b
+ lbsr _ltoacc
+ puls b
+ tstb
+ beq _lshl2
+_lshl1 asl 3,x
+ rol 2,x
+ rol 1,x
+ rol 0,x
+ decb
+ bne _lshl1
+_lshl2 puls d
+ std ,s
+ rts
+
+_lshr:
+ ldx 2,s
+ pshs b
+ lbsr _ltoacc
+ puls b
+ tstb
+ beq _lshr2
+_lshr1 asr 0,x
+ ror 1,x
+ ror 2,x
+ ror 3,x
+ decb
+ bne _lshr1
+_lshr2 puls d
+ std 0,s
+ rts
+ endsect

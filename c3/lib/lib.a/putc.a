@@ -1,0 +1,265 @@
+********** putc_a **********
+
+* Converted to new ABI on December 4, 2005
+
+ ifp1
+ use ../../defs/stdio.a
+ endc
+
+ psect putc_a,0,0,1,0,0
+
+*** putc(ch,fp)
+*    add "ch" to file "fp"
+*      if unbuf
+*            if rbf
+*                  write
+*               else
+*                  writeln
+*         else
+*            {
+*            if not written
+*                  flush
+*            put ch in buff
+*            if full
+*                  flush
+*               else
+*                  if scf & ch=$0d
+*                        flush
+*            }
+*    stack -> u, ret, fp
+
+putc:
+ pshs d,u
+ ldu 6,s fp
+ ldd _flag,u
+ anda #_INIT
+ andb #_ERR+_WRITE
+ cmpb #_WRITE
+ bne eofxit
+ cmpa #_INIT
+ beq putc1 if already init
+ lbsr _setbase init buffer
+putc1 ldd _flag,u need a later
+ andb #_UNBUF
+ beq putc5 if buffered
+*       unbuffered I/O
+ ldd #$0001 one char
+ pshs d
+ leax 3,s char addr
+ ldd _fd,u fildes
+ pshs d,x
+ ldb _flag+1,u
+ andb #_SCF
+ beq putc3 if rbf
+ puls d
+ lbsr writeln
+ bra putc4
+
+putc3 puls d
+ lbsr write
+putc4 leas 4,s
+ cmpd #-1
+ bne putc8 if ok
+ ldb _flag+1,u
+ orb #_ERR mark error
+ stb _flag+1,u
+eofxit ldd #-1 return eof
+ puls x,u,pc
+ pag
+*         buffered I/O
+putc5 anda #_WRITTEN
+ bne putc6 if written
+ tfr u,d
+ lbsr _flush so flush buffer
+ std -2,s
+ bne eofxit
+putc6 ldx _ptr,u
+ ldb 1,s get ch
+ stb ,x+
+ stx _ptr,u
+ cmpx _end,u
+ bhs putc7 forced flush
+ ldb _flag+1,u
+ andb #_SCF
+ beq putc8 exit if rbf
+ ldb 1,s
+ cmpb #$0D was ch '\n'?
+ bne putc8 no - exit
+putc7 tfr u,d else
+ lbsr _flush flush
+ std -2,s
+ bne eofxit
+putc8 puls d,u,pc return ch
+ pag
+*** putw(n,fp)
+*    add word "n" to file "fp"
+
+putw:
+ pshs d,u store copy of "n"
+ ldu 6,s load copy of fp
+ tfr a,b move first byte into place
+ clra clear MSB of parameter
+ pshs u stack fp
+ lbsr putc write MSB
+ stb 2,s store result to stack
+ ldb 3,s word "n" lsb
+ lbsr putc write LSB
+ lda 2,s Bring back MSB of putc
+ leas 4,s
+ puls u,pc returns result of putc
+
+
+*** _tidyup
+*    closes all 16 files
+
+_tidyup: pshs u
+ leax _iob,y point to array beg
+ ldb #_NFILE set up loop count
+ pshs b
+
+tidyup1 pshs x fp
+ tfr x,d
+ bsr fclose
+ puls x recover fp
+ leax _iobsiz,x
+ dec ,s
+ bne tidyup1
+ puls b,u,pc
+
+
+*** fclose(fp)
+*    closes fp, purgeing any buffers
+
+fclose:
+ pshs d,u
+ tfr d,u fp
+ cmpd #0
+ lbeq eofxit if null fp
+ ldd _flag,u
+ lbeq eofxit if not open
+ andb #_WRITE
+ beq fclose3 if not write
+ tfr u,d
+ bsr fflush
+ bra fclose4
+
+fclose3 clra ret 0 if read close
+ clrb
+fclose4 pshs d save flush status
+ ldd _fd,u
+*   flush scf device
+ lbsr close
+ clra
+ clrb closed
+ std _flag,u
+ puls d
+ puls x,u,pc
+ pag
+*** fflush(fp)
+*    flush buffer associated with fp
+
+fflush: pshs d,u
+ tfr d,u fp
+ lbeq eofxit
+ ldd _flag,u
+ andb #_ERR+_WRITE
+ cmpb #_WRITE
+ lbne eofxit if not write or errors
+ anda #_INIT
+ bne fflush03 if init
+ lbsr _setbase else init
+fflush03 tfr u,d
+ bsr _flush do flush
+ puls x,u,pc
+
+
+*        actual flusher
+*         marks iob with "WRITTEN"
+*         routes output AR for scf & rbf
+*         calls ftell and lseek  if first write on partial buffer
+*         resets ptr to buf beg & marks w/"WRITTEN"
+
+_flush pshs u
+ tfr d,u get fp
+ leas -4,s
+ lda _flag,u
+ anda #_WRITTEN
+ bne _flush1 if written in update
+ ldd _ptr,u
+ cmpd _end,u
+ beq _flush1 if buf full
+ clra
+ clrb 0 for later
+ pshs d
+ tfr u,d fp
+ lbsr ftell curpos to flacc (x->flacc)
+ ldd 2,x LSW
+ pshs d
+ ldd ,x MSW
+ pshs d
+ ldd _fd,u os9 path
+ lbsr lseek seek there
+ leas 6,s clean stack
+_flush1 ldd _ptr,u
+ subd _base,u bytes to write
+ std 2,s
+ lbeq _flush6 if none
+ ldd _flag,u
+ anda #_WRITTEN
+ lbeq _flush6 if not written
+ andb #_SCF
+ beq _flush4 if rbf
+ ldd _base,u
+ bra _flush3
+
+*        flush scf device
+_flush2 pshs d count
+ ldd _ptr,u
+ pshs d buffer
+ ldd _fd,u filedes
+ lbsr writeln
+ leas 4,s
+ std ,s save bytes written
+ cmpd #-1
+ beq _flush5 if error
+ ldd 2,s bytes to write
+ subd ,s bytes written
+ std 2,s remaining to write
+ ldd _ptr,u
+ addd ,s advance by amount written
+_flush3 std _ptr,u reset buff pointer
+ ldd 2,s get bytes to write
+ bne _flush2 not done yet
+ bra _flush6
+
+*      flush rbf device
+_flush4 ldd 2,s bytes to write
+ pshs d
+ ldd _base,u buffer
+ pshs d
+ ldd _fd,u filedes
+ lbsr write
+ leas 4,s
+ cmpd 2,s did we write all?
+ beq _flush6 yes
+_flush5 ldb _flag+1,u
+ orb #_ERR
+ stb _flag+1,u
+ ldd _end,u
+ std _ptr,u set ptr to end of buff
+ ldd #-1 ret eof
+ bra _flush7
+
+_flush6 lda _flag,u
+ ora #_WRITTEN
+ sta _flag,u
+ ldd _base,u reset pointers
+ std _ptr,u
+ addd _bufsiz,u
+ std _end,u
+ clra set "OK"
+ clrb
+_flush7 leas 4,s
+ puls u,pc
+
+ endsect

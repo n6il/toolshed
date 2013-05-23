@@ -1,0 +1,42 @@
+.so header
+.tl /STACKSIZE(3C)/Kreider OS-9 C Library/STACKSIZE(3S)/
+.sh NAME
+.bb
+stacksize, freemem - get stack reservation size
+.eb
+.sh SYNOPSIS
+.bb
+stacksize()
+freemem()
+.eb
+.sh DESCRIPTION
+.db
+The stack area is the currently reserved memory for exclusive use of the
+stack. As each C function is entered, a routine in the system interface is
+called to reserve enough stack space for the use of the function with an
+additional 64 bytes. The 64 bytes are for the use of user-written assembly
+language code functions and/or the system interface and/or arithmetic
+routines. A record is kept of the lowest address so far granted for the
+stack. If the area requested would not bring this lower, then the C function
+allowed to proceed. If the new lower limit would mean that the stack area
+would overlap the data area, then the program stops with the message
+.bb
+****  STACK OVERFLOW  ****
+.eb
+on the standard error outpath. Otherwise, the new lower limit is set, and
+the C function resumes as before.
+.sp
+If the stack check code is in effect, then a call to \fBSTACKSIZE\fP will return the maximum number of bytes of stack used at the time of the call.
+This call can be used to determine the stack size required by the program.
+.sp \fBFREEMEM\fP will return the number of bytes of the stack that has not been used.
+.ed
+.sh CAVEATS
+.db
+Of course, all this depends on if the program was compiled with stack checking
+enabled. If stack checking was disabled (cc -s code.c), then no stack
+checking occurs.
+.ed
+.sh SEE ALSO
+.db
+ibrk(), sbrk(), variables \fImemend\fP and value \fIend.\f
+.ed

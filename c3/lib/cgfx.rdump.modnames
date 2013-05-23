@@ -1,0 +1,232 @@
+
+Module name: getwind_c
+donet   getwind 0000 (04) to code
+
+Module name: setwind_c
+donet   setwind 0000 (04) to code
+
+Module name: cbuffer
+6 global symbols defined:
+donet    _write 002f (04) to code
+donet    _Flush 0000 (04) to code
+done  _CGFXBuf 002e (04) to code
+done    _CPath 0002 (01) to non-dp data
+done    _CUsed 0000 (01) to non-dp data
+done  _CBuffer 0000 (00) to non-dp bss
+
+Module name: polyline_c
+  PolyLine 0000 (04) to code
+
+Module name: polyfill_c
+  PolyFill 015d (04) to code
+
+Module name: polyfunc_c
+   PolyBox 003f (04) to code
+   PolyRot 00b2 (04) to code
+  PolyScal 014c (04) to code
+  PolyTran 01c2 (04) to code
+
+Module name: dialog_c
+    Dialog 0000 (04) to code
+
+Module name: mousekey_c
+  MouseKey 0000 (04) to code
+
+Module name: settype_c
+   SetType 0000 (04) to code
+
+Module name: sinecosine_c
+      Sine 0019 (04) to code
+    Cosine 0000 (04) to code
+
+Module name: button_c
+       BUp 0000 (04) to code
+     BDown 014f (04) to code
+
+Module name: tandy_c
+   TandyMN 0000 (04) to code
+
+Module name: object_c
+   Objects 0000 (01) to non-dp data
+    AddObj 0000 (04) to code
+    DelObj 0200 (04) to code
+   MoveObj 00b9 (04) to code
+
+Module name: mvmenu_c
+    MVMenu 0000 (04) to code
+
+Module name: mvmenuxy_c
+    remove 04a9 (04) to code
+  MVMenuXY 0000 (04) to code
+
+Module name: mvfname_c
+   MVFName 0000 (04) to code
+
+Module name: getstr_c
+    getstr 0000 (04) to code
+
+Module name: fname_c
+     FName 0000 (04) to code
+
+Module name: menu_c
+      Menu 0000 (04) to code
+
+Module name: menuxy_c
+    MenuXY 0000 (04) to code
+    remove 0368 (04) to code
+
+Module name: mouse
+    Shadow 0000 (04) to code
+
+Module name: text
+done    BlnkOn 004a (04) to code
+done    BnlkOn 004a (04) to code
+done    CurOff 0009 (04) to code
+done    RevOff 003b (04) to code
+done     ReVOn 0036 (04) to code
+done    InsLin 0054 (04) to code
+done    CurLft 000e (04) to code
+done    CurDwn 001a (04) to code
+done  ErEOLine 0022 (04) to code
+done    CurRgt 0012 (04) to code
+done     CurXY 007f (04) to code
+done  UndlnOff 0045 (04) to code
+done   DelLine 0059 (04) to code
+done  ErEOScrn 0026 (04) to code
+done   BlnkOff 004f (04) to code
+done     Clear 002a (04) to code
+done     CurOn 0004 (04) to code
+done    ReVOff 003b (04) to code
+done     CrRtn 0032 (04) to code
+done     RevOn 0036 (04) to code
+done     CurUp 0016 (04) to code
+done   CurHome 0000 (04) to code
+done   UndlnOn 0040 (04) to code
+done      Bell 002e (04) to code
+done    ErLine 001e (04) to code
+
+Module name: getput
+  DfnGPBuf 0000 (04) to code
+    PutBlk 00b3 (04) to code
+    GPLoad 003d (04) to code
+    GetBlk 007f (04) to code
+    KilBuf 0022 (04) to code
+
+Module name: play
+      Play 0000 (04) to code
+
+Module name: window
+done     DWSet 0000 (04) to code
+done  DWProtSw 0058 (04) to code
+done     OWSet 0083 (04) to code
+done    CWArea 0100 (04) to code
+done   MVOWEnd 00bb (04) to code
+done    Select 00e6 (04) to code
+done  UnShadow 00cd (04) to code
+done     DWEnd 003f (04) to code
+done     OWEnd 00cd (04) to code
+
+Module name: config
+done    BColor 0027 (04) to code
+done    FColor 0022 (04) to code
+done   Palette 001d (04) to code
+done      Lset 0005 (04) to code
+done    Border 002c (04) to code
+done   DefColr 000a (04) to code
+done   ScaleSw 0031 (04) to code
+done     SetGC 004c (04) to code
+done      LSet 0005 (04) to code
+done      PSet 0000 (04) to code
+
+Module name: font
+done    BoldSw 0020 (04) to code
+done      Font 0000 (04) to code
+done   TCharSw 001b (04) to code
+done    PropSw 0025 (04) to code
+
+Module name: radio_c
+      RBUp 0000 (04) to code
+    RBDown 009b (04) to code
+
+Module name: draw
+done     PutGC 006d (04) to code
+done      Line 0014 (04) to code
+done     Point 000a (04) to code
+done     FFill 003c (04) to code
+done   Ellipse 0068 (04) to code
+done    Circle 004f (04) to code
+done       Bar 0032 (04) to code
+done     LineM 001e (04) to code
+done       Arc 009a (04) to code
+done     RLine 0019 (04) to code
+done    RPoint 000f (04) to code
+done   SetDPtr 0000 (04) to code
+done      RBar 0037 (04) to code
+done    RLineM 0023 (04) to code
+done       Box 0028 (04) to code
+done  RSetDPtr 0005 (04) to code
+done      RBox 002d (04) to code
+
+Module name: status
+donet  _gs_palt 0025 (04) to code
+done  _ss_dfpl 00ba (04) to code
+done  _ss_mgpb 0035 (04) to code
+donet  _gs_crsr 0000 (04) to code
+donet  _gs_scsz 000b (04) to code
+done    _ss_gip 0095 (04) to code
+donet  _gs_styp 005c (04) to code
+donet   _ss_mtyp 00c5 (04) to code
+donet  _gs_fbrg 007a (04) to code
+
+Module name: mouse
+  _ss_msig 0022 (04) to code
+  _gs_mous 002d (04) to code
+  _ss_mous 0000 (04) to code
+
+Module name: alarm
+done  GetAlarm 0007 (04) to code
+done  ClrAlarm 000e (04) to code
+done  SigAlarm 0021 (04) to code
+done  SetAlarm 0000 (04) to code
+
+Module name: mv_window
+  _gs_msel 0015 (04) to code
+  _ss_umba 0026 (04) to code
+  _ss_sbar 003b (04) to code
+  _ss_wset 0000 (04) to code
+ _ss_umbar 0026 (04) to code
+
+Module name: keysense
+  _gs_ksns 0017 (04) to code
+  _ss_ksns 0000 (04) to code
+
+Module name: sound
+  _ss_tone 0000 (04) to code
+
+Module name: crw
+donet   writeln 00db (04) to code
+donet    cwrite 004b (04) to code
+donet   creadln 0027 (04) to code
+donet      read 009c (04) to code
+donet  cwriteln 0078 (04) to code
+donet     write 00c8 (04) to code
+donet    readln 00b1 (04) to code
+donet     cread 0000 (04) to code
+
+Module name: mouse
+done   MouseXY 0000 (04) to code
+
+Module name: getenv_c
+done    getenv 0128 (04) to code
+done    putenv 0162 (04) to code
+  _ENVFILE 0000 (01) to non-dp data
+
+Module name: movemem
+done   movemem 0000 (04) to code
+
+Module name: drawfunc
+done      Draw 0000 (04) to code
+
+Module name: nobuffer
+donet    _write 0000 (04) to code
+donet    _Flush 000b (04) to code

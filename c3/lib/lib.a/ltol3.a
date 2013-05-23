@@ -1,0 +1,32 @@
+ psect ltol3_a,0,0,1,0,0
+ nam ltol3_c
+
+* Ltol3 - convert between long integer and 3 byte integers.
+* ltol3( cp, lp, n )
+*  char *cp;
+*  long *lp;
+
+* Converted to new ABI on December 3, 2005
+
+ltol3: pshs  u
+ tfr   d,u
+ leau  1,u
+ bra   label
+loop ldx   4,s
+ ldb   1,x
+ stb   -1,u
+ ldx   4,s
+ ldd   2,x
+ std   ,u
+ ldd   4,s
+ addd  #4
+ std   4,s
+ leau  3,u
+label ldd   6,s
+ addd  #-1
+ std   6,s
+ subd  #-1
+ bgt   loop
+ puls  u,pc
+ 
+ endsect

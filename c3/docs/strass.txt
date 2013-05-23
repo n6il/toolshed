@@ -1,0 +1,17 @@
+.so header
+.tl /STRASS(3S)/Kreider OS-9 C Library/STRASS(3S)/
+.sh NAME
+.bb
+strass - byte by byte copy
+.eb
+.sh SYNOPSIS
+.bb
+_strass(s1, s2, count)
+char *s1, *s2;
+int count;
+.eb
+.sh DESCRIPTION
+.db
+Until such time as the compiler can deal with structure assignment, this
+function is useful for copying one structure to another.
+.sp \fICount\fP bytes are copied from memory location \fIs2\fP to memory location \fIs1\fP regardless of the contents.

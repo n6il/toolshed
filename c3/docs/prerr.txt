@@ -1,0 +1,20 @@
+.so header
+.tl /PRERR(3S)/Kreider OS-9 C Library/PRERR(3S)/
+.sh NAME
+.bb
+prerr - print an error message
+.eb
+.sh SYNOPSIS
+.bb
+prerr(filnum, errcode)
+int filnum, errcode;
+.eb
+.sh DESCRIPTION
+.db \fBPRERR\fP prints an error message on the output path specified by \fIfilenum,\fP which must be the path number of an already opened file. The message
+depends on \fIerrcode\fP which will normally be a standard OS-9 error code. \fIFilenum\fP may also be the standard output or standard error paths which
+are always opened at program start.
+.ed
+.sh SEE ALSO
+.bb
+errmsg()
+.eb

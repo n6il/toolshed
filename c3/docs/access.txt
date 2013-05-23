@@ -1,0 +1,33 @@
+.so header
+.tl /ACCESS(3S)/Kreider OS-9 C Library/ACCESS(3S)/
+.sh NAME
+.bb
+access - give file accessibility
+.eb
+.sh SYNOPSIS
+.bb
+#include <modes.h>
+.sp
+access(fname, perm)
+char *fname;
+int perm;
+.eb
+.sh DESCRIPTION
+.db \fBACCESS\fP returns zero if the access modes specified in \fIperm\fP are correct for
+the user to access \fIfname.\fP A -1 is returned if the file cannot be accessed.
+.PP
+The value for \fIperm\fP may be any legal OS-9 mode as used for \fIopen()\fP or \fIcreat(),\fP or, it may be zero which then tests whether or not the file exists or the
+path to it may be searched.
+.PP \fBACCESS\fP is useful to test the existance of a file without actually opening the
+file as would \fIopen()\fP or \fIfopen(),\fP thereby changing the user permissions.
+.ed
+.sh CAVEATS
+.db
+The values for \fIperm\fP are NOT compatible with other non-OS-9 systems.
+.ed
+.sh DIAGNOSTICS
+.db
+The returned error number, if a value of -1 is returned from this call,
+will be found in the global variable \fIerrno,\fP and will indicate the reason
+that file cannot be accessed.
+.ed

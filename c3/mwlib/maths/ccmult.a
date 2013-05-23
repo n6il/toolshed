@@ -1,0 +1,71 @@
+ psect ccmult_a,0,0,1,0,0
+* assume left operand on the stack and
+* right operand in d.
+
+* return with result in d and remainder or overflow in x.
+ccmult:
+ tsta
+ bne _ccm
+ tst 2,s
+ bne _ccm
+
+* byte arguments
+ lda 3,s
+ mul
+ ldx 0,s
+ stx 2,s
+ ldx #0
+ std 0,s
+ puls d,pc
+
+_ccm
+*  set up stack frame
+
+ pshs d
+ ldd #0
+ pshs d
+ pshs d
+
+*  low order bytes
+
+ lda 5,s
+ ldb 9,s
+ mul
+ std 2,s
+
+*  middle bytes
+
+ lda 5,s
+ ldb 8,s
+ mul
+ addd 1,s
+ std 1,s
+ bcc ccm1
+ inc 0,s
+
+ccm1 lda 4,s
+ ldb 9,s
+ mul
+ addd 1,s
+ std 1,s
+ bcc ccm2
+ inc 0,s
+
+ccm2
+* high order bytes
+
+ lda 4,s
+ ldb 8,s
+ mul
+ addd 0,s
+ std 0,s
+
+* tidy up and exit
+
+ ldx 6,s
+ stx 8,s
+ ldx 0,s
+ ldd 2,s
+ leas 8,s
+ rts
+ endsect

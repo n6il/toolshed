@@ -1,0 +1,44 @@
+.so header
+.tl /PUTC(3C)/Kreider OS-9 C Library/PUTC(3C)/
+.sh NAME
+.bb
+putc, putchar, putw - put character or word on a stream
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+char putc(c, fp)
+char c;
+FILE *fp;
+.sp
+char putchar(c)
+.sp
+putw(w, fp)
+FILE *fp;
+.eb
+.sh DESCRIPTION
+.db
+The \fBPUTC\fP routine appends the character \fIc\fP to the named output \fIfp.\fP It returns the character written.
+.PP
+The \fBPUTCHAR(c)\fP routine is defined as a macro in the header file \fBSTDIO.H\fP and is the same as \fIputc\fP (c, stdout).
+.PP
+The \fBPUTW\fP routine appends word (that is, a two byte word, such as int), \fIw\fP to the output \fIfp.\fP It returns the word written.
+The \fBPUTW\fP routine neither assumes nor causes special alignment in the file.
+.PP
+Output via \fBPUTC\fP is normally buffered except when buffering is disabled with \fIsetbuf()\fP or when the standard error output path is used.
+.ed
+.sh CAVEATS
+.db
+Because it is implemented as a macro, \fBPUTCHAR\fP treats its
+argument with side effects incorrectly.
+In particular, `putchar(*c++);' doesn't work as expected.
+.ed
+.sh DIAGNOSTICS
+.db \fBPUTC\fP and \fBPUTCHAR\fP return the character argument from a successful call or \fBEOF\fP upon error or end-of-file.
+Since \fBEOF\fP is a good integer, \fIferror()\fP should be used to detect  \fBPUTW\fP errors.
+.ed
+.sh SEE ALSO
+.bb
+fclose(), fopen(), fread(), getc(), printf(), puts()
+.eb

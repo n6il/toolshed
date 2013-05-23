@@ -1,0 +1,26 @@
+.so header
+.he /SBRK(3S)/Kreider OS-9 C Library/SBRK(3S)/
+.sh NAME
+.bb
+sbrk, ibrk - request additional working memory
+.eb
+.sh SYNOPSIS
+.bb
+char *sbrk(increase)
+char *ibrk(increase)
+.sp
+int increase;
+.eb
+.sh DESCRIPTION
+.db \fBSBRK\fP requests an allocation from free memory and returns a pointer to its
+base, if successful.
+.sp \fBSBRK\fP requests the system to allocate "new" memory from outside the initial
+allocation.
+.sp \fBIBRK\fP requests memory from inside the initial memory allocation.
+.sp
+Users should read the Memory Management section of the "C" programming
+Manual for a fuller explanation of the arrangement.
+.ed
+.sh DIAGNOSTICS
+.db \fBSBRK\fP and \fBIBRK return a -1 if the requested amount of contiguous memory is\fP not available
+.ed

@@ -1,0 +1,33 @@
+.so header
+.tl /PATMATCH(3C)/Kreider OS-9 C Library/PATMATCH(3C)/
+.sh NAME
+.bb
+patmatch - Tests one string with another for a match
+.eb
+.sh SYNOPSIS
+.bb
+patmatch(pat, s, flag)
+char *pat, *s
+int flag
+.eb
+.sh DESCRIPTION
+.db \fBPATMATCH\fP searches the string \fIs\fP for the pattern in \fIpat\fP and returns true if there is a
+match. The pattern \fIpat\fP must contain wildcard characters of '*' and '?',
+where '*' denotes a string of characters of any type and length, and '?'
+denotes a single character of any type. Expansion of wildcards is
+performed within the function.
+.sp
+If no match is found, false is returned.
+.sp
+If \fIflag\fP is set as true, \fBPATMATCH\fP will ignore the case of both strings buy
+calling the function \fItoupper()\fP to make both the pattern and the string all
+uppercase characters prior to matching. Otherwise, an exact match is
+required.
+.ed
+.sh EXAMPLE
+.bb
+if (patmatch("*.ar", dir_string, TRUE) == TRUE)
+   puts("A match has been found");
+else
+   puts("No match was found");
+.eb

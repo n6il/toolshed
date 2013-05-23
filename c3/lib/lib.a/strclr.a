@@ -1,0 +1,42 @@
+ psect strclr_a,0,0,0,0,0
+ nam strclr_c
+
+* 12/03/05 tjl fixed to match documentation
+*              it was writing zero instead of 0x20
+
+* Converted to new ABI on December 3, 2005
+
+* */*
+* *
+* *strclr(s, cnt)
+* *char *s;
+* *int cnt;
+* *   {
+ ttl strclr
+strclr:
+ pshs d,u
+
+* *   register char *pnt = s;
+ tfr d,u
+ ldb #' 
+ ldx 6,s
+ beq _1
+
+* *   while (cnt--)
+* *   {
+* *       if( *pnt == 0 )
+* *          break;
+* *      *pnt++ = '\0';
+* *   }
+_3
+ lda ,u
+ beq _1
+ stb ,u+
+ leax -1,x
+ bne _3
+* *   return (s);
+_1
+ puls d,u,pc
+
+* *   }
+ endsect

@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+# Script name: ccom
+#
+# This script will convert Microwares CC1's output c.com file
+# to a unix compatiable shell script.
+#
+# Usage:
+#   os9l1 cc1 -x prog.c; ccom | sh
+#
+# Written by tim lindner (tlindner@ix.netcom.com)
+# July 24, 2005
+
+open(DAT, "c.com") || die("Could not open file!");
+
+$/ = "\r";  # change perl to understand OS9 line endingsOh
+
+print "#!/bin/sh\n\n";
+
+while( <DAT> )
+{
+	chomp;
+	$line = $_;
+	
+	if( $line eq "-x" ) { next; }
+	if( $line eq "x" ) { next; }
+	
+	$line =~ s/^C.PREP/os9l1 C.PREP/g;
+	$line =~ s/^C.PASS1/os9l1 C.PASS1/g;
+	$line =~ s/^C.PASS2/os9l1 C.PASS2/g;
+	$line =~ s/^C.OPT/os9l1 C.OPT/g;
+	$line =~ s/^C.ASM/os9l1 C.ASM/g;
+	$line =~ s/^C.LINK/os9l1 C.LINK/g;
+	$line =~ s/^del/rm/g;
+	
+	print "$line";
+	
+	if( substr($line, 0, 12) eq "os9l1 C.PREP" )
+	{
+		print "m\n";
+		print 'tr -ud "\n" <ctmp.1.mm >ctmp.1.m';
+		print "\n";
+		print "rm ctmp.1.mm\n";
+	}
+	else
+	{
+		print "\n";
+	}
+	
+}
+
+close(DAT);

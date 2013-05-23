@@ -1,0 +1,44 @@
+.so header
+.tl /INTERCEPT(3S)/Kreider OS-9 C Library/INTERCEPT(3S)/
+.sh NAME
+.bb
+intercept - set a function for interrupt processing
+.eb
+.sh SYNOPSIS
+.bb
+intercept(func)
+int (*func)();
+.eb
+.sh DESCRIPTION
+.db \fBINTERCEPT\fP instructs OS-9 to pass control of the process to the function \fIfunc\fP when an interrupt (signal) is received.
+If the interrupt processing function has an argument, it will contain the
+value of the signal received. On return from \fIfunc,\fP the process resumes
+at the point in the program where it was interrupted by the signal. \fBINTERRUPT\fP is an alternate to the use of \fIsignal()\fP to process interrupts.
+.PP
+As an example, suppose we wish to ensure that a partially completed output file is deleted if an interrupt is received. The body of the program might include:
+.bb
+char *temp_file = "temp";
+int pn = 0;
+int intrupt();
+.sp
+intercept(intrupt);
+pn = creat(temp_file, 3);
+write(pn, string, count);
+close(pn);
+pn = 0;
+.sp
+The interrupt routine might be:
+.sp
+intrupt(sig)
+{
+    if (pn) {
+        close(pn);
+        unlink(temp_file);
+    }
+    exit(sig);
+}
+.eb
+.ed
+.sh CAVEATS
+.db \fBIntercept()\fP and \fIsignal()\fP are mutually incompatible so that calls to both must not appear in the same program. The linker guards against this by giving an "entry name clash - sigint" error if it is attempted.
+.ed

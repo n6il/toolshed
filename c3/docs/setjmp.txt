@@ -1,0 +1,54 @@
+.so header
+.tl /SETJMP(3C)/Kreider OS-9 C Library/SETJMP(3C)/
+.sh NAME
+.bb
+setjmp, longjmp - nonlocal goto another function
+.eb
+.sh SYNOPSIS
+.bb
+#include <setjmp.h>
+.PP
+setjmp(env)
+jmp_buf env;
+.PP
+longjmp(env, val)
+jmp_buf env;
+.eb
+.sh DESCRIPTION
+.db
+These routines are useful for dealing with errors and interrupts
+encountered in a low-level subroutine of a program.
+.PP \fIGoto\fP in C has a scope only in the function in which it is used; i.e., the label
+which is the object of the \fIgoto\fP may only be in the same function. Control can only be transferred elsewhere
+by means of the function call, which, of course, returns to the caller.
+In certain abnormal situations a programmer would perfer to be able to start
+some section of code again, but this would mean returning up a ladder of
+function calls with error indications all the way.
+.PP \fBSETJMP\fP is used to "mark" a point in the program where a subsequent \fBLONGJMP\fP can reach. It places in the buffer, defined in the header file \fBSETJMP.H,\fP enough information for the \fBLONGJMP\fP to restore the environment to that existing at the time \fBSETJMP\fP is called.
+.PP
+The \fBSETJMP \fP subroutine
+saves its stack environment in \fIenv\fP for later use by \fBLONGJMP.\fP It returns value 0.
+.PP
+The \fBLONGJMP\fP subroutine
+restores the environment saved by the last call of \fBSETJMP.\fP It then returns in such a way that execution
+continues as if the call of \fBSETJMP\fP had just returned the value \fIval\fP to the function that invoked \fBSETJMP,\fP which must not itself have returned in the interim.
+However,  \fBLONGJMP\fP cannot cause  \fBSETJMP\fP to return the value 0. If  \fBLONGJMP\fP is invoked with a  \fIval\fP of 0,  \fBSETJMP\fP will return 1.
+All accessible data have values as of the time \fBLONGJMP\fP was called.
+.ed
+.sh CAVEATS
+.db
+The \fBSETJMP\fP subroutine does not save current notion of whether the process is
+executing as a result of a signal. The result is that a
+LONGJMP to some place as a result of a signal leaves the
+signal state incorrect.
+.sp
+In addition, the variable \fIenv\fP MUST be globally declared.
+.ed
+.sh DIAGNOSTICS
+.db \fBSETJMP\fP returns a zero (0) if the call is the the first made in the current
+program run. If a one (1) is returned, then it must be a \fBLONGJMP\fP returning from some deeper level in the program.
+.ed
+.sh SEE ALSO
+.bb
+signal(), intercept()
+.eb

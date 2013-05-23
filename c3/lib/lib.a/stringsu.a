@@ -1,0 +1,39 @@
+********** strings_a **********
+
+ psect stringsu_a,0,0,1,0,0
+
+* Converted to new ABI on December 3, 2005
+
+* like normal except force upper case
+
+*** strucat(s1,s2)
+*    append s2 to s1 thru null on s2
+*    returns s1
+
+strucat: pshs d,u
+ ldu 6,s *s2
+ tfr d,x *s1
+strucat1 ldb ,x+
+ bne strucat1 find end of s1
+ leax -1,x back to null
+ bra strucpy1
+
+*** strucpy(s1,s2)
+*    copy s2 to s1 thru null on s2
+*    returns s1
+
+strucpy: pshs d,u
+ ldu 6,s *s2
+ tfr d,x *s1
+strucpy1 ldb ,u+
+ clra
+ pshs x
+ lbsr toupper
+ puls x
+ stb ,x+
+ bne strucpy1
+strucpy2
+ puls d,u,pc
+
+
+ endsect

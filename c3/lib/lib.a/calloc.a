@@ -1,0 +1,30 @@
+ psect calloc_a,0,0,0,0,0
+
+* calloc is optimized for size.
+*  clear could be faster, but this one
+*   clears 128K bytes per sec, so.....
+
+* Converted to new ABI on December 1, 2005
+
+* char *calloc(count, size)
+* unsigned count, size;
+
+calloc:
+ pshs u
+* Reg D is count
+ ldx 4,s size
+ pshs x
+ lbsr ccmult
+ pshs d i = count * size
+ lbsr malloc p = malloc()
+ std -2,s if (p)
+ beq calloc2
+ ldx 0,s get i
+ tfr d,u get pnt
+calloc1 clr ,u+
+ leax -1,x
+ bne calloc1
+calloc2 leas 2,s
+ puls u,pc
+
+ endsect

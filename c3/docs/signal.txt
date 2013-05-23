@@ -1,0 +1,88 @@
+.so header
+.tl /SIGNAL(3S)/Kreider OS-9 C Library/SIGNAL(3S)/
+.sh NAME
+.bb
+signal - catch or ignore interrupts
+.eb
+.sh SYNOPSIS
+.bb
+#include <signal.h>
+.sp
+(*signal(interrupt, address))()
+(*address)();
+.eb
+.sh DESCRIPTION
+.db
+This call is a comprehensive method of catching or ignoring signals sent to
+the current process. Notice that \fBKILL\fP does the sending of signals and \fBSIGNAL\fP does the catching.
+.sp
+Normally, a signal sent to a process causes it to terminate with the status
+of the signal. If, in advance of the signal, this system call is used,
+the program has the choice of ignoring the signal or designating a function
+to be executed when the signal is received. Different functions may be
+designated for different signals.
+.sp
+The values for \fIaddress\fP have the following meanings:
+.bb
+0 = reset to the default, i.e., abort when received
+1 = ignore - this applies until reset to another value
+
+Otherwise: taken to be the address of a C function which
+is to be executed upon receipt of the signal.
+.eb
+If the latter case is chosen, when the signal is received by the process the \fIaddress\fP is reset to 0, the default, before the function is executed. This means that
+is the next signal received should be caught then another call to \fBSIGNAL\fP must be made immediately. This is normally the first action taken by the \fBINTERRUPT\fP function. The function may access the signal number which caused its
+execution by looking at its argument. On completion fo this function the
+program resumes execution at the point where it was interrupted by the signal.
+.eb
+The return value of  \fBSIGNAL\fP is the previous signal handler's address. \fBSIGNAL\fP will alternativly return SIG_DFL or SIG_IGN if thoes were the previous signal
+actions. \fBSIGNAL\fP will return -1 if you try to instal a signal handler for SIGKILL.
+.ed
+.sh EXAMPLE
+.db
+Suppose a program needs to create a temporary file which should be deleted
+before exiting. The body of the program might contain fragments like this:
+.bb
+pn = creat("temp",3);
+signal(2,intrupt);
+signal(3,intrupt);
+write(pn,string,count);
+close(pn);
+unlink("temp");
+exit(0);
+.eb
+The call to \fIsignal()\fP will insure that if a keyboard or quit signal is received then the function \fIintrupt()\fP will be executed and this might written as:
+.bb
+intrupt(sig)
+{
+    close(pn);
+    unlink("temp");
+    exit(sig);
+}
+.eb
+In this case, as the function will be exiting before another signal is
+receive, it is unnecessary to call \fIsignal()\fP again to reset its pointer.
+Note that either the function \fIintrupt()\fP should appear in the source code before the call to \fIsignal(),\fP or it should be pre-declared.
+.sp
+The signals used by OS-9 are define in the header file \fBSIGNAL.H\fP as follows:
+.bb
+/* OS-9 Signals */
+.sp
+#define SIGKILL 0
+#define SIGWAKE 1
+#define SIGQUIT 2
+#define SIGINT  3
+.sp
+/* special addresses */
+.sp
+#define SIG_DFL 0
+#define SIG_IGN 1
+.eb
+Please note that there is another method of trapping signals, namely \fIintercept().\fP However, since \fIsignal()\fP and \fIintercept()\fP are mutually incompatible, calls to both of them must not appear in the
+same program. The linker will prevent the creation of an executable program
+in which both are called by aborting with an \fIentry name clash\fP error for \fI_sigint.\f
+.ed
+.sh SEE ALSO
+.bb
+intercept(), kill(), OS-9 Shell command "kill"
+.eb

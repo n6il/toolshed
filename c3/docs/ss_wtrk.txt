@@ -1,0 +1,41 @@
+.so header
+.tl /SS_WTRK(2)/Kreider OS-9 C Library/SS_WTRK(2)/
+.sh NAME
+.bb
+_ss_wtrk - write a disk drive track
+.eb
+.sh SYNOPSIS
+.bb
+int _ss_wtrk(path, trkno, siden, trkbuf)
+int path;
+int trkno, siden
+char *trkbuf
+.eb
+.sh DESCRIPTION
+.db \fBSS_WRTK\fP performs a write-track operation on a disk drive. It is essentially
+a direct hook into the driver's write-track entry point.
+.sp
+The argument \fIpath\fP is the path on which the device is opened. \fITrkno\fP is the desired track number to write, and \fIsiden\fP is the desired side of the disk on
+which to write. When the write is performed, the image contained in and
+pointed to by \fItrkbuf\fP is written out to the disk.
+.sp
+If an error occurs, \fB_SS_WTRK\fP returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+This function works only on \fBRBF\fP devices. Additional information on how it
+works can be obtained from examining the \fBFORMAT\fP utility or a device driver.
+Also, note there is a difference in the syntax of this call from that used in
+OSK systems.
+.sp
+.ce 1 \fB>>>>  W A R N I N G  <<<<\f
+.sp
+If the variable \fItrkno\fP is set to zero when this function is called,
+the \fBENTIRE\fP disk, floppy or hard disk, will be formatted. Care should be
+taken to insure that \fItrkno\fP has a non-zero value prior to entering this function.
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call, Microware manual.
+.eb

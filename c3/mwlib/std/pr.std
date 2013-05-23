@@ -1,0 +1,9 @@
+pr -n -h1 -p64 atof.c atoi.c atol.c case.c chcodes.c conv.c defdrive.c findstr.c fopen.c fread.c fseek.c fwrite.c getc.c gets.c getwd.c index.c iob_data.c
+
+pr -n -h1 -p64 l3tol.c ltol3.c memory.c mktemp.c pffdummy.c pffinit.c pfldummy.c pflinit.c printf.c prof.c putc.c puts.c qsort.c scale.c scanf.c setbase.c
+
+pr -n -h1 -p64 setbuf.c sleep.c strass.c strings.c stringsn.c system.c testwd.c
+
+c.asm abs.a -l
+c.asm setjmp.a -l
+pr comp.std make.std

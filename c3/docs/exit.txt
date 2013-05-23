@@ -1,0 +1,43 @@
+.so header
+.tl /exit(3C)/Kreider OS-9 C Library/exit(3C)/
+.sh NAME
+.bb
+exit - terminate a process after flushing any pending output
+.eb
+.sh SYNOPSIS
+.bb
+exit(status)
+int status;
+.sp
+_exit(status)
+int status;
+.eb
+.sh DESCRIPTION
+.db \fBEXIT\fP is the normal means of terminating a task.
+The \fBEXIT\fP function terminates a process after calling the Standard I/O library
+function \fI_cleanup,\fP to flush any buffered output.
+.sp
+The \fB_exit\fP function performs the same, but DOES NOT flush any file
+buffers prior to exiting the task.
+Neither the \fBEXIT\fP or \fB_EXIT\fP functions ever return.
+.sp
+A process finishing normally, that is, returning from \fImain(),\fP is
+equivalent to a call to \fBEXIT.\f
+.sp
+The status passed to \fBEXIT\fP is avaiable to the parent process if it is
+executing a \fIwait. An example is:\f
+.bb
+static int stat;
+char *status = &stat;
+\.
+\.
+os9fork (cmds, strlen(params), params, 1, 1, 0);
+wait (status);
+\.
+\.
+.eb
+.ed
+.sh SEE ALSO
+.bb
+wait()
+.eb

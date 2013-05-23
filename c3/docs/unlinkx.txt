@@ -1,0 +1,23 @@
+.so header
+.tl /UNLINKX(3C)/Kreider OS-9 C Library/UNLINKX(3C)/
+.sh NAME
+.bb
+unlinkx - deletes a directory entry
+.eb
+.sh SYNOPSIS
+.bb
+unlinkx (fname, mode)
+char *fname, mode;
+.eb
+.sh DESCRIPTION
+.db \fBUNLINKX\fP performs essentially the same function as \fBUNLINK.\fP However, if the
+attribute of the file to remove from the directory, as described by \fImode,\fP is
+an executable file, then the current execution directory is used. If the mode
+is not executable, then the current data directory is used.
+.sp
+This function returns -1 if an error occurs and 0 upon success.
+.ed
+.sh SEE ALSO
+.bb
+unlink()
+.eb

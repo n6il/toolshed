@@ -1,0 +1,70 @@
+.so header
+.tl /GETC(3C)/Kreider OS-9 C Library/GETC(3C)/
+.sh NAME
+.bb
+getc, getchar, getw - get character or word from a file
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+getc(fp)
+FILE *fp;
+.sp
+getchar()
+.sp 
+getw(fp)
+FILE *fp;
+.eb
+.sh DESCRIPTION
+.db
+The \fBGETC\fP function returns the next character from the named input \fIfp.\fP
+.pp
+The \fBGETCHAR\fP function 
+is identical to  \fIgetc\fP (stdin).
+.PP
+The \fBGETW\fP function returns the next
+word from the named input \fIfp.\fP It returns the constant EOF
+upon end of file or error, but since that is a good
+integer value, \fIfeof()\fP and \fIferror()\fP should be used to check the success of \fBGETW.\fP The \fBGETW\fP assumes no special alignment in the file.
+.ed
+.sh CAVEATS
+.db
+Because it is implemented as a macro, \fBGETC\fP treats a \fIfp\fP argument with side effects incorrectly.
+In particular, \fI'getc(*f++);'\fP doesn't work as expected.
+.ed
+.sh SPECIAL CONSIDERATIONS
+.db
+Under OS-9, there is a choice of system calls to use when reading from a file. \fIRead()\fP will get characters up to a specified number in the "raw" mode, i.e., no
+editing will take place on the input stream and the characters will appear to
+the program exactly as in the file. \fIReadln()\fP on the other hand, will honor the various mapping of characters associated with
+a serial device such as a terminal and will return as soon as a carriage
+return is seen on the input.
+.PP
+In the vast majority of cases, it is preferable to use \fIreadln()\fP for accessing serial character devices and \fIread()\fP for any other file input. \fBGETC\fP uses this strategy and as all file input using the Standard Library functions
+is routed through \fBGETC(),\fP so do all the other input functions. The choice is made when the first call
+to \fBGETC()\fP is made after the file has been opened. The system is consulted for the status
+of the file and a flag bit is set in the file structure accordingly. The
+choice may be forced by the programmer by setting the relevant bit before a
+call to \fBGETC().\fP The flag bits are defined in \fBSTDIO.H\fP as \fI_SCF\fP and \fI_RBF\fP and the method used is as follows:
+.PP
+Assuming that the file pointer for the file as returned by \fIfopen()\fP is \fIf,\f
+.bb
+f->_flag |= _SCF
+.eb
+will force the use of \fIreadln()\fP on input, and
+.bb
+f->flag |= _RBF
+.eb
+will force the use of \fIread().\fP This trick may be played on the standard input, output, and error files
+without the need to call \fIfopen()\fP but must be made before any input is requested from these files.
+.ed
+.sh DIAGNOSTICS
+.db
+These functions return the integer constant EOF (-1)
+at end of file or upon read error.
+.ed
+.sh SEE ALSO
+.bb
+fopen(), fread(), gets(), putc(), scanf(), ungetc()
+.eb

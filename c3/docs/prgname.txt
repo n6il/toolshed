@@ -1,0 +1,19 @@
+.so header
+.he /PRGNAME(3C)/Kreider OS-9 C Library/PRGNAME(3C)/
+.sh NAME
+.bb
+_prgname() - Get a module name
+.eb
+.sh SYNOPSIS
+.bb
+char *_prgname()
+.eb
+.sh DESCRIPTION
+.db
+This function returns a pointer to the name of the module being executed.
+Normally, \fIargv[0]\fP points to the same string, but when \fIargv[]\fP is not available, this function serves the purpose well.
+.ed
+.sh SEE ALSO
+.bb
+_errmsg().
+.eb

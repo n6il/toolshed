@@ -1,0 +1,24 @@
+.so header
+.tl /_DUMP(3C)/Kreider OS-9 C Library/_DUMP(3C)/
+.sh NAME
+.bb
+_dump - Dumps memory to standard output.
+.eb
+.sh SYNOPSIS
+.bb
+void _dump(s, addr, count, fp)
+int count;
+char *s, *addr;
+FILE *fp;
+.eb
+.sh DESCRIPTION
+.db \fBDUMP\fP is used mostly as a debugging function. It prints the title \fIs\fP and then,
+starting at the memory address pointed to by \fIaddr,\fP dumps exactly \fIcount\fP bytes to the fp
+file pointer.
+.ed
+.sh NOTE
+.db
+Care must be taken to insure the variable \fIcount\fP is not too large, else the
+memory dump will take a very long time. Also, the dump is formatted similar
+to the standard OS9 dump utility.
+.ed

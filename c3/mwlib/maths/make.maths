@@ -1,0 +1,9 @@
+t
+-x
+del carith.l
+x
+merge cfloats.r clmul.r cldiv.r claddsub.r clcompare.r clbits.r >temp1
+merge clnegcompl.r clconvert.r clmove.r clincdec.r clshifts.r >temp2
+merge clcommon.r ccmult.r ccmod.r ccdiv.r cshifts.r rpterr.r >temp3
+merge temp1 temp2 temp3 >carith.l
+del temp1 temp2 temp3

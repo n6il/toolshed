@@ -1,0 +1,21 @@
+.so header
+.tl /UNBRK(3C)/Kreider OS-9 C Library/UNBRK(3C)/
+sh NAME
+.bb
+unbrk - returns memory
+.eb
+.sh SYNOPSIS
+.bb
+unbrk(pnt)
+char *pnt;
+.eb
+.sh DESCRIPTION
+.db \fBUNBRK\fP returns memory that was allocated using \fBSBRK. SBRK\fP requests the system
+to allocate more memory than was originally allocated. \fBUNBRK\fP simply returns that additional allocation.
+.sp
+This function returns -1 if an error occurs and 0 upon success.
+.ed
+.sh SEE ALSO
+.bb
+sbrk()
+.eb

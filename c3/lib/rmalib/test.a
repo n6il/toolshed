@@ -1,0 +1,20 @@
+ psect test,$11,$81,0,200,start
+
+ vsect
+
+buffer rmb 200
+ 
+ endsect
+
+start
+ leax msg,pcr
+ leay buffer,u
+ lbsr STRCPY
+ leax buffer,u
+ ldd #$0001
+ lbsr LINEDIT
+
+ os9 F$Exit
+
+msg fcc /test message/
+    fcb 0

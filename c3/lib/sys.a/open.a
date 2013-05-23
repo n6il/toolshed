@@ -1,0 +1,29 @@
+*
+* File access system calls
+*
+* tjl  08/05/2005  Moved file to version 2 C ABI.
+
+pmode equ $0b r/w for owner, r for others
+
+* ifp1
+* use ../../defs/os9defs.a
+* endc
+ psect open_a,0,0,2,0,0
+
+* open(name,mode)
+open: tfr d,x   *ldx 2,s
+ lda 3,s   *lda 5,s
+
+ os9 I$Open
+ lbcs _os9err
+
+ tfr a,b
+ clra
+ rts
+
+* close(fd)
+close: tfr b,a   *lda 3,s
+ os9 I$Close
+ lbra _sysret
+
+ endsect

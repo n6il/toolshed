@@ -1,0 +1,15 @@
+ nam OS-9 C Support
+ ttl GetStat - Data Ready
+
+ psect gsrdy_a,0,0,0,0,0
+
+*	_gs_rdy(path)
+_gs_rdy: tfr b,a get path number
+ ldb #SS.Ready get function code
+ OS9 I$GetStt call system
+ lbcs _os9err branch if not
+ clra return number of bytes in buffer
+ rts
+
+ ends
+

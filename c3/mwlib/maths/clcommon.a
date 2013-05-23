@@ -1,0 +1,18 @@
+ psect clcommon_a,0,0,1,0,0
+_lbexit:
+ tfr cc,a
+ puls x
+ stx 2,s
+ leas 2,s
+ leax _flacc,y
+ tfr a,cc
+ rts
+
+_ltoacc:
+ ldd 0,x
+ std _flacc,y
+ ldd 2,x
+ leax _flacc,y
+ std 2,x
+ rts
+ endsect

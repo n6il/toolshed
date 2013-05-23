@@ -1,0 +1,18 @@
+.so header
+.tl /getuid(3S)/Kreider OS-9 C Library/getuid(3S)/
+.sh NAME
+.bb
+getuid - get a user ID
+.eb
+.sh SYNOPSIS
+.bb
+getuid()
+.eb
+.sh DESCRIPTION
+.db \fBGETUID\fP returns the real user ID if the currently executing process as
+maintained in the password file \fI/dd/sys/password.\f
+.ed
+.sh SEE ALSO
+.bb
+setuid(), asetuid()
+.eb

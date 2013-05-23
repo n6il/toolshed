@@ -1,0 +1,48 @@
+.so header
+.he /LSEEK(3C)/Kreider OS-9 C Library/LSEEK(3C)/
+.sh NAME
+.bb
+lseek - seek to a position within a file
+.eb
+.sh SYNOPSIS
+.bb
+long lseek(pn, position, type)
+int pn;
+long position;
+int type;
+.eb
+.sh DESCRIPTION
+.db
+The read or write pointer for the opened file with the path number \fIpn\fP is positioned by \fBLSEEK\fP to the specified place in the file.
+The \fItype\fP indicates from where \fIposition\fP is to be measured: if 0, from the
+beginning of the file, if 1, from the current pointer location, and if 2,
+from the end of the file.
+.sp
+Seeking to a location beyond the end of a file opened for writing and then
+writing to it creates a "hole" in the file which appears to be filled with
+zeros from the previous end to the position desired.
+.sp
+The returned value is the resulting position in the file unless there is an
+error, so to find the current position use:
+.bb
+lseek (pn, 0l, 1);
+.eb
+.ed
+.sh CAVEATS
+.db
+The argument \fIposition\fP MUST be a long integer. Constants should be explicitly
+made long by appending an "l" (el - lower case L), as above, any other type
+should be converted using a cast:
+.bb
+lseek (pn, (long)pos, 1);
+.eb
+Notice also that the returned value from \fBLSEEK\fP is itself a long integer.
+.ed
+.sh DIAGNOSTICS
+.db
+A -1 is returned if \fIpn\fP is a bad path number, or attempting to seek to a position before the beginning of the file.
+.ed
+.sh SEE ALSO
+.bb
+open(), creat(), create(), fseek()
+.eb

@@ -1,0 +1,29 @@
+ psect strpbrk_a,0,0,0,0,0
+
+* Converted to new ABI on December 4, 2005
+*
+* function to check a string for one of a set of chars
+*  char *strpbrk(s1, s2)
+*        char *s1, s2;        s1 = string, s2 = char set
+*
+
+strpbrk: pshs  U      need a pointer
+stacked  set   stacked+4
+
+         tfr   d,u            pointer to s1
+
+         clra                 in case set is null
+_1       ldb   ,U+            get a char from string
+         beq   _4             if end of string
+         ldx   4,S            pointer to char set (s2)
+_2       tst   ,x
+         beq   _1             End of char set?
+         cmpb  ,x+            is char set in current string?
+         beq   _3             yes, check next string char
+         bra   _2             no, check next char set char
+
+_3       leau  -1,U           fix overshoot
+         tfr   U,D            return string ptr
+_4       puls  U,PC
+
+         endsect

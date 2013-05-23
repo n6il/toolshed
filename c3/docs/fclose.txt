@@ -1,0 +1,49 @@
+.so header
+.tl /fclose(3C)/Kreider OS-9 C Library/fclose(3C)/
+.sh NAME
+.bb
+fclose, fflush - close or flush a stream (file)
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+fclose(fp)
+FILE *fp;
+.sp
+fflush(fp)
+FILE *fp;
+.eb
+.sh DESCRIPTION
+.db
+The \fBFCLOSE\fP routine causes any buffers for the named
+file pointer \fIfp\fP to be emptied, and the file to be closed.
+Buffers allocated by the standard input/output system
+are freed for use by another \fBFOPEN\fP call. \fBFCLOSE\fP should always be called to close access to a file when it is no
+longer needed.
+The \fBFCLOSE\fP routine is performed automatically upon
+calling \fIexit().\fP The \fBFFLUSH\fP routine causes any buffered data associated with the named output
+file pointer \fIfp\fP to be cleared and written to that file, but only if the file was opened in
+the write or update mode. It is not normally necessary to call \fBFFLUSH,\fP but it can be useful when, for example, normal output is to \fIstdout,\fP and it
+is wished to send something to \fIstderr,\fP which is unbuffered. If \fBFFLUSH\fP were
+not used and \fIstdout\fP was referred to the terminal, the \fIstderr\fP message would
+appear before large chunks of the \fIstdout\fP message even though the latter was
+written first. The file associated with \fIfp\fP remains open after the call.
+.ed
+.sh DIAGNOSTICS
+.db
+These routines return \fIEOF\fP if the file pointer \fIfp\fP is not associated with an output file, or
+if buffered data cannot be written to that file.
+You should always check the returned status of and \fBFCLOSE\fP call.
+.ed
+.sh CAVEATS
+.db
+In cases where \fBFCLOSE\fP is called as a result of an \fIexit()\fP call, the error may be returned, but no
+process is running to receive it. In this case, the data in the buffer
+will not be written to the file and the operator will NOT GET an error
+message.
+.ed
+.sh SEE ALSO
+.bb
+exit(), close(), fopen(), setbuf()
+.eb

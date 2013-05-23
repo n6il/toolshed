@@ -1,0 +1,861 @@
+* Converted to new ABI on December 21, 2005
+
+* int scanf (format [, pointer...])
+* char *format;
+* 
+* int fscanf (fp, format [, pointer...])
+* FILE *fp;
+* char *format;
+* 
+* int sscanf (s, format [, pointer...])
+* char *s, *format;
+
+
+ psect scanf_c, $0, $0, 4, 0, scanf
+
+ vsect
+u0000 rmb 9
+u0009 rmb 4
+u000d rmb 19
+u0020 rmb 96
+u0080 rmb 2
+u0082 rmb 2
+ endsect
+
+scanf:  pshs  u
+ leax  _iob,y
+ stx   u0082,y
+ leax 4,s leax  6,s
+ pshs  x
+*nop ldd   6,s
+ bra   _002c
+fscanf:  pshs  u
+*nop  ldd   4,s
+ std   u0082,y
+ leax 6,s leax  8,s
+ pshs  x
+ ldd 6,s ldd   8,s
+_002c  pshs  b,a
+ leax  _079d,pc
+ pshs  x
+ leax  _0788,pc
+ bra   _005a
+sscanf:  pshs  u
+*nop  ldd   4,s
+ std   u0080,y
+ leax 6,s leax  8,s
+ pshs  x
+ ldd 6,s ldd   8,s
+ pshs  b,a
+ leax  _07d8,pc
+ pshs  x
+ leax  _07b6,pc
+_005a  pshs  x
+ bsr   _0062
+ leas  8,s
+ puls  u,pc
+_0062  pshs  u
+ ldd   #$FFA0
+ lbsr  _stkcheck
+ ldu   8,s
+ leas  -14,s
+ ldd   #$0001
+ stb   u0020,y
+ stb   u000d,y
+ stb   u0009,y
+ clra  
+ clrb  
+ std   10,s
+ clra  
+ clrb  
+ std   2,s
+_0085  ldb   ,u+
+ sex   
+ std   12,s
+ tfr   d,x
+ lbra  _02a4
+_008f  ldb   ,u+
+ sex   
+ std   12,s
+ cmpd  #$0025
+ bne   _009f
+ leax  14,s
+ lbra  _027b
+_009f  ldd   12,s
+ cmpd  #$002A
+ bne   _00b2
+ clra  
+ clrb  
+ std   4,s
+ ldb   ,u+
+ sex   
+ std   12,s
+ bra   _00c0
+_00b2  ldd   24,s
+ addd  #$0002
+ std   24,s
+ subd  #$0002
+ std   4,s
+_00c0  clra  
+ clrb  
+ std   8,s
+ ldd   #$0001
+ std   ,s
+ bra   _00e1
+_00cb  ldd   8,s
+ pshs  b,a
+ ldd   #$000A
+ lbsr  ccmult
+ addd  12,s
+ addd  #$FFD0
+ std   8,s
+ ldb   ,u+
+ sex   
+ std   12,s
+_00e1  ldd   12,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$08
+ bne   _00cb
+ ldd   8,s
+ bne   _00f9
+ ldd   #$7FFF
+ std   8,s
+_00f9  ldx   12,s
+ lbra  _01dd
+_00fe  ldb   ,u+
+ sex   
+ std   12,s
+ tfr   d,x
+ bra   _010c
+_0107  ldd   #$0002
+ bra   _013b
+_010c  cmpx  #$0064
+ beq   _0107
+ cmpx  #$006F
+ lbeq  _0107
+ cmpx  #$0078
+ lbeq  _0107
+ cmpx  #$0065
+ lbeq  _0107
+ cmpx  #$0066
+ lbeq  _0107
+ lbra  _028f
+_0130  ldb   ,u+
+ sex   
+ std   12,s
+ tfr   d,x
+ bra   _013f
+_0139  clra  
+ clrb  
+_013b  std   ,s
+ bra   _0165
+_013f  cmpx  #$0064
+ beq   _0139
+ cmpx  #$006F
+ lbeq  _0139
+ cmpx  #$0078
+ lbeq  _0139
+ lbra  _028f
+_0155  ldd   #$0002
+ std   ,s
+ ldd   12,s
+*pshs  b,a
+ lbsr  tolower
+*leas  2,s
+ std   12,s
+_0165  leax  14,s
+ bra   _0170
+_0169  ldd   #$0001
+ std   ,s
+ bra   _0172
+_0170  leas  -14,x
+_0172  leax  2,s
+ pshs  x
+ ldd   2,s
+ pshs  b,a
+ ldd   12,s
+ pshs  b,a
+ ldd   18,s
+ pshs  b,a
+ ldd   12,s
+ pshs  b,a
+ ldd   30,s
+ pshs  b,a
+ ldd   30,s
+ pshs  b,a
+ lbsr  _02ca
+ leas  14,s
+ bra   _01ca
+_0198  pshs  u
+ lbsr  _06e8
+ leas  2,s
+ tfr   d,u
+_01a1  leax  2,s
+ pshs  x
+ ldd   10,s
+ pshs  b,a
+ ldd   16,s
+ pshs  b,a
+ ldd   10,s
+ beq   _01b7
+ ldd   [10,s]
+ bra   _01b9
+_01b7  clra  
+ clrb  
+_01b9  pshs  b,a
+ ldd   28,s
+ pshs  b,a
+ ldd   28,s
+ pshs  b,a
+ lbsr  _05f6
+ leas  12,s
+_01ca  std   -2,s
+ lbeq  _0248
+ ldd   4,s
+ beq   _0248
+ ldd   10,s
+ addd  #$0001
+ std   10,s
+ bra   _0248
+_01dd  cmpx  #$006C
+ lbeq  _00fe
+ cmpx  #$0068
+ lbeq  _0130
+ cmpx  #$0044
+ lbeq  _0155
+ cmpx  #$004F
+ lbeq  _0155
+ cmpx  #$0058
+ lbeq  _0155
+ cmpx  #$0045
+ lbeq  _0155
+ cmpx  #$0046
+ lbeq  _0155
+ cmpx  #$0064
+ lbeq  _0169
+ cmpx  #$006F
+ lbeq  _0169
+ cmpx  #$0078
+ lbeq  _0169
+ cmpx  #$0065
+ lbeq  _0169
+ cmpx  #$0066
+ lbeq  _0169
+ cmpx  #$005B
+ lbeq  _0198
+ cmpx  #$0073
+ lbeq  _01a1
+ cmpx  #$0063
+ lbeq  _01a1
+ bra   _028f
+_0248  ldd   2,s
+ beq   _0252
+ ldd   10,s
+ beq   _028f
+ bra   _029d
+_0252  lbra  _0085
+_0255  jsr   [18,s]
+ std   6,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$10
+ bne   _0255
+ ldd   6,s
+ cmpd  #$FFFF
+ beq   _0278
+ ldd   6,s
+ pshs  b,a
+ jsr   [22,s]
+ leas  2,s
+_0278  lbra  _0085
+_027b  leas  -14,x
+_027d  jsr   [18,s]
+ std   6,s
+ cmpd  12,s
+ beq   _02a1
+ ldd   6,s
+ cmpd  #$FFFF
+ bne   _0294
+_028f  ldd   #$FFFF
+ bra   _02c6
+_0294  ldd   6,s
+ pshs  b,a
+ jsr   [22,s]
+ leas  2,s
+_029d  ldd   10,s
+ bra   _02c6
+_02a1  lbra  _0085
+_02a4  stx   -2,s
+ beq   _029d
+ cmpx  #$0025
+ lbeq  _008f
+ cmpx  #$0020
+ lbeq  _0255
+ cmpx  #$000D
+ lbeq  _0255
+ cmpx  #$0009
+ lbeq  _0255
+ bra   _027d
+_02c6  leas  14,s
+ puls  u,pc
+_02ca  pshs  u
+ ldd   #$FF64
+ lbsr  _stkcheck
+ leas  -80,s
+ clra  
+ clrb  
+ std   10,s
+ clra  
+ clrb  
+ std   8,s
+ clra  
+ clrb  
+ std   6,s
+ leax  ,s
+ pshs  x
+ bsr   _02eb
+ neg   $00
+ neg   $00
+_02eb  puls  x
+ lbsr  _lmove
+ ldx   90,s
+ bra   _030a
+_02f5  ldd   #$0008
+ bra   _0306
+_02fa  ldd   #$0010
+ bra   _0306
+_02ff  clra  
+ clrb  
+ bra   _0306
+_0303  ldd   #$000A
+_0306  std   12,s
+ bra   _0322
+_030a  cmpx  #$006F
+ beq   _02f5
+ cmpx  #$0078
+ beq   _02fa
+ cmpx  #$0065
+ beq   _02ff
+ cmpx  #$0066
+ lbeq  _02ff
+ bra   _0303
+_0322  jsr   [84,s]
+ std   14,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$10
+ bne   _0322
+ ldd   12,s
+ lbne  _0405
+ leau  16,s
+ clra  
+ clrb  
+ std   4,s
+ ldd   92,s
+ cmpd  #$003F
+ ble   _0350
+ ldd   #$003F
+ std   92,s
+_0350  ldd   14,s
+ cmpd  #$002D
+ bne   _035e
+ ldd   14,s
+ stb   ,u+
+ bra   _0368
+_035e  ldd   14,s
+ cmpd  #$002B
+ lbne  _03f5
+_0368  ldd   92,s
+ addd  #$FFFF
+ std   92,s
+ lbra  _03f0
+_0374  ldd   14,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$08
+ beq   _038d
+ ldd   4,s
+ addd  #$0001
+ std   4,s
+ lbra  _03ec
+_038d  ldd   14,s
+ cmpd  #$002E
+ bne   _03a0
+ ldd   6,s
+ bne   _03a0
+ ldd   #$0001
+ std   6,s
+ bra   _03ec
+_03a0  ldd   14,s
+ cmpd  #$0065
+ beq   _03b2
+ ldd   14,s
+ cmpd  #$0045
+ lbne  _0540
+_03b2  ldd   10,s
+ lbne  _0540
+ ldd   4,s
+ lbeq  _0540
+ ldd   #$0001
+ std   10,s
+ ldd   14,s
+ stb   ,u+
+ jsr   [84,s]
+ std   14,s
+ cmpd  #$002D
+ beq   _03ec
+ ldd   14,s
+ cmpd  #$002D
+ beq   _03ec
+ ldd   14,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$08
+ bne   _03ec
+ lbra  _0540
+_03ec  ldd   14,s
+ stb   ,u+
+_03f0  jsr   [84,s]
+ std   14,s
+_03f5  ldd   92,s
+ addd  #$FFFF
+ std   92,s
+ lbge  _0374
+ lbra  _0540
+_0405  ldd   14,s
+ cmpd  #$002D
+ bne   _0414
+ ldd   #$0001
+ std   8,s
+ bra   _041c
+_0414  ldd   14,s
+ cmpd  #$002B
+ bne   _0421
+_041c  jsr   [84,s]
+ std   14,s
+_0421  leau  16,s
+ lbra  _0523
+_0427  ldx   12,s
+ lbra  _0507
+_042c  ldd   14,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$08
+ lbeq  _0530
+ ldd   14,s
+ cmpd  #$0038
+ lbge  _0530
+ leax  ,s
+ pshs  x
+ leax  2,s
+ pshs  x
+ ldd   #$0003
+ lbsr  _lshl
+ lbra  _04db
+_0458  ldd   14,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$40
+ lbeq  _0530
+ leax  ,s
+ pshs  x
+ pshs  x
+ ldd   #$0004
+ lbsr  _lshl
+ lbsr  _lmove
+ leax  ,s
+ pshs  x
+ ldd   2,x
+ pshs  b,a
+ ldd   ,x
+ pshs  b,a
+ ldd   20,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$08
+ beq   _049c
+ ldd   20,s
+ addd  #$FFD0
+ bra   _04a9
+_049c  ldd   20,s
+*pshs  b,a
+ lbsr  toupper
+*leas  2,s
+ addd  #$FFC9
+_04a9  lbsr  _litol
+ lbsr  _ladd
+ bra   _04ff
+_04b1  ldd   14,s
+ leax  _chcodes,y
+ leax  d,x
+ ldb   ,x
+ clra  
+ andb  #$08
+ lbeq  _0530
+ leax  ,s
+ pshs  x
+ leax  2,s
+ ldd   2,x
+ pshs  b,a
+ ldd   ,x
+ pshs  b,a
+ bsr   _04d6
+ neg   $00
+ neg   $0A
+_04d6  puls  x
+ lbsr  _lmul
+_04db  ldd   2,x
+ pshs  b,a
+ ldd   ,x
+ pshs  b,a
+ ldd   20,s
+ lbsr  _litol
+ lbsr  _ladd
+ ldd   2,x
+ pshs  b,a
+ ldd   ,x
+ pshs  b,a
+ bsr   _04fa
+ neg   $00
+ neg   $30
+_04fa  puls  x
+ lbsr  _lsub
+_04ff  lbsr  _lmove
+ ldu   #$0000
+ bra   _051e
+_0507  cmpx  #$0008
+ lbeq  _042c
+ cmpx  #$0010
+ lbeq  _0458
+ cmpx  #$000A
+ lbeq  _04b1
+ bra   _0530
+_051e  jsr   [84,s]
+ std   14,s
+_0523  ldd   92,s
+ addd  #$FFFF
+ std   92,s
+ lbge  _0427
+_0530  ldd   8,s
+ beq   _0540
+ leax  ,s
+ pshs  x
+ leax  2,s
+ lbsr  _lneg
+ lbsr  _lmove
+_0540  ldd   14,s
+ cmpd  #$FFFF
+ beq   _0555
+ ldd   14,s
+ pshs  b,a
+ jsr   [88,s]
+ leas  2,s
+ clra  
+ clrb  
+ bra   _0558
+_0555  ldd   #$0001
+_0558  std   [96,s]
+ ldd   88,s
+ beq   _056a
+ leax  16,s
+ pshs  x
+ cmpu  ,s++
+ bne   _056f
+_056a  clra  
+ clrb  
+ lbra  _05f1
+_056f  ldd   12,s
+ bne   _05be
+ clra  
+ clrb  
+ stb   ,u
+ ldx   94,s
+ bra   _05ac
+_057c  ldx   88,s
+ ldx   ,x
+ pshs  x
+ leax  18,s
+ tfr x,d pshs  x
+ lbsr  atof
+*leas  2,s
+ lbsr  _dtof
+ lbsr  _fmove
+ lbra  _05ee
+_0596  ldx   88,s
+ ldx   ,x
+ pshs  x
+ leax  18,s
+ tfr x,d pshs  x
+ lbsr  atof
+*leas  2,s
+ lbsr  _dmove
+ bra   _05ee
+_05ac  stx   -2,s
+ beq   _057c
+ cmpx  #$0001
+ lbeq  _057c
+ cmpx  #$0002
+ beq   _0596
+ bra   _05ee
+_05be  ldx   94,s
+ bra   _05de
+_05c3  ldx   88,s
+ ldx   ,x
+ pshs  x
+ ldd   4,s
+ std   [,s++]
+ bra   _05ee
+_05d0  ldx   88,s
+ ldx   ,x
+ pshs  x
+ leax  2,s
+ lbsr  _lmove
+ bra   _05ee
+_05de  stx   -2,s
+ beq   _05c3
+ cmpx  #$0001
+ lbeq  _05c3
+ cmpx  #$0002
+ beq   _05d0
+_05ee  ldd   #$0001
+_05f1  leas  80,s
+ puls  u,pc
+_05f6  pshs  u
+ ldd   #$FFB4
+ lbsr  _stkcheck
+ ldu   8,s
+ leas  -6,s
+ clra  
+ clrb  
+ std   [20,s]
+ stu   2,s
+ ldd   16,s
+ cmpd  #$0063
+ bne   _0621
+ ldd   18,s
+ cmpd  #$7FFF
+ bne   _0621
+ ldd   #$0001
+ std   18,s
+_0621  clra  
+ clrb  
+ std   ,s
+ ldd   16,s
+ cmpd  #$0073
+ bne   _063d
+ ldd   #$0001
+ std   ,s
+ bra   _063d
+_0635  ldd   4,s
+ cmpd  #$FFFF
+ beq   _0653
+_063d  jsr   [10,s]
+ std   4,s
+ leax  u0000,y
+ leax  d,x
+ ldb   ,x
+ sex   
+ anda  ,s
+ andb  1,s
+ std   -2,s
+ bne   _0635
+_0653  ldx   16,s
+ bra   _0668
+_0658  clra  
+ clrb  
+ bra   _0664
+_065c  ldd   #$0002
+ bra   _0664
+_0661  ldd   #$0001
+_0664  std   ,s
+ bra   _068c
+_0668  cmpx  #$0063
+ beq   _0658
+ cmpx  #$005B
+ beq   _065c
+ bra   _0661
+_0674  stu   -2,s
+ beq   _067c
+ ldd   4,s
+ stb   ,u+
+_067c  ldd   18,s
+ addd  #$FFFF
+ std   18,s
+ ble   _06a7
+ jsr   [10,s]
+ std   4,s
+_068c  ldd   4,s
+ cmpd  #$FFFF
+ beq   _06a7
+ ldd   4,s
+ leax  u0000,y
+ leax  d,x
+ ldb   ,x
+ sex   
+ anda  ,s
+ andb  1,s
+ std   -2,s
+ beq   _0674
+_06a7  ldd   4,s
+ cmpd  #$FFFF
+ beq   _06c1
+ ldd   18,s
+ ble   _06bd
+ ldd   4,s
+ pshs  b,a
+ jsr   [14,s]
+ leas  2,s
+_06bd  clra  
+ clrb  
+ bra   _06c4
+_06c1  ldd   #$0001
+_06c4  std   [20,s]
+ stu   -2,s
+ beq   _06e2
+ cmpu  2,s
+ beq   _06e2
+ ldd   16,s
+ cmpd  #$0063
+ beq   _06dd
+ clra  
+ clrb  
+ stb   ,u+
+_06dd  ldd   #$0001
+ bra   _06e4
+_06e2  clra  
+ clrb  
+_06e4  leas  6,s
+ puls  u,pc
+_06e8  pshs  u
+ ldd   #$FFBC
+ lbsr  _stkcheck
+ ldu   4,s
+ leas  -4,s
+ clra  
+ clrb  
+ std   ,s
+ ldb   ,u
+ cmpb  #$5E
+ bne   _0705
+ ldd   #$0001
+ std   ,s
+ leau  1,u
+_0705  clra  
+ clrb  
+ bra   _0730
+_0709  ldd   ,s
+ beq   _071c
+ ldd   2,s
+ leax  u0000,y
+ leax  d,x
+ ldb   ,x
+ sex   
+ andb  #$FD
+ bra   _0729
+_071c  ldd   2,s
+ leax  u0000,y
+ leax  d,x
+ ldb   ,x
+ sex   
+ orb   #$02
+_0729  stb   ,x
+ ldd   2,s
+ addd  #$0001
+_0730  std   2,s
+ ldd   2,s
+ cmpd  #$0080
+ blt   _0709
+ bra   _0776
+_073c  ldd   ,s
+ beq   _0757
+ ldd   2,s
+ addd  #$0001
+ std   2,s
+ subd  #$0001
+ leax  u0000,y
+ leax  d,x
+ ldb   ,x
+ sex   
+ orb   #$02
+ bra   _076c
+_0757  ldd   2,s
+ addd  #$0001
+ std   2,s
+ subd  #$0001
+ leax  u0000,y
+ leax  d,x
+ ldb   ,x
+ sex   
+ andb  #$FD
+_076c  stb   ,x
+ ldd   2,s
+ bne   _0776
+ leau  -1,u
+ bra   _0784
+_0776  ldb   ,u+
+ sex   
+ std   2,s
+ clra  
+ andb  #$7F
+ cmpd  #$005D
+ bne   _073c
+_0784  tfr   u,d
+ bra   _07b2
+_0788  pshs  u
+ ldd   #$FFBA
+ lbsr  _stkcheck
+ ldd   u0082,y
+*pshs  b,a
+ lbsr  getc
+*leas  2,s
+ puls  u,pc
+_079d  pshs  u
+ ldd   #$FFB8
+ lbsr  _stkcheck
+ ldd   u0082,y
+ pshs  b,a
+ ldd   6,s
+*pshs  b,a
+ lbsr  ungetc
+_07b2  leas 2,s leas  4,s
+ puls  u,pc
+_07b6  pshs  u
+ ldd   #$FFC0
+ lbsr  _stkcheck
+ ldb   [u0080,y]
+ beq   _07d3
+ ldx   u0080,y
+ leax  1,x
+ stx   u0080,y
+ ldb   -1,x
+ sex   
+ bra   _07d6
+_07d3  ldd   #$FFFF
+_07d6  puls  u,pc
+_07d8  pshs  u
+ ldd   #$FFC0
+ lbsr  _stkcheck
+ ldd   4,s
+ ldx   u0080,y
+ leax  -1,x
+ stx   u0080,y
+ stb   ,x
+ puls  u,pc
+ endsect

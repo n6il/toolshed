@@ -1,0 +1,17 @@
+ psect pffdummy_a,0,0,1,0,0
+
+* Converted to new ABI on December 4, 2005
+
+* 12-05-2005 tjl corrected to advance args pointer
+
+pffloat:
+ ldx [4,s] advance past double
+ leax 8,x
+ stx [4,s]
+ leax pffdata,pcr return a null string
+ tfr x,d
+ rts
+
+pffdata fcb 0
+
+ endsect

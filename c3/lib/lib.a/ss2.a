@@ -1,0 +1,43 @@
+*
+* handler for _ss_attr, _ss_size, _ss_lock
+*
+* Converted September 18, 2005 to new ABI
+
+* ifp1
+* use ../../defs/os9defs.a
+* endc
+
+* int _ss_lock(path, locksize)
+* int path;
+* long locksize;
+
+* int _ss_attr(path, attr)
+* int path;
+* short attr;
+
+* int _ss_size(path, size)
+* int path;
+* long size;
+
+ psect ss2,0,0,1,0,0
+
+_ss_lock: pshs U
+ tfr b,a
+ ldb #SS.Lock
+ bra ss1
+
+_ss_attr: pshs U
+ tfr b,a
+ ldb #SS.Attr
+ bra ss2
+
+_ss_size: pshs U
+ tfr b,a
+ ldb #SS.Size
+ss1 ldu 6,S
+ss2 ldx 4,S
+ os9 I$SetStt
+ puls U
+ lbra _sysret
+
+ ends

@@ -1,0 +1,38 @@
+.so header
+.he /MODLOAD(3S)/Kreider OS-9 C Library/MODLOAD(3S)/
+.sh NAME
+.bb
+modload, modlink - return a pointer to a module structure
+.eb
+.sh SYNOPSIS
+.bb
+#include <module.h>
+.sp
+mod_exec *modload(filename, type, language)
+char *filename
+int type, language;
+.sp
+mod_exec *modlink(modname, type, language)
+char *modname;
+int type, language;
+.eb
+.sh DESCRIPTION
+.db
+Each of these calls returns a pointer to an OS-9 memory module.
+.sp \fBMODLOAD\fP will open a file which has the pathlist specified by \fIfilename\fP and loads modules from the file adding them to the module directory.
+The returned value is a pointer to the first module loaded.
+.sp \fBMODLINK\fP will search the module directory for a module with the same name
+as \fImodname\fP and, if found, increment its link count.
+.sp
+In the synopsis above, each call is shown as returning a pointer to an
+executable module, but it will return a pointer to whatever type of module
+is found.
+.ed
+.sh DIAGNOSTICS
+.db
+A -1 is returned on any error.
+.ed
+.sh SEE ALSO
+.bb
+munlink()
+.eb

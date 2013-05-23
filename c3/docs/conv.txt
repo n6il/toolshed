@@ -1,0 +1,50 @@
+.so header
+.tl /CONV(3C)/Kreider OS-9 C Library/CONV(3C)/
+.sh NAME
+.bb
+toupper, tolower, _toupper, _tolower, toascii - translate characters
+.eb
+.sh SYNOPSIS
+.bb
+ #include <ctype.h>
+.sp
+ toupper (c)
+ int c;
+.sp
+ tolower (c)
+ int c;
+.sp
+ _toupper (c)
+ int c;
+.sp
+ _tolower (c)
+ int c;
+.sp
+ toascii (c)
+ int c;
+.eb
+.sh DESCRIPTION
+.db
+The functions \fBTOUPPER\fP and \fBTOLOWER\fP have as domain the range of \fIgetc(),\fP which are the ASCII characters from -1 through 255.
+If the argument to \fBTOUPPER\fP represents a lower case letter,
+the result is the corresponding upper case letter.
+If the argument to \fBTOLOWER\fP represents an upper case letter, the result is the corresponding lower case letter.
+.PP
+The macros \fB_TOUPPER\fP and \fB_TOLOWER\fP accomplish the same thing as \fBTOUPPER\fP and \fBTOLOWER ,\fP except they are faster and are restricted to ASCII characters (for example, -1
+to 127). The macro \fB_TOUPPER\fP requires a lowercase letter as its argument;
+its result is the corresponding uppercase letter.
+The macro \fB_TOLOWER\fP requires an uppercase letter as its argument;
+its result is the corresponding lowercase letter.
+.PP
+The macro \fBTOASCII\fP yields its argument with all bits turned off that are not
+part of a standard ASCII character set, i.e., the MSB of that character
+is set to 0. It is intended for compatibility with other systems.
+.ed
+.sh CAVEATS
+.db
+Any arguments to the macros \fB_TOUPPER, _TOLOWER,\fP or \fBTOASCII\fP outside the ranges specified will yield garbage results.
+.ed
+.sh SEE ALSO
+.bb
+ctype, getc()
+.eb

@@ -1,0 +1,93 @@
+ psect ccdiv_a,0,0,1,0,0
+
+EDIVERR equ 45
+Carry equ %00000001
+
+ccudiv:
+* unsigned division
+ subd #0
+ beq _cderr
+
+ pshs d
+ leas -2,s
+ clr 0,s
+ clr 1,s
+ bra _ccd2
+
+_cderr puls d
+ std 0,s
+ ldd #EDIVERR
+ lbra _rpterr
+
+ccdiv:
+* set up stack frame
+ subd #0
+ beq _cderr
+
+ pshs d
+ leas -2,s
+ clr 0,s
+ clr 1,s
+
+ tsta
+ bpl _ccd1
+ nega
+ negb
+ sbca #0
+ inc 1,s
+ std 2,s
+
+_ccd1 ldd 6,s
+ bpl _ccd2
+ nega
+ negb
+ sbca #0
+ com 1,s
+ std 6,s
+
+_ccd2 lda #1
+
+_ccd3 inca
+ asl 3,s
+ rol 2,s
+ bpl _ccd3
+
+_ccd4 sta 0,s
+ ldd 6,s
+ clr 6,s
+ clr 7,s
+
+_ccd5 subd 2,s
+ bcc _ccd6
+ addd 2,s
+ andcc #^Carry
+ bra _ccd7
+
+_ccd6 orcc #Carry
+
+_ccd7 rol 7,s
+ rol 6,s
+ lsr 2,s
+ ror 3,s
+ dec 0,s
+ bne _ccd5
+
+_ccd8 std 2,s
+ tst 1,s
+ beq _ccd9
+ ldd 6,s
+ nega
+ negb
+ sbca #0
+ std 6,s
+
+_ccd9
+ ldx 4,s
+ ldd 6,s
+ std 4,s
+ stx 6,s
+ ldx 2,s
+ ldd 4,s ensure proper condition codes
+ leas 6,s
+ rts
+ endsect

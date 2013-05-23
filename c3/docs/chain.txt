@@ -1,0 +1,38 @@
+.so header
+.tl /CHAIN(3S)/Kreider OS-9 C Library/CHAIN(3S)/
+.sh NAME
+.bb
+chain - load and execute a new program module
+.eb
+.sh SYNOPSIS
+.bb
+chain(modname, paramsize, paramptr, type, lang, datasize)
+char *modname, *paramptr;
+int paramsize, type, lang, datasize;
+.eb
+.sh DESCRIPTION
+.db
+The action of the \fBF$CHAIN\fP system call is described fully in the OS-9
+documentation. \fBCHAIN\fP implements this service request as described there
+with one important exception: chain will NEVER return to the caller.
+If there is an error, the chained process will abort and return to its
+parent process. It might be wise, therefore, for the program to check
+the existance and access permissions of the module before calling chain.
+Permissions may be checked by using \fImodlink()\fP or \fImodload()\fP followed by \fImunlink().\f
+.PP \fIModname\fP should point to the name of the desired module. \fIParamsize\fP is the length of the parameter string (which should be terminated with
+an '\\n'), and \fIparamptr\fP points to this parameter string. \fIType\fP is the
+module type as found in the module header (normally a 1 for a program
+module), and \fIlang\fP should match the language nibble in the module
+header (C programs have a 1 for machine language). \fIDatasize\fP my be
+zero, or contain the number of 256 byte pages to give to the new process
+as its initial data memory allocation.
+.ed
+.sh CAVEATS
+.db
+The variable \fIparamsize\fP should never be zero. If only a carriage return command line terminator
+(\\n) is used, \fIparamsize\fP should be set to one.
+.ed
+.sh SEE ALSO
+.bb
+os9fork(), os9 F$CHAIN system call
+.eb

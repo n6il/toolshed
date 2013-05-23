@@ -1,0 +1,56 @@
+.so header
+.tl /MALLOC(3C)/Kreider OS-9 C Library/MALLOC(3C)/
+.sh NAME
+.bb
+malloc, free, realloc, calloc - memory allocation
+.eb
+.sh SYNOPSIS
+.bb
+char *malloc(size)
+unsigned size;
+.sp
+free(ptr)
+char *ptr;
+.sp
+char *realloc(ptr, size)
+char *ptr;
+unsigned size;
+.sp
+char *calloc(nelem, elsize)
+unsigned nelem, elsize;
+.eb
+.sh DESCRIPTION
+.db
+The \fBMALLOC\fP and \fBFREE\fP subroutines
+provide a simple general-purpose memory allocation package.
+The \fBMALLOC\fP subroutine
+returns a pointer to a block of at least \fIsize\fP bytes beginning on a word boundary.
+.sp
+The argument to \fBFREE\fP is a pointer to a block previously allocated by \fBMALLOC.\fP This space is made available for further allocation,
+but its contents are left undisturbed.
+.sp
+Needless to say, grave disorder will result if the space assigned by \fBMALLOC\fP is overrun or if some random number is handed to \fBFREE.\f
+.sp
+The \fBMALLOC\fP subroutine maintains multiple lists of free blocks according to size,
+allocating space from the appropriate list. It calls \fIsbrk\fP to get more memory from the system when there is no
+suitable space already free.
+For further information, see  \fIbrk().\f
+.sp
+The \fBREALLOC\fP subroutine changes the size of the block pointed to by \fIptr\fP to \fIsize\fP bytes and returns a pointer to the (possibly moved) block.
+The contents will be unchanged up to the
+lesser of the new and old sizes.
+.sp
+If the pointer arguement \fIptr\fP is zero, then \fBREALLOC\fP degenerates into a \fBMALLOC.\f
+.sp
+In order to be compatible with older versions, \fIREALLOC\fP also works if \fIptr\fP points to a block freed since the last call of \fBMALLOC, REALLOC,\fP or \fICALLOC.\fP Sequences of \fBFREE, MALLOC, \fP and \fBREALLOC\fP were previously used to attempt storage compaction.
+This procedure is no longer recommended.
+.sp
+The \fBCALLOC\fP subroutine allocates space for an array of \fInelem\fP elements of size \fIelsize.\fP The space is initialized to zeros.
+.ed
+.sh CAVEATS
+.db
+When \fBREALLOC\fP returns 0, the block pointed to by \fIptr\fP may be destroyed.
+.ed
+.sh DIAGNOSTICS
+.db \fBMALLOC, FREE,\fP and \fBCALLOC\fP return a \fInull\fP if no free memory can be found, or if there was an error.
+.ed

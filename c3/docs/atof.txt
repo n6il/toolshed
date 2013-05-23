@@ -1,0 +1,44 @@
+.so header
+.tl /atof(3C)/Kreider OS-9 C Library/atof(3C)/
+.sh NAME
+.bb
+atof, atoi, atol - convert ASCII to numbers
+.eb
+.sh SYNOPSIS
+.bb
+#include <math.h>
+.sp
+double atof(ptr)
+char *ptr;
+.sp
+long atoi(ptr)
+char *ptr;
+.sp
+int atol(ptr)
+char *ptr;
+.eb
+.sh DESCRIPTION
+.db
+These functions convert a string pointed to by \fIptr\fP to double, long, and integer representation respectively.
+Any leading whitespace (space, tab, or newline) is ignored.
+The first unrecognized character ends the string.
+.PP \fBATOF\fP recognizes (in order), an optional sign, an optional string of spaces,
+a string of digits optionally containing a radix
+character, an optional `e' or `E', and then an optionally signed integer,
+as in the example below:
+.PP
+.in +5
+"-1234.5678e+9"
+.PP
+.in-5
+Numbers up to the decimal point are assumed to be the integer portion of
+the number.
+.PP
+The \fBATOI\fP and \fBATOL\fP functions recognize (in order), an optional string of spaces,
+an optional sign, then a string of digits.
+.ed
+.sh CAVEATS
+.db
+Overflow causes unpredictable results. There are no error indications
+returned by these functions.
+.ed

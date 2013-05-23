@@ -1,0 +1,46 @@
+.so header
+.tl /ferror(3C)/Kreider OS-9 C Library/ferror(3C)/
+.sh NAME
+.bb
+ferror, feof, clearerr, fileno - return status inquiries of files
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+feof(fp)
+FILE *fp;
+.sp
+ferror(fp)
+FILE *fp;
+.sp
+clearerr(fp)
+FILE *fp;
+.sp
+fileno(fp)
+FILE *fp;
+.eb
+.sh DESCRIPTION
+.db
+The \fBFERROR\fP function returns nonzero when an error has
+occurred reading or writing the file associated with the file pointer \fIfp\fP has reached its end, otherwise zero is returned. Unless cleared by \fBCLEARERR,\fP the error indication lasts until the file pointed to by \fIfp\fP is closed, thus preventing any further access to that file.
+.PP
+The \fBFEOF\fP function returns nonzero when end of file is read on the named input \fIfp,\fP otherwise zero.
+.PP
+The \fBCLEARERR\fP function resets both the error and \fIEOF\fP indicators on the named file associated with \fIfp.\fP Note that the file is not "fixed" nor does it prevent the error from
+occurring again. It just allows Standard Library functions to at least
+try to access the file.
+.PP
+The \fBFILENO\fP function returns the integer path descriptor
+associated with the file pointer \fIfp,\fP for use with Standard Library calls the use path numbers, such as \fIclose(), open(),\fP etc.
+.ed
+.sh CAVEATS
+.db
+These functions
+are implemented as macros in \fBSTDIO.H\fP so they
+cannot be redeclared.
+.ed
+.sh SEE ALSO
+.bb
+open(), fopen()
+.eb

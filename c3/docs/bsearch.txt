@@ -1,0 +1,30 @@
+.so header
+.tl /BSEARCH(3C)/Kreider OS-9 C Library/BSEARCH(3C)/
+.sh NAME
+.bb
+bsearch - binary search function
+.eb
+.sh SYNOPSIS
+.bb
+char *bsearch(key, base, nel, width, compar)
+char *key, *base;
+int nel, width;
+int (*compar) ();
+.eb
+.sh DESCRIPTION
+.db
+This function performs a binary search on already sorted arrays of strings,
+finding the string matching \fIkey,\fP in the array of strings, beginning at the memory location
+pointed to by \fIbase. The array MUST have been previously sorted, in assending order,\fP according to the comparision function \fIcompar().\fP The total number of elements in the array
+is contained in \fInel,\fP and the width of each string in the array, which must
+all be the same length, is held in \fIwidth.\fP
+.pp
+The function \fIcompar()\fP is any user supplied function that will return whether
+the first argument is greater than, equal to, or less than, the second
+argument. \fBSTRCMP\fP would be a good choice for string variables.
+.PP \fBBSEARCH\fP returns a pointer to the matching string upon success, or \fInull.\f
+.ed
+.sh SEE ALSO
+.bb
+strcmp() (in STRINGS(3C))
+.eb

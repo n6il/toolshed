@@ -1,0 +1,31 @@
+.so header
+.tl /UNGETC(3C)/Kreider OS-9 C Library/UNGETC(3C)/
+.sh NAME
+.bb
+ungetc - put a character back into the input buffer
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+ungetc (ch, fp)
+char ch;
+FILE *fp;
+.eb
+.sh DESCRIPTION
+.db
+This function alters the state of the input file buffer such that the next
+call of \fBGETC\fP returns the character \fIch.\f
+.sp
+Only one character may be puched back, and at least one character must have
+been read from the file before a call to \fBUNGETC\fP is made.
+.sp \fBFSEEK\fP erases and characters pushed back.
+.ed
+.sh DIAGNOSTICS
+.db \fBUNGETC\fP returns its character argument unless no pushback could occur, in which
+case EOF is returned.
+.ed
+.sh SEE ALSO
+.bb
+getc(), fseek()
+.eb

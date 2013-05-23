@@ -1,0 +1,18 @@
+* use ../../defs/os9defs.a
+
+* Converted to new ABI on December 5, 2004
+
+ psect cfinish_a,0,0,1,0,0
+* normal exit - buffers flushed if there are any
+exit: pshs d
+ lbsr _dumprof profile dump (if necessary)
+ lbsr _tidyup
+ puls d
+
+* abnormal exit - no buffer flushing
+* the argument to either exit entry is taken to be the
+* F$EXIT status
+_exit:
+* exit statis already in D
+ os9 F$Exit and bye-bye!
+ endsect

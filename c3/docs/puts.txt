@@ -1,0 +1,33 @@
+.so header
+.tl /PUTS(3C)/Kreider OS-9 C Library/PUTS(3C)/
+.sh NAME
+.bb
+puts, fputs - put a string on an output stream
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+puts(s)
+char *s;
+.sp
+fputs(s, fp)
+char *s;
+FILE *fp;
+.eb
+.sh DESCRIPTION
+.db
+The \fBPUTS\fP subroutine copies the null-terminated string \fIs\fP to the standard output stream \fIstdout\fP and appends a new line character.
+.PP
+The \fBFPUTS\fP subroutine copies the null-terminated string \fIs\fP to the named output \fIfp.\fP
+.pp
+Neither routine copies the terminal null character.
+.ed
+.sh CAVEATS
+.db
+The \fBPUTS\fP subroutine appends a new line, while \fBFPUTS\fP does not. This inconsistency of the new-line being appended by \fBPUTS\fP and not by \fBFPUTS\fP is dictated by history and the desire for compatibility.
+.ed
+.sh SEE ALSO
+.bb
+fopen(), gets(), putc(), printf(), ferror() fread() 
+.eb

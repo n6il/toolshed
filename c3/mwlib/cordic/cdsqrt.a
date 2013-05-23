@@ -1,0 +1,176 @@
+ nam C Square Root
+ ttl Double Precision Square Root
+ 
+ psect _sqrt_c,0,0,0,0,0
+ 
+ vsect 
+_cntr rmb 1
+ endsect
+ 
+carry equ %00000001
+
+
+***************
+* Subroutine sqrt
+sqrt: lda 2,s
+* lbmi _illarg
+ ora #$80 or in implied bit
+ sta 2,s
+ ldb #55 set cycle count
+ stb _cntr,y
+ lda 9,s get exponent
+ lbeq _retzero
+ adda #128 remove bias
+ inca adjust exponent for even/odd test
+ asra exponent/2
+ sta 9,s save it
+ leas -14,s get extra stack space
+ ldd 16,s get msdb
+ bcs sqrt.a bra if even exponent
+ lsra adjust mantissa for odd exponent
+ rorb
+ std 7,s
+ ldd 18,s
+ rora
+ rorb
+ std 9,s
+ ldd 20,s
+ rora
+ rorb
+ std 11,s
+ lda 22,s
+ rora
+ bra sqrt.b
+sqrt.a std 7,s copy mantissa
+ ldd 18,s
+ std 9,s
+ ldd 20,s
+ std 11,s
+ lda 22,s
+sqrt.b sta 13,s
+ clra clear result
+ clrb
+ std 16,s
+ std 18,s
+ std 20,s
+ sta 22,s
+ std 0,s clear temp
+ std 2,s
+ std 4,s
+ sta 6,s
+ bra sqrt.d
+sqrt.c orcc #carry set carry
+ rol 22,s shift in result bit
+ rol 21,s
+ rol 20,s
+ rol 19,s
+ rol 18,s
+ rol 17,s
+ rol 16,s
+ dec _cntr,y count down
+ beq sqrt.f
+ lbsr _sqshf call double shifter
+sqrt.d ldb 7,s get lsb affected
+ subb #$40
+ stb 7,s
+ ldd 5,s get next byte
+ sbcb 22,s
+ sbca 21,s
+ std 5,s
+ ldd 3,s
+ sbcb 20,s
+ sbca 19,s
+ std 3,s
+ ldd 1,s
+ sbcb 18,s
+ sbca 17,s
+ std 1,s
+ ldb 0,s
+ sbcb 16,s
+ stb 0,s
+ bpl sqrt.c
+sqrt.e andcc #^carry
+ rol 22,s
+ rol 21,s
+ rol 20,s
+ rol 19,s
+ rol 18,s
+ rol 17,s
+ rol 16,s
+ dec _cntr,y count down
+ beq sqrt.f bra if done
+ bsr _sqshf call double shifter
+ ldb 7,s get lsb affected
+ addb #$C0
+ stb 7,s
+ ldd 5,s get next byte
+ adcb 22,s
+ adca 21,s
+ std 5,s
+ ldd 3,s
+ adcb 20,s
+ adca 19,s 
+ std 3,s
+ ldd 1,s
+ adcb 18,s
+ adca 17,s
+ std 1,s
+ ldb 0,s
+ adcb 16,s
+ stb 0,s
+ bmi sqrt.e
+ lbra sqrt.c
+sqrt.f ldd 16,s get result msdb
+ bra sqrt.h do last shift
+sqrt.g dec 23,s adjust exponent
+* lbvs flzero
+sqrt.h asl 22,s
+ rol 21,s
+ rol 20,s
+ rol 19,s
+ rol 18,s
+ rolb
+ rola
+ bpl sqrt.g bra if not normalized
+ anda #$7F clear implied bit
+ std 16,s
+ leas 14,s pop temp stack space
+ lda 9,s get result exponent
+ suba #128 restore bias
+ sta 9,s
+ leax 2,s
+ leau _flacc,y move result 
+ lbsr _ccdmove
+ leax 0,u return pointer to result
+ rts
+ 
+_sqshf ldb #2
+_sqshf2 asl 15,s
+ rol 14,s
+ rol 13,s
+ rol 12,s
+ rol 11,s
+ rol 10,s
+ rol 9,s
+ rol 8,s
+ rol 7,s
+ rol 6,s
+ rol 5,s
+ rol 4,s
+ rol 3,s
+ rol 2,s
+ decb
+ bne _sqshf2
+ rts
+ 
+* return zero when argument is zero
+_retzero leax _flacc,y get accumulator address
+ clra
+ clrb
+ std 0,x
+ std 2,x
+ std 4,x
+ std 6,x
+ rts
+ 
+ endsect

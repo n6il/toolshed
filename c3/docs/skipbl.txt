@@ -1,0 +1,40 @@
+.so header
+.he /SKIPBL(3C)/Kreider OS-9 C Library/SKIPBL(3C)/
+.sh NAME
+.bb
+skipbl - Skips spaces and tabs within a string
+.eb
+.sh SYNOPSIS
+.bb
+char *skipbl(s)
+char *s
+.eb
+.sh DESCRIPTION
+.db \fBSKIPBL\fP skips over all spaces (0x20) and tabs (0x09) in a string and returns an
+updated pointer to the next non-blank character.
+.sp
+Since the function returns a pointer, is must be declared prior to calling as
+a type CHAR function.
+.ed
+.sh EXAMPLE
+.bb
+Before entering, the pointer is positioned as:
+
+.in +5
+Now    is    the    time
+   ^
+.in -5
+
+skipbl("Now    is    the    time")
+
+returns the pointer as:
+
+.in +5
+Now    is    the    time
+       ^
+.in -5
+.eb
+.sh SEE ALSO
+.bb
+skipwd()
+.eb

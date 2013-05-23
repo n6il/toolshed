@@ -1,0 +1,41 @@
+.so header
+.he /MKNOD(3S)/Kreider OS-9 C Library/MKNOD(3S)/
+.sh NAME
+.bb
+mknod - create a directory
+.eb
+.sh SYNOPSIS
+.bb
+#include <modes.h>
+.sp
+mknod(fname, desc)
+char *fname;
+int desc;
+.eb
+.sh DESCRIPTION
+.db \fBMKNOD\fP may be used to create a new directory. \fIFname\fP should be a pointer to a
+string containing the desired directory name. \fIDesc\fP is a descriptor
+specifying the desired modes (file type) and the permissions of the new file.
+.sp
+The include file defines possible values for \fIdesc\fP as follows:
+.bb
+/* permissions */
+.sp
+#define  S_IREAD   0x01      /* owner read */
+#define  S_IWRITE  0x02      /* owner write */
+#define  S_IEXEC   0x04      /* owner execute */
+#define  S_IOREAD  0x08      /* public read */
+#define  S_IOWRITE 0x10      /* public write */
+#define  S_IOEXEC  0x20      /* public execute */
+#define  S_ISHARE  0x40      /* sharable */
+.eb
+.ed
+.sh DIAGNOSTICS
+.db
+Zero is returned if the directory has been successfully made, -1 if the file
+already exists.
+.ed
+.sh SEE ALSO
+.bb
+OS-9 command "makdir"
+.eb

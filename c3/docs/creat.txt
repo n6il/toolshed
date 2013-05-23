@@ -1,0 +1,63 @@
+.so header
+.tl /CREAT(3S)/Kreider OS-9 C Library/CREAT(3S)/
+.sh NAME
+.bb
+creat - create a new file
+.eb
+.sh SYNOPSIS
+.bb
+#include <modes.h>
+.sp
+creat(fname, perms)
+char *fname;
+int perms;
+.eb
+.sh DESCRIPTION
+.db \fBCREAT\fP returns a path number to a new file available for writing, giving it
+the permissions specified in the \fIperm\fP variable and making the process user
+the owner of the file. If, however, \fIfname\fP is the name of an already
+existing file, the file is truncated to zero length and the ownership and
+permissions remain unchanged. Note, that unlike the OS-9 assembler service
+request, \fBCREAT\fP DOES NOT return an error if the file already exists. \fIAccess()\fP should be used to establish the existance of the file if it is important that
+a file should not be overwritten.
+.PP
+It is unnecessary to specifiy writing permissions in \fIperm\fP in order to
+write to the file in the current process.
+.PP
+The following permissions are defined in the the include file \fBMODES.H\fP as follows:
+.bb
+/* File Modes */
+.sp
+#define  S_IFMT     0xff  /* mask for type of file */
+#define  S_IFDIR    0x80  /* directory */
+.sp
+/* Permissions */
+.sp
+#define  S_IPRM     0xff  /* mask for permission bits */
+#define  S_IREAD    0x01  /* owner read */
+#define  S_IWRITE   0x02  /* owner write */
+#define  S_IEXEC    0x04  /* owner execute */
+#define  S_IOREAD   0x08  /* public read */
+#define  S_IOWRITE  0x10  /* public write */
+#define  S_IOEXEC   0x20  /* public execute */
+#define  S_ISHARE   0x40  /* sharable */
+.eb
+Directories may not be created with this call -- use \fImknod()\fP instead.
+.ed
+.sh DIAGNOSTICS
+.db
+This call returns -1 if there are too many files opened, if the pathname
+cannot be searched, if permission to write is denied, or of the file
+already exists and IS A DIRECTORY.
+.ed
+.sh CAVEATS
+.db
+File permissions that specify either owner or public executable files will
+cause the new file to be created in the current execution directory. All
+other permissions will cause the file to be created in the current data
+directory. To create an executeable file in the current data directory, see \fIcreate().\f
+.ed
+.sh SEE ALSO
+.bb
+create(), write(), close(), chmod()
+.eb

@@ -1,0 +1,34 @@
+.so header
+.tl /FINDSTR(3C)/Kreider OS-9 C Library/FINDSTR(3C)/
+.sh NAME
+.bb
+findstr, findnstr - string search
+.eb
+.sh SYNOPSIS
+.bb
+findstr(pos, string, pattern)
+char *string, *pattern;
+int pos;
+.sp
+findnstr(pos, string, pattern, len)
+char *string, *pattern;
+int pos, len;
+.eb
+.sh DESCRIPTION
+.db
+These functions search the string pointed to by \fIstring\fP for the first instance of the pattern pointed to by \fIpattern\fP starting at position \fIpos\fP (where the first position in a string is 1 not 0). The returned value is
+the position of the first matched character of the pattern in the string, or
+zero if a match is not found.
+.PP \fBFINDSTR\fP stops searching the string when a null byte is found.
+.PP \fBFINDNSTR\fP only stops searching at position \fIpos + len\fP so it may continue past nulls.
+.ed
+.sh CAVEATS
+.db
+The current implementation does not use the most efficient algorithm for
+pattern matching so use on very long strings is likely to be somewhat
+slow.
+.ed
+.sh SEE ALSO
+.bb
+patmatch(), index(), rindex(), strchr(), strrchr()
+.eb

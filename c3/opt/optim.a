@@ -1,0 +1,1572 @@
+ psect optim_c,0,0,0,0,0
+ nam optim_c
+ vsect
+d_
+ fcc "d"
+ fcb $0
+
+ endsect
+ vsect
+x_
+ fcc "x"
+ fcb $0
+
+ endsect
+ vsect
+y_
+ fcc "y"
+ fcb $0
+
+ endsect
+ vsect
+u_
+ fcc "u"
+ fcb $0
+
+ endsect
+ vsect
+dx
+ fcc "d,x"
+ fcb $0
+
+ endsect
+ vsect
+dy
+ fcc "d,y"
+ fcb $0
+
+ endsect
+ vsect
+du
+ fcc "d,u"
+ fcb $0
+
+ endsect
+ vsect
+dxu
+ fcc "d,x,u"
+ fcb $0
+
+ endsect
+ vsect
+dxyu
+ fcc "d,x,y,u"
+ fcb $0
+
+ endsect
+ vsect
+xupc
+ fcc "x,u,pc"
+ fcb $0
+
+ endsect
+ vsect
+yd
+ fcc "y,d"
+ fcb $0
+
+ endsect
+ vsect
+yu
+ fcc "y,u"
+ fcb $0
+
+ endsect
+ vsect
+ud
+ fcc "u,d"
+ fcb $0
+
+ endsect
+ vsect
+upc
+ fcc "u,pc"
+ fcb $0
+
+ endsect
+ vsect
+clra
+ fcc "clra"
+ fcb $0
+
+ endsect
+ vsect
+clrb
+ fcc "clrb"
+ fcb $0
+
+ endsect
+ vsect
+cmpb
+ fcc "cmpb"
+ fcb $0
+
+ endsect
+ vsect
+cmpd
+ fcc "cmpd"
+ fcb $0
+
+ endsect
+ vsect
+cmpx
+ fcc "cmpx"
+ fcb $0
+
+ endsect
+ vsect
+cmpy
+ fcc "cmpy"
+ fcb $0
+
+ endsect
+ vsect
+cmpu
+ fcc "cmpu"
+ fcb $0
+
+ endsect
+ vsect
+ldb
+ fcc "ldb"
+ fcb $0
+
+ endsect
+ vsect
+ldd
+ fcc "ldd"
+ fcb $0
+
+ endsect
+ vsect
+ldx
+ fcc "ldx"
+ fcb $0
+
+ endsect
+ vsect
+ldy
+ fcc "ldy"
+ fcb $0
+
+ endsect
+ vsect
+ldu
+ fcc "ldu"
+ fcb $0
+
+ endsect
+ vsect
+stb
+ fcc "stb"
+ fcb $0
+
+ endsect
+ vsect
+std
+ fcc "std"
+ fcb $0
+
+ endsect
+ vsect
+stx
+ fcc "stx"
+ fcb $0
+
+ endsect
+ vsect
+sty
+ fcc "sty"
+ fcb $0
+
+ endsect
+ vsect
+stu
+ fcc "stu"
+ fcb $0
+
+ endsect
+ vsect
+pshs
+ fcc "pshs"
+ fcb $0
+
+ endsect
+ vsect
+puls
+ fcc "puls"
+ fcb $0
+
+ endsect
+ vsect
+leax
+ fcc "leax"
+ fcb $0
+
+ endsect
+ vsect
+leay
+ fcc "leay"
+ fcb $0
+
+ endsect
+ vsect
+leau
+ fcc "leau"
+ fcb $0
+
+ endsect
+ vsect
+leas
+ fcc "leas"
+ fcb $0
+
+ endsect
+ vsect
+sex
+ fcc "sex"
+ fcb $0
+
+ endsect
+ vsect
+tfr
+ fcc "tfr"
+ fcb $0
+
+ endsect
+ vsect
+zero
+ fcc "#0"
+ fcb $0
+
+ endsect
+ vsect
+p2x
+ fcc "2,x"
+ fcb $0
+
+ endsect
+ vsect
+p1x
+ fcc "1,x"
+ fcb $0
+
+ endsect
+ vsect
+zx
+ fcc "0,x"
+ fcb $0
+
+ endsect
+ vsect
+m1x
+ fcc "-1,x"
+ fcb $0
+
+ endsect
+ vsect
+m2x
+ fcc "-2,x"
+ fcb $0
+
+ endsect
+ vsect
+p2y
+ fcc "2,y"
+ fcb $0
+
+ endsect
+ vsect
+p1y
+ fcc "1,y"
+ fcb $0
+
+ endsect
+ vsect
+zy
+ fcc "0,y"
+ fcb $0
+
+ endsect
+ vsect
+m1y
+ fcc "-1,y"
+ fcb $0
+
+ endsect
+ vsect
+m2y
+ fcc "-2,y"
+ fcb $0
+
+ endsect
+ vsect
+p2u
+ fcc "2,u"
+ fcb $0
+
+ endsect
+ vsect
+p1u
+ fcc "1,u"
+ fcb $0
+
+ endsect
+ vsect
+zu
+ fcc "0,u"
+ fcb $0
+
+ endsect
+ vsect
+m1u
+ fcc "-1,u"
+ fcb $0
+
+ endsect
+ vsect
+m2u
+ fcc "-2,u"
+ fcb $0
+
+ endsect
+ vsect
+p2s
+ fcc "2,s"
+ fcb $0
+
+ endsect
+ vsect
+zs
+ fcc "0,s"
+ fcb $0
+
+ endsect
+ vsect
+m2s
+ fcc "-2,s"
+ fcb $0
+
+ endsect
+ vsect
+litnum
+ fcc "#<"
+ fcb $0
+
+ endsect
+ vsect
+act1b
+ fdb 0
+ fdb std
+ fdb 0
+ endsect
+ vsect
+act1a
+ fdb act1b
+ fdb ldd
+ fdb 1
+ endsect
+ vsect
+rep1a
+ fdb 0
+ fdb std
+ fdb 0
+ endsect
+ vsect
+act2f
+ fdb 0
+ fdb clra
+ fdb 0
+ endsect
+ vsect
+act2e
+ fdb act2f
+ fdb clrb
+ fdb 0
+ endsect
+ vsect
+act2d
+ fdb act2e
+ fdb pshs
+ fdb d_
+ endsect
+ vsect
+rep2d
+ fdb 0
+ fdb clra
+ fdb 0
+ endsect
+ vsect
+act2c
+ fdb act2d
+ fdb clra
+ fdb 0
+ endsect
+ vsect
+rep2c
+ fdb rep2d
+ fdb clrb
+ fdb 0
+ endsect
+ vsect
+act2b
+ fdb act2c
+ fdb clrb
+ fdb 0
+ endsect
+ vsect
+rep2b
+ fdb rep2c
+ fdb pshs
+ fdb d_
+ endsect
+ vsect
+act2a
+ fdb act2b
+ fdb pshs
+ fdb d_
+ endsect
+ vsect
+rep2a
+ fdb rep2b
+ fdb pshs
+ fdb d_
+ endsect
+ vsect
+act3b
+ fdb 0
+ fdb leas
+ fdb p2s
+ endsect
+ vsect
+act3a
+ fdb act3b
+ fdb pshs
+ fdb d_
+ endsect
+ vsect
+rep3a
+ fdb 0
+ fdb std
+ fdb zs
+ endsect
+ vsect
+act4b
+ fdb 0
+ fdb leas
+ fdb p2s
+ endsect
+ vsect
+act4a
+ fdb act4b
+ fdb std
+ fdb m2s
+ endsect
+ vsect
+rep4a
+ fdb 0
+ fdb std
+ fdb _1
+ endsect
+ vsect
+actions:
+ fdb 1
+ fdb act1a
+ fdb rep1a
+ fdb 1
+ fdb act2a
+ fdb rep2a
+ fdb 1
+ fdb act3a
+ fdb rep3a
+ fdb 1
+ fdb act4a
+ fdb rep4a
+ fdb 0
+ fdb 0
+ fdb 0
+ endsect
+ vsect dp
+opsdone: rmb 2
+ endsect
+ vsect
+labelnum:
+ fdb 0
+ endsect
+ vsect
+acslots: rmb 256
+ endsect
+ ttl optinit
+optinit:
+ pshs u
+ leas -2,s
+ leau actions,y
+_4
+ ldd 0,u
+ lbeq _3
+_2
+ ldx 2,u
+ ldd 2,x
+ pshs d
+ lbsr hash
+ leas 2,s
+ aslb
+ rola
+ leax acslots,y
+ leax d,x
+ stx 0,s
+ ldd [0,s]
+ std 0,u
+ stu [0,s]
+_5
+ leau 6,u
+ lbra _4
+_3
+ leas 2,s
+ puls u,pc
+
+ ttl optim
+optim:
+ pshs u
+ ldu 4,s
+ leas -14,s
+ ldu 2,u
+_8
+_6
+ lbra _10
+_9
+ leas -14,x
+_10
+ leax >ilist,y
+ pshs x
+ cmpu ,s++
+ lbeq _11
+_13
+ ldd 0,u
+ std 12,s
+ pshs d
+ leax >ilist,y
+ cmpx ,s++
+ lbne _12
+_11
+ leas 14,s
+ puls u,pc
+
+_12
+ ldx 12,s
+ ldd 4,x
+ lbeq _15
+_14
+ ldd 6,u
+ clra
+ andb #32
+ lbeq _17
+_18
+ ldd 6,u
+ clra
+ andb #63
+ cmpd #33
+ lbeq _17
+_16
+ ldx 19,u
+ ldd 4,x
+ cmpd 12,s
+ lbne _20
+_19
+ ldd 12,s
+ pshs d
+ pshs u
+ lbsr movlab
+ leas 4,s
+ pshs u
+ lbsr remins
+ leas 2,s
+ ldx 12,s
+ ldu 2,x
+ ldd <opsdone
+ addd #1
+ std <opsdone
+ leax 14,s
+ lbra _9
+ lbra _21
+_20
+ ldd 6,u
+ anda #1
+ clrb
+ std -2,s
+ lbeq _23
+_27
+ ldd 4,u
+ lbne _23
+_26
+ ldu 2,u
+ pshs u
+ leax >ilist,y
+ cmpx ,s++
+ lbeq _23
+_25
+ ldd 6,u
+ clra
+ andb #63
+ cmpd #33
+ lble _23
+_24
+ ldx 19,u
+ ldd 4,x
+ cmpd 12,s
+ lbne _23
+_22
+ pshs u
+ lbsr fixcond
+ leas 2,s
+_23
+_21
+_17
+ leas 14,s
+ puls u,pc
+
+_15
+ ldd 12,s
+ addd #8
+ pshs d
+ lbsr hash
+ leas 2,s
+ aslb
+ rola
+ leax acslots,y
+ leax d,x
+ ldd 0,x
+ std 10,s
+ clra
+ clrb
+ std 4,s
+_30
+ ldd 10,s
+ lbeq _29
+_28
+ ldu 12,s
+ clra
+ clrb
+ std 2,s
+ ldx 10,s
+ ldd 2,x
+ std 8,s
+_34
+ ldd 8,s
+ lbeq _33
+_32
+ leax >ilist,y
+ pshs x
+ cmpu ,s++
+ lbeq _36
+_38
+ ldd 4,u
+ lbeq _37
+_36
+ lbra _33
+_37
+ ldx 8,s
+ ldd 2,x
+ lbeq _40
+_41
+ ldx 8,s
+ ldd 2,x
+ pshs d
+ pshs u
+ ldd #8
+ addd ,s++
+ pshs d
+ lbsr match
+ leas 4,s
+ std -2,s
+ lbne _40
+_39
+ lbra _33
+_40
+ ldx 8,s
+ ldd 4,x
+ lbeq _43
+_42
+ ldx 8,s
+ ldd 4,x
+ cmpd #1
+ lbne _45
+_44
+ leax >ilist,y
+ cmpx 2,u
+ lbne _47
+_46
+ lbra _33
+_47
+ ldx 2,u
+ ldd 19,x
+ pshs d
+ ldd 19,u
+ pshs d
+ lbsr match
+ leas 4,s
+ std -2,s
+ lbne _49
+_48
+ lbra _33
+_49
+ lbra _50
+_45
+ ldx 8,s
+ ldd 4,x
+ pshs d
+ ldd 19,u
+ pshs d
+ lbsr match
+ leas 4,s
+ std -2,s
+ lbne _52
+_51
+ lbra _33
+_52
+_50
+_43
+ ldu 2,u
+ ldd 2,s
+ addd #1
+ std 2,s
+_35
+ ldd [8,s]
+ std 8,s
+ lbra _34
+_33
+ ldd 8,s
+ lbne _54
+_53
+ ldd #1
+ std 4,s
+ lbra _29
+_54
+_31
+ ldd [10,s]
+ std 10,s
+ lbra _30
+_29
+ ldd 4,s
+ lbne _56
+_55
+ leas 14,s
+ puls u,pc
+
+_56
+ ldu 12,s
+ ldx 10,s
+ ldd 4,x
+ std 8,s
+_59
+ ldd 8,s
+ lbeq _58
+_57
+ ldx 8,s
+ ldd 2,x
+ lbeq _62
+_61
+ ldx 8,s
+ ldd 2,x
+ pshs d
+ pshs u
+ ldd #8
+ addd ,s++
+ pshs d
+ lbsr strcpy
+ leas 4,s
+_62
+ ldx 8,s
+ ldd 4,x
+ lbeq _64
+_63
+ ldx 8,s
+ ldd 4,x
+ pshs d
+ ldd 19,u
+ pshs d
+ lbsr strcpy
+ leas 4,s
+_64
+ ldu 2,u
+ ldd 2,s
+ addd #-1
+ std 2,s
+_60
+ ldd [8,s]
+ std 8,s
+ lbra _59
+_58
+_66
+ ldd 2,s
+ lble _65
+_67
+ ldd 2,u
+ std 12,s
+ pshs u
+ lbsr remins
+ leas 2,s
+ ldd <opsdone
+ addd #1
+ std <opsdone
+ ldu 12,s
+ ldd 2,s
+ addd #-1
+ std 2,s
+ lbra _66
+_65
+ leas 14,s
+ puls u,pc
+
+ lbra _8
+_7
+ leas 14,s
+ puls u,pc
+
+ ttl fixcond
+fixcond:
+ pshs u
+ ldu 4,s
+ ldd 6,u
+ clra
+ andb #63
+ eorb #1
+ pshs d
+ ldx 0,u
+ ldd 6,x
+ anda #254
+ andb #192
+ ora ,s+
+ orb ,s+
+ std 6,u
+ ldd 6,u
+ clra
+ andb #31
+ aslb
+ rola
+ leax bratab,y
+ leax d,x
+ ldd 0,x
+ pshs d
+ pshs u
+ ldd #8
+ addd ,s++
+ pshs d
+ lbsr strcpy
+ leas 4,s
+ ldd 19,u
+ pshs d
+ pshs u
+ lbsr remref
+ leas 4,s
+ ldx 0,u
+ ldd 19,x
+ std 19,u
+ pshs d
+ pshs u
+ lbsr insref
+ leas 4,s
+ ldd 0,u
+ pshs d
+ lbsr remins
+ leas 2,s
+ ldd <opsdone
+ addd #1
+ std <opsdone
+ puls u,pc
+
+ ttl match
+match:
+ pshs u
+ ldu 4,s
+ ldd 6,s
+ lbne _69
+_68
+ ldd #1
+ puls u,pc
+
+_69
+_71
+ ldb [6,s]
+ lbeq _70
+_72
+ ldb [6,s]
+ sex
+ cmpd #60
+ lbne _74
+_73
+ ldb 0,u
+ sex
+ leax _chcodes,y
+ leax d,x
+ ldb 0,x
+ sex
+ clra
+ andb #8
+ lbeq _76
+_75
+ leas -2,s
+ clra
+ clrb
+ std 0,s
+_79
+ ldd 0,s
+ pshs d
+ ldd #10
+ lbsr  ccmult
+ pshs d
+ leau 1,u
+ ldb -1,u
+ sex
+ addd ,s++
+ addd #-48
+ std 0,s
+_77
+ ldb 0,u
+ sex
+ leax _chcodes,y
+ leax d,x
+ ldb 0,x
+ sex
+ clra
+ andb #8
+ lbne _79
+_78
+ ldd 0,s
+ cmpd #255
+ lbls _81
+_80
+ clra
+ clrb
+ leas 2,s
+ puls u,pc
+
+_81
+ leas 2,s
+ lbra _82
+_76
+ clra
+ clrb
+ puls u,pc
+
+_82
+ ldd 6,s
+ addd #1
+ std 6,s
+ lbra _83
+_74
+ leau 1,u
+ ldb -1,u
+ sex
+ pshs d
+ ldx 8,s
+ leax 1,x
+ stx 8,s
+ ldb -1,x
+ sex
+ cmpd ,s++
+ lbeq _85
+_84
+ clra
+ clrb
+ puls u,pc
+
+_85
+_83
+ lbra _71
+_70
+ ldb 0,u
+ lbne _86
+_87
+ ldd #1
+ lbra _88
+_86
+ clra
+ clrb
+_88
+ puls u,pc
+
+ ttl finddupl
+finddupl:
+ pshs u
+ ldu 4,s
+ leas -10,s
+ leax >ilist,y
+ cmpx 2,u
+ lbne _90
+_89
+ leas 10,s
+ puls u,pc
+
+_90
+ clra
+ clrb
+ std 0,s
+ ldd 4,u
+ std 6,s
+_93
+ ldd 6,s
+ lbeq _92
+_91
+ ldx 6,s
+ ldd 6,x
+ std 4,s
+_97
+ ldd 4,s
+ lbeq _96
+_95
+ ldx 4,s
+ ldd 2,x
+ std 8,s
+ ldx 8,s
+ ldd 4,x
+ lbeq _100
+_102
+ ldx 8,s
+ ldd 6,x
+ anda #1
+ clrb
+ std -2,s
+ lbeq _100
+_101
+ ldx 8,s
+ ldd 6,x
+ clra
+ andb #128
+ lbne _100
+_99
+ lbsr newchain
+ std 2,s
+ ldd 0,s
+ std [2,s]
+ ldd 2,s
+ std 0,s
+ ldd 8,s
+ ldx 0,s
+ std 2,x
+_100
+_98
+ ldd [4,s]
+ std 4,s
+ lbra _97
+_96
+_94
+ ldx 6,s
+ ldd 8,x
+ std 6,s
+ lbra _93
+_92
+_104
+ ldd 0,s
+ lbeq _103
+_105
+ pshs u
+ ldx 2,s
+ ldd 2,x
+ std 10,s
+ pshs d
+ lbsr movlab
+ leas 4,s
+ ldx 8,s
+ ldd 2,x
+ std 8,s
+ pshs d
+ leax >ilist,y
+ cmpx ,s++
+ lbeq _107
+_108
+ ldx 8,s
+ ldd 6,x
+ clra
+ andb #32
+ lbeq _107
+_106
+ ldx 8,s
+ ldd 6,x
+ anda #1
+ clrb
+ std -2,s
+ lbeq _110
+_109
+ ldd [8,s]
+ pshs d
+ lbsr remins
+ leas 2,s
+ lbra _111
+_110
+ ldx 8,s
+ ldd 6,x
+ clra
+ andb #63
+ cmpd #33
+ lble _113
+_114
+ ldx 8,s
+ ldx 19,x
+ ldd 4,x
+ ldx 8,s
+ cmpd [0,x]
+ lbne _113
+_112
+ ldd 8,s
+ pshs d
+ lbsr fixcond
+ leas 2,s
+_113
+_111
+_107
+ ldd [0,s]
+ std 2,s
+ ldd 0,s
+ pshs d
+ lbsr freechai
+ leas 2,s
+ ldd 2,s
+ std 0,s
+ lbra _104
+_103
+ ldx 2,u
+ ldd 6,x
+ anda #1
+ clrb
+ std -2,s
+ lbne _116
+_115
+ ldd 4,u
+ std 6,s
+_119
+ ldd 6,s
+ lbeq _118
+_117
+ ldx 6,s
+ ldd 6,x
+ std 4,s
+_123
+ ldd 4,s
+ lbeq _122
+_121
+ ldx 4,s
+ ldd 2,x
+ std 8,s
+ tfr d,x
+ ldd 6,x
+ anda #1
+ clrb
+ std -2,s
+ lbeq _126
+_125
+ ldd 8,s
+ pshs d
+ ldx 8,s
+ ldd 8,x
+ pshs d
+ lbsr duplrefs
+ leas 4,s
+_126
+_124
+ ldd [4,s]
+ std 4,s
+ lbra _123
+_122
+_120
+ ldx 6,s
+ ldd 8,x
+ std 6,s
+ lbra _119
+_118
+ pshs u
+ ldd 4,u
+ pshs d
+ lbsr duplrefs
+ leas 4,s
+_116
+ ldd 6,u
+ anda #1
+ clrb
+ std -2,s
+ lbeq _128
+_127
+ ldd 6,u
+ clra
+ andb #32
+ lbeq _130
+_129
+ ldx 19,u
+ ldd 4,x
+ std 8,s
+ lbeq _132
+_131
+ ldx 8,s
+ ldd 2,x
+ pshs d
+ ldd 2,u
+ pshs d
+ lbsr duplsrch
+ leas 4,s
+ std -2,s
+ lbne _134
+_133
+ pshs u
+ ldx 10,s
+ ldd 4,x
+ pshs d
+ lbsr duplrefs
+ leas 4,s
+_134
+ lbra _135
+_132
+ pshs u
+ ldd 19,u
+ pshs d
+ lbsr duplrefs
+ leas 4,s
+_135
+ lbra _136
+_130
+ ldd 2,u
+ std 8,s
+_139
+ leax >ilist,y
+ cmpx 8,s
+ lbeq _138
+_137
+ ldx 8,s
+ ldd 6,x
+ anda #1
+ clrb
+ std -2,s
+ lbeq _141
+_143
+ ldx 8,s
+ ldd 6,x
+ clra
+ andb #160
+ lbeq _142
+_141
+ lbra _140
+_142
+ ldd 8,s
+ addd #8
+ pshs d
+ pshs u
+ ldd #8
+ addd ,s++
+ pshs d
+ lbsr strcmp
+ leas 4,s
+ std -2,s
+ lbne _145
+_147
+ ldx 8,s
+ ldd 19,x
+ pshs d
+ ldd 19,u
+ pshs d
+ lbsr strcmp
+ leas 4,s
+ std -2,s
+ lbne _145
+_146
+ ldd 2,u
+ pshs d
+ ldx 10,s
+ ldd 2,x
+ pshs d
+ lbsr duplsrch
+ leas 4,s
+ std -2,s
+ lbeq _145
+_144
+ lbra _138
+_145
+_140
+ ldx 8,s
+ ldd 2,x
+ std 8,s
+ lbra _139
+_138
+_136
+_128
+ leas 10,s
+ puls u,pc
+
+ ttl duplsrch
+duplsrch:
+ pshs u
+ ldu 4,s
+ leas -20,s
+ clra
+ clrb
+ std 0,s
+ stu 6,s
+ pshs u
+ ldd 28,s
+ std 6,s
+ cmpd ,s++
+ lbne _149
+_148
+ clra
+ clrb
+ leas 20,s
+ puls u,pc
+
+_149
+_151
+ leax >ilist,y
+ pshs x
+ cmpu ,s++
+ lbeq _150
+_158
+ leax >ilist,y
+ cmpx 26,s
+ lbeq _150
+_157
+ cmpu 4,s
+ lbeq _150
+_156
+ ldd 26,s
+ cmpd 6,s
+ lbeq _150
+_155
+ ldd 6,u
+ clra
+ andb #63
+ pshs d
+ ldx 28,s
+ ldd 6,x
+ clra
+ andb #63
+ cmpd ,s++
+ lbne _150
+_154
+ ldd 6,u
+ clra
+ andb #128
+ lbne _150
+_153
+ ldd 6,u
+ clra
+ andb #32
+ lbeq _159
+_160
+ ldx 19,u
+ ldd 4,x
+ lbeq _161
+_162
+ ldx 19,u
+ ldd 4,x
+ ldx 26,s
+ ldx 19,x
+ cmpd 4,x
+ lbne _163
+_164
+ ldd #1
+ lbra _165
+_163
+ clra
+ clrb
+_165
+ lbra _166
+_161
+ ldd 19,u
+ ldx 26,s
+ cmpd 19,x
+ lbne _167
+_168
+ ldd #1
+ lbra _169
+_167
+ clra
+ clrb
+_169
+_166
+ lbra _170
+_159
+ ldd 26,s
+ addd #8
+ pshs d
+ pshs u
+ ldd #8
+ addd ,s++
+ pshs d
+ lbsr strcmp
+ leas 4,s
+ std -2,s
+ lbne _171
+_173
+ ldx 26,s
+ ldd 19,x
+ pshs d
+ ldd 19,u
+ pshs d
+ lbsr strcmp
+ leas 4,s
+ std -2,s
+ lbne _171
+_172
+ ldd #1
+ lbra _174
+_171
+ clra
+ clrb
+_174
+_170
+ lbeq _150
+_152
+ ldu 2,u
+ ldx 26,s
+ ldd 2,x
+ std 26,s
+ ldd 0,s
+ addd #1
+ std 0,s
+ lbra _151
+_150
+ ldu 0,u
+ ldd 0,s
+ lbeq _176
+_175
+ ldd [26,s]
+ std 26,s
+ std 4,s
+ ldd 4,u
+ std 2,s
+ lbne _178
+_177
+ ldx 26,s
+ ldd 4,x
+ std 2,s
+ lbne _180
+_179
+ leax 8,s
+ pshs x
+ lbsr newbra
+ leas 2,s
+ pshs d
+ lbsr inslabel
+ leas 2,s
+ std 2,s
+ ldd 26,s
+ ldx 2,s
+ std 4,x
+ ldd 2,s
+ ldx 26,s
+ std 4,x
+_180
+_178
+_182
+ ldd 0,s
+ addd #-1
+ std 0,s
+ subd #-1
+ lblt _181
+_183
+ ldd 26,s
+ pshs d
+ pshs u
+ lbsr movlab
+ leas 4,s
+ ldu 0,u
+ ldd 2,u
+ pshs d
+ lbsr remins
+ leas 2,s
+ ldd <opsdone
+ addd #1
+ std <opsdone
+ ldd [26,s]
+ std 26,s
+ lbra _182
+_181
+ clra
+ clrb
+ pshs d
+ ldd 4,s
+ addd #12
+ pshs d
+ leax _184,pcr
+ pshs x
+ pshs u
+ lbsr insins
+ leas 8,s
+ pshs u
+ lbsr optim
+ leas 2,s
+ ldd 4,s
+ pshs d
+ ldx 6,s
+ ldd 4,x
+ pshs d
+ lbsr duplrefs
+ leas 4,s
+ ldd #1
+ leas 20,s
+ puls u,pc
+
+_176
+ clra
+ clrb
+ leas 20,s
+ puls u,pc
+
+ ttl duplrefs
+duplrefs:
+ pshs u
+ leas -2,s
+_187
+ ldd 6,s
+ lbeq _186
+_185
+ ldx 6,s
+ ldd 6,x
+ std 0,s
+_191
+ ldd 0,s
+ lbeq _190
+_189
+ ldx 0,s
+ ldu 2,x
+ ldd 6,u
+ anda #1
+ clrb
+ std -2,s
+ lbeq _194
+_196
+ ldd 6,u
+ clra
+ andb #128
+ lbne _194
+_195
+ ldx 8,s
+ ldd 2,x
+ pshs d
+ ldd 2,u
+ pshs d
+ lbsr duplsrch
+ leas 4,s
+ std -2,s
+ lbeq _194
+_193
+ lbra _190
+_194
+_192
+ ldd [0,s]
+ std 0,s
+ lbra _191
+_190
+_188
+ ldx 6,s
+ ldd 8,x
+ std 6,s
+ lbra _187
+_186
+ leas 2,s
+ puls u,pc
+
+_1 fcc ",s++"
+ fcb $0
+
+_184 fcc "lbra"
+ fcb $0
+
+ endsect

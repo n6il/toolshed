@@ -1,0 +1,33 @@
+.so header
+.tl /WAIT(3S)/Kreider OS-9 C Library/WAIT(3S)/
+.sh NAME
+.bb
+wait - wait for a process termination
+.eb
+.sh SYNOPSIS
+.bb
+wait(status)
+int *status;
+.sp
+wait(0)
+.eb
+.sh DESCRIPTION
+.db \fBWAIT\fP is used to halt the current process until a child process has terminated.
+.sp \fBWAIT\fP returns the process ID of the terminating process and places the status of
+that process in the integer pointed to by \fIstatus\fP unless \fIstatus\fP is zero. A \fBWAIT\fP must be executed for each child process spawned.
+.sp
+The status of the terminating child process will contain the argument of the \fIexit()\fP or \fI_exit()\fP call if the child process or the signal number if it was interrupted. A
+normally terminating C program with no call to \fIexit\fP or \fI_exit\fP has an implied call of \fIexit(0).\f
+.ed
+.sh CAVEATS
+.db \fBNOTE\fP that the status is the OS-9 status code and is not compatible with codes from
+other operating systems.
+.ed
+.sh DIAGNOSTICS
+.db
+A -1 is returned if there is no child to be waited for.
+.ed
+.sh SEE ALSO
+.bb
+os9fork(), signal(), exit(), _exit()
+.eb

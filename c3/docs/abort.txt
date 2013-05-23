@@ -1,0 +1,14 @@
+.so header
+.tl /ABORT(3C)/Kreider OS-9 C Library/ABORT(3C)/
+.sh NAME
+.bb
+abort - stop the program and produce a core dump
+.eb
+.sh SYNOPSIS
+.bb
+abort()
+.eb
+.sh DESCRIPTION
+.db
+This call causes a memory image to be written out to the file \fIcore\fP in the current directory, and then the program exits with a status of 1.
+.ed

@@ -1,0 +1,7 @@
+Rmxlab Version 1.0
+
+This program removes unused local labels from an assembler file.
+
+Usage:
+rmxlab <filename> >outfile
+

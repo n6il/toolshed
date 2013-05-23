@@ -1,0 +1,86 @@
+.so header
+.tl /CTIME(3C)/Kreider OS-9 C Library/CTIME(3C)/
+.sh NAME
+.bb
+ctime, localtime, gmtime, asctime, tzset - convert date and time
+.eb
+.sh SYNOPSIS
+.bb
+#include <utime.h>
+.PP
+*ctime (clock)
+long *clock;
+.PP
+*localtime (clock)
+long *clock;
+.PP
+*asctime (tm)
+struct tm *tm;
+.PP
+extern long timezone;  /* used here for compatibility only */
+.PP
+extern int daylight;
+.PP
+void tzset()
+.eb
+.sh DESCRIPTION
+.db \fBCTIME\fP converts a long integer, usually returned from \fBTIME()\fP , or pointed to by \fIclock,\fP representing the time in
+seconds since 00:00:00, January 1, 1970, and returns a pointer to a
+26-character string in the following form:
+.PP
+.in +5
+Sun Sep 16 01:03:52 1973\\n\\0
+.PP
+.in -5
+The \fBTIME\fP function is ideally suited to return the long interger time value.
+.PP \fBLOCALTIME\fP returns a pointer to the \fItm\fP structure.
+.PP \fBASCTIME\fP converts a \fItm\fP structure to a 26-character string, as shown in the
+above example, and returns a pointer to the string.
+.PP
+For user convience,
+declarations of all the functions and the externals, and the \fItm\fP structure,
+are provided in the <utime.h> header file, shown on the next page.
+.PP
+The external long variable \fItimezone\fP is always zero.
+.ed
+.sh EXAMPLE
+.bb
+To print the current time:
+.PP
+long curr_time;
+curr_time = time ((long *)0);
+printf ("The time is: %s", ctime(&curr_time));
+.eb
+.sh BUGS
+.db
+The return values point to static data whose content is overwritten by each
+call.
+.ed
+.sh SEE ALSO
+.bb
+time(), o2utime(), u2otime()
+.bp
+/*
+**      Utime.h
+*/
+
+struct tm {
+      int   tm_sec;       /* seconds (0 - 59)         */
+      int   tm_min;       /* minutes (0 - 59)         */
+      int   tm_hour;      /* hours   (0 - 23)         */
+      int   tm_mday;      /* day of month (1 - 31)    */
+      int   tm_mon;       /* month of year (0 - 11)   */
+      int   tm_year;      /* year ( year - 1900)      */
+      int   tm_wday;      /* day of week (Sunday = 0) */
+      int   tm_yday;      /* day of year (0 - 365)    */
+      int   tm_isdst;     /* NOT USED                 */
+      };
+
+long        time();       /* Same as UNIX */
+struct tm   *localtime(); /* Same as UNIX */
+char        *asctime();   /* Same as UNIX */
+char        *ctime();     /* Same as UNIX */
+
+long        o2utime();    /* Convert OS9 style buf to UNIX long */
+/* void */  u2otime();    /* Convert 'tm' to OS9 char *buf */
+.eb

@@ -1,0 +1,25 @@
+.so header
+.tl /SS_REL(2)/Kreider OS-9 C Library/SS_REL(2)/
+.sh NAME
+.bb
+_ss_rel - release a pending signal
+.eb
+.sh SYNOPSIS
+.bb
+int _ss_rel(path)
+int path;
+.eb
+.sh DESCRIPTION
+.db \fBSS_REL\fP cancels the signal to be sent from a device on data ready. The function \fBSS_SSIG\fP enables a device to send a signal to a process when data is available
+on the device. If an error occurs, the function returns the value -1 and the
+appropriate error value is placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+The signal request is also canceled when the issuing process dies or closes
+the path to the device. This feature exists only on \fBSCF\fP devices.
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call, Microware manual, _ss_ssig().
+.eb

@@ -1,0 +1,25 @@
+ psect case_a,0,0,0,0,0
+
+* Converted to new ABI on December 3, 2005
+
+toupper: tstb
+ bmi return
+ leax _chcodes,y
+ lda d,x
+ anda #4
+ beq returnit
+ andb #$df
+ bra returnit
+
+tolower: tstb
+ bmi return
+ leax _chcodes,y
+ lda d,x
+ anda #2
+ beq returnit
+ orb #$20
+
+returnit clra
+return rts
+
+ endsect

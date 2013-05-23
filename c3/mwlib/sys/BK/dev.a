@@ -1,0 +1,28 @@
+*
+* Device system calls
+*
+
+ use ..../defs/os9defs.a
+ psect dev_a,0,0,1,0,0
+
+* attach(devname,mode)
+attach: pshs u save register variable
+ ldx 4,s get name pointer
+ lda 7,s get access mode
+
+ os9 I$ATTACH call os9
+
+ tfr u,d return result in d
+ puls u restore data pointer
+ lbcs _os9err return -1 on error
+ rts
+
+* detach(table)
+detach: pshs u save register variable
+ ldu 4,s get device table pointer
+
+ os9 I$DETACH call os9
+
+ puls u restore register variable
+ lbra _sysret usual return sequence
+ endsect

@@ -1,0 +1,31 @@
+.so header
+.tl /SS_SIZE(2)/Kreider OS-9 C Library/SS_SIZE(2)/
+.sh NAME
+.bb
+_ss_size - change file size
+.eb
+.sh SYNOPSIS
+.bb
+int _ss_size(path, size)
+int path;
+long size;
+.eb
+.sh DESCRIPTION
+.db \fBSS_SIZE\fP is used to change the size of a file opened on \fIpath.\fP The size change
+is immediate.
+.sp
+If the size of the file is decreased, the freed sectors are returned to the
+system. If the size is increased, sectors are added to the file with the
+contents of those sectors being undefined.
+.sp
+If an error occurs, _ss_size returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+This function works only on \fBRBF\fP devices.
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call, Microware manual.
+.eb

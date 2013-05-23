@@ -1,0 +1,31 @@
+.so header
+.he /OPEN(3S)/Kreider OS-9 C Library/OPEN(3S)/
+.sh NAME
+.bb
+open - open a file for read/write access
+.eb
+.sh SYNOPSIS
+.bb
+open(fname, mode)
+char *fname;
+int mode;
+.eb
+.sh DESCRIPTION
+.db \fBOPEN\fP opens an already existing file for reading if \fImode\fP is 1, for writing if \fImode\fP is 2, or reading and writing if \fImode\fP is 3. \fBNOTE\fP that these values are OS-9 specific and are not compatible with other
+systems. \fIFname\fP should point to a string representing the pathname of
+the file to be opened.
+.sp \fBOPEN\fP returns an integer as the "path number" which should be used by I/O
+system calls referring to the file.
+.sp
+The position where reads or writes start is at the beginning of the file.
+.ed
+.sh DIAGNOSTICS
+.db
+A -1 is returned if the file does not exist, if the pathname cannot be
+searched, if too many files are already open, or if the file permissions
+deny the requested mode.
+.ed
+.sh SEE ALSO
+.bb
+creat(), create(), read(), write(), dup(), close()
+.eb

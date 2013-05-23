@@ -1,0 +1,46 @@
+.so header
+.he /OS9FORK(3C)/Kreider OS-9 C Library/OS9FORK(3S)/
+.sh NAME
+.bb
+os9fork - create a new process
+.eb
+.sh SYNOPSIS
+.bb
+os9fork(modname, paramsize, parmamptr, type, lang, datasize)
+char *modname, paramptr;
+int paramsize, type, lang, datasize;
+.eb
+.sh DESCRIPTION
+.db
+The action of \fBF$FORK,\fP the assembler equivalent of \fBOS9FORK\fP is fully described
+in the OS-9 System manual. \fBOS9FORK\fP will create a process that runs
+concurrently with the calling process. When the forked process terminates,
+it will return to the calling process and pass back its exit status.
+.sp \fIModname\fP should point to the name of the desired module. \fIParamsize\fP is the
+length of the parameter string which should always be terminated with a
+'\\n', and \fIparamptr\fP points to the parameter string itself. \fIType\fP is the
+module type as found in the program header (normally a 1 for "program"), and \fIlang\fP should match the language nibble in the module header (C programs have
+a 1 for "6809 machine language"). \fIDatasize\fP may be zero or it may contain
+the number of 256 byte pages to give to the new process as its initial memory
+allocation. If it is zero, the new process' memory allocation will be the
+amount specified in the program header.
+.ed
+.sh DIAGNOSTICS
+.db
+A -1 will be returned on an error, or the ID number of the child process will
+be returned upon success.
+.ed
+.sh EXAMPLE
+.bb
+An example of typical usage would be:
+
+static int stat;
+char *status = &stat;
+
+fork(module, params)
+char *module, *params;
+{
+    os9fork (module, strlen(params), params, 1, 1, 0);
+    wait (status);
+}
+.eb

@@ -1,0 +1,67 @@
+ psect strtok_a,0,0,1,0,0
+
+* Converted to new ABI on December 4, 2005
+
+ vsect
+save fdb 0 safe string ptr
+ endsect
+
+*
+* char  *
+* strtok(string, sepset)
+* char  *string, *sepset;
+*    {
+*    register char  *p;
+*    static   char  *save;
+
+strtok: pshs u
+ tstd
+ beq strtok0
+ tfr d,u get *string
+ clra
+ clrb
+ pshs D get scratch
+*
+*    if ((p = (string == NULL) ? save : string) == NULL)
+*       return (NULL);                            /* no tokens remain */
+ 
+ bra strtok1
+strtok0
+ clra
+ clrb
+ pshs D get scratch
+ ldu save,Y get saved version
+ beq nomore if none left
+*
+*    p += strspn(p, sepset);               /* skip leading seperators */
+strtok1 ldx 6,S get *sepset
+ pshs X set for call
+ tfr u,d
+ lbsr strspn
+ leas 2,S
+ leau D,U
+*
+*    if (*p == '\0')
+*       return (NULL);                            /* no tokens remain */
+ ldb ,U check for end of string
+ beq nomore
+ stu ,S finally something to return
+*
+*    if ((save = strpbrk(p, sepset)) != NULL)  /* find next seperator */
+*       *save++ = '\0';                       /* terminate this token */
+ ldx 6,S
+ pshs X set for call
+ tfr u,d
+ lbsr strpbrk
+ leas 2,s
+ std save,Y update save past end
+ beq nomore
+ tfr D,X
+ clr ,X+
+ stx save,Y
+*
+*    return (p);
+*    }
+nomore puls D,U,PC
+
+ endsect

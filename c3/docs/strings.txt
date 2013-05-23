@@ -1,0 +1,166 @@
+.so header
+.tl /STRINGS(3C)/Kreider OS-9 C Library/STRINGS(3C)/
+.sh NAME
+.bb
+strcat, strucat, strncat, strcmp, strucmp, strncmp, strnucmp,
+strcpy, strucpy, strncpy, strlen, strchr, strrchr, strpbrk,
+strspn, strcspn, strtok, strclr, strend, reverse, pwcryp
+index, rindex
+.sp
+String operations
+.eb
+.sh SYNOPSIS
+.bb
+#include <string.h>
+.sp
+char *strcat (s1, s2)
+char *s1, *s2;
+.sp
+char *strucat (s1, s2, n)
+char *s1, *s2;
+int n;
+.sp
+char *strncat (s1, s2, n)
+char *s1, *s2
+int n;
+.sp
+int strcmp (s1, s2)
+char *s1, *s2;
+.sp
+int strucmp (s1, s2)
+char *s1, *s2;
+.sp
+int strncmp (s1, s2, n)
+char *s1, *s2;
+int n;
+.sp
+int strnucmp (s1, s2, n)
+char *s1, s2;
+int n;
+.sp
+char *strcpy (s1, s2)
+char *s1, *s2;
+.sp
+char *strucpy (s1, s2)
+char *s1, s2;
+.sp
+char *strncpy (s1, s2, n)
+char *s1, *s2;
+int n;
+.sp
+int strlen (s)
+char *s;
+.sp
+char *strchr (s, c)     /* aka index() */
+char *s1;
+int c;
+.sp
+char *strrchr (s, c)    /* aka rindex() */
+char *s1;
+int c;
+.sp
+char *strpbrk (s1, s2)
+char *s1, *s2;
+.sp
+int strspn (s1, s2)
+char *s1, *s2;
+.sp
+int strcspn (s1, s2)
+char *s1, *s2;
+.sp
+char *strtok (s1, s2)
+char *s1, *s2;
+.sp
+char *strclr (s, c)
+char *s;
+int c;
+.sp
+char *strend (s)
+char *s;
+.sp
+char *reverse (s)
+char *s;
+.sp
+char *pwcryp (s)
+char *s;
+.sp
+char *index(s, ch)
+char *s, ch;
+.sp
+char *rindex(s, ch)
+char *s, ch;
+.eb
+.sh DESCRIPTION
+.db
+The arguments \fIs1, s2,\fP and \fIs\fP point to strings (arrays of characters terminated
+by a NULL character). The functions \fBSTRCAT, STRUCAT, STRNCAT, STRCPY, STRUCPY\fP and \fBSTRNCPY\fP all
+alter \fIs1.\fP These functions do not check for overflow of the array pointed to by \fIs1.\f
+.sp \fBSTRCAT\fP appends a copy of string \fIs2\fP to the end of string \fIs1. \fBSTRNCAT\fP appends\fP at most \fIn\fP characters. \fBSTRUCAT\fP is the same as \fBSTRCAT\fP but makes all characters
+uppercase. Each returns a pointer to the null-terminated result.
+.sp \fBSTRCMP\fP compares its arguments and returns an integer less than, equal to, or
+greater than 0, according as \fIs1\fP is lexicographically less than, equal to, or
+greater than \fIs2. \fBSTRUCMP\fP functions in the same way but makes all characters\fP uppercase before comparing. \fBSTRNCMP\fP makes the same comparison but looks at at most \fIN\fP characters. \fBSTRNUCMP\fP is the same except it makes all characters uppercase
+prior to the comparison.
+.sp \fBSTRCPY\fP copies string \fIs2\fP to \fIs1, stopping after the null character has been\fP copied. \fBSTRUCPY\fP performs the same except all characters are made uppercase. \fBSTRNCPY\fP copies exactly \fIn\fP characters, truncating \fIs2\fP or adding \fBnull\fP characters to \fIs1\fP as necessary. The result will not be null-terminated if the
+length of \fIs2\fP is \fIn\fP or more. Each function returns \fIs1.\f
+.sp \fBSTRLEN\fP returns the number of characters in \fIs,\fP not including the terminating
+null characters.
+.sp \fBSTRCHR (STRRCHR)\fP returns a pointer to the first (last) occurrence of
+character \fIc in string\f
+.ul
+s,
+or a \fBnull\fP pointer if \fIc\fP does not occur in the string.
+The null character terminating a string is considered to be part of the
+string.
+.sp \fBSTRPBRK\fP returns a pointer to the first occurrence in string \fIs1\fP of any character from \fIs2, or a \fBnull\fP pointer if no character from\f
+.ul
+s2
+exists in \fIs1.\f
+.sp \fBSTRSPN (STRCSPN) returns the length of the initial segment of string\f
+.ul
+s1
+which
+consists entirely of characters from (or not from) string \fIs2.\f
+.sp \fBSTRTOK\fP considers the string \fIs1\fP to consist of a sequence of zero or more text
+tokens separated by spans of one or more characters from the separator string \fIs2.\fP The first call (with pointer \fIs1\fP specified) returns a pointer to the first
+character of the first token, and will have written a null character into \fIs1\fP immediately following the returned token. the function keeps track of its
+position in the string between separate calls, so that subsequent calls
+(which must be made with the first argument a NULL pointer) will work through
+the string \fIs1\fP immediately following that token. In this way, subsequent calls
+will work through the string \fIs1\fP until no tokens remain. The separator string \fIs2 may be different from call to call. When no token remains in\f
+.ul
+s1,
+a \fBnull\fP pointer is returned.
+.sp \fBSTRCLR\fP sets at the most \fIc\fP characters in string \fIs,\fP but not including the null-terminator, to SPACES (Ox20).
+.sp \fBSTREND\fP returns a pointer to the end of string \fIs.\f
+.sp \fBREVERSE\fP reverses the characters of string \fIs\fP in memory and then returns \fIs.\f
+.sp \fBPWCRYP\fP encrypts and returns string \fIs.\f
+.sp \fBINDEX\fP returns a pointer to the first occurance of \fIch\fP in \fIs\fP or \fBnull\fP if not
+found. \fBINDEX\fP is functionally the same as \fBSTRCHR\fP except \fIch\fP is of type CHAR.
+.sp \fBRINDEX\fP returns a pointer to the last occurance of \fIch\fP in \fIs or NULL if not\fP found. \fBRINDEX\fP is functionally the same as \fBSTRRCHR\fP except \fIch\fP is of type CHAR.
+.sp
+Both \fBINDEX\fP and \fBRINDEX\fP are maintained for backward compatibility with older UNIX System V releases.
+.ed
+.sh NOTE
+.db
+For user convenience, all these functions are declared in the optional
+<string.h> header file.
+.ed
+.sh BUGS
+.db \fBSTRCMP\fP and \fBSTRNCMP\fP use native character comparison,
+which is unsigned on some machines.
+Thus, the sign of the value returned when one of the characters has its high
+order bit set is implementation-dependent.
+.sp
+Character movement is performed differently in different implementations.
+Thus, overlapping moves may yield surprises.
+.ed
+.sh CAVEATS
+.db \fBSTRCAT\fP and \fBSTRCPY\fP have no means of checking that the space provided is
+large enough. It is the user's responsibility to ensure that string space
+does not overflow.
+.ed
+.sh SEE ALSO
+.bb
+findstr()
+.eb

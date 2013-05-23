@@ -1,0 +1,24 @@
+*
+* handler for _ss_wtrk
+*
+* Updated for new ABI on 9/5/2005
+
+* ifp1
+* use ../../defs/os9defs.a
+* endc
+
+ psect ss3,0,0,1,0,0
+
+* int _ss_wtrk(path, trkno, siden, trkbuf)
+
+_ss_wtrk: pshs Y,U
+ tfr b,a *path
+ ldb #SS.WTrk
+ ldy 8,S *siden
+ ldu 6,S *trkno
+ ldx 10,S *trkbuf
+ os9 I$SetStt
+ puls Y,U
+ lbra _sysret
+
+ ends

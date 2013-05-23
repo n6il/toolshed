@@ -1,0 +1,162 @@
+                         COpt2 Version 1.1
+
+COpt2 is a generic peephole optimizer.  It uses a file that specifies
+patterns, conditins, and replacements.  An assembler language text file
+is read in as standard input, transformed, and written out to standard
+output.  A sample pattern file is included.
+
+COpt2 is envoked by
+
+copt2 <pattern file> <infile >outfile
+
+The pattern file consits of any number of constructs of the general form
+
+Comment lines
+Pattern
+Conditional
+Replacement
+
+Comment lines consist of any number of lines beginning with '*'.
+
+The Pattern consists of a any number of non-blank lines of text and a
+terminating blank line.  Before and after the main pattern, tag matching
+patterns can be used.  A tag matching pattern is a line that starts with
+'&' or '!'.  If the line starts with '&' the rest of the line must match
+one of the tags in the tag group.  If there is no tag group at the
+current point in the input file, the match fails.  If the line starts
+with '!' then the rest of the line must not match any tag in the tag
+group.
+
+In the main part of the pattern, a space character matches one or more space 
+characters.  A newline matches any number of spaces and a newline.
+An identifier name enclosed in {}'s matches an identifier or a number.
+The resulting match is placed into a variable with the given name.
+An expression can be placed after a ':' after the variable name.  If
+this is specified, the expression must evaluate to non-zero for the
+pattern to match.  The expression is of the same form as the conditional
+specified between the pattern and the replacement.  A space in the input 
+stream is considered to have a 0 length identifier before it when this 
+match is performed.  If an optional '*' is placed after the variable name 
+enclosed in {}'s, the rest of the line is matched and placed into the 
+variable.
+
+The conditional consists of a 'C' style expression that must evaluate to
+a number.  The expression can contain the following components:
+  * An integer number.
+  * A string enclosed in double quotes ("")
+  * parenthesis ('(' and ')') for gouping
+  * unary plus (which has no effect) and negation
+  * addition and subtraction
+  * multiplication, and division
+  * shift left ('<<') and shift right ('>>')
+  * comparison ('<' '>' '<=' '>=')
+  * equality ('==') and inequality ('!=')
+  * logical and ('&&')
+  * logical or ('||')
+  * bitwise and ('&')
+  * bitwise or ('&')
+  * bitwise exclusive or ('^')
+  * conditional (? expession : expression)
+
+If the resulting number is 0, the pattern is considered not to match and
+no replacement is done, otherwise a match is made.  Any variables collected
+from the pattern can be used in the expression.  The comparison and equality
+operators can be used on both numbers and strings.  All others can only
+be used on numbers.
+
+The replacement consists of any number of non-blank lines followed by a
+blank line.  If the replacement contains an expression enclosed in '{}'
+the expression is evaluated and the text form of the result is substituted.
+The expression is of the same form as the conditional and may evaluate to
+either a number or a string.  If the replacement is preceded by a line
+containing only a '#', all tags currently in the buffer will be removed.
+
+After a replacement is made.  Patterns are searched again starting at the
+point of replacement, so it is possible for multiple optimizations to be
+performed on the same segment of code.
+
+Be very careful that blank lines are actually blank.  Any spaces on the
+line will disqualify it as being the terminator.
+
+Example:
+
+* This pattern merges multiple leas n,s statements together
+{l1} leas {n1},s
+ leas {n2},s
+
+1
+{l1} leas {n1+n2},s
+
+The 'l1' variable will be set to the label preceding the leas statement, or
+to an empty string if there is no label.  The '1' provides the necessary
+expression and always evaluates to true.
+
+Example:
+
+{l1} ldd #{n1}
+ std {t1*}
+ ldd #{n2}
+
+n2==n1+1 && n1>0 && n2<128
+{l1} ldd #{n1}
+ std {t1}
+ incb
+
+In this example, the "rest of line" form is used with 't1' so that anything
+following the "std" is placed into t1.  A more complicated expression is used
+to limit when this replacement can be made.
+
+This pattern can also be specfied like this:
+
+{l1} ldd #{n1:n1>0}
+ std {t1*}
+ ldd #{n2:n2==n1+1 && n2<128}
+
+Some facinating optimization patterns can be produced by using tags.
+Tags are lines that start with '*'.  A tag group is several consecutive
+tag lines.
+
+intermediate identifiers.  For example:
+
+*****************************
+* tag clra lines with "ais 0"
+*****************************
+ clra
+! ais 0
+
+1
+ clra
+* ais 0
+
+*****************************************
+* remove clra statement if a is already 0
+*****************************************
+& ais 0
+ clra
+
+1
+#
+
+
+The '#' in the replacement specifies that all tags should be removed from
+the buffer.  This is necessary if other patterns have been set up that
+depended on the clra statement which was removed.
+
+The pattern file included in the archive has not been thoroughly tested, so
+it might produce inequivalent replacements.  Please let me know if you find
+that this is the case.
+
+
+
+
+Changes Since Version 1.0
+
+* Addition of in-line conditional expressions in patterns.
+* Addition of tags and tag handling mechanisms.
+
+Please send any questions, comments, ideas, or new patterns to my email 
+address:
+
+  gcato@st6000.sct.edu
+
+  - Vaughn Cato

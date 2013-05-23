@@ -1,0 +1,128 @@
+ psect cldiv_a,0,0,1,0,0
+
+EDIVERR equ 45
+Carry equ %00000001
+
+_ldiv:
+ bsr _ldiv0
+ lda 1,s check for neg.
+ beq _ldiv8
+_ldivneg
+ lbsr _lnegx
+
+_ldiv8
+ leas 8,s
+ lbra _lbexit
+
+_lmod:
+ lda ,x
+ ora 1,x
+ ora 2,x
+ ora 3,x
+ bne _lmod1
+* zero divisor - return dividend
+ ldd ,x
+ std _flacc,y
+ ldd 2,x
+ leax _flacc,y
+ std 2,x
+ lbra _lbexit
+
+_lmod1
+* find sign
+ lda 2,s
+ sta _modsign,y
+ bsr _ldiv01 no need to check for zero again
+ ldd 10,s
+ leax _flacc,y
+ std 0,x
+ ldd 12,s
+ std 2,x
+ tst _modsign,y
+ bmi _ldivneg
+ leas 8,s
+ lbra _lbexit
+
+ vsect
+_modsign rmb 1
+ endsect
+
+*   test for zero divisor
+_ldiv0 lda 0,x
+ ora 1,x
+ ora 2,x
+ ora 3,x
+ bne _ldiv01
+ ldd 2,s
+ std 6,s
+ leas 6,s
+ ldd #EDIVERR
+ lbra _rpterr
+
+*   set up stack
+_ldiv01
+ ldd 0,x
+ ldx 2,x
+ pshs d,x
+ ldd #0
+ pshs d
+ std _flacc,y
+ std _flacc+2,y
+
+*   check for negs.
+ tst 2,s
+ bpl _ldiv1
+ leax 2,s
+ lbsr _lnegx
+ inc 1,s
+_ldiv1 tst 10,s
+ bpl _ldiv2
+ leax 10,s
+ lbsr _lnegx
+ com 1,s
+_ldiv2 leax _flacc,y
+
+*   justify divisor left
+ lda #1
+_ldiv4 inca
+ asl 5,s
+ rol 4,s
+ rol 3,s
+ rol 2,s
+ bpl _ldiv4
+ sta 0,s
+
+*   subtract divisor from dividend
+_ldiv5 ldd 12,s
+ subd 4,s
+ std 12,s
+ ldd 10,s
+ sbcb 3,s
+ sbca 2,s
+ std 10,s
+ bcc _ldiv6
+*   add it back
+ ldd 12,s
+ addd 4,s
+ std 12,s
+ ldd 10,s
+ adcb 3,s
+ adca 2,s
+ std 10,s
+ andcc #^Carry
+ bra _ldiv7
+_ldiv6 orcc #Carry
+
+*   rotate result and dividend
+_ldiv7 rol 3,x
+ rol 2,x
+ rol 1,x
+ rol 0,x
+ lsr 2,s
+ ror 3,s
+ ror 4,s
+ ror 5,s
+ dec 0,s finished ?
+ bne _ldiv5
+ jmp [6,s]
+ endsect

@@ -1,0 +1,20 @@
+*
+* Directory change system calls
+*
+* tjl  08/04/2005  Moved file to version 2 C ABI.
+
+* use ../../defs/os9defs.a
+ psect dir_a,0,0,1,0,0
+
+* chdir(dirname)
+chdir: tfr d,x
+ lda #1 read permission
+
+chgdir10 os9 I$ChgDir
+ lbra _sysret
+
+* chxdir(dirname)
+chxdir: tfr d,x
+ lda #4 execute
+ bra chgdir10
+ endsect

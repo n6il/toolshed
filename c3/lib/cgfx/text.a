@@ -1,0 +1,141 @@
+**************************************
+* Standard Text Functions (MW C)     *
+* Copyright (c) 1989 by Mike Sweet   *
+**************************************
+* Updated for the new C ABI on     *
+* 12/31/2005 by tim lindner        *
+************************************
+ ifp1
+* use /dd/defs/os9defs.a
+ endc
+
+ psect text,0,0,0,0,0
+
+CurHome:
+ lda #1
+ bra send1
+
+CurOn:
+ ldx #$0521
+ bra send2
+
+CurOff:
+ ldx #$0520
+ bra send2
+
+CurLft:
+ lda #8
+ bra send1
+
+CurRgt:
+ lda #6
+ bra send1
+
+CurUp:
+ lda #9
+ bra send1
+
+CurDwn:
+ lda #10
+ bra send1
+
+ErLine:
+ lda #3
+ bra send1
+
+ErEOLine:
+ lda #4
+ bra send1
+
+ErEOScrn:
+ lda #11
+ bra send1
+
+Clear:
+ lda #12
+ bra send1
+
+Bell:
+ lda #7
+ bra send1
+
+CrRtn:
+ lda #13
+ bra send1
+
+ReVOn:
+RevOn:
+ ldx #$1f20
+ bra send2
+
+ReVOff:
+RevOff:
+ ldx #$1f21
+ bra send2
+
+UndlnOn:
+ ldx #$1f22
+ bra send2
+
+UndlnOff:
+ ldx #$1f23
+ bra send2
+
+BlnkOn:
+BnlkOn:
+ ldx #$1f24
+ bra send2
+
+BlnkOff:
+ ldx #$1f25
+ bra send2
+
+InsLin:
+ ldx #$1f30
+ bra send2
+
+DelLine:
+ ldx #$1f31
+
+send2 pshs x,u
+ ldu #2
+ bra sendit
+
+send1 pshs d,u
+ ldu #1
+
+sendit leax ,s
+ tfr b,a
+ lbsr _write
+ puls x,u
+
+os9err0 bcc noerr0
+ clra
+ std errno,y
+ ldd #-1
+ rts
+noerr0 clra
+ clrb
+ rts
+
+* int CurXY(path,x,y)
+* int path,x,y;
+
+CurXY:
+ pshs u,b
+ leas -3,s
+ lda 9,s
+ ldb 11,s
+ addd #$2020
+ std 1,s
+ lda #2
+ sta ,s
+ lda 3,s
+ ldu #3
+ leax ,s
+ lbsr _write
+ leas 4,s buffer, plus reg b
+ puls u
+ bra os9err0
+
+ endsect

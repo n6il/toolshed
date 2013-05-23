@@ -1,0 +1,37 @@
+.so header
+.tl /KILL(3S)/Kreider OS-9 C Library/KILL(3S)/
+.sh NAME
+.bb
+kill - send an interrupt to a process
+.eb
+.sh SYNOPSIS
+.bb
+#include <signal.h>
+.sp
+kill(tid, interrupt)
+int tid, interrupt;
+.eb
+.sh DESCRIPTION
+.db \fBKILL sends the signal type\f
+.ul
+interrupt
+to the process with id \fItid.\fP Both tasks, sender and receiver, must have the same user ID unless the users or sender is the super user.
+.PP
+The include file contains definitions of the defined signals as follows:
+.bb
+#define  SIGKILL  0   /* system abort cannot be */
+                      /* caught or ignored */
+
+#define  SIGWAKE  1   /* wake up signal */
+#define  SIGQUIT  2   /* keyboard abort signal */
+#define  SIGINT   3   /* keyboard interrupt signal */
+.eb
+Other user-define signals my also be sent.
+.ed
+.sh DIAGNOSTICS
+.db \fBKILL\fP returns 0 from a successful call and -1 if the process does not exist, the effective user IDs do not match, or the user is not the super user.
+.ed
+.sh SEE ALSO
+.bb
+signal(), OS-9 Shell command "kill"
+.eb

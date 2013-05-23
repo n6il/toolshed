@@ -1,0 +1,31 @@
+.so header
+.he /SETMEM(3C)/Kreider OS-9 C Library/SETMEM(3C)/
+.sh NAME
+.bb
+setmem - Fills memory with a character
+.eb
+.sh SYNOPSIS
+.bb
+setmem(start, count, fill)
+char *start
+int count
+char fill
+.eb
+.sh DESCRIPTION
+.db \fBSETMEM\fP fills \fIcount\fP bytes of memory beginning at the location pointed to by \fIstart\fP with the \fBASCII\fP character contained in \fIfill.\f
+.sp
+No value is returned making this a type VOID function.
+.ed
+.sh EXAMPLE
+.bb
+/* Initialize an 80 character string to all NULLS */
+
+count = 80;
+fill = '0x00'
+
+setmem(start, count, fill)
+.eb
+.sh SEE ALSO
+.bb
+memset()
+.eb

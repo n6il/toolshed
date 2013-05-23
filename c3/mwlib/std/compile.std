@@ -1,0 +1,35 @@
+t
+tmode -pause
+c.prep -p qsort.c!m.comp -s -s >qsort.a
+c.prep -p chcodes.c!m.comp -s >chcodes.a
+c.prep -p setbase.c!m.comp -s >setbase.a
+c.prep -p defdrive.c!m.comp -s >defdrive.a
+c.prep -p pffinit.c!m.comp -s >pffinit.a
+c.prep -p strings.c!m.comp -s >strings.a
+c.prep -p testwd.c!m.comp -s >testwd.a
+c.prep -p puts.c!m.comp -s >puts.a
+c.prep -p gets.c!m.comp -s >gets.a
+c.prep -p mktemp.c!m.comp -s >mktemp.a
+c.prep -p fread.c!m.comp -s >fread.a
+c.prep -p fwrite.c!m.comp -s >fwrite.a
+c.prep -p setbuf.c!m.comp -s >setbuf.a
+c.prep -p putc.c!m.comp -s >putc.a
+c.prep -p getc.c!m.comp -s >getc.a
+c.prep -p fseek.c!m.comp -s >fseek.a
+c.prep -p findstr.c!m.comp -s >findstr.a
+c.prep -p scale.c!m.comp -s >scale.a
+c.prep -p system.c!m.comp -s >system.a
+c.prep -p atol.c!m.comp -s >atol.a
+c.prep -p conv.c!m.comp -s >conv.a
+c.prep -p atoi.c!m.comp -s >atoi.a
+c.prep -p pffdummy.c!m.comp -s >pffdummy.a
+c.prep -p l3tol.c!m.comp -s >l3tol.a
+c.prep -p ltol3.c!m.comp -s >ltol3.a
+c.prep -p sleep.c!m.comp -s >sleep.a
+c.prep -p strass.c!m.comp -s >strass.a
+c.prep -p pfldummy.c!m.comp -s >pfldummy.a
+c.prep -p printf.c!m.comp -s >printf.a
+c.prep -p iob_data.c!m.comp -s >iob_data.a
+c.prep -p pflinit.c!m.comp -s >pflinit.a
+c.prep -p fopen.c!m.comp -s >fopen.a
+c.prep -p getwd.c!m.comp -s >getwd.a

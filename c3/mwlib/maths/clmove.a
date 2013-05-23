@@ -1,0 +1,14 @@
+ psect clmove_a,0,0,1,0,0
+_lmove:
+ pshs y
+ ldy 4,s
+ ldd 0,x
+ std 0,y
+ ldd 2,x
+ std 2,y
+ puls x
+ exg y,x
+ puls d
+ std 0,s
+ rts
+ endsect

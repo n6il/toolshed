@@ -1,0 +1,10 @@
+ psect swab_a,0,0,1,0,0
+
+* Converted to new ABI on December 5, 2005
+
+* swap bytes in an int
+swab:
+ exg a,b
+ rts
+
+ endsect

@@ -1,0 +1,19 @@
+.so header
+.tl /TSLEEP(3S)/Kreider OS-9 C Library/TSLEEP(3S)/
+.sh NAME
+.bb
+tsleep - put process to sleep
+.eb
+.sh SYNOPSIS
+.bb
+tsleep(ticks)
+int ticks;
+.eb
+.sh DESCRIPTION
+.db \fBTSLEEP deactivates the calling process for a specified number of system\fP clock \fIticks\fP or if \fIticks\fP is zero indefinitely. A tick is system dependent, but is usually 100ms for
+most OS-9 systems except the Color Computer where it is 1/60th of a second.
+.ed
+.sh SEE ALSO
+.bb
+sleep()
+.eb

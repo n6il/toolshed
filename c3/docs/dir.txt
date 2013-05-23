@@ -1,0 +1,80 @@
+.so header
+.tl /DIR(3C)/Kreider OS-9 C Library/DIR(3C)/
+.sh NAME
+.bb
+opendir, readdir, telldir, rewinddir, seekdir, closedir
+.sp
+Directory operations
+.eb
+.sh SYNOPSIS
+.bb
+#include <dir.h>
+.sp
+*opendir(dirname)
+char *dirname;
+.sp
+*readdir(dirp)
+DIR *dirp;
+.sp
+telldir(dirp)
+DIR *dirp;
+sp
+rewinddir(dirp)
+DIR *dirp;
+.sp
+seekdir(dirp, loc)
+DIR *dirp;
+long loc;
+.sp
+closedir(dirp)
+DIR *dirp;
+.eb
+.sh DESCRIPTION
+.db \fBOPENDIR\fP opens the specified directory and associates a directory stream with it. \fBOPENDIR\fP returns a pointer to be used to identify the directory stream in
+subsequent operations. The pointer \fInull\fP is returned if \fIdirname\fP can not be accessed or of it can not "malloc" enough memory to hold the whole
+thing. Directory sectors are NOT buffered.
+.PP \fBREADDIR\fP returns a pointer to a structure containing the next directory entry, unless
+the entry is a deleted file in which case the next entry is returned.
+It returns \fInull\fP upon reaching the end of the directory or detecting an invalid \fBSEEKDIR\fP operation.
+.PP \fBTELLDIR\fP returns the current location associated with the named directory stream.
+Values returned by \fBTELLDIR\fP are
+valid only for the lifetime of the associated dir pointer. If the directory
+is closed and then reopened, the \fBTELLDIR\fP value may be invalidated. It is safe to use a previous \fBTELLDIR\fP value immediately after a call to \fBOPENDIR\fP and before any calls to \fBREADDIR.\f
+.PP \fBREWINDDIR\fP resets the position of the named directory stream to the beginning of the
+directory.
+.PP
+This function is implemented as a macro in \fBDIR.H.\f
+.PP \fBSEEKDIR\fP sets the position of the next \fBREADDIR\fP operation in the directory
+stream. The new position reverts to the one associated with the directory
+stream when the \fBTELLDIR\fP operation was performed. \fBCLOSEDIR\fP closes the named directory stream and frees the structure
+associated with \fIdirp.\f
+.ed
+.sh NOTE
+.db
+For user convinence, function declarations are made in the header \fBDIR.H\fP below.
+.ed
+.PP
+.bb
+/*
+**      Dir.h
+/*
+
+struct direct {
+        long d_addr;       /* file descriptor address */
+        char d_name[30];   /* directory entry name    */
+        };
+
+typedef struct {
+        int   dd_fd;       /* fd for open directory   */
+        char  dd_buf[32];  /* a one entry buffer      */
+        } DIR;
+
+#define DIRECT        struct direct
+#define rewinddir(a)  seekdir(a, 0L)
+
+extern DIR            *opendir();
+extern DIRECT         *readdir();
+extern long           telldir();
+extern  /* void */    seekdir(), closedir();
+.eb
+.ed

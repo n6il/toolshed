@@ -1,0 +1,27 @@
+.so header
+.tl /CHDIR(3S)/Kreider OS-9 C Library/CHDIR(3S)/
+.sh NAME
+.bb
+chdir, chxdir - change directories
+.eb
+.sh SYNOPSIS
+.bb
+chdir(dirname)
+char *dirname;
+.sp
+chxdir(dirname)
+char *dirname;
+.eb
+.sh DESCRIPTION
+.db
+These calls change the current data and execution directories respectively.
+This change is only current as long as the process is running. \fIDirname\fP is a pointer to the directory pathlist string.
+.ed
+.sh DIAGNOSITCS
+.db
+Each call returns zero after a succesful call, or -1 if \fIdirname\fP is not a directory or its path is not searchable.
+.ed
+.sh SEE ALSO
+.bb
+Shell commands chd and chx (cd, cx)
+.eb

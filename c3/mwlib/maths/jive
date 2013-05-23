@@ -1,0 +1,17 @@
+c.asm cfloats.a -o=cfloats.r
+c.asm clmul.a -o=clmul.r
+c.asm cldiv.a -o=cldiv.r
+c.asm claddsub.a -o=claddsub.r
+c.asm clcompare.a -o=clcompare.r
+c.asm clbits.a -o=clbits.r
+c.asm clnegcompl.a -o=clnegcompl.r
+c.asm clconvert.a -o=clconvert.r
+c.asm clmove.a -o=clmove.r
+c.asm clincdec.a -o=clincdec.r
+c.asm clshifts.a -o=clshifts.r
+c.asm clcommon.a -o=clcommon.r
+c.asm ccmult.a -o=ccmult.r
+c.asm ccmod.a -o=ccmod.r
+c.asm ccdiv.a -o=ccdiv.r
+c.asm cshifts.a -o=cshifts.r
+c.asm rpterr.a -o=rpterr.r

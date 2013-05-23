@@ -1,0 +1,35 @@
+.so header
+.he /SS_OPT(2)/Kreider OS-9 C Library/SS_OPT(2)/
+.sh NAME
+.bb
+_ss_opt - set file descriptor options
+.eb
+.sh SYNOPSIS
+.bb
+#include <sgstat.h>
+
+int _ss_opt(path, buffer)
+int path;
+struct sgbuf *buffer;
+.eb
+.sh DESCRIPTION
+.db \fBSS_OPT\fP copies the buffer pointed to be \fIbuffer\fP into the options section of the path descriptor opened on \fIpath.\f
+.sp
+Generally, a program will fetch the options with the \fBGS_OPT\fP function, change
+the desired values, and then update the path options with the \fBSS_OPT\fP function. The structure \fIsgbuf\fP declared in \fBSGSTAT.H\fP provides a convenient
+means to access the individual option values.
+.sp
+If the path is invalid, _ss_opt returns -1 and the appropriate error code is
+placed in \fIerrno.\f
+.ed
+.sh NOTE
+.db
+It is a common practice to preserve a copy of the original path descriptor
+options so a program can restore them prior to exiting. The option changes
+take effect on the currently open path and any path created with the I$DUP
+system call.
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call - Microware Manual, _gs_opt().
+.eb

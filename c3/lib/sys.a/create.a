@@ -1,0 +1,72 @@
+* file creation calls
+*
+* tjl  08/05/2005  Moved file to version 2 C ABI.
+pmode equ $0b r/w for owner, r for others
+* ifp1
+* use ../../defs/os9defs.a
+* endc
+ psect create_a,0,0,1,0,0
+* creat(fname,mode)
+creat: pshs d
+ tfr d,x get the name
+ lda 5,s get the mode
+ tfr a,b proto attr
+ andb #%00100100 save exec bits
+ orb #pmode default modes
+ os9 I$Create
+ bcc crret
+ cmpb #E$CEF already there?
+ bne errout no - can't cope
+
+ lda 5,s get the mode
+ bita #$80 trying to create a directory?
+ bne errout yes, forget it
+
+ anda #7 access mode bits
+ ldx ,s get the name again
+ os9 I$Open try to open it
+ bcs errout
+
+ pshs a,u
+ ldx #0
+ leau ,x
+ ldb #2
+ os9 I$SetStt set the file size to zero
+ puls a,u
+ bcc crret
+
+ pshs b
+ os9 I$Close
+ puls b
+errout leas 2,s
+ lbra _os9err
+
+* create(fname,mode,pmode)
+create: pshs d
+ tfr d,x   *ldx 2,s
+ lda 5,s
+ ldb 7,s
+ os9 I$Create
+ bcs errout
+ bra crret
+
+* ocreat(fname,mode,pmode)
+creat10 cmpb #E$CEF already there?
+ bne errout no - can't cope
+ ldx ,s Get name
+ os9 I$Delete
+ bcs errout can't cope
+ puls d
+ 
+ocreat: pshs d
+ tfr d,x   *ldx 2,s
+ lda 5,s
+ ldb 7,s
+ os9 I$Create
+ bcs creat10
+crret leas 2,s
+ tfr a,b
+ clra
+ rts
+
+ endsect

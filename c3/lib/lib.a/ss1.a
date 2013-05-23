@@ -1,0 +1,45 @@
+*
+* handler for _ss_rel, _ss_rest, _ss_opt,
+*  _ss_pfd, _ss_ssig, _ss_tiks
+*
+* Converted September 19, 2005 to new ABI
+
+* ifp1
+* use ../../defs/os9defs.a
+* endc
+
+ psect ss1,0,0,1,0,0
+
+_ss_rel:
+ tfr b,a
+ ldb #SS.Relea
+ bra ss2
+
+_ss_rest:
+ tfr b,a
+ ldb #SS.Reset
+ bra ss2
+
+_ss_opt:
+ tfr b,a
+ ldb #SS.Opt
+ bra ss1
+
+_ss_pfd:
+ tfr b,a
+ ldb #SS.FD
+ bra ss1
+
+_ss_ssig:
+ tfr b,a
+ ldb #SS.SSig
+ bra ss1
+
+_ss_tiks:
+ tfr b,a
+ ldb #SS.Ticks
+ss1 ldx 2,S get buf, or parm
+ss2 os9 I$SetStt
+ lbra _sysret
+
+ ends

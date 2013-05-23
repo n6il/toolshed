@@ -1,0 +1,38 @@
+.so header
+.tl /TIME(3C)/Kreider OS-9 C Library/TIME(3C)/
+.sh NAME
+.bb
+time - Get the time
+.eb
+.sh SYNOPSIS
+.bb
+long time ((char *) 0)
+long time (tloc)
+long *tloc;
+.eb
+.sh DESCRIPTION
+.db \fBTIME\fP returns the value of time in seconds since 00:00:00 GMT, January 1, 1970.
+.sp
+If \fItloc (taken as an integer) is non-zero, the return value is also stored in\fP the location to which \fItloc points.\f
+.sp
+Upon successful completion, \fBTIME\fP returns the value of time. No error is
+possible here as \fBTIME\fP always returns a value.
+.sp
+The value returned is suited for use with the \fBCTIME\fP function.
+.ed
+.sh EXAMPLES
+.bb
+To get the system time value:
+
+long curr_time;
+curr_time = time ((char *)0);
+
+or
+
+long curr_time;
+time (&curr_time);
+.eb
+.sh SEE ALSO
+.bb
+ctime(), o2utime(), u2otime().
+.eb

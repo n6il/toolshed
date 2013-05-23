@@ -1,0 +1,20 @@
+ psect attdet_a,0,0,0,0,0
+I$Attach equ $80
+I$Detach equ $81
+attach:
+ pshs u
+ lda 7,s mode
+ ldx 4,s name pptr
+ os9 I$Attach
+ tfr u,d
+ puls u
+ lbcs _os9err
+ rts
+
+detach:
+ pshs u
+ ldu 4,s dev tbl ptr
+ os9 I$Detach
+ puls u
+ lbra _sysret
+ ends

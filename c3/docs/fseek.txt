@@ -1,0 +1,45 @@
+.so header
+.tl /FSEEK(3C)/Kreider OS-9 C Library/FSEEK(3C)/
+.sh NAME
+.bb
+fseek, ftell, rewind - reposition a file pointer or report position
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+fseek(fp, offset, place)
+FILE *fp;
+long offset;
+int place;
+.sp
+long ftell(fp)
+FILE *fp;
+.sp
+rewind(fp)
+FILE *fp;
+.sp
+.eb
+.sh DESCRIPTION
+.db
+The \fBFSEEK\fP function sets the position of the next input or output
+operation on the already opened file pointed to by \fIfp.\fP The new position is at \fIoffset\fP bytes
+from the beginning, the current position, or the beginning of the file if \fIplace\fP has the value 0, the current position if 1, or the end of the file if 2.
+.PP
+The \fBFSEEK\fP function undoes any effects of \fIungetc()\fP and sorts out the problems associated with buffered I/O.
+.PP \fBNOTE:\fP Using \fIlseek()\fP on a buffered file will produce unpredictable results.
+.PP
+The \fBFTELL\fP function returns the current value of the 
+offset relative to the beginning
+of the file associated with the file pointer \fIfp.\fP It is measured in bytes and is the only foolproof way to obtain an \fIoffset\fP for \fBFSEEK.\fP
+.pp
+The \fBREWIND \fP function is equivalent to \fIfseek(fp, 0L, 0),\fP except that no value is returned. It returns the file pointer to the beginning
+of the file.
+.ed
+.sh DIAGNOSTICS
+.db \fBFSEEK\fP returns a -1 if the call is invalid, otherwise it returns zero.
+.ed
+.sh SEE ALSO
+.bb
+lseek()
+.eb

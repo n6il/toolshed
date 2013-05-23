@@ -1,0 +1,48 @@
+ psect strspn_a,0,0,0,0,0
+
+* Converted to new ABI on December 3, 2005
+
+* int  strspn(s1, s2)
+* char *s1, *s2;
+
+* returns the length of the initial segment of
+*  s1 composed entirely of chars from s2
+
+strspn:  pshs  D,U         save U and s1
+         tfr   d,u         s1
+*        ldu   0,S         s1
+
+sloop1   ldb   ,U+
+         beq   sdone       end of s1
+         ldx   6,S         start of s2
+sloop1a  lda   ,x
+         beq   sdone       end of s2
+         cmpb  ,x+
+         beq   sloop1
+         bra   sloop1a
+
+* int  strcspn(s1, s2)
+* char *s1, *s2;
+
+* returns the length of the initial segment of
+*  s1 composed not of chars from s2
+
+strcspn: pshs  D,U         save U and s1
+         tfr   d,u         s1
+*        ldu   0,S         s1
+
+sloop2   ldb   ,U+
+         beq   sdone       end of s1
+         ldx   6,s         start of s2
+sloop2a  lda   ,x
+         beq   sloop2      end of s2
+         cmpb  ,x+
+         beq   sdone
+         bra   sloop2a     try next char
+
+sdone    leau  -1,U
+         tfr   U,D
+         subd  0,S p-s1
+         puls  X,U,PC
+
+         endsect

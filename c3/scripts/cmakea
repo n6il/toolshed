@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+use File::Basename;
+
+qx(rm ctestdisk.os9);
+qx(cp $ENV{NITROS9DIR}/6809l2/nos96809l2_80d.dsk ctestdisk.os9);
+
+# This program will compile and then copy the tests to an os9 disk image.
+
+$temp = qx(find -L ../test -type f -name \*.c -print0 | xargs -0 -n 1 echo);
+
+# Convert into a proper perl array
+@tempfiles = split( /\n/, $temp );
+
+foreach $file (@tempfiles)
+{
+	$temp =  "c3 -a -c $file";
+	$temp = qx($temp);
+	print $temp."\n";
+
+}
+
+printf "Now all .a test files are created (with comments).\n\n";

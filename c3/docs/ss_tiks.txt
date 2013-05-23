@@ -1,0 +1,35 @@
+.so header
+.tl /SS_TIKS(2)/Kreider OS-9 C Library/SS_TIKS(2)/
+.sh NAME
+.bb
+_ss_tiks - set timeout tick count
+.eb
+.sh SYNOPSIS
+.bb
+int _ss_tiks(path, tickcnt)
+int path;
+int tickcnt;
+.eb
+.sh DESCRIPTION
+.db
+If a read or write request is made for a part of a file that is locked out by
+another user, \fBRBF\fP normally sleeps indefinitely until the conflict is removed. \fBSS_TIKS\fP may be used to cause an error (E$Lock) to be returned to the process
+if the conflict still exists after a specific number of clock ticks have
+elapsed.
+.sp
+The argument \fItickcnt\fP specifies the number of ticks to wait if the record-lock
+conflict occurs with the file open on \fIpath.\fP A tick count of zero (the default on \fBRBF\fP devices), causes a sleep until the record is released. A tick count of
+one means if the record is not released immediately, an error is to be
+returned.
+.sp
+If an error occurs, \fB_SS_TIKS\fP returns the value -1 and the error code is
+placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+This feature exists only on \fBRBF\fP devices.
+.ed
+.sh SEE ALSO
+.bb
+I$SetStt system call, Microware manual, _ss_rel().
+.eb

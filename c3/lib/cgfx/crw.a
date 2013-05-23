@@ -1,0 +1,227 @@
+******************************************
+* C read and write functions
+* by Mike Sweet 1/4/90
+******************************************
+* Updated to new ABI by tim lindner      *
+* December 26, 2005                      *
+******************************************
+*
+
+ ifp1
+* use /dd/defs/os9defs.a
+ endc
+ 
+ psect crw,0,0,0,20,0
+
+
+****************************************************
+*
+* cread(path,s,n);
+* int path,n;
+* char *s;
+*
+* Reads up to 'n' characters.  Replaces the CR with a NULL.
+*
+
+cread:pshs b,y
+ lbsr _Flush
+ puls a
+ ldy 6,s
+ ldx 4,s
+ os9 I$ReadLn
+ bcs os9err
+ leay -1,y
+ ldx 4,s
+ tfr y,d
+ leax d,x
+ lda ,x
+ cmpa #13
+ beq c2
+ leax 1,x
+c2 clr ,x
+ tfr y,d
+ puls y,pc
+
+
+
+****************************************************
+*
+* creadln(path,s,n);
+* int path,n;
+* char *s;
+*
+* Reads up to 'n' characters.  Appends a NULL to
+* the end of the string.
+*
+
+creadln: pshs b,y
+ lbsr _Flush
+ puls a
+ ldy 6,s
+ ldx 4,s
+ os9 I$ReadLn
+ bcs os9err
+ ldx 4,s
+ tfr y,d
+ clr d,x
+ puls y,pc
+
+
+os9err
+ puls y
+ clra
+ std errno,y
+ ldd #-1
+ rts
+ 
+************************************************
+*
+* cwrite(path,s,n);
+* int path,n;
+* char *s;
+*
+* 'cwrite()' will write up to 'n'charatcers to path
+* using the I$WRITE call.  If 's' is shorter than 'n'
+* characters then only 's' characters are written.
+*
+
+cwrite:
+ pshs u,b
+ ldx 5,s *s
+ tfr x,d
+ lbsr strlen
+ cmpd 7,s n
+ blo c0
+ ldd 7,s n
+c0 tfr d,u
+ puls a
+ pshs u
+ ldx 6,s *s
+ lbsr _write
+ bcs os9err2
+ puls d,u,pc
+
+
+os9err2 clra
+ std errno,y
+ leas 2,s
+ ldd #-1
+ puls u,pc
+
+
+************************************************
+*
+* cwriteln(path,s,n);
+* int path,n;
+* char *s;
+*
+* 'cwriteln()' will write up to 'n'charatcers to path
+* using the I$WRITELN call.  If 's' is shorter than 'n'
+* characters then only 's' characters are written.
+*
+
+cwriteln:
+ pshs b,y
+ lbsr _Flush
+ ldx 5,s *s
+ tfr x,d
+ lbsr strlen
+ cmpd 7,s n
+ blo c1
+ ldd 7,s n
+c1 tfr d,y
+ ldx 5,s *s
+ puls a path
+ os9 I$WritLn
+ bcs os9err
+ tfr y,d
+ puls y,pc
+
+
+
+****************************************************
+*
+* read(path,s,n);
+* int path,n;
+* char *s;
+*
+* Reads up to 'n' characters.
+*
+
+read:
+ pshs b,y
+ lbsr _Flush
+ puls a path
+ ldy 6,s n
+ ldx 4,s *s
+ os9 I$Read
+ bcs os9err
+ tfr y,d
+ puls y,pc
+
+
+
+****************************************************
+*
+* readln(path,s,n);
+* int path,n;
+* char *s;
+*
+* Reads up to 'n' characters.
+*
+
+readln:
+ pshs b,y
+ lbsr _Flush
+ puls a path
+ ldy 6,s n
+ ldx 4,s *s
+ os9 I$ReadLn
+ lbcs os9err
+ tfr y,d
+ puls y,pc
+
+
+************************************************
+*
+* write(path,s,n);
+* int path,n;
+* char *s;
+*
+* 'write()' will write up to 'n' characters to path
+* using the I$WRITE call.
+*
+
+write:
+ pshs u
+ ldx 4,s *s
+ ldu 6,s n
+ tfr b,a path
+ lbsr _write
+ lbcs os9err2
+ puls u,pc
+
+
+************************************************
+*
+* writeln(path,s,n);
+* int path,n;
+* char *s;
+*
+* 'writeln()' will write up to 'n' characters to path
+* using the I$WRITELN call.
+*
+
+writeln:
+ pshs b,y
+ lbsr _Flush
+ ldx 5,s *s
+ ldy 7,s n
+ puls a path
+ os9 I$WritLn
+ lbcs os9err
+ tfr y,d
+ puls y,pc
+
+
+ endsect

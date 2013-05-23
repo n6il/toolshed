@@ -1,0 +1,44 @@
+ psect reverse_c,0,0,0,0,0
+ 
+* Converted to new ABI on December 4, 2005
+
+ nam reverse1_c
+* */*
+* *
+* *reverse(s)
+* *char *s;
+* *   {
+ ttl reverse
+reverse:
+ pshs d,u
+* *   register char *hd = s;
+ tfr d,u
+
+* *   char *tl = hd + strlen(hd) - 1;
+ pshs u
+ lbsr strlen Reg D already contains parameter
+ addd ,s++
+ tfr d,x
+
+* *   while (hd < tl)
+* *      {
+ bra _2
+* *      temp = *hd;
+* *      *hd++ = *tl;
+* *      *tl-- = temp;
+_3
+ ldb 0,u
+ lda ,-x
+ sta ,u+
+ stb 0,x
+_2
+ pshs x
+ cmpu ,s++
+ blo _3
+
+* *      }
+* *   return (s);
+ puls d,u,pc
+
+* *   }
+ endsect

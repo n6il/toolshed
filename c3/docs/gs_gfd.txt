@@ -1,0 +1,33 @@
+.so header
+.tl /GS_GFD(2)/Kreider OS-9 C Library/GS_GFD(2)/
+.sh NAME
+.bb
+_gs_gfd - get file descriptor
+.eb
+.sh SYNOPSIS
+.bb
+#include <direct.h>
+.sp
+int _gs_gfd(path, buffer, count)
+int path;
+struct fildes *buffer;
+int count;
+.eb
+.sh DESCRIPTION
+.db
+This function will place a copy of the \fBRBF\fP file descriptor sector of the file
+opened on PATH into the buffer pointed to by \fIbuffer.\fP A maximum of \fIcount\fP bytes are copied. The structure \fBFILDES,\fP declared in \fBDIRECT.H,\fP provides a convenient method to access the file descriptor information.
+.PP
+If and error occurs, this function returns -1 as its value and the error code
+is placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+Be sure the buffer is large enough to hold all the options, or at least \fIcount\fP bytes. This call is effective only on \fBRBF\fP devices. Declaring the buffer
+as type "struct fildes" is perfectly safe as this structure is predefined to
+be large enough to hold all the file descriptor information.
+.ed
+.sh SEE ALSO
+.bb
+I$GetStt system call - Microware Manual, _ss_pfd().
+.eb

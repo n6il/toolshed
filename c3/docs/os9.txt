@@ -1,0 +1,90 @@
+.so header
+.he /_OS9(3S)/Kreider OS-9 C Library/_OS9(3S)/
+.sh NAME
+.bb
+_os9 - system call interface from C programs
+.eb
+.sh SYNOPSIS
+.bb
+#include <os9.h>
+.sp
+_os9(code, reg)
+char code;
+struct registers *reg;
+.eb
+.sh DESCRIPTION
+.db \fB_OS9\fP enables the programmer to access virtually any OS-9 system call
+directly from a C program without having to resort to assembly
+language routines.
+.sp \fICode\fP is one of the codes that are define in \fBOS9.H. OS9.H\fP contains codes for the F$ and I$ function/service requests, and also contains
+getstt, setstt, and error codes.
+.sp
+The input registers \fI(reg)\fP for the system calls are accessed by the
+following structure that is defined in os9.h:
+.bb
+struct registers {
+    char rg_cc, rg_a, rg_b, rg_dp;
+    unsigned rg_x, rg_y, rg_u;
+};
+.eb
+An example program that uses _os9 is presented on the following page.
+.ed
+.sh DIAGNOSTICS
+.db
+A -1 is returned if the OS-9 call fails. 0 (zero) is returned on success.
+.ed
+.bp
+.ce
+Program example:
+.bb
+#include <os9.h>
+#include <modes.h>
+.sp
+/* This program does an I$GETSTT call to get file size */
+.sp
+main (argc, argv)
+int argc;
+char **argv;
+{
+    struct registers reg;
+    int path;
+.sp
+/* Tell linker we need longs */
+.sp
+    pflinit();
+.sp
+/* low level open - filename is first command line param */
+.sp
+    path = open (*++argv, S_IREAD);
+.sp
+/* set up regs for call to OS-9 */
+.sp
+    re
+.rg_a = path;
+    re
+.rg_b = SS_SIZE;
+.sp
+    if (_os9(I_GETSTT, &reg) == 0)
+        printf ("filesize = %1x\n",
+        (long) (re
+.rg_x << 16) + re
+.rg_u);
+    else
+        printf (OS9 error #%d\n, re
+.rg_b & 0xff);
+.sp
+    dumpregs (&reg);
+}
+.sp
+dumpregs(r)
+register struct registers *r;
+{
+    printf("cc = %02x\n", r->rg_cc &0xff);
+    printf(" a = %02x\n", r->rg_a &0xff);
+    printf(" b = %02x\n", r->rg_b &0xff);
+    printf("dp = %04x\n", r->rg_dp &0xff);
+    printf(" x = %04x\n", r->rg_x);
+    printf(" y = %04x\n", r->rg_y);
+    printf(" u = %04x\n", r->rg_u);
+}
+.eb

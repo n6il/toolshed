@@ -1,0 +1,39 @@
+ psect cshifts_a,0,0,1,0,0
+ccasr:
+ tstb
+ beq _ccsex
+
+_ccs1 asr 2,s
+ ror 3,s
+ decb
+ bne _ccs1
+ bra _ccsex
+
+cclsr:
+ tstb
+ beq _ccsex
+
+_ccls1 lsr 2,s
+ ror 3,s
+ decb
+ bne _ccls1
+
+_ccsex
+ ldd 2,s
+ pshs d
+ ldd 2,s
+ std 4,s
+ ldd 0,s set condition codes
+ leas 4,s
+ rts
+
+ccasl:
+ tstb
+ beq _ccsex
+
+_ccs2 asl 3,s
+ rol 2,s
+ decb
+ bne _ccs2
+ bra _ccsex
+ endsect

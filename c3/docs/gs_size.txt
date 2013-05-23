@@ -1,0 +1,27 @@
+.so header
+.tl /GS_SIZE(2)/Kreider OS-9 C Library/GS_SIZE(2)/
+.sh NAME
+.bb
+_gs_size - get file size
+.eb
+.sh SYNOPSIS
+.bb
+long _gs_size(path)
+int path;
+.eb
+.sh DESCRIPTION
+.db
+This function is used to determine the current size of the file opened on
+PATH, and returns this value to the calling function.
+.PP
+If \fIpath\fP is invalid, this function returns -1 as its value and the error code
+is placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+This call works only on \fBRBF\fP devices.
+.ed
+.sh SEE ALSO
+.bb
+I$GetStt system call - Microware Manual, getstat()
+.eb

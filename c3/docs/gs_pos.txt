@@ -1,0 +1,28 @@
+.so header
+.tl /GS_POS(2)/Kreider OS-9 C Library/GS_POS(2)/
+.sh NAME
+.bb
+_gs_pos - get file position pointer
+.eb
+.sh SYNOPSIS
+.bb
+long _gs_pos(path)
+int path;
+.eb
+.sh DESCRIPTION
+.db
+This function returns the value of the file pointer for the file opened on \fIpath.\fP
+.pp
+If \fIpath\fP is invalid, this function returns -1 as its value and the error code
+is placed in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+This call works only on \fBRBF\fP devices. It is unique to OS-9 and the only
+equivalent portable call is \fIlseek().\fP DO NOT use this call if buffered I/O is
+being performed on the path. Use \fIftell()\fP instead.
+.ed
+.sh SEE ALSO
+.bb
+I$GetStt system call - Microware Manual, lseek(), ftell()
+.eb

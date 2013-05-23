@@ -1,0 +1,183 @@
+.so header
+.tl /PRINTF(3C)/Kreider OS-9 C Library/PRINTF(3C)/
+.sh NAME
+.bb
+printf, fprintf, sprintf - formatted output conversion
+.eb
+.sh SYNOPSIS
+.bb
+#include <stdio.h>
+.sp
+printf(format [,arg ]... )
+char *format;
+.sp
+fprintf(fp, format [,arg ]... )
+FILE  *fp;
+char *format;
+.sp
+sprintf(s, format [,arg ]... )
+char *s, *format;
+.eb
+.sh DESCRIPTION
+.db
+These three functions are used to place numbers and strings in the
+output into formatted, human readable form.
+.PP
+The \fBPRINTF\fP subroutine places output on the standard output stream \fIstdout.\fP The \fBFPRINTF\fP subroutine places output on the named output \fIfp.\fP Note that the file pointer \fIfp\fP may be 0, 1, or 2 corresponding to stdin, stdout, and stderr or any valid
+pointer as returned by \fIfopen(), creat(), create(),\fP or \fIdup().\fP The \fBSPRINTF\fP subroutine places output in the string \fIs,\fP followed by the character `\\0' (NULL). NOTE: It is the programmers
+responsibility to insure that string \fIs\fP is large enough to hold the output of \fBSPRINTF.\fP
+.PP
+Each of these functions converts, formats, and prints its arguments after
+the first under control of the \fIformat\fP argument. The \fIformat\fP argument is a character string which contains two types of objects:
+plain characters, which are simply copied to the output stream,
+and conversion specifications. Each of these cause conversion and printing
+of the next successive \fIarg.\fP
+.pp
+Following is the order in which a \fBPRINTF\fP conversion specification is presented:
+.bb
+% [-] [field_width] [.] [num_to_print] [len] conv_char
+.eb
+This order must be followed. Any of the optional (enclosed in brackets)
+conversion specifications may be omitted but, the order must remain the same.
+A period must appear before the "nbr of chars to print" or \fBPRINTF\fP will interpret the number to be the field width specification.
+.PP
+Each conversion specification is introduced by the percent sign character
+(%).
+Following the
+%,
+there may be:
+.sp
+.in +5
+Zero or more flags, which modify the meaning of the conversion specification.
+If the character following the '%' is not a conversion character, that
+character is printed literally.
+The first uninterpretable character ends the conversion string.
+.PP
+An optional minus sign (-) which specifies left adjustment of the 
+converted value in the indicated field.
+.PP
+An optional digit string specifying a field width. The field will be at
+least this wide and may be wider if the conversion requires it.
+If the converted value has fewer characters than the field width,
+it is blank-padded on the left (or right,
+if the left-adjustment indicator has
+been given) to make up the field width.
+If the field width digit string begins with a zero,
+zero-padding occurs instead of blank-padding.
+.PP
+An optional period (.) which serves to separate the field width from the next digit string.
+.PP
+An optional digit string specifying a precision which specifies the number of digits to appear after the radix character, for \fIe\fP and \fIf\fP conversions, or the maximum number of characters to be printed from a string.
+.PP
+The character \fIl\fP (lowercase 'l' (ell)) specifying that a following \fId, o, x, X,\fP or \fIu\fP corresponds to a long integer \fIarg.\fP %lu is currently unimplemented.
+
+.pp
+A character which indicates the type of
+conversion to be applied.
+.in -5
+.PP
+A field width or precision may be an asterisk (*) instead of a digit string.
+In this case an integer \fIarg\fP supplies
+the field width or precision.
+.PP
+The flag characters and their meanings are:
+.sp
+.in +5
+- : The result of the conversion is left-justified
+within the field.
+.PP
++ : The result of a signed conversion always begins 
+with a sign (+ or -).
+.PP
+blank : If the first character of a signed conversion is not
+a sign, a blank is prepended to the result. This
+implies that if the blank and plus sign (+) flags both appear, the
+blank flag is ignored.
+.sp
+# : The value is to be converted to an alternative form. For \fIc, d, s,\fP and  \fIu\fP conversions, the flag has no effect. For \fIo\fP conversions,
+it increases the precision to force the first digit of the
+result to be a zero. For \fIx\fP or  \fIX\fP conversions, a non-zero result has 0x or 0X
+prepended to it. For  \fIe, E, f, g,\fP and \fIG\fP conversions, the result always contains a decimal point,
+even if no digits follow the point. A decimal point usually
+appears in the result of these conversions only if a digit 
+follows it. For \fIg\fP and \fIG\fP conversions, trailing zeroes
+are not removed from the result.
+.in -5
+.PP
+The conversion characters and their meanings are
+.sp
+.in +5
+d, o, x - The integer \fIarg\fP is converted to decimal, octal, or
+hexadecimal notation respectively.
+.PP
+f - The float or double \fIarg\fP is converted to decimal notation in the style `[-]dd
+.ddd'
+where the number of d's after the decimal point
+is equal to the precision specification  for the argument.
+If the precision is missing, 6 digits are given;
+if the precision is explicitly 0, no decimal point and following characters
+are printed.
+.PP
+e, E - The float or double \fIarg\fP is converted in the style
+`[-]
+.ddde(+-)dd'
+where there is one digit before the decimal point and
+the number after is equal to the precision specification for the argument;
+when the precision is missing, 6 digits are produced. When the argument is \fIE,\fP the results are printed in uppercase characters.
+.PP
+g, G - The float or double
+arg
+is printed in style
+d ,
+in style
+f ,
+or in
+style
+e.
+The style used depends on the value converted and the shortest is printed.
+Style \fIe\fP is used only if the exponent resulting from the conversion is less than 4 or
+greater than the precision. Trailing zeroes are
+removed from the result. A decimal point appears only
+if it is followed by a digit. If the \fIG\fP form is used, the output is printed in uppercase characters.
+.PP
+c - The character \fIarg\fP is printed.
+.PP
+s - The \fIarg\fP is taken to be a string (character pointer)
+and characters from the string are printed until
+a null character or the number of characters indicated by the precision
+specification is reached;  however if the precision is 0 or missing
+all characters up to a null are printed.
+.PP
+u - The unsigned integer \fIarg\fP is converted to decimal and printed. The result is in the
+range 0 through 65535 (for 6809/OS-9 only) or whatever the maximum integer
+size is on the system.
+.PP
+% - Print a `%'; no argument is converted.
+.in -5
+.PP
+A non-existent or small field width never
+causes truncation of a field. Padding takes place only if the specified 
+field width exceeds the actual width. Characters generated by \fBPRINTF\fP are printed by  \fIputc().\fP
+.pp
+In the case of double or float conversions, the last digit printed is rounded.
+.ed
+.sh CAVEATS
+.db
+In the ULTRIX-32 environment,  \fBPRINTF \fP and  \fBFPRINTF \fP return 0 for success and EOF for failure. 
+The \fBSPRINTF \fP subroutine returns its first 
+argument for success and EOF for failure.
+.PP
+In the System V environment,  \fBPRINTF, FPRINTF, \fP and \fBSPRINTF\fP subroutines return the number of characters transmitted, 
+not including the \\0 in the case of  \fBSPRINTF \fP or a negative value if an output error was encountered.
+.PP
+Within the OS-9 environment, in order to print long integers, the
+statement \fIpflinit()\fP must occur somewhere in the source code in order for the routines to print
+longs to be linked from the standard library. In addition, to print floats
+or double integers, the statement \fIpffinit()\fP must occur somewhere in the source code. Normally, either one or both of
+these statements are placed at the start of the source code file where
+printing of longs, floats, or doubles is required.
+.ed
+.sh SEE ALSO
+.bb
+putc(), scanf()
+.eb

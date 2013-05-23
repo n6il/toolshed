@@ -1,0 +1,67 @@
+ psect clmul_a,0,0,1,0,0
+*   all binary operators have op1 at 2,s and op2 at 0,x
+_lmul:
+ ldd 2,x
+ pshs d
+ ldd 0,x
+ pshs d
+ leax _flacc,y
+ clr 0,x
+ clr 1,x
+
+ lda 9,s
+ ldb 3,s
+ mul
+ std 2,x
+ lda 9,s
+ ldb 2,s
+ mul
+ addd 1,x
+ std 1,x
+ bcc _lmul1
+ inc 0,x
+_lmul1 lda 8,s
+ ldb 3,s
+ mul
+ addd 1,x
+ std 1,x
+ bcc _lmul2
+ inc 0,x
+_lmul2 lda 9,s
+ ldb 1,s
+ mul
+ addd 0,x
+ std 0,x
+ lda 8,s
+ ldb 2,s
+ mul
+ addd 0,x
+ std 0,x
+ lda 7,s
+ ldb 3,s
+ mul
+ addd 0,x
+ std 0,x
+ lda 9,s
+ ldb 0,s
+ mul
+ addb 0,x
+ stb 0,x
+ lda 8,s
+ ldb 1,s
+ mul
+ addb 0,x
+ stb 0,x
+ lda 7,s
+ ldb 2,s
+ mul
+ addb 0,x
+ stb 0,x
+ lda 6,s
+ ldb 3,s
+ mul
+ addb 0,x
+ stb 0,x
+ leas 4,s
+ lbra _lbexit
+ endsect

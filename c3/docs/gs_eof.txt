@@ -1,0 +1,28 @@
+.so header
+.tl /GS_EOF(2)/Kreider OS-9 C Library/GS_EOF(2)/
+.sh NAME
+.bb
+_gs_eof - get end-of-file status
+.eb
+.sh SYNOPSIS
+.bb
+int _gs_eof(path)
+int path;
+.eb
+.sh DESCRIPTION
+.db
+This function determines if the file opened on \fIpath\fP is at the end-of-file. If it is, the value 1 is returned -- if not, 0 is
+returned.
+.PP
+If \fIpath is invalid, a -1 is returned and the appropriate error code is placed\fP in the global variable \fIerrno.\f
+.ed
+.sh NOTE
+.db
+This function cannot determine the end-of-file on an SCF device. SCF devices
+return an E$EOF error when the EOF character is read. DO NOT use this call
+if using buffered I/O on PATH. Instead, use the function feof().
+.ed
+.sh SEE ALSO
+.bb
+I$GetStt system call - Microware Manual, feof().
+.eb

@@ -1,0 +1,23 @@
+.so header
+.tl /SETUID(3S)/Kreider OS-9 C Library/SETUID(3S)/
+.sh NAME
+.bb
+setuid - set user ID
+.eb
+.sh SYNOPSIS
+.bb
+setuid(uid)
+int uid;
+.eb
+.sh DESCRIPTION
+.db
+This call is used to set the user ID for the current process. \fBSETUID only works if the caller is the super user.\f
+.ed
+.sh DIAGNOSTICS
+.db
+A zero is returned from a successful call, and -1 on error.
+.ed
+.sh SEE ALSO
+.bb
+getuid()
+.eb

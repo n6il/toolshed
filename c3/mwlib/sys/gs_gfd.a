@@ -1,0 +1,21 @@
+ nam OS-9 C Support
+ ttl GetStat - FD
+
+ psect gsgfd_a,0,0,0,0,0
+
+
+* _gs_gfd(path,fdp,count)
+* int path;
+* char *fdp;
+* int count;
+_gs_gfd: tfr b,a get path number
+ ldb #SS.FD get getstat code
+ ldx 2,s get FD buffer ptr
+ pshs y save data area ptr
+ ldy 6,s get size desired
+ OS9 I$GetStt get some fd
+ puls y retrieve data area ptr
+ lbra _sysret
+
+
+ ends

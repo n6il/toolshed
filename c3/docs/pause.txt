@@ -1,0 +1,21 @@
+.so header
+.he /PAUSE(3S)/Kreider OS-9 C Library/PAUSE(3S)/
+.sh NAME
+.bb
+pause - halt and wait for an interrupt/signal
+.eb
+.sh SYNOPSIS
+.bb
+pause()
+.eb
+.sh DESCRIPTION
+.db \fBPAUSE\fP may be used to halt a process until an interrupt or signal is received from \fBKILL.\fP An equivalent function is \fItsleep(0).\f
+.ed
+.sh DIAGNOSTICS
+.db
+ PAUSE always returns a -1.
+.ed
+.sh SEE ALSO
+.bb
+kill(), signal(), tsleep()
+.eb

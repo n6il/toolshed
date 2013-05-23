@@ -1,0 +1,21 @@
+ nam OS-9 C Support
+ ttl SetStat - Lock File Area
+
+ psect sslock_a,0,0,0,0,0
+
+
+* _ss_lock(path,size)
+* int path;
+* long size;
+_ss_lock: pshs u
+ tfr b,a copy path number
+ ldb #SS.Lock
+ ldx 4,s m.s. byte
+ ldu 6,s l.s. byte
+ os9 I$SetStt
+ puls u retrieve register
+ lbra _sysret
+
+
+ ends
+ 

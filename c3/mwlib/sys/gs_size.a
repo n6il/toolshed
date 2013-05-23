@@ -1,0 +1,22 @@
+ nam OS-9 C Support
+ ttl GetStat - Size
+
+ psect gssize_a,0,0,0,0,0
+
+
+* _gs_size(path,sizptr)
+* int path;
+* long *sizptr;
+_gs_size: tfr b,a get path number
+ ldb #SS.Size get getstat code
+ pshs u save register variable
+ OS9 I$GetStt
+ bcs out branch if error
+ stx [4,s] return high-order size
+ ldx 4,s get parameter ptr
+ stu 2,x return low-order size
+out puls u retrieve register variable
+ lbra _sysret
+
+
+ ends

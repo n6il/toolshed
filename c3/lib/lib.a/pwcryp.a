@@ -1,0 +1,46 @@
+ psect pwcryp_a,0,0,0,0,0
+
+* Converted to new ABI on December 10, 2005
+
+* char *pwcryp (s)
+* char *s;
+
+pwcryp: pshs d,u save user's reg var
+ tfr d,u get string addr
+ ldd #$ffff
+ pshs d 3 byte accum for crc
+ pshs b
+ leax ,s pointer to crc accum
+ pshs x set addr of accum for crc
+ tfr u,d set for strlen
+ lbsr strlen
+ pshs d push length of string for crc
+ tfr u,d set addr of string for crc
+ lbsr crc
+ leas 4,s clean up from crc call
+ lda ,s+
+ bsr out2h
+ lda ,s+
+ bsr out2h
+ lda ,s+
+ bsr out2h
+ clr ,u terminate the new string
+ puls d,u,pc
+
+
+out2h pshs a
+ lsra
+ lsra
+ lsra
+ lsra
+ bsr out2h1
+ puls a
+ anda #$0f
+out2h1 adda #'0
+ cmpa #'9
+ bls out2h2
+ adda #7
+out2h2 sta ,u+
+ rts
+
+ endsect

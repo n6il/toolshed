@@ -1,0 +1,35 @@
+
+ psect errmsg_a,0,0,1,0,0
+
+* Converted to new ABI on December 6, 2005
+
+* int _errmsg(nerr, msg[,arg1, arg2, arg3])
+* int nerr;
+* char *msg;
+
+_errmsg:
+ pshs d,u
+ lbsr _prgname
+ pshs d
+ leau _2,pcr
+ pshs u
+ leax _iob+26,y
+ tfr x,d
+ lbsr fprintf
+ leas 4,s
+ ldu 12,s
+ ldx 10,s
+ ldd 8,s
+ pshs d,x,u
+ ldu 12,s
+ pshs u
+ leax _iob+26,y
+ tfr x,d
+ lbsr fprintf
+ leas 8,s
+ puls d,u,pc
+
+_2 fcc "%s: "
+ fcb $0
+
+ endsect

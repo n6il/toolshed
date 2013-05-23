@@ -1,0 +1,44 @@
+ psect ccmod_a,0,0,1,0,0
+ccumod:
+ clr sign,y
+ leax ccudiv,pcr
+ stx func,y
+ bra ccmod1
+
+ccmod:
+ leax ccdiv,pcr
+ stx func,y
+ clr sign,y
+ tst 2,s sign of dividend?
+ bpl ccmod1
+ inc sign,y
+ccmod1
+ subd #0
+ bne ccmod2
+* divisor zero - return dividend
+ puls x get return address into x
+ ldd ,s++ set cc and bump sp
+ jmp 0,x go home
+
+* set up for division
+ccmod2 ldx 2,s
+ pshs x
+ jsr [func,y] ccdiv or ccudiv appropriately
+ ldd 0,s move return address
+ std 2,s to next slot up
+ tfr x,d result was returned in x
+ tst sign,y
+ beq ccmod3
+* dividend was negative
+ nega
+ negb
+ sbca #0
+
+ccmod3 std ,s++ set cc and reset stack
+ rts
+
+ vsect
+sign rmb 1
+func rmb 2
+ endsect
+ endsect

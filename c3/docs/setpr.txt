@@ -1,0 +1,27 @@
+.so header
+.he /SETPR(3S)/Kreider OS-9 C Library/SETPR(3S)/
+.sh NAME
+.bb
+setpr - set process priority
+.eb
+.sh SYNOPSIS
+.bb
+setpr(pid, priority)
+int pid, priority;
+.eb
+.sh DESCRIPTION
+.db \fBSETPR\fP sets the process identified by \fIpid\fP (process ID) to have a
+priority of \fIpriority.\fP The lowest priority is 0 and the highest is 255.
+.sp
+A currently running process cannot change the priority of another running
+process if the two process' do not share ownership. In addition, a process,
+if not owned by the super user, cannot upgrade its priority to a level
+higher than the parent process that created it with the OS-9 system call.
+However, a process owned by the super user, or any system process, can
+change the priority of any other running process to any level.
+.ed
+.sh DIAGNOSTICS
+.db
+A -1 will be returned if the process does not have the same user ID as the
+calling process.
+.ed
