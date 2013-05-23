@@ -7,7 +7,7 @@ PACKAGENAME	= toolshed$(RELEASE).tgz
 ifneq ($(DESTDIR),)
 INSTALLDIR	= $(DESTDIR)/usr/bin
 else
-INSTALLDIR	= $(HOME)/bin
+INSTALLDIR	= /usr/local/bin
 endif
 DIRS		= libtoolshed libnative libcecb librbf libcoco libdecb libmisc libsys \
 		ar2 os9 mamou decb tocgen cocofuse makewav libcecb cecb
