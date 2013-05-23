@@ -7,9 +7,9 @@
  */
 
 #ifdef __MINGW32__
-#  define INCLDIR "C:\\dd\\defs\\"
+#  define INCLDIR "C:\\dd\\defs"
 #else
-#  define INCLDIR "/dd/defs/"
+#  define INCLDIR "include"
 #endif
         /* open include files and place in file path stack */
 void
@@ -50,7 +50,17 @@ doinclude (char *ln)
 	avail = sizeof (ifnbuf[0]);
 
         /*strcpy (ifnbuf[++fptr], "/dd/defs/");*/ /* add LIB prefix to filename */
-        strcpy (ifnbuf[++fptr], INCLDIR);
+#ifdef XTARGET
+	char *includedir = getenv("C3INCLUDEDIR");
+	if (NULL == includedir)
+	{
+		includedir = INCLDIR;
+	}
+#else
+	char *includedir = INCLDIR;
+#endif
+        strcpy (ifnbuf[++fptr], includedir);
+        strcat (ifnbuf[fptr], "/");
 	avail -= (strlen (INCLDIR) + 1); /* srlen remaining less ending NULL */
 
 	/* c = strlen (ln) up to, but not including, the ">" */

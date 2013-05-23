@@ -23,3 +23,6 @@ proto.h: $(protos)
 
 clean:
 	rm -f *.o *.s co_comp
+
+install: co_comp
+	install co_comp /usr/local/bin

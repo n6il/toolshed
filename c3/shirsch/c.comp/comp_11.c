@@ -224,7 +224,8 @@ prt_vsect (isdp)
 prt_vsect (int isdp)
 #endif
 {
-    prt_opcode ( isdp ? "vsect dp" : "vsect");
+//    prt_opcode ( isdp ? "vsect dp" : "vsect");
+    prt_opcode ( "section bss");
 }
 
 void

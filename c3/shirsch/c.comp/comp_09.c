@@ -153,8 +153,10 @@ prepln ()
                         return -1;
                     }
 
-                    fprintf (OutPath, " psect %s,0,0,%d,0,0\n",
+/*                    fprintf (OutPath, " psect %s,0,0,%d,0,0\n",
                                         D078a, a_toi (InpBuf)) ;
+*/
+                    fprintf (OutPath, " section code\n");
                     fprintf (OutPath, " nam %s\n", D078a);
                     continue;
                 case '0':     /* L43c3 */  /* '0' */
