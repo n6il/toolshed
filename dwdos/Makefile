@@ -41,7 +41,7 @@ dw3dos_mb_cc2.rom:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2
 
 dw3dos_mb_cc1.rom:	dw3dos.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=1 -DBAUD38400=1
 
 dw3dos_dsk_cc3.rom:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=3 -DDISKROM=1
@@ -50,7 +50,7 @@ dw3dos_dsk_cc2.rom:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DDISKROM=1
 
 dw3dos_dsk_cc1.rom:	dw3dos.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=1 -DDISKROM=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=1 -DDISKROM=1 -DBAUD38400=1
 
 dw3doscc3.bin:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=3 -DBIN=1 -b
@@ -59,7 +59,7 @@ dw3doscc2.bin:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DBIN=1 -b
 
 dw3doscc1.bin:	dw3dos.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=1 -DBIN=1 -b
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=1 -DBIN=1 -b -DBAUD38400=1
 
 dw3doscc3.wav:	dw3doscc3.bin
 	$(MAKEWAV) -o$@ -nDW3DOSC3 $<
@@ -103,7 +103,7 @@ dw3dos_cc2.trk:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DDOSTRACK
 
 dw3dos_cc1.trk:	dw3dos.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=1 -DDOSTRACK
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=1 -DDOSTRACK -DBAUD38400=1
 
 # DW4DOS Tracks
 dw4dos_cc3.trk:	dw3dos.asm
