@@ -427,7 +427,7 @@ strcommon:
 				sptr->size = 2;
 				sptr->dimptr = NULL;
 				sptr->storage = EXTERN;
-				sptr->blklev = 0;
+				sptr->blocklevel = 0;
 				move(sptr,lhs,6);
 				t = INT;
 			} else {
@@ -879,7 +879,7 @@ register expnode *dptr,*rhs;
 	return ptr;
 }
 
-needlval(node,flag)
+void needlval(node,flag)
 register expnode *node;
 {
 	int op;

@@ -84,7 +84,7 @@ typedef struct symstr {
 		elem *elems;		/* chain of structure members */
 		int labflg;			/* label flag */
 	} x;
-	short blklev;			/* block level of declaration */
+	short blocklevel;			/* block level of declaration */
 	struct symstr *downptr, /* ptr to 'hidden' outer declaration */
 				  *snext,	/* ptr to entry in various lists */
 				  *hlink;	/* ptr to next symbol in hash chain */
@@ -333,6 +333,12 @@ typedef struct initstruct {
 #define		   isary(t)		   (((t) & XTYPE) == ARRAY)
 #define		   isftn(t)		   (((t) & XTYPE) == FUNCTION)
 #define		   modtype(t,b)	   (((t) & (~BASICT)) + b)
+
+
+#define            basictype(t)         btype(t)
+#define            ispointer(t)         isptr(t)
+#define            isarray(t)           isary(t)
+#define            isfunction(t)        isftn(t)
 
 #define		   getlabel(a)	   (++curlabel)
 

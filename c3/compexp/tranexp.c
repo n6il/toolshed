@@ -186,7 +186,7 @@ prtree(tree,"tranexp (after)");
 }
 
 
-tranbinop(op,node)
+void tranbinop(op,node)
 int op;
 expnode *node;
 {
@@ -521,7 +521,7 @@ register expnode *p;
 }
 
 
-getinx(node)
+void getinx(node)
 register expnode *node;
 {
 	if (node->op & INDIRECT) {
@@ -533,7 +533,7 @@ register expnode *node;
 }
 
 
-doass(node)
+void doass(node)
 register expnode *node;
 {
 	register expnode *lhs,*rhs,*savlhs;
@@ -620,7 +620,7 @@ register expnode *tree;
 }
 
 
-assop(node,op)
+void assop(node,op)
 expnode *node;
 {
 	register expnode *lhs,*rhs;
@@ -726,7 +726,7 @@ ord:
 }
 
 
-stackx(node)
+void stackx(node)
 register expnode *node;
 {
 	if ((node->op & NOTIND) == NAME) return;
@@ -817,7 +817,7 @@ fix:			node->val.sp = lhs->val.sp;
 }
 
 
-dotoggle(node,dest)
+void dotoggle(node,dest)
 register expnode *node;
 register int dest;
 {
@@ -906,7 +906,7 @@ register expnode *p;
 	p->op = XREG;
 }
 
-tranxexp(node)
+void tranxexp(node)
 expnode *node;
 {
 	register expnode *lhs,*rhs;

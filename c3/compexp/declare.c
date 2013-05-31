@@ -22,6 +22,7 @@
 
 static direct int reguse;
 static direct struct initstruct *initlist,*initlast,*initfree;
+static int blocklevel;
 
 #ifdef FUNCNAME
 direct int fnline;
@@ -1006,7 +1007,6 @@ int declarator(symnode **ptr, dimnode **dptr, int bastype)
 	register dimnode *tempdim, *p, *p1;
 	int dtype, savmos, count;
 	auto dimnode *dummy;
-
 	*ptr = NULL;
 	dtype = 0;
 
@@ -1151,7 +1151,7 @@ int getsize(int t, int size, dimnode *dptr)
 		}
 		while (isarray(t = decref(t)));
 
-		return n * (isfunctioni(t) ? POINTSIZE : size);
+		return n * (isfunction(t) ? POINTSIZE : size);
 	}
 
 	return size;

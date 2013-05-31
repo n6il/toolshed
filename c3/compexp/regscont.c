@@ -8,6 +8,8 @@ direct expnode	*dregcont, *xregcont, *currexpr;
 //extern int		fixnode(), graft();
 extern expnode	*subtree(), *treecont(), *regcont();
 
+expnode *treecopy(expnode *tree);
+
 void clrconts(void)
 {
 	setdreg(NULL);

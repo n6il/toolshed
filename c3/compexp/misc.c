@@ -25,7 +25,7 @@ void pushdown(symnode *sptr)
 	sptr->downptr = nptr;
 	sptr->type = sptr->size = sptr->dimptr =
 	sptr->offset = sptr->storage = sptr->x.labflg =
-	sptr->blklev = sptr->snext = 0;
+	sptr->blocklevel = sptr->snext = 0;
 }
 
 /* to recover outer block declaration
@@ -257,8 +257,8 @@ void pnode(expnode *node)
 	printf("%04x    ",node);
 	if (op == NAME)
 	    printf("%-10.8s %04x  ", node->val.sp->sname, node->modifier);
-	else
-		printf("%-10s%5d  ", kw[op], node->val.num);
+//	else
+//		printf("%-10s%5d  ", kw[op], node->val.num);
 	val = node->type;
 	for (i = 14; i >= 4 ; i -= 2) {
 	    switch ((val >> i)  & 3) {
@@ -275,7 +275,7 @@ void pnode(expnode *node)
 	    	putchar(' ');
 	    }
 	}
-	printf(" %-8s%4d %2d  %04x   %04x\n",
-		kw[val & BASICT], node->size, node->sux, node->left, node->right);
+//	printf(" %-8s%4d %2d  %04x   %04x\n",
+//		kw[val & BASICT], node->size, node->sux, node->left, node->right);
 }
 #endif

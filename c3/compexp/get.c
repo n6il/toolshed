@@ -19,6 +19,8 @@ static long soffset;
 #endif
 */
 
+char getline2(void);
+
 void preinit(void)
 {
         lptr=line;
@@ -36,10 +38,10 @@ void getch(void)
         if((cc= *lptr++))
                 ;
         else
-                cc=getline();
+                cc=getline2();
 }
 
-char getline(void)
+char getline2(void)
 {
         int lno, n, x;
         static char temp[LINESIZE];

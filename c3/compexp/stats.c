@@ -495,7 +495,7 @@ static symnode *checklabel(void)
     if (ptr->type == LABEL) return ptr;
 
     if (ptr->type != UNDECL) {
-        if (ptr->blklev != 0) {
+        if (ptr->blocklevel != 0) {
             error("already a local variable");
             return NULL;
         }
@@ -505,7 +505,7 @@ static symnode *checklabel(void)
     ptr->storage = AUTO;
     ptr->offset = getlabel();
     ptr->x.labflg = 0;
-    ptr->blklev = blklev;
+    ptr->blocklevel = blklev;
     ptr->snext = labelist;
     labelist = ptr;
     return ptr;
