@@ -5,7 +5,7 @@ vpath %.c ../../mamou:../../os9
 
 RELEASE		= _2.0
 PACKAGENAME	= toolshed$(RELEASE)_win32.zip
-INSTALLDIR	= $(HOME)/bin
+INSTALLDIR	= /usr/local/bin
 DIRS		= libnative librbf libcoco libdecb libmisc libcecb libsys  \
 		libtoolshed os9 mamou decb cecb makewav tocgen
 # ar2
@@ -17,6 +17,7 @@ all:
 	$(foreach dir, $(DIRS), (echo $(dir); cd $(dir); make);)
 
 install: all
+	mkdir -p $(INSTALLDIR)
 	cp os9/os9.exe mamou/mamou.exe decb/decb.exe cecb/cecb.exe \
 	makewav/makewav.exe tocgen/tocgen.exe \
 	$(INSTALLDIR)
