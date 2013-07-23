@@ -245,7 +245,7 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 
     /* 3. Determine if this is an OS-9, DECB or CECB image. */
 
-	fp = fopen(tmppathlist, "r");
+	fp = fopen(tmppathlist, "rb");
 
 	if (fp != NULL)
 	{

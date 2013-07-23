@@ -161,7 +161,7 @@ void do_rdump(char *file)
 {
 	fname = file;
 	
-	if ((in = fopen(fname,"r")) == NULL)
+	if ((in = fopen(fname,"rb")) == NULL)
 	{
 		printf("can't open '%s'\n", fname);
 

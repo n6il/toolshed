@@ -519,7 +519,7 @@ int             main(int argc, char **argv)
 	}
 
 
-	FILE           *output = fopen(out_filename, "w+");
+	FILE           *output = fopen(out_filename, "wb");
 
 	if (output == NULL)
 	{
