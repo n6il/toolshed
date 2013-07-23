@@ -93,8 +93,12 @@ int os9format(int argc, char **argv)
 						break;
 
 					case 'c':
-						/* TODO: verify clusterSize is a power of 2! */
 						clusterSize = atoi(p+1);
+						if (clusterSize == 0 || (clusterSize & (clusterSize - 1)))
+						{
+							fprintf(stderr, "%s: cluster size must be a power of two\n", argv[0]);
+							return 0;
+						}
 						while (*(p + 1) != '\0') p++;
 						break;
 
