@@ -396,8 +396,13 @@ FCBDFL         equ       23                  INPUT FILE ONLY: DATA LEFT FLAG: 0=
 FCBLFT         equ       24                  NUMBER OF CHARACTERS LEFT IN BUFFER (INPUT FILE)
 * NUMBER OF CHARS STORED IN BUFFER (OUTPUT FILE)
 FCBCON         equ       25                  OFFSET TO FCB DATA BUFFER (256 BYTES)
+               IFDEF     ORG
+               org       ORG
+MAGICDG        fcc       'OS'
+               ELSE
                org       $C000
 MAGICDG        fcc       'DK'
+               ENDC
 LC002          bra       LC00C
 DCNVEC         fdb       DSKCON              DSKCON POINTER
 DSKVAR         fdb       DCOPC               ADDRESS OF DSKCON VARIABLES
@@ -3718,7 +3723,7 @@ VEXT           rmb       4                   Reserved 10 byte SCSI commands
 
 * HARD DISK DRIVER
 
-               org       $D930               It all starts here!
+               org       MAGICDG+$1930       It all starts here!
 
 * Indirect Jump Table ( jsr [$MMMM] )
 
@@ -5214,6 +5219,6 @@ ZZLAST         equ       *-1                 Cannot be > $DFFF!
 
 
 
-               fill      $39,$E000-*
+               fill      $39,MAGICDG+$2000-*
 
-
+               end LC00C
