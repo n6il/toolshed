@@ -2323,11 +2323,11 @@ DXCVEC         cmpa      #$CA                TOKEN FOR DLOAD?
                cmpb      #$04                CHECK FOR PMODE 4
                lbhi      LB44A               'FC' ERROR IF PMODE > 4
                lda       GRPRAM              NUMBER BLOCKS BEFORE GRAPHICS PAGES
-               jmp       >L962E              JUMP TO EXEAS' PMODE COMMAND
+               jmp       >L962E              JUMP TO EXBAS' PMODE COMMAND
 * DISK BASIC DLOAD MODIFIER
 LCF2A          jsr       >LA429              CLOSE FILES
                jsr       GETNCH              GET NEXT CHARACTER FROM BASIC
-               jmp       >L8C1B              JUMP TO EXEAS' DLOAD
+               jmp       >L8C1B              JUMP TO EXBAS' DLOAD
 DXIVEC         cmpb      #($9A-$80)*2        MODIFIED TOKEN FOR POS
                lbne      L8168               IF NOT POS, GO TO EXBAS SECONDARY COMM HANDLER
                jsr       >LB262              SYNTAX CHECK FOR '(' AND EVALUATE EXPRESSION
@@ -4630,7 +4630,7 @@ DRVCHK         cmpa      #$88                "ON" token?
                beq       DNUM                Yes, set SCSI or IDE ID
 
 * If here, must be a drive number
-               jsr       LB70B               Evaluate argument
+               jsr       EVALEXPB            Evaluate argument
                jsr       LA5C7               ?SN ERROR if more chars
                cmpb      MAXDRV              Valid number requested?
                jmp       LCECA               Store default drive & return
@@ -4644,7 +4644,7 @@ DRIVEF         ldb       #4                  Offset of 4 = floppies
                beq       a@                  Go if no argument
                tstb                          "DRIVE ON" command?
                beq       a@                  Yes, argument not allowed
-               jsr       LB70B               No, evaluate argument
+               jsr       EVALEXPB            No, evaluate argument
                incb                          Correct it
                cmpb      #4                  Legal number?
                bhi       FCERR               No, ?FC ERROR
@@ -4682,7 +4682,7 @@ IOERR          jmp       LD709
 
 * Select Device ID number
 DNUM           jsr       <$9F                Parse over "#"
-DSET05         jsr       LB70B               Evaluate argument
+DSET05         jsr       EVALEXPB            Evaluate argument
                cmpb      #MAXDN-1            Legal?
                bhi       FCERR               No, ?FC ERROR
                jsr       LA5C7               ?SN ERROR if more chars
@@ -4883,7 +4883,7 @@ RENAME2        cmpa      #$CF                "DRIVE" token?
                bne       NONAME              No, continue old code
                jsr       <$9F                Yes, parse over it
                jsr       >LD256               Get drive number
-               jsr       LB26D               Sytax check for comma
+               jsr       SYNCOMMA            Syntax check for comma
                ldd       #(0*256)+$FF        Write 256 bytes of $FF
                ldx       #DBUF0              Point to buffer
                stx       <DCBPT              Tell DSKCON where buffer is
