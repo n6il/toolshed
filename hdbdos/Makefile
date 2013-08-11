@@ -211,6 +211,15 @@ hdbdw3arduino.bin: preload hdbdw3arduino.rom postload
 hdbdw3arduino.wav: hdbdw3arduino.bin
 	$(MAKEWAV) -o$@ -nHDBDW3ARD $<
 
+# Dragon example, DW3 run from lower RAM
+hdbdw3dgn32ram.bin: ../cocoroms/ecb_equates.asm ../cocoroms/dragon_equivs.asm hdbdos.asm
+	$(AS) -b -DDW -DORG=0x6000 -DLevel=1 -DDRAGON $+ -o$@
+hdbdw3dgn32ram.wav: hdbdw3dgn32ram.bin
+	$(MAKEWAV) -o$@ -nHDBDWD32 $<
+
+# Dragon example, IDE LBA for ROM cartridge
+hdblbadgn.rom: ../cocoroms/ecb_equates.asm ../cocoroms/dragon_equivs.asm hdbdos.asm
+	$(AS) -DIDE -DUSELBA -DLevel=1 -DDRAGON $+ -o$@
 
 clean:
 	-rm -f preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)

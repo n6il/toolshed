@@ -274,6 +274,20 @@ SELECT         equ       -1                  Write -SEL pulse
 SCSIRESET      equ       -2                  Write -RST pulse
                ENDC
 
+               IFDEF     DRAGON
+* Dragon Color Basic tokens
+TOKEN_ON       equ       $88
+TOKEN_RESTORE  equ       $90
+TOKEN_STOP     equ       $92
+TOKEN_CLOAD    equ       $99
+TOKEN_CSAVE    equ       $9A
+TOKEN_POS      equ       $83
+TOKEN_TO       equ       $BC
+TOKEN_OFF      equ       $C2
+TOKEN_EQUAL    equ       $CB
+TOKEN_PMODE    equ       $B7
+TOKEN_DLOAD    equ       $B9
+               ELSE
 * Coco Extended Color Basic tokens
 TOKEN_ON       equ       $88
 TOKEN_RESTORE  equ       $8F
@@ -286,6 +300,7 @@ TOKEN_OFF      equ       $AA
 TOKEN_EQUAL    equ       $B3
 TOKEN_PMODE    equ       $C8
 TOKEN_DLOAD    equ       $CA
+               ENDC
 
 * Disk Color BASIC tokens
 TOKEN_AS       equ       $A7
@@ -414,9 +429,19 @@ LC00F          clr       ,X+                 CLEAR A BYTE
                cmpx      #DFLBUF             END OF DISK'S RAM?
                bne       LC00F               NO - KEEP CLEARING
                ldx       #LC109              POINT X TO ROM IMAGE OF COMMAND INTERPRETATION TABLE
+               IFDEF     DRAGON
+               ldu       #COMVEC+10          POINT U TO RAM ADDRESS OF SAME (STUB1)
+               ELSE
                ldu       #COMVEC+20          POINT U TO RAM ADDRESS OF SAME
+               ENDC
                ldb       #10                 10 BYTES PER TABLE
                jsr       >LA59A              MOVE (B) BYTES FROM (X) TO (U)
+               IFDEF     DRAGON
+               clr       ,U                  EMPTY STUB2 (NEED NOT ALTER STUB2 MORE)
+               ldd       #USRTBL             OUR RELOCATED TABLE
+               std       <$B0                RELOCATE USR ADDRESS TABLE
+               FILL      $12,16              FILL WITH NOP (TO HAVE SAME CODE LENGTH AS COCO BUILD)
+               ELSE
                ldd       #LB277              SYNTAX ERROR ADDRESS
                std       $03,U               * SET JUMP TABLE ADDRESSES OF THE USER COMMAND
                std       $08,U               * INTERPRETATION TABLE TO POINT TO SYNTAX ERROR
@@ -426,6 +451,7 @@ LC00F          clr       ,X+                 CLEAR A BYTE
                std       COMVEC+13           * POINTERS TO EXBAS
                ldd       #DXIVEC             * COMMAND AND SECONDARY
                std       COMVEC+18           * COMMAND INTERPRETATION ROUTINES
+               ENDC
 **** MOVE THE NEW RAM VECTORS FROM ROM TO RAM
                ldu       #RVEC0              POINT U TO 1ST RAM VECTOR
 LC03B          lda       #$7E                OP CODE OF JMP INSTRUCTION
@@ -3668,8 +3694,15 @@ DOSIN2         ldd       #(6*256)+$3B        6 "RTI" opcodes
                jsr       >LD6C2               Store 6 RTIs
                puls      d,x,pc              Restore & return
 
+* INITIALIZE DRAGON USR ADDRESS TABLE TO FC ERROR
+* FIXME: USE ANOTHER LOCATION IN CASE THIS CODE IS IN ROM
+               IFDEF DRAGON
+USRTBL         fdb       $8B8D,$8B8D,$8B8D,$8B8D,$8B8D
+               fdb       $8B8D,$8B8D,$8B8D,$8B8D,$8B8D
+               ELSE
                fcb       $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
                fcb       $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+               ENDC
                fcb       $FF,$FF,$FF,$FF,$FF,$99
 
 
@@ -5084,6 +5117,9 @@ SIGNON         fcc       "HDB-DOS "
                ENDC      
                ENDC      
                ENDC      
+               IFDEF     DRAGON
+               fcc       " ON DRAGON"
+               ENDC
 *	fcc	" (C) 2002 AE"
                fcb       CR,CR
                fcb       STOP2
