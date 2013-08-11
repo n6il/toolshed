@@ -274,6 +274,22 @@ SELECT         equ       -1                  Write -SEL pulse
 SCSIRESET      equ       -2                  Write -RST pulse
                ENDC
 
+* Coco Extended Color Basic tokens
+TOKEN_ON       equ       $88
+TOKEN_RESTORE  equ       $8F
+TOKEN_STOP     equ       $91
+TOKEN_CLOAD    equ       $97
+TOKEN_CSAVE    equ       $98
+TOKEN_POS      equ       $9A
+TOKEN_TO       equ       $A5
+TOKEN_OFF      equ       $AA
+TOKEN_EQUAL    equ       $B3
+TOKEN_PMODE    equ       $C8
+TOKEN_DLOAD    equ       $CA
+
+* Disk Color BASIC tokens
+TOKEN_AS       equ       $A7
+TOKEN_DRIVE    equ       $CF
 
 * Disk Color BASIC 1.1
 * Copied from the PDF version of Disk Color BASIC Unravelled.
@@ -284,6 +300,7 @@ SCSIRESET      equ       -2                  Write -RST pulse
 *# $Id: $
 *
 DHITOK         equ       $E1                 HIGHEST 1.1 DISK TOKEN
+DHISTOK        equ       $A7                 HIGHEST 1.1 DISK SECONDARY TOKEN
 CYEAR          equ       '2
 *
 *
@@ -592,7 +609,7 @@ LC244          cmpa      #DHITOK             COMPARE TO HIGHEST DISK BASIC TOKEN
                lbls      LB277               'SYNTAX' ERROR IF < DISK BASIC COMMAND TOKEN
                jmp       [COMVEC+33]         PROCESS A USER COMMAND TOKEN
 *DISK BASIC SECONDARY COMMAND INTERPRETATION HANDLER
-LC24E          cmpb      #($A7-$80)*2        *COMPARE MODIFIED SECONDARY TOKEN TO
+LC24E          cmpb      #(DHISTOK-$80)*2    *COMPARE MODIFIED SECONDARY TOKEN TO
                bls       LC256               *HIGHEST DISK BASIC TOKEN & BRANCH IF HIGHER
                jmp       [COMVEC+38]         JUMP TO USER SECONDARY COMMAND HANDLER
 LC256          subb      #($A2-$80)*2        *SUBTRACT OUT THE SMALLEST SECONDARY
@@ -1470,10 +1487,10 @@ LC8DA          ldd       ,X+                 *GET LINE NUMBER OF THIS LINE AND
                jsr       PUTCHR              SEND A CHARACTER TO CONSOLE OUT
 LC8F3          jsr       GETNCH              GET NEXT CHARACTER FROM BASIC
                tfr       CC,B                SAVE STATUS REGISTER IN ACCB
-               cmpa      #$98                CSAVE TOKEN?
+               cmpa      #TOKEN_CSAVE        CSAVE TOKEN?
                bne       LC8FE               NO
                jmp       >L8316              GO CHECK FOR CSAVEM
-LC8FE          cmpa      #$97                CLOAD TOKEN?
+LC8FE          cmpa      #TOKEN_CLOAD        CLOAD TOKEN?
                bne       LC905               NO
                jmp       >L8311              JUMP TO EXBAS' CLOAD ROUTINE
 LC905          tfr       B,CC                RESTORE STATUS REGISTER
@@ -2311,9 +2328,9 @@ LCEEC          puls      A                   PULL VARIABLE TYPE OFF OF THE STACK
                lbcs      LAFB1               BRANCH IF STRING STORED IN RANDOM FILE BUFFER - MOVE IT INTO THE STRING SPACE
 LCF07          jmp       >LAFA4              BRANCH BACK TO BASIC’S 'LET' COMMAND
 *MODIFIER FOR EXBAS COMMAND INTERPRETATION HANDLER
-DXCVEC         cmpa      #$CA                TOKEN FOR DLOAD?
+DXCVEC         cmpa      #TOKEN_DLOAD        TOKEN FOR DLOAD?
                beq       LCF2A               YES
-               cmpa      #$C8                TOKEN FOR PMODE?
+               cmpa      #TOKEN_PMODE        TOKEN for PMODE?
                lbne      L813C               NO
 * DISK BASIC MODIFIER FOR PMODE - ALLOWS FOR THE RAM THE DOS USES
                jsr       GETNCH              GET NEXT CHARACTER FROM BASIC
@@ -2328,7 +2345,7 @@ DXCVEC         cmpa      #$CA                TOKEN FOR DLOAD?
 LCF2A          jsr       >LA429              CLOSE FILES
                jsr       GETNCH              GET NEXT CHARACTER FROM BASIC
                jmp       >L8C1B              JUMP TO EXBAS' DLOAD
-DXIVEC         cmpb      #($9A-$80)*2        MODIFIED TOKEN FOR POS
+DXIVEC         cmpb      #(TOKEN_POS-$80)*2  MODIFIED TOKEN FOR POS
                lbne      L8168               IF NOT POS, GO TO EXBAS SECONDARY COMM HANDLER
                jsr       >LB262              SYNTAX CHECK FOR '(' AND EVALUATE EXPRESSION
                lda       DEVNUM              * GET DEVICE NUMBER AND
@@ -2461,7 +2478,7 @@ LD01F          bsr       LD056               GET FILENAME OF SOURCE FILE
                stb       DCOPC               * SAVE IN DSKCON VARIABLE
                jmp       >LD6F2              WRITE NEW DIRECTORY SECTOR
 * DO A SYNTAX CHECK FOR 'TO’ AND STRIP A FILENAME FROM BASIC
-LD051          ldb       #$A5                'TO' TOKEN
+LD051          ldb       #TOKEN_TO           'TO' TOKEN
                jsr       >LB26F              SYNTAX CHECK FOR 'TO'
 LD056          jmp       >LC935              GET FILENAME FROM BASIC
 LD059          jsr       >LC68C              SCAN DIRECTORY FOR FILENAME
@@ -2536,7 +2553,7 @@ LD0DF          ldu       $03,S               LOAD U WITH OLD TOTAL LENGTH OF ALL
                stu       $01,S               *FILE BUFFER AND SAVE IT ON THE STACK
                ldb       #$FF                SECONDARY TOKEN
                jsr       >LB26F              SYNTAX CHECK FOR SECONDARY TOKEN
-               ldb       #$A7                'AS' TOKEN
+               ldb       #TOKEN_AS           'AS' TOKEN
                jsr       >LB26F              SYNTAX CHECK FOR 'AS' TOKEN
                jsr       >LB357              EVALUATE VARIABLE
                jsr       >LB146              'TM' ERROR IF NUMERIC VARIABLE
@@ -2559,7 +2576,7 @@ LSET           clra                          LSET	FLAG = 0
                blo       LD11E               = AREA - BRANCH IF STRING IN RANDOM FILE BUFFER
 LD119          ldb       #2*35               'SET TO NON-FIELDED STRING' ERROR
                jmp       >LAC46              JUMP TO ERROR HANDLER
-LD11E          ldb       #$B3                *
+LD11E          ldb       #TOKEN_EQUAL        *
                jsr       >LB26F              * SYNTAX CHECK FOR '=' TOKEN
                jsr       >L8748              =EVALUATE DATA STRING EXPRESSION; RETURN WITH X
 *			=POINTING TO STRING; ACCB = LENGTH
@@ -2743,7 +2760,7 @@ BACKUP         lbeq      LA61F               DEVICE NUMBER ERROR IF NO DRIVE NUM
 *	STB	DBUF0+255	* IT AT TOP OF DBUF0 (TOP OF NEW STACK)
                jsr       GETCCH              GET A CHARACTER FROM BASIC
                beq       LD27B               BRANCH IF END OF LINE
-               ldb       #$A5                TOKEN FOR 'TO'
+               ldb       #TOKEN_TO
                jsr       >LB26F              SYNTAX CHECK FOR 'TO'
                jsr       >LD256              GET DESTINATION DRIVE NUMBER
 
@@ -2921,7 +2938,7 @@ COPY           jsr       >LC935              * GET SOURCE FILENAME.EXT & DRIVE N
                jsr       GETCCH              GET CURRENT INPUT CHARACTER
                beq       LD3CE               BRANCH IF END OF LINE - SINGLE DISK COPY
                com       ,S                  SET SOC FLAG TO $FF (NO SINGLE DISK COPY)
-               ldb       #$A5                TOKEN FOR 'TO'
+               ldb       #TOKEN_TO
                jsr       >LB26F              SYNTAX CHECK FOR 'TO'
                jsr       >COPtst
 *	JSR	>LC935	GET DESTINATION FILENAME.EXT AND DRIVE NUMBER
@@ -3389,10 +3406,10 @@ LD743          puls      A,B,X,U             RESTORE REGISTERS
                bra       LD70B               JUMP TO ERROR HANDLER
 * VERIFY COMMAND
 VERIFY         clrb                          OFF FLAG = 0
-               cmpa      #$AA                OFF TOKEN ?
+               cmpa      #TOKEN_OFF          OFF TOKEN ?
                beq       LD75A               YES
                comb                          ON FLAG = $FF
-               cmpa      #$88                ON TOKEN
+               cmpa      #TOKEN_ON           ON TOKEN ?
                lbne      LB277               BRANCH TO 'SYNTAX ERROR' IF NOT ON OR OFF
 LD75A          stb       DVERFL              SET VERIFY FLAG
                jmp       GETNCH              GET NEXT CHARACTER FROM BASIC
@@ -4618,13 +4635,13 @@ b@             rts                           Return
 
 * Check for enhanced drive commands
 
-DRVCHK         cmpa      #$88                "ON" token?
+DRVCHK         cmpa      #TOKEN_ON           "ON" token?
                beq       DRIVEH              Yes, enable hard drives 0-3
-               cmpa      #$AA                "OFF" Token?
+               cmpa      #TOKEN_OFF          "OFF" Token?
                beq       DRIVEF              Yes, enable floppys
-               cmpa      #$91                "STOP" token?
+               cmpa      #TOKEN_STOP         "STOP" token?
                beq       DPARK               Yes, go park drive
-               cmpa      #$8F                "RESTORE" token?
+               cmpa      #TOKEN_RESTORE      "RESTORE" token?
                beq       RECAL               Yes, rezero drive
                cmpa      #'#                 "DRIVE #" command?
                beq       DNUM                Yes, set SCSI or IDE ID
@@ -4879,7 +4896,7 @@ SETVAR         ldd       #$1111
 
 * Rename drive command syntax: RENAME DRIVE n, "STRING"
 
-RENAME2        cmpa      #$CF                "DRIVE" token?
+RENAME2        cmpa      #TOKEN_DRIVE        "DRIVE" token?
                bne       NONAME              No, continue old code
                jsr       <$9F                Yes, parse over it
                jsr       >LD256               Get drive number
