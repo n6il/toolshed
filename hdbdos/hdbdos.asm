@@ -3732,7 +3732,11 @@ BASBFR         equ       $2DD
 
 
 * Static Storage
+               IFDEF     DRAGON
+               org       $13A                Recycle parts of original USR table location
+               ELSE
                org       $149
+               ENDC
 
 INTFLG         rmb       1                   FlexiKey variable
 NCYLS          rmb       2                   Device cylinder count (IDE)
