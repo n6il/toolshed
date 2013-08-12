@@ -437,10 +437,11 @@ LC00F          clr       ,X+                 CLEAR A BYTE
                ldb       #10                 10 BYTES PER TABLE
                jsr       >LA59A              MOVE (B) BYTES FROM (X) TO (U)
                IFDEF     DRAGON
-               clr       ,U                  EMPTY STUB2 (NEED NOT ALTER STUB2 MORE)
+               clr       ,U                  EMPTY STUB2 COMMAND TABLE
+               clr       $05,U               EMPTY STUB2 FUNCTION TABLE
                ldd       #USRTBL             OUR RELOCATED TABLE
                std       <$B0                RELOCATE USR ADDRESS TABLE
-               FILL      $12,16              FILL WITH NOP (TO HAVE SAME CODE LENGTH AS COCO BUILD)
+               FILL      $12,14              FILL WITH NOP (TO HAVE SAME CODE LENGTH AS COCO BUILD)
                ELSE
                ldd       #LB277              SYNTAX ERROR ADDRESS
                std       $03,U               * SET JUMP TABLE ADDRESSES OF THE USER COMMAND
