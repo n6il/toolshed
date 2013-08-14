@@ -430,28 +430,24 @@ LC00F          clr       ,X+                 CLEAR A BYTE
                bne       LC00F               NO - KEEP CLEARING
                ldx       #LC109              POINT X TO ROM IMAGE OF COMMAND INTERPRETATION TABLE
                IFDEF     DRAGON
-               ldu       #COMVEC+10          POINT U TO RAM ADDRESS OF SAME (STUB1)
+               ldu       #COMVEC+10          POINT U TO RAM ADDRESS OF SAME (STUB1 ON DRAGON)
                ELSE
-               ldu       #COMVEC+20          POINT U TO RAM ADDRESS OF SAME
+               ldu       #COMVEC+20          POINT U TO RAM ADDRESS OF SAME (STUB2 ON COCO)
                ENDC
                ldb       #10                 10 BYTES PER TABLE
                jsr       >LA59A              MOVE (B) BYTES FROM (X) TO (U)
-               IFDEF     DRAGON
-               clr       ,U                  EMPTY STUB2 COMMAND TABLE
-               clr       $05,U               EMPTY STUB2 FUNCTION TABLE
-               ldd       #USRTBL             OUR RELOCATED TABLE
-               std       <$B0                RELOCATE USR ADDRESS TABLE
-               FILL      $12,14              FILL WITH NOP (TO HAVE SAME CODE LENGTH AS COCO BUILD)
-               ELSE
                ldd       #LB277              SYNTAX ERROR ADDRESS
                std       $03,U               * SET JUMP TABLE ADDRESSES OF THE USER COMMAND
                std       $08,U               * INTERPRETATION TABLE TO POINT TO SYNTAX ERROR
                clr       ,U                  CLEAR BYTE 0 OF USER TABLE (DOESN'T EXIST FLAG)
                clr       $05,U               SET NUMBER OF SECONDARY USER TOKENS TO ZERO
+               IFNDEF    DRAGON
                ldd       #DXCVEC             * SAVE NEW
                std       COMVEC+13           * POINTERS TO EXBAS
                ldd       #DXIVEC             * COMMAND AND SECONDARY
                std       COMVEC+18           * COMMAND INTERPRETATION ROUTINES
+               ELSE
+               FILL      $12,12              FILL WITH NOP (TO HAVE SAME CODE LENGTH AS COCO BUILD)
                ENDC
 **** MOVE THE NEW RAM VECTORS FROM ROM TO RAM
                ldu       #RVEC0              POINT U TO 1ST RAM VECTOR
@@ -3695,15 +3691,8 @@ DOSIN2         ldd       #(6*256)+$3B        6 "RTI" opcodes
                jsr       >LD6C2               Store 6 RTIs
                puls      d,x,pc              Restore & return
 
-* INITIALIZE DRAGON USR ADDRESS TABLE TO FC ERROR
-* FIXME: USE ANOTHER LOCATION IN CASE THIS CODE IS IN ROM
-               IFDEF DRAGON
-USRTBL         fdb       $8B8D,$8B8D,$8B8D,$8B8D,$8B8D
-               fdb       $8B8D,$8B8D,$8B8D,$8B8D,$8B8D
-               ELSE
                fcb       $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
                fcb       $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-               ENDC
                fcb       $FF,$FF,$FF,$FF,$FF,$99
 
 
@@ -3731,9 +3720,9 @@ HLDBFR         equ       $1DA
 BASBFR         equ       $2DD
 
 
-* Static Storage
+* Static Storage                             (Reusing 9 last bytes of original USR table, after stubs)
                IFDEF     DRAGON
-               org       $13A                Recycle parts of original USR table location
+               org       $13F
                ELSE
                org       $149
                ENDC
