@@ -28,7 +28,7 @@ L9682	equ	$aa10	Select colour set 0 or 1 from B
 L9695	equ	$aa23	Reserve HiRes Graphics RAM, move Basic if necessary
 L96CB	equ	$aa66	PUT CORRECT ADDRESSES IN FIRST 2 BYTES OF EACH LINE - PCLEAR
 L96EC	equ	$aa87	CONSTANT OFFSET OF $600 - init of EXBAS graphics vars
-L975F	equ	$aaf7	VEC22  CHECK FOR @ SIGN - PUT
+L975F	equ	$aafa	VEC22  CHECK FOR @ SIGN - PUT
 L9AD7	equ	$ae9a	Play note from A
 L9CB6	equ	$b051	Draw token dispatch address
 L9FB5	equ	$b350	MULTIPLY (UNSIGNED) TWO 16 BIT NUMBERS TOGETHER
