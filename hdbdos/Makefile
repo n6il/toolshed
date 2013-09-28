@@ -110,7 +110,7 @@ hdbdw4cc3.bin: preload hdbdw4cc3.rom postload
 	$(MERGE) $+ > $@
 
 hdbdw4cc3.wav: hdbdw4cc3.bin
-	$(MAKEWAV) -o$@ -nHDBDW3C3 $<
+	$(MAKEWAV) -o$@ -nHDBDW4C3 $<
 
 # DW4 CoCo 2
 hdbdw4cc2.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
@@ -120,7 +120,7 @@ hdbdw4cc2.bin: preload hdbdw4cc2.rom postload
 	$(MERGE) $+ > $@
 
 hdbdw4cc2.wav: hdbdw4cc2.bin
-	$(MAKEWAV) -o$@ -nHDBDW3C3 $<
+	$(MAKEWAV) -o$@ -nHDBDW4C2 $<
 
 # DW3 CoCo 1
 hdbdw3cc1.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
@@ -215,7 +215,13 @@ hdbdw3arduino.wav: hdbdw3arduino.bin
 hdbdw3dgn32ram.bin: ../cocoroms/ecb_equates.asm ../cocoroms/dragon_equivs.asm hdbdos.asm
 	$(AS) -b -DDW -DORG=0x6000 -DLevel=1 -DDRAGON $+ -o$@
 hdbdw3dgn32ram.wav: hdbdw3dgn32ram.bin
-	$(MAKEWAV) -o$@ -nHDBDWD32 $<
+	$(MAKEWAV) -o$@ -nHDBDW3DR $<
+
+# Dragon example, DW4 run from lower RAM
+hdbdw4dgn32ram.bin: ../cocoroms/ecb_equates.asm ../cocoroms/dragon_equivs.asm hdbdos.asm
+	$(AS) -b -DDW -DDW4 -DORG=0x6000 -DLevel=1 -DDRAGON $+ -o$@
+hdbdw4dgn32ram.wav: hdbdw4dgn32ram.bin
+	$(MAKEWAV) -o$@ -nHDBDW4DR $<
 
 # Dragon example, IDE LBA for ROM cartridge
 hdblbadgn.rom: ../cocoroms/ecb_equates.asm ../cocoroms/dragon_equivs.asm hdbdos.asm
