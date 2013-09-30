@@ -35,148 +35,117 @@ postload: postload.asm
 %.bin : preload %.rom postload
 	$(MERGE) $+ > $@
 
-# TC^3 SCSI
-hdbtc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DSCSI -DTC3 $+ -o$@
+%.rom : hdbdos.asm
+	$(AS) $(EQUATES) hdbdos.asm -o$@ $(FLAGS)
 
-hdbtc3.wav: hdbtc3.bin
-	$(MAKEWAV) -o$@ -nHDBTC3 $<
+%.wav : %.bin
+	$(MAKEWAV) -o$@ -n$(LABEL) $<
+
+%.cas : %.bin
+	$(CECB) bulkerase $@
+	$(CECB) copy -2 -b -g $< $@,$(LABEL)
+
+
+# For CoCo 1/2/3
+$(HDBROM): EQUATES = ../cocoroms/ecb_equates.asm
+$(HDBROM): ../cocoroms/ecb_equates.asm
+
+# TC^3 SCSI
+hdbtc3.rom:    FLAGS = -DSCSI -DTC3
+hdbtc3.wav:    LABEL = HDBTC3
 
 # Ken-Ton SCSI
-hdbkenton.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DSCSI -DKENTON $+ -o$@
-
-hdbkenton.wav: hdbkenton.bin
-	$(MAKEWAV) -o$@ -nHDBKENTN $<
+hdbkenton.rom: FLAGS = -DSCSI -DKENTON
+hdbkenton.wav: LABEL = HDBKENTN
 
 # LRTech SCSI
-hdblrtech.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DSCSI -DLRTECH $+ -o$@
-
-hdblrtech.wav: hdblrtech.bin
-	$(MAKEWAV) -o$@ -nHDBLRTCH $<
+hdblrtech.rom: FLAGS = -DSCSI -DLRTECH
+hdblrtech.wav: LABEL = HDBLRTCH
 
 # Disto 4-N-1 SCSI
-hdbd4n1.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DSCSI -DD4N1 $+ -o$@
-
-hdbd4n1.wav: hdbd4n1.bin
-	$(MAKEWAV) -o$@ -nHDBD4N1 $<
+hdbd4n1.rom:   FLAGS = -DSCSI -DD4N1
+hdbd4n1.wav:   LABEL = HDBD4N1
 
 # Disto HD-II
-hdbdhdii.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DSCSI -DDHDII $+ -o$@
-
-hdbdhdii.wav: hdbdhdii.bin
-	$(MAKEWAV) -o$@ -nHDBDHDII $<
+hdbdhdii.rom:  FLAGS = -DSCSI -DDHDII
+hdbdhdii.wav:  LABEL = HDBDHDII
 
 # IDE LBA
-hdblba.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DIDE -DUSELBA $+ -o$@
-
-hdblba.wav: hdblba.bin
-	$(MAKEWAV) -o$@ -nHDBLBA $<
+hdblba.rom:    FLAGS = -DIDE -DUSELBA
+hdblba.wav:    LABEL = HDBLBA
 
 # IDE CHS
-hdbchs.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DIDE -DUSECHS $+ -o$@
-
-hdbchs.wav: hdbchs.bin
-	$(MAKEWAV) -o$@ -nHDBCHS $<
+hdbchs.rom:    FLAGS = -DIDE -DUSECHS
+hdbchs.wav:    LABEL = HDBCHS
 
 # DW4 CoCo 3
-hdbdw4cc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=2 -DDW4 $+ -o$@
-
-hdbdw4cc3.wav: hdbdw4cc3.bin
-	$(MAKEWAV) -o$@ -nHDBDW4C3 $<
+hdbdw4cc3.rom: FLAGS = -DDW -DLevel=2 -DDW4
+hdbdw4cc3.wav: LABEL = HDBDW4C3
 
 # DW4 CoCo 2
-hdbdw4cc2.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=1 -DDW4 $+ -o$@
-
-hdbdw4cc2.wav: hdbdw4cc2.bin
-	$(MAKEWAV) -o$@ -nHDBDW4C2 $<
-
-# DW3 CoCo 1
-hdbdw3cc1.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=1 -DBAUD38400 $+ -o$@
-
-hdbdw3cc1.wav: hdbdw3cc1.bin
-	$(MAKEWAV) -o$@ -nHDBDW3C1 $<
-
-# DW3 CoCo 2
-hdbdw3cc2.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=1 $+ -o$@
-
-hdbdw3cc2.wav: hdbdw3cc2.bin
-	$(MAKEWAV) -o$@ -nHDBDW3C2 $<
+hdbdw4cc2.rom: FLAGS = -DDW -DLevel=1 -DDW4
+hdbdw4cc2.wav: LABEL = HDBDW4C2
 
 # DW3 CoCo 3
-hdbdw3cc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=2 $+ -o$@
+hdbdw3cc3.rom: FLAGS = -DDW -DLevel=2
+hdbdw3cc3.wav: LABEL = HDBDW3C3
 
-hdbdw3cc3.wav: hdbdw3cc3.bin
-	$(MAKEWAV) -o$@ -nHDBDW3C3 $<
+# DW3 CoCo 2
+hdbdw3cc2.rom: FLAGS = -DDW -DLevel=1
+hdbdw3cc2.wav: LABEL = HDBDW3C2
+
+# DW3 CoCo 1
+hdbdw3cc1.rom: FLAGS = -DDW -DLevel=1 -DBAUD38400
+hdbdw3cc1.wav: LABEL = HDBDW3C1
 
 # DW3 CoCo Becker
-hdbdw3bck.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=1 -DBECKER $+ -o$@
-
-hdbdw3bck.wav: hdbdw3bck.bin
-	$(MAKEWAV) -o$@ -nHDBDW3BK $<
-
-hdbdw3bck.cas: hdbdw3bck.bin
-	$(CECB) bulkerase $@
-	$(CECB) copy -2 -b -g $< $@,HDBDW3BK
+hdbdw3bck.rom: FLAGS = -DDW -DLevel=1 -DBECKER
+hdbdw3bck.wav: LABEL = HDBDW3BK
+hdbdw3bck.cas: LABEL = HDBDW3BK
 
 # DW3 CoCo 3 Becker
-hdbdw3bc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=2 -DBECKER $+ -o$@
-
-hdbdw3bc3.wav: hdbdw3bc3.bin
-	$(MAKEWAV) -o$@ -nHDBDW3B3 $<
-
-hdbdw3bc3.cas: hdbdw3bc3.bin
-	$(CECB) bulkerase $@
-	$(CECB) copy -2 -b -g $< $@,HDBDW3B3
+hdbdw3bc3.rom: FLAGS = -DDW -DLevel=2 -DBECKER
+hdbdw3bc3.wav: LABEL = HDBDW3B3
+hdbdw3bc3.cas: LABEL = HDBDW3B3
 
 # DW3 CoCo 3 J&M CP FDC Becker
-hdbdw3jc3.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=2 -DJMCPBCK $+ -o$@
-
-hdbdw3jc3.wav: hdbdw3jc3.bin
-	$(MAKEWAV) -o$@ -nHDBDW3J3 $<
+hdbdw3jc3.rom: FLAGS = -DDW -DLevel=2 -DJMCPBCK
+hdbdw3jc3.wav: LABEL = HDBDW3J3
 
 # DW3 CoCo J&M CP FDC Becker
-hdbdw3jc2.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=1 -DJMCPBCK $+ -o$@
-
-hdbdw3jc2.wav: hdbdw3jc2.bin
-	$(MAKEWAV) -o$@ -nHDBDW3J2 $<
+hdbdw3jc2.rom: FLAGS = -DDW -DLevel=1 -DJMCPBCK
+hdbdw3jc2.wav: LABEL = HDBDW3J2
 
 # DW3 Arduino (Boisy)
-hdbdw3arduino.rom: ../cocoroms/ecb_equates.asm hdbdos.asm
-	$(AS) -DDW -DLevel=1 -DARDUINO $+ -o$@
+hdbdw3arduino.rom: FLAGS = -DDW -DLevel=1 -DARDUINO
+hdbdw3arduino.wav: LABEL = HDBDW3ARD
 
-hdbdw3arduino.wav: hdbdw3arduino.bin
-	$(MAKEWAV) -o$@ -nHDBDW3ARD $<
 
-# Dragon example, DW3 run from lower RAM
-hdbdw3dgn32ram.bin: ../cocoroms/ecb_equates.asm ../cocoroms/dragon_equivs.asm hdbdos.asm
-	$(AS) -b -DDW -DORG=0x6000 -DLevel=1 -DDRAGON $+ -o$@
-hdbdw3dgn32ram.wav: hdbdw3dgn32ram.bin
-	$(MAKEWAV) -o$@ -nHDBDW3DR $<
+DRAGONROM = hdbdw3dgn32ram.rom hdbdw4dgn32ram.rom hdblbadgn.rom
+DRAGONBIN = hdbdw3dgn32ram.bin hdbdw4dgn32ram.bin
+DRAGONWAV = hdbdw3dgn32ram.wav hdbdw4dgn32ram.wav
 
-# Dragon example, DW4 run from lower RAM
-hdbdw4dgn32ram.bin: ../cocoroms/ecb_equates.asm ../cocoroms/dragon_equivs.asm hdbdos.asm
-	$(AS) -b -DDW -DDW4 -DORG=0x6000 -DLevel=1 -DDRAGON $+ -o$@
-hdbdw4dgn32ram.wav: hdbdw4dgn32ram.bin
-	$(MAKEWAV) -o$@ -nHDBDW4DR $<
+dragon: $(DRAGONROM) $(DRAGONWAV)
 
-# Dragon example, IDE LBA for ROM cartridge
-hdblbadgn.rom: ../cocoroms/ecb_equates.asm ../cocoroms/dragon_equivs.asm hdbdos.asm
-	$(AS) -DIDE -DUSELBA -DLevel=1 -DDRAGON $+ -o$@
+$(DRAGONROM): ../cocoroms/equates.asm ../cocoroms/dragon_equivs.asm
+$(DRAGONROM): EQUATES = ../cocoroms/equates.asm ../cocoroms/dragon_equivs.asm
+
+# Dragon 32, DW3 run from lower RAM
+hdbdw3dgn32ram.rom: FLAGS = -DDW -DORG=0x6000 -DLevel=1 -DDRAGON -b
+hdbdw3dgn32ram.wav: LABEL = HDBDW3DR
+# This "rom" is already in DECB binary format (to carry ORG), so just copy it
+hdbdw3dgn32ram.bin: hdbdw3dgn32ram.rom
+	$(MERGE) $+ > $@
+
+# Dragon 32, DW4 run from lower RAM
+hdbdw4dgn32ram.rom: FLAGS =  -DDW -DORG=0x6000 -DLevel=1 -DDRAGON -DDW4 -b
+hdbdw4dgn32ram.wav: LABEL = HDBDW4DR
+hdbdw4dgn32ram.bin: hdbdw4dgn32ram.rom
+	$(MERGE) $+ > $@
+
+# Dragon, IDE LBA for ROM cartridge
+hdblbadgn.rom: FLAGS = -DIDE -DUSELBA -DLevel=1 -DDRAGON
 
 clean:
-	-rm -f preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)
+	-rm -f preload postload $(HDBROM) $(HDBBIN) $(HDBCAS) \
+	 $(DRAGONROM) $(DRAGONWAV) $(DRAGONBIN)
