@@ -10,6 +10,7 @@
 #include <util.h>
 #include <cocopath.h>
 #include <cocotypes.h>
+#include <toolshed.h>
 
 
 #define YES 1
@@ -279,7 +280,10 @@ int os9copy(int argc, char *argv[])
 
         if (ec != 0)
         {
-            fprintf(stderr, "%s: error %d on file %s\n", argv[0], ec, argv[j]);
+	    char errorstr[TS_MAXSTR];
+
+	    TSReportError(ec, errorstr);
+            fprintf(stderr, "%s: error %d on file '%s': %s\n", argv[0], ec, argv[j], errorstr);
         }
     }
 

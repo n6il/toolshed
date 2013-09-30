@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <cocotypes.h>
 #include <os9path.h>
+#include <toolshed.h>
 
 
 /* Help message */
@@ -142,7 +143,10 @@ int os9attr(int argc, char *argv[])
                 /* No attribute options were specified */
                 if ((ec = TSRBFAttrGet(p, attr, attrs)) != 0)
 				{
-					fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, p);
+					char errorstr[TS_MAXSTR];
+
+					TSReportError(ec, errorstr);
+					fprintf(stderr, "%s: error %d opening '%s': %s\n", argv[0], ec, p, errorstr);
 				}
 				else
 				{
@@ -157,7 +161,10 @@ int os9attr(int argc, char *argv[])
                 /* Attributes were specified */
                 if ((ec = TSRBFAttrSet(p, attrSetMask, attrResetMask, attr, attrs)) != 0)
 				{
-					fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, p);
+					char errorstr[TS_MAXSTR];
+
+					TSReportError(ec, errorstr);
+					fprintf(stderr, "%s: error %d opening '%s': %s\n", argv[0], ec, p, errorstr);
 				}
 				else
 				if (quiet == 0)
