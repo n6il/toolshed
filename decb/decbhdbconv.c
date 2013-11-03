@@ -126,7 +126,7 @@ int decbhdbconv(int argc, char *argv[])
 	}
 
 
-    return 0;
+    return ec;
 }
 
 
