@@ -134,7 +134,14 @@ error_code TSPadROM(char *pathlist, int padSize, char padChar, int padAtStart)
         return ec;
     }
 
-    if (padSize <= fileSize)
+    if (padSize == fileSize)
+    {
+        _coco_close(path);
+
+	return 0;
+    }
+
+    if (padSize < fileSize)
     {
         _coco_close(path);
 
