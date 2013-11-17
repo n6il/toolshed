@@ -45,7 +45,7 @@ void TSReportError(error_code te, char *errorstr)
 			break;
 
 		case EOS_PADROM:
-			strcpy(errorstr, "file size insufficient for pad size");
+			strcpy(errorstr, "file is larger than pad size");
 			break;
 
 		case EOS_WT:
