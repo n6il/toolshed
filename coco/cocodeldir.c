@@ -17,7 +17,7 @@ static int do_deldir(char **argv, char *path, int interaction);
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: deldir {[<opts>]} {<directory>} {[<opts>]}\n",
     "Usage:  Delete a directory and its contents.\n",

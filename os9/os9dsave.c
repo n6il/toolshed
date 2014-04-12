@@ -19,7 +19,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffsize
 static int DoFunc(int (*func)( int, char *[]), char *command);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: dsave {[<opts>]} {[<source>]} <target> {[<opts>]}\n",
 	"Usage: Copy the contents of a directory or device.\n",

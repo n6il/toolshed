@@ -13,7 +13,7 @@
 static int do_modbust(char **argv, char *filename);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: modbust {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
 	"Usage:  Bust a single merged file of OS-9 modules into separate files.\n",

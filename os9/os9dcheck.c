@@ -23,7 +23,7 @@ static void FreeQuestionableMemory(void);
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: dcheck {[<opts>]} {<disk> [<...>]} {[<opts>]}\n",
 	"Usage:  Verify the file structure of a disk image.\n",

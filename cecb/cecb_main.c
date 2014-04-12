@@ -12,11 +12,11 @@
 #include <util.h>
 #include <cecbpath.h>
 
-static void show_cecb_help(char **helpMessage);
+static void show_cecb_help(char const * const *helpMessage);
 static int do_command(int argc, char **argv);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: cecb {[<opts>]} <sub command> {[<opts>]}\n",
 	"Usage:  Casette BASIC File Tools Executive\n",
@@ -166,9 +166,9 @@ static int do_command(int argc, char **argv)
 }
 
 
-static void show_cecb_help(char **helpMessage)
+static void show_cecb_help(char const * const *helpMessage)
 {
-	char **p = helpMessage;
+	char const * const *p = helpMessage;
 	struct cmdtbl *ptr = table;
 	char *argv[3];
 

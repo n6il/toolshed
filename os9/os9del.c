@@ -20,7 +20,7 @@ error_code RBFDelete(char *file)
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: del {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
     "Usage:  Delete one or more files.\n",

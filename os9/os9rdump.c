@@ -82,7 +82,7 @@ FILE *in;
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: rdump [opts] <file>[ <file>] [opts]\n",
 	"Usage:  prints formatted dump of .r and .l files\n",

@@ -16,7 +16,7 @@
 static int do_kill(char **argv, char *p);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: del {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
     "Usage:  Delete one or more files.\n",

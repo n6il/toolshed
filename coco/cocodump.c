@@ -20,7 +20,7 @@ static void dump_header(int format);
 static char *binary(char s);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: dump {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
     "Usage:  Display the contents of a file in hexadecimal.\n",

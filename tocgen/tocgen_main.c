@@ -13,7 +13,7 @@
 static int do_tocgen(char *infile, char *outfile, int quiet);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: tocgen {[<opts>]} {<infile>} {[<outfile>]} {[<opts>]}\n",
     "Usage:  Table of contents generator for Sierra AGI games.\n",

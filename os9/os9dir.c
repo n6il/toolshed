@@ -26,7 +26,7 @@ static int do_dir(char **argv, char *p);
 static int extended = 0, dotfiles = 0, recurse = 0;
 
 /* Help Message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: dir {[<opts>]} {<dir> [<...>]} {[<opts>]}\n",
 	"Usage:  Display the contents of a directory.\n",

@@ -12,13 +12,13 @@
 #include "util.h"
 
 
-static char *types[16] = {
+static char const * const types[16] = {
 	"???", "Prog", "Subr", "Multi", "Data", "USR 5", "USR 6", "USR 7", 
 	"USR 8", "USR 9", "USR A", "USR B", "System", "File Manager",
 	"Device Driver", "Device Descriptor"
 };
   
-static char *langs[16] = {
+static char const * const langs[16] = {
 	"Data", "6809 Obj", "Basic09 I-Code", "Pascal P-Code", "C I-Code",
 	"Cobol I-Code", "Fortran I-Code", "6309 Obj", "???", "???", "???",
 	"???", "???", "???", "???", "???"
@@ -31,7 +31,7 @@ static u_char *buffer;
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: ident {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
 	"Usage:  Display OS-9 module information.\n",

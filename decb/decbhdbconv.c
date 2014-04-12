@@ -21,7 +21,7 @@ static error_code HDBConv(char *srcfile, char *dstfile, int sourceSize, int targ
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: hdbconv {[<opts>]} <srcfile> {[<...>]} <target> {[<opts>]}\n",
     "Usage:  Converts an HDB-DOS disk image into a 512-byte sector compatible one.\n",

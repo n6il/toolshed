@@ -19,7 +19,7 @@ double silence_length = 0.5;
 static int do_bulkerase(char **argv, char *p);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: bulkerase {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
 	"Usage:  Create cassette image files, WAV for CAS.\n",

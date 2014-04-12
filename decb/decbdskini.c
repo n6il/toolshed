@@ -15,7 +15,7 @@
 static int do_dskini(char **argv, char *vdisk, int tracks, char *diskName, int hdbdrives, int bps, int skitzo);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: dskini {[<opts>]} <disk> {[<...>]} {[<opts>]}\n",
 	"Usage:  Create a Disk BASIC image.\n",

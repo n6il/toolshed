@@ -13,7 +13,7 @@
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: padrom {[<opts>]} <padsize> {<file> [<...>]} {[<opts>]}\n",
     "Usage:  Pad a file to a specific length.\n",

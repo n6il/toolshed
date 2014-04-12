@@ -25,7 +25,7 @@ static void OS9ToNative(char *buffer, int size, char **newBuffer, int *newSize);
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: copy {[<opts>]} <srcfile> {[<...>]} <target> {[<opts>]}\n",
     "Usage:  Copy one or more files to a target directory.\n",

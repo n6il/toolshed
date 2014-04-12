@@ -12,11 +12,11 @@
 #include "util.h"
 
 
-static void show_decb_help(char **helpMessage);
+static void show_decb_help(char const * const *helpMessage);
 static int do_command(int argc, char **argv);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: decb {[<opts>]} <command> {[<opts>]}\n",
 	"Usage:  Disk BASIC File Tools Executive\n",
@@ -115,9 +115,9 @@ static int do_command(int argc, char **argv)
 }
 
 
-static void show_decb_help(char **helpMessage)
+static void show_decb_help(char const * const *helpMessage)
 {
-	char **p = helpMessage;
+	char const * const *p = helpMessage;
 	struct cmdtbl *ptr = table;
 	char *argv[3];
 

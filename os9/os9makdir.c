@@ -24,7 +24,7 @@
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: makdir {<dirname> [<...>]}\n",
 	"Usage:  Create one or more directories.\n",

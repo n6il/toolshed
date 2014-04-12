@@ -16,7 +16,7 @@
 static int do_free(char **argv, char *p);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: free {[<opts>]} {<disk> [<...>]} {[<opts>]}\n",
 	"Usage:  Displays the amount of free space on an image.\n",

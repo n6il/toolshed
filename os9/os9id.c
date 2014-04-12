@@ -19,7 +19,7 @@ static int do_id(char **argv, char *p);
 static char os9pathlist[256];
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: id {[<opts>]} {<disk> [<...>]} {[<opts>]}\n",
 	"Usage:  Display sector 0 of an image.\n",

@@ -94,9 +94,9 @@ int strendcasecmp( char *s1, char *s2 )
 }
 	
 
-void show_help(char **helpMessage)
+void show_help(char const * const *helpMessage)
 {
-	char **p = helpMessage;
+	char const * const *p = helpMessage;
 
 	while (*p)
     {

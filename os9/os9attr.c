@@ -15,7 +15,7 @@
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: attr {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
     "Usage:  Display or modify file attributes.\n",

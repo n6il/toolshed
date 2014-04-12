@@ -18,7 +18,7 @@ static void show_header(void);
 static int different;
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: cmp {[<opts>]} <file1> <file2> {[<...>]} {[<opts>]}\n",
     "Usage:  Compare the contents of two files.\n",

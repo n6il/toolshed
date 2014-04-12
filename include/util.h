@@ -50,7 +50,7 @@ int strcasecmp(char *s1, char *s2);
 int strncasecmp(char *s1, char *s2, int len);
 #endif
 int strendcasecmp( char *s1, char *s2 );
-void show_help(char **helpMessage);
+void show_help(char const * const *helpMessage);
 
 /* Function prototypes for supported Disk BASIC commands are here */
 int decbattr(int, char **);

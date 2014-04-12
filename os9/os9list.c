@@ -14,7 +14,7 @@
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: list {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
 	"Usage:  Display contents of a text file.\n",

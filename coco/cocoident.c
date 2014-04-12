@@ -31,7 +31,7 @@ static u_char *buffer;
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: ident {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
 	"Usage:  Display OS-9 module information.\n",

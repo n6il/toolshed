@@ -16,7 +16,7 @@
 static int do_fstat(char **argv, char *p);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: fstat {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
 	"Usage:  Display the file descriptor sector for a file.\n",

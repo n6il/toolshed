@@ -15,7 +15,7 @@
 static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int bytesPerSector, int formatEntire);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: format {[<opts>]} <disk> {[<...>]} {[<opts>]}\n",
 	"Usage:  Create a disk image of a given size.\n",

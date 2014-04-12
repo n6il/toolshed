@@ -17,7 +17,7 @@ static int do_getattr(char **argv, char *p);
 static int do_setattr(char **argv, char *p, int attrSetMask, int attrResetMask, int quiet);
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: attr {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
     "Usage:  Display or modify file attributes.\n",

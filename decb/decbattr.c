@@ -20,7 +20,7 @@ static void show_attr(decb_file_stat *fstat);
 
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
     "Syntax: attr {[<opts>]} {<file> [<...>]} {[<opts>]}\n",
     "Usage:  Display or modify file attributes.\n",

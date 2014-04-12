@@ -16,7 +16,7 @@
 static int do_dir(char **argv, char *p);
 
 /* Help Message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: dir {[<opts>]} {<dir> [<...>]} {[<opts>]}\n",
 	"Usage:  Display the contents of a cassette image.\n",

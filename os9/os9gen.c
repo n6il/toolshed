@@ -24,7 +24,7 @@ static struct personality coco = { 18 * 34 };
 static struct personality dragon = { 2 };
 
 /* Help message */
-static char *helpMessage[] =
+static char const * const helpMessage[] =
 {
 	"Syntax: gen {[<opts>]} {<disk_image>}\n",
 	"Usage:  Prepare the disk image for booting.\n",
