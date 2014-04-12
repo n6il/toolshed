@@ -198,7 +198,7 @@ error_code TSPadROM(char *pathlist, int padSize, char padChar, int padAtStart)
 
 
 
-error_code TSRBFAttrGet(char *p, char attr, char *strattr)
+error_code TSRBFAttrGet(char *p, char *attr, char *strattr)
 {
     error_code	ec = 0;
     os9_path_id path;
@@ -217,11 +217,11 @@ error_code TSRBFAttrGet(char *p, char attr, char *strattr)
 
         _os9_gs_fd(path, size, &fdbuf);
 
-		attr = fdbuf.fd_att;
+		*attr = fdbuf.fd_att;
 
 		if (strattr != NULL)
 		{
-			OS9AttrToString(attr, strattr);
+			OS9AttrToString(*attr, strattr);
 		}
 	}
 
@@ -232,7 +232,7 @@ error_code TSRBFAttrGet(char *p, char attr, char *strattr)
 
 
 
-error_code TSRBFAttrSet(char *file, int attrSetMask, int attrResetMask, char attr, char *strattr)
+error_code TSRBFAttrSet(char *file, int attrSetMask, int attrResetMask, char *attr, char *strattr)
 {
     error_code	ec = 0;
     os9_path_id path;
@@ -263,11 +263,11 @@ error_code TSRBFAttrSet(char *file, int attrSetMask, int attrResetMask, char att
 
         ec = _os9_ss_fd(path, size, &fdbuf);
 
-		attr = fdbuf.fd_att;
+		*attr = fdbuf.fd_att;
 
 		if (strattr != NULL)
 		{
-			OS9AttrToString(attr, strattr);
+			OS9AttrToString(*attr, strattr);
 		}
 	}
 

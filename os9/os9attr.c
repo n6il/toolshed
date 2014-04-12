@@ -141,7 +141,7 @@ int os9attr(int argc, char *argv[])
 				char attrs[9], attr;
 				
                 /* No attribute options were specified */
-                if ((ec = TSRBFAttrGet(p, attr, attrs)) != 0)
+                if ((ec = TSRBFAttrGet(p, &attr, attrs)) != 0)
 				{
 					char errorstr[TS_MAXSTR];
 
@@ -159,7 +159,7 @@ int os9attr(int argc, char *argv[])
 				char attr, attrs[9];
 				
                 /* Attributes were specified */
-                if ((ec = TSRBFAttrSet(p, attrSetMask, attrResetMask, attr, attrs)) != 0)
+                if ((ec = TSRBFAttrSet(p, attrSetMask, attrResetMask, &attr, attrs)) != 0)
 				{
 					char errorstr[TS_MAXSTR];
 
