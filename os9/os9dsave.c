@@ -236,7 +236,13 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				puts(command);
 				if (execute) 
 				{
-					system(command);
+					ec = system(command);
+					if (ec != 0)
+					{
+						_coco_close(sourcePath);
+
+						return(ec);
+					}
 				}
 
 				/* 4. call this function again */
@@ -272,7 +278,13 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				puts(command);
 				if (execute)
 				{
-					system(command);
+					ec = system(command);
+					if (ec != 0)
+					{
+						_coco_close(sourcePath);
+
+						return(ec);
+					}
 				}
 			}
 		}
