@@ -232,7 +232,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				}
 
 				/* 3. make directory on target */
-				sprintf(command, "os9 makdir \"%s\"", newTarget);
+				snprintf(command, sizeof(command), "os9 makdir \"%s\"", newTarget);
 				puts(command);
 				if (execute) 
 				{
@@ -274,7 +274,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 					strcat(ropt, "-l");
 				}
 				
-				sprintf(command, "os9 copy \"%s%s%s\" \"%s%s%s\" %s %s", source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
+				snprintf(command, sizeof(command), "os9 copy \"%s%s%s\" \"%s%s%s\" %s %s", source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
 				puts(command);
 				if (execute)
 				{
