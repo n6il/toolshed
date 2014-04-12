@@ -535,7 +535,7 @@ int             main(int argc, char **argv)
 	buffer_1200_length = (double)sample_rate / 1094.68085106384;
 	buffer_2400_length = (double)sample_rate / 2004.54545454545;
 	
-	if( verbose )
+	if( verbose && !cas )
 	{
 		printf( "sample size: 1200 hertz: %d, 2400 hertz: %d\n", buffer_1200_length, buffer_2400_length );
 	}
