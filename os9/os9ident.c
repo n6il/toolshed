@@ -121,7 +121,7 @@ static void ident_osk(OSK_MODULE_t *mod)
 			printf("Trap Hnlr");
 			break;
 		default :
-			printf(types[mod->type]);
+			printf("%s", types[mod->type]);
 			break;
 	}
 	printf(", %s",(mod->lang == Objct) ? "68000 obj" : langs[mod->lang]);
