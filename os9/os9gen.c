@@ -212,7 +212,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 
 		_os9_allbit(opath->bitmap, startlsn, (size+255)/256);
 
-		printf("Boot track written!\n");
+		printf("Boot track written!  LSN: %d, size: %d\n", startlsn, size);
 
 		_os9_close(opath);
 	}
