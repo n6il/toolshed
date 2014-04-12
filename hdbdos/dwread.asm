@@ -45,7 +45,9 @@ DWRead    clra                          ; clear Carry (no framing error)
           pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
           leau   ,x
           ldx    #$0000
+          IFEQ   NOINTMASK
           orcc   #IntMasks
+          ENDC
 loop@     ldb    $FF4C
           bitb   #$02
           beq    loop@
@@ -73,7 +75,9 @@ DWRead    clra                          ; clear Carry (no framing error)
           pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
           leau   ,x
           ldx    #$0000
+          IFEQ   NOINTMASK
           orcc   #IntMasks
+          ENDC
 loop@     ldb    $FF41
           bitb   #$02
           beq    loop@
@@ -106,7 +110,9 @@ DWRead    clra                          ; clear Carry (no framing error)
           deca                          ; clear Z flag, A = timeout msb ($ff)
           tfr       cc,b
           pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
-          orcc      #$50                ; mask interrupts
+          IFEQ      NOINTMASK
+          orcc      #IntMasks           ; mask interrupts
+          ENDC
           tfr       a,dp                ; set direct page to $FFxx
           setdp     $ff
           leau      ,x                  ; U = storage ptr
@@ -171,7 +177,9 @@ rxExit    leas      1,s                 ; remove timeout msb from stack
 DWRead    clrb                          ; clear Carry (no framing error)
           decb                          ; clear Z flag, B = $FF
           pshs      u,x,dp,cc           ; preserve registers
-          orcc      #$50                ; mask interrupts
+          IFEQ      NOINTMASK
+          orcc      #IntMasks           ; mask interrupts
+          ENDC
 *         ldmd      #1                  ; requires 6309 native mode
           tfr       b,dp                ; set direct page to $FFxx
           setdp     $ff
@@ -235,7 +243,9 @@ DWRead    clra                          ; clear Carry (no framing error)
           deca                          ; clear Z flag, A = timeout msb ($ff)
           tfr       cc,b
           pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
-          orcc      #$50                ; mask interrupts
+          IFEQ      NOINTMASK
+          orcc      #IntMasks           ; mask interrupts
+          ENDC
           tfr       a,dp                ; set direct page to $FFxx
           setdp     $ff
           leau      ,x                  ; U = storage ptr

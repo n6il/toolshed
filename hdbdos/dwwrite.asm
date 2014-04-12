@@ -33,7 +33,9 @@ loop@     tst       $FF53              ; check status register
 
           IFNE JMCPBCK
 DWWrite   pshs      d,cc              ; preserve registers
-          orcc      #$50                ; mask interrupts
+          IFEQ      NOINTMASK
+          orcc      #IntMasks           ; mask interrupts
+          ENDC
 txByte
           lda       ,x+
           sta       $FF44
@@ -45,7 +47,9 @@ txByte
           ELSE
           IFNE BECKER
 DWWrite   pshs      d,cc              ; preserve registers
-          orcc      #$50                ; mask interrupts
+          IFEQ      NOINTMASK
+          orcc      #IntMasks           ; mask interrupts
+          ENDC
 ;          ldu       #BBOUT              ; point U to bit banger out register
 ;          lda       3,u                 ; read PIA 1-B control register
 ;          anda      #$f7                ; clear sound enable bit
@@ -70,7 +74,9 @@ txByte
 *******************************************************
 
 DWWrite   pshs      u,d,cc              ; preserve registers
-          orcc      #$50                ; mask interrupts
+          IFEQ      NOINTMASK
+          orcc      #IntMasks           ; mask interrupts
+          ENDC
           ldu       #BBOUT              ; point U to bit banger out register
           lda       3,u                 ; read PIA 1-B control register
           anda      #$f7                ; clear sound enable bit
@@ -106,7 +112,9 @@ tx0010    stb       ,u++                ; send bit
 *******************************************************
 
 DWWrite   pshs      u,d,cc              ; preserve registers
-          orcc      #$50                ; mask interrupts
+          IFEQ      NOINTMASK
+          orcc      #IntMasks           ; mask interrupts
+          ENDC
 *         ldmd      #1                  ; requires 6309 native mode
           ldu       #BBOUT+1            ; point U to bit banger out register +1
           aim       #$f7,2,u            ; disable sound output
@@ -141,7 +149,9 @@ tx0040    stb       -1,u                ; send bit
 *******************************************************
 
 DWWrite   pshs      dp,d,cc             ; preserve registers
-          orcc      #$50                ; mask interrupts
+          IFEQ      NOINTMASK
+          orcc      #IntMasks           ; mask interrupts
+          ENDC
           ldd       #$04ff              ; A = loop counter, B = $ff
           tfr       b,dp                ; set direct page to $FFxx
           setdp     $ff
