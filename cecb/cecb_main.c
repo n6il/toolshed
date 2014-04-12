@@ -19,7 +19,7 @@ static int do_command(int argc, char **argv);
 static char const * const helpMessage[] =
 {
 	"Syntax: cecb {[<opts>]} <sub command> {[<opts>]}\n",
-	"Usage:  Casette BASIC File Tools Executive\n",
+	"Usage:  Cassette BASIC File Tools Executive\n",
 	"Options:\n",
 	"     -t <%>    = Set threshold to remove background noise (for WAV files).\n",
 	"     -f <n>    = Set bit delineation frequency (for WAV files).\n",

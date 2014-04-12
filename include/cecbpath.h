@@ -17,7 +17,7 @@ extern "C" {
 #include "util.h"
 
 /* File descriptor */
-/* Casette BASIC doesn't have a file descriptor per se, but we use this structure as one. */
+/* Cassette BASIC doesn't have a file descriptor per se, but we use this structure as one. */
 
 typedef struct _cecb_dir_entry
 {
