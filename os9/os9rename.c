@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <cocotypes.h>
 #include <cocopath.h>
+#include <toolshed.h>
 
 
 /* Help message */

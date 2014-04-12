@@ -12,6 +12,7 @@
 #include <cocotypes.h>
 #include <cocopath.h>
 #include <queue.h>
+#include <toolshed.h>
 
 
 /* Help message */

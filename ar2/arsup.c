@@ -75,6 +75,9 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <unistd.h>
+#include <time.h>
+#include <utime.h>
 #include "ar.h"
 
 

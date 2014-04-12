@@ -121,3 +121,12 @@ STATIC UWORD	buf[BITS];
 STATIC COMPTBL	*CompTbl;
 STATIC DCOMPTBL	*CrakTbl;
 extern int	debug;
+
+int lz1_config(int bits);
+WORD de_LZ_1(FILE *infile, FILE *outfile, long bytes);
+int LZ_1(FILE *infile, FILE *outfile, long *bytes);
+int readbuf(int cnt, FILE *fp);
+int fetch(void);
+int writeshort(FILE *fp, short s);
+int readshort(FILE *fp, short *sp);
+

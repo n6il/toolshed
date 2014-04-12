@@ -129,3 +129,22 @@ typedef struct fn {
 	struct fn	*fn_link;				/* link to next file name	*/
 	char		fn_name[1];				/* the name itself			*/
 	} FN;
+
+/* function prototypes from ar.c and arsup.c */
+int get_names(int ac, char **av, int updating);
+int gethdr(FILE *fp, HEADER *hp);
+int patmatch(char *p, char *s, int f);
+void set_fsize(int pn, long size);
+int stash_name(char *p);
+void set_fstat(char *pn, FILDES *fs);
+#ifdef SYSV
+int is_dir(int pn);
+#endif
+int isobject(FILE *input);
+void get_fstat(int pn, FILDES *fs);
+int iswild(char *p);
+int notdot(char *p);
+int readlong(FILE *fp, long *lp);
+int writelong(FILE *fp, long l);
+int assureDir(char *path);
+

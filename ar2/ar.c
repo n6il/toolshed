@@ -118,6 +118,7 @@
 # include <sys/dir.h>
 #else
 # include <sys/types.h>
+# include <unistd.h>
 #if defined(WIN32)
 #include <dirent.h>
 #else
@@ -125,6 +126,7 @@
 #endif
 #endif
 #include "ar.h"
+#include "lz1.h"
 
 #if defined(BRAINDEAD)
 # undef tolower

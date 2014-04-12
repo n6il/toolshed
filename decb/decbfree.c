@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <decbpath.h>
+#include <toolshed.h>
 
 
 static int do_free(char **argv, char *p);
