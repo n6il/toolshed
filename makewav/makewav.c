@@ -489,6 +489,10 @@ int             main(int argc, char **argv)
 		VERIFY(total_length > 10, "DECB file too short");
 		VERIFY(ubuf[0] == 0, "Wrong DECB magic");
 		decb_len = ubuf[1] * 256 + ubuf[2];
+		if (total_length > decb_len + 10 && ubuf[decb_len + 5] == 0) {
+			fprintf(stderr, "Error: This looks like a multi-segment DECB binary, not supported by makewav\n");
+			exit(1);
+		}
 		VERIFY(total_length == decb_len + 10, "Wrong DECB block length");
 		if ( start_address == 0 )
 			start_address = ubuf[3] * 256 + ubuf[4];
