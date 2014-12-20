@@ -25,7 +25,7 @@
 *    U is preserved
 *    All others clobbered
 *
-BBIN	equ	$FF22		; bit banger input port
+*BBIN	equ	$FF22		; bit banger input port
 
 DWRead	clra			; ACCA = 0, clear Carry
 	pshs	u,dp,a,cc		; save registers (A allocates space for status)

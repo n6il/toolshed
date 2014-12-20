@@ -15,7 +15,7 @@
 *    Y  = 0
 *    All others preserved
 *
-BBOUT	equ	$FF20		; bit banger output port
+*BBOUT	equ	$FF20		; bit banger output port
 
 DWWrite	pshs	u,d,cc		; preserve registers
 	orcc	#$50		; mask interrupts
