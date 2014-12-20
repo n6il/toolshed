@@ -68,7 +68,7 @@ loop@     ldb    $FF4C
           puls      cc,dp,x,u,pc        ; restore registers and return
           ELSE
           IFNE BECKER
-* NOTE: There is no timeout currently on here...
+* NOTE: There is now timeout ...
 DWRead	  clra                  ; clear Carry, Set Z
 	  pshs	 cc,x,u         ; save regs
           leau   ,x		; U is data buffer
