@@ -2,19 +2,19 @@ HDBSCSI	= hdbtc3.rom hdbkenton.rom hdblrtech.rom hdbd4n1.rom hdbdhdii.rom
 HDBIDE  = hdblba.rom hdbchs.rom
 HDBDW   = hdbdw3cc1.rom hdbdw3cc2.rom hdbdw3cc3.rom \
 	hdbdw4cc3.rom hdbdw4cc2.rom \
-	hdbdw3bck.rom hdbdw3bc3.rom hdbdw3jc3.rom hdbdw3jc2.rom \
+	hdbdw3bck.rom hdbdw3bc3.rom hdbdw3bckt.rom hdbdw3bc3t.rom hdbdw3jc3.rom hdbdw3jc2.rom \
 	hdbdw3arduino.rom
 HDBROM  = $(HDBSCSI) $(HDBIDE) $(HDBDW)
 HDBBIN	= hdbtc3.bin hdbkenton.bin hdblrtech.bin hdbd4n1.bin hdbdhdii.bin \
 	hdblba.bin hdbchs.bin hdbdw3cc1.bin hdbdw3cc2.bin hdbdw3cc3.bin \
 	hdbdw4cc2.bin hdbdw4cc3.bin \
-	hdbdw3bck.bin hdbdw3bc3.bin hdbdw3jc3.bin hdbdw3jc2.bin \
+	hdbdw3bck.bin hdbdw3bc3.bin hdbdw3bc3t.bin hdbdw3bckt.bin hdbdw3jc3.bin hdbdw3jc2.bin \
 	hdbdw3arduino.bin
 HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
 	hdblba.wav hdbchs.wav hdbdw3cc1.wav hdbdw3cc2.wav hdbdw3cc3.wav \
 	hdbdw3bck.wav hdbdw3bc3.wav hdbdw3jc3.wav hdbdw3jc2.wav hdbdw4cc3.wav \
-	hdbdw4cc2.wav hdbdw3arduino.wav \
-	hdbdw3bck.cas hdbdw3bc3.cas
+	hdbdw4cc2.wav hdbdw3arduino.wav hdbdw3bckt.wav hdbdw3bc3t.wav \
+	hdbdw3bck.cas hdbdw3bc3.cas hdbdw3bc3t.cas hdbdw3bckt.cas
 
 ALLOBJS         = preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)
 
@@ -103,10 +103,20 @@ hdbdw3bck.rom: FLAGS = -DDW -DLevel=1 -DBECKER
 hdbdw3bck.wav: LABEL = HDBDW3BK
 hdbdw3bck.cas: LABEL = HDBDW3BK
 
+# DW3 CoCo Becker With Timeout
+hdbdw3bckt.rom: FLAGS = -DDW -DLevel=1 -DBECKERTO
+hdbdw3bckt.wav: LABEL = HDBDW3BK
+hdbdw3bckt.cas: LABEL = HDBDW3BK
+
 # DW3 CoCo 3 Becker
 hdbdw3bc3.rom: FLAGS = -DDW -DLevel=2 -DBECKER
 hdbdw3bc3.wav: LABEL = HDBDW3B3
 hdbdw3bc3.cas: LABEL = HDBDW3B3
+
+# DW3 CoCo 3 Becker With Timeout
+hdbdw3bc3t.rom: FLAGS = -DDW -DLevel=2 -DBECKERTO
+hdbdw3bc3t.wav: LABEL = HDBDW3B3
+hdbdw3bc3t.cas: LABEL = HDBDW3B3
 
 # DW3 CoCo 3 J&M CP FDC Becker
 hdbdw3jc3.rom: FLAGS = -DDW -DLevel=2 -DJMCPBCK
