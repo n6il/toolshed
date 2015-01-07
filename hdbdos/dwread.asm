@@ -97,36 +97,57 @@ loop@     ldb    $FF41
           puls      cc,dp,x,u,pc        ; restore registers and return
           ELSE
           IFNE BECKERTO
-* NOTE: There is now timeout ...
+;;; I added a Vsync/IRQ timeout for 2 seconds here.  This should
+;;; make the timeout work regardless of speed of emulated systems
+;;; esp. Vcc and CoCoFPGA.  Vcc over 89 Mhz is known to be wonky
+;;; and the IRQ appearantly slows down.  There is a good chance
+;;; that MESS will not work with this method, as it's "unthrottled"
+;;; mode, also increases the speed of IRQ (oops!)
 DWRead	  clra                  ; clear Carry, Set Z
 	  pshs	 cc,x,u         ; save regs
           leau   ,x		; U is data buffer
-          ldx    #$0000		; X is reset check sum
-          IFEQ   NOINTMASK
-          orcc   #IntMasks	; turn off interrupts
-          ENDC
-ini@      pshs	 x		; save X
-	  ldx	 #0x8000	; X = timeout
-loop@     ldb    $FF41		; test for data ready flag
+          orcc	 #0x50	        ; turn off interrupts
+	  ldd	 0x10d		; save current irq handler
+	  pshs	 d		; on stack
+	  leax	 irq,pcr	; load X with pointer to irq handler
+	  stx	 0x10d		; and put it in the jmp table
+	  andcc	 #0xef		; turn on irq
+	  ldx    #$0000		; X is reset check sum
+ini@	  lda	 #120		; set RDYTMR to 120 jiffies = 2 seconds
+	  sta	 RDYTMR		;
+loop@
+	  ldb    $FF41		; test for data ready flag
           bitb   #$02
           bne    rdy@		; byte is ready
-	  leax	 -1,x		; bump timout
+	  tst	 RDYTMR		; test timer
 	  bne    loop@          ; not timed out, try again
         ;; timed out!
-	  puls	 x              ; remove timeout off stack
+	  bsr	 reset@
 	  puls   cc		; pull CC
 	  comb                  ; reset Z (timeout error)
 	  puls	 x,u,pc	        ; restore registers and return
 	;; a byte is ready
-rdy@      puls	 x		; restore X
-          ldb    $FF42          ; get byte from port
+rdy@      ldb    $FF42          ; get byte from port
           stb    ,u+            ; store in data buffer
           abx                   ; add received byte to checksum
           leay   ,-y            ; decrement byte counter
           bne    ini@           ; go get another byte if not done
 	;; done reading bytes return
-          tfr    x,y		; put checksum in y 
+          tfr    x,y		; put checksum in y
+	  bsr	 reset@		; reset to old irq handler
           puls   cc,x,u,pc      ; restore registers and return
+	;; reset irq handler
+reset@	  orcc	 #0x50		; turn off interrupts
+	  puls	 x,u		; pull ret, old handler
+	  stu	 0x10d		; put old handler back in int table
+	  jmp	 ,x		; return
+
+irq
+	lda 	PIA0+3     	; is a proper 60hz timeout?
+	bpl 	o@              ; nop return
+	lda 	PIA0+2          ; reset the interrupt flag
+	dec 	RDYTMR          ; get timer
+o@	rti			; return from interrupt
 
           ENDC
           ENDC
