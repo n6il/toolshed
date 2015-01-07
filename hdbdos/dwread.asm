@@ -109,7 +109,7 @@ DWRead	  clra                  ; clear Carry, Set Z
           orcc	 #0x50	        ; turn off interrupts
 	  ldd	 0x10d		; save current irq handler
 	  pshs	 d		; on stack
-	  leax	 irq,pcr	; load X with pointer to irq handler
+	  ldx	 #irq		; load X with pointer to irq handler
 	  stx	 0x10d		; and put it in the jmp table
 	  andcc	 #0xef		; turn on irq
 	  ldx    #$0000		; X is reset check sum
