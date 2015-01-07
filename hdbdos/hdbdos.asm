@@ -5097,7 +5097,11 @@ SIGNON         fcc       "HDB-DOS "
                IFDEF     BECKER
                fcc       "BECKER COCO "
                ELSE
+               IFDEF     BECKERTO
+               fcc       "BECKER COCO "
+               ELSE
                fcc       "DW3 COCO "
+               ENDC
                ENDC
                ENDC
                IFGT      Level-1
