@@ -5100,7 +5100,11 @@ SIGNON         fcc       "HDB-DOS "
                IFDEF     BECKERTO
                fcc       "BECKER COCO "
                ELSE
+               IFDEF     JMCPBCK
+               fcc       "J&M CP COCO "
+               ELSE
                fcc       "DW3 COCO "
+               ENDC
                ENDC
                ENDC
                ENDC
