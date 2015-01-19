@@ -50,12 +50,6 @@ DWWrite   pshs      d,cc              ; preserve registers
           IFEQ      NOINTMASK
           orcc      #IntMasks           ; mask interrupts
           ENDC
-;          ldu       #BBOUT              ; point U to bit banger out register
-;          lda       3,u                 ; read PIA 1-B control register
-;          anda      #$f7                ; clear sound enable bit
-;          sta       3,u                 ; disable sound output
-;          fcb       $8c                 ; skip next instruction
-
 txByte
           lda       ,x+
           sta       $FF42
@@ -69,12 +63,6 @@ DWWrite   pshs      d,cc              ; preserve registers
           IFEQ      NOINTMASK
           orcc      #IntMasks           ; mask interrupts
           ENDC
-;          ldu       #BBOUT              ; point U to bit banger out register
-;          lda       3,u                 ; read PIA 1-B control register
-;          anda      #$f7                ; clear sound enable bit
-;          sta       3,u                 ; disable sound output
-;          fcb       $8c                 ; skip next instruction
-
 txByte
           lda       ,x+
           sta       $FF42
