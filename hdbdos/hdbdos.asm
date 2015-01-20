@@ -3341,8 +3341,10 @@ LD69A          pshs      B                   SAVE SECTOR COUNTER
                bsr       LD6C8               * WRITE THEM TO BUFFER
                lda       DCTRK               = GET TRACK NUMBER AND STORE lT
                sta       ,X+                 = IN THE RAM BUFFER
-               clr       ,X+                 CLEAR A BYTE (SIDE NUMBER) IN BUFFER
-               lda       DSEC                * GET SECTOR NUMBER AND
+               lbsr      TFSIDE              branch to sub routine that deals with the side
+               NOP                           This NOP is used to keep rom spacing correct
+*               clr       ,X+                 CLEAR A BYTE (SIDE NUMBER) IN BUFFER
+*               lda       DSEC                * GET SECTOR NUMBER AND
                sta       ,X+                 * STORE IT IN THE BUFFER
                ldb       #$09                = GET THE LAST NINE DATA BLOCKS AND
                bsr       LD6C8               = WRITE THEM TO THE BUFFER
@@ -3691,10 +3693,23 @@ DOSIN2         ldd       #(6*256)+$3B        6 "RTI" opcodes
                jsr       >LD6C2               Store 6 RTIs
                puls      d,x,pc              Restore & return
 
-               fcb       $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-               fcb       $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-               fcb       $FF,$FF,$FF,$FF,$FF,$99
-
+* SIDE select portion of the track buffer format routine.
+TFSIDE         pshs      x                   Backup X onto stack
+               ldx       #LD89D              Set X to point to drive table
+               ldb       <DCDRV              Get current drive from DCDRV
+               ldb       b,x                 Get drive masks from drive table for B
+               puls      x                   Restore X from stack
+               clra                          clear A to have it ready for bit6 from B
+               lslb                          roll bit 7 into C
+               lslb                          roll bit 6 into N
+               rola                          roll bit 6 back from N into A
+               sta       ,x+                 store A into track format buffer
+               lda       DSEC                * GET SECTOR NUMBER AND
+               rts
+* These fcb's are filler
+               fcb       $FF,$FF,$FF,$FF,$FF
+* This fcb is also filler and is used to help check ROM locations
+               fcb       $99
 
 
 
