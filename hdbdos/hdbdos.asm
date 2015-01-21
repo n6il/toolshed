@@ -3700,9 +3700,9 @@ TFSIDE         pshs      x                   Backup X onto stack
                ldb       b,x                 Get drive masks from drive table for B
                puls      x                   Restore X from stack
                clra                          clear A to have it ready for bit6 from B
-               lslb                          roll bit 7 into C
-               lslb                          roll bit 6 into N
-               rola                          roll bit 6 back from N into A
+               lslb                          roll bit 7 into C and bit 6 into N
+               lslb                          roll what was bit 6 into C
+               rola                          roll bit 6 back from C into A
                sta       ,x+                 store A into track format buffer
                lda       DSEC                * GET SECTOR NUMBER AND
                rts
