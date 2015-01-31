@@ -445,31 +445,34 @@ static int _decb_cmp(decb_dir_entry *entry, char *name)
 	
 	/* 1. Copy filename. */
 	
-	while (*filename != ' ' && count++ < 8)
-	{
-		*(p++) = *(filename++);
-	}
+	memcpy( p, filename, 8 );
+	p += 8;
 
+	while( *(p-1) == ' ' && count++ < 8)
+	{
+		p--;
+	}
 
 	/* 2. If an extension exists, add it. */
 	
-	if (ext[0] != ' ')
+	if ( !(ext[0] == ' ' && ext[1] == ' ' && ext[2] == ' ') )
 	{
 		*(p++) = '.';
 		
-		count = 0;
-	
 		/* 1. Copy extension. */
 	
-		while (*ext != ' ' && count++ < 3)
+		count = 0;
+		memcpy( p, ext, 3 );
+		p += 3;
+	
+		while( *(p-1) == ' ' && count++ < 3)
 		{
-			*(p++) = *(ext++);
+			p--;
 		}
 	}
 	
 	*p = '\0';
-	
-	
+
 	return (strcasecmp(modified_name, name));
 }
 
