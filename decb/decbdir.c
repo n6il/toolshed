@@ -150,7 +150,7 @@ static int do_dir(char **argv, char *p)
 	while (_decb_readdir(path, &de) == 0)
 	{
 		char	asciiflag;
-		int		granule_size = 1;
+		int		granule_size = 1, i;
 		int		curr_granule;
 
 
@@ -182,7 +182,37 @@ static int do_dir(char **argv, char *p)
 			granule_size++;
 		}
 		
-		printf("%8.8s %3.3s  %1.1d  %c  %d\n", de.filename, de.file_extension, de.file_type, asciiflag, granule_size);
+		/* print escaped filename */
+		
+		for( i=0; i<8; i++ )
+		{
+			if( isprint(de.filename[i] ) )
+			{
+				putchar( de.filename[i] );
+			}
+			else
+			{
+				printf( "\\%o", de.filename[i] );
+			}
+		}
+		
+		putchar( ' ' );
+		
+		/* print escaped extension */
+		
+		for( i=0; i<3; i++ )
+		{
+			if( isprint(de.file_extension[i] ) )
+			{
+				putchar( de.file_extension[i] );
+			}
+			else
+			{
+				printf( "\\%o", de.file_extension[i] );
+			}
+		}
+
+		printf("  %1.1d  %c  %d\n", de.file_type, asciiflag, granule_size);
 	}
 
 	
