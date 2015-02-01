@@ -436,11 +436,11 @@ error_code _decb_close(decb_path_id path)
 
 static int _decb_cmp(decb_dir_entry *entry, char *name)
 {
-	char modified_name[13];
+	unsigned char modified_name[13];
 	
 	DECBStringToCString(entry->filename, entry->file_extension, modified_name);
 
-	return (strcasecmp(modified_name, name));
+	return (strcasecmp((const char *)modified_name, name));
 }
 
 
