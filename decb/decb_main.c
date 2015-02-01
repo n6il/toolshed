@@ -46,6 +46,7 @@ static struct cmdtbl table[] =
 	{decbkill,		"kill"},
 	{decblist,		"list"},
 	{decbrename,	"rename"},
+	{decbdsave,     "dsave"},
 	{NULL,			NULL}
 };
 

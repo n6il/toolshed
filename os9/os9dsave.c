@@ -13,9 +13,9 @@
 #include <math.h>
 
 /* globals */
-static u_int buffer_size = 32768;
+u_int buffer_size = 32768;
 
-static error_code do_dsave(char *source, char *target, int execute, int buffsize, int rewrite, int eoltranslate);
+error_code do_dsave(char *pgmname, char *source, char *target, int execute, int buffsize, int rewrite, int eoltranslate);
 static int DoFunc(int (*func)( int, char *[]), char *command);
 
 /* Help message */
@@ -134,7 +134,7 @@ int os9dsave(int argc, char *argv[])
 	}
 
 	/* do dsave */
-	ec = do_dsave(source, target, execute, buffer_size, rewrite, eoltranslate);
+	ec = do_dsave("os9", source, target, execute, buffer_size, rewrite, eoltranslate);
 	if (ec != 0)
 	{
 		fprintf(stderr, "%s: error %d encountered during dsave\n", argv[0], ec);
@@ -144,7 +144,7 @@ int os9dsave(int argc, char *argv[])
 }
 
 
-static error_code do_dsave(char *source, char *target, int execute, int buffer_size, int rewrite, int eoltranslate)
+error_code do_dsave(char *pgmname, char *source, char *target, int execute, int buffer_size, int rewrite, int eoltranslate)
 {
 	error_code	ec = 0;
 	static int	level = 0;
@@ -246,7 +246,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				}
 
 				/* 4. call this function again */
-				do_dsave(sourcePathList, newTarget, execute, buffer_size, rewrite, eoltranslate);
+				do_dsave(pgmname, sourcePathList, newTarget, execute, buffer_size, rewrite, eoltranslate);
 
 				/* 5. decrement level indicator */
 				level--;
@@ -259,7 +259,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 				ropt[0] = 0;
 				bopt[0] = 0;
 
-				if (buffer_size > 0)
+				if ( strcmp(pgmname, "os9") == 0 && buffer_size > 0)
 				{
 					sprintf(bopt, "-b=%d", buffer_size);
 				}
@@ -274,7 +274,7 @@ static error_code do_dsave(char *source, char *target, int execute, int buffer_s
 					strcat(ropt, "-l");
 				}
 				
-				snprintf(command, sizeof(command), "os9 copy \"%s%s%s\" \"%s%s%s\" %s %s", source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
+				snprintf(command, sizeof(command), "%s copy \"%s%s%s\" \"%s%s%s\" %s %s", pgmname, source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
 				puts(command);
 				if (execute)
 				{
