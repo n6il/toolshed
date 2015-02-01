@@ -426,7 +426,7 @@ int patmatch(char *p, char *s, int f)
 			sc;							/* a single character from string	*/
 	int		found, compl;
 
-	while (pc = ifup(*p++))
+	while ((pc = ifup(*p++)))
 		{
 		if (pc == '*')
 			{
@@ -448,7 +448,7 @@ int patmatch(char *p, char *s, int f)
 					if (pc == '[')						/* character class	*/
 						{
 						sc = ifup(*s++);
-						if (compl = (*p == '^'))		/* class inversion?	*/
+						if ((compl = (*p == '^')))		/* class inversion?	*/
 							p++;
 						found = 0;
 						while ((pc = ifup(*p++)) != ']')
