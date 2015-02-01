@@ -564,7 +564,7 @@ int get_names(int ac, char **av, int updating)
 		else
 			{
 			*(p = buf) = '\0';
-			if (q = strrchr((r = *av++), '/'))
+			if ((q = strrchr((r = *av++), '/')))
 				{
 				strcpy(p, r);			/* copy all to buffer			*/
 				*(r = strrchr(p, '/')) = '\0';	/* break in two			*/
@@ -580,7 +580,7 @@ int get_names(int ac, char **av, int updating)
 			if (*p)
 				*r++ = '/';				/* set up for append			*/
 
-			while (dp = readdir(dirp))
+			while ((dp = readdir(dirp)))
 				if (patmatch(q, strcpy(r, dp->d_name), TRUE))
 					if (strucmp(r, archfile) && notdot(r))
 						found += stash_name(p);
@@ -718,7 +718,7 @@ HEADER	*hp;
 	long	c4tol();
 
 	p = hp->a_name;
-	while (p = strchr(p, '/'))
+	while ((p = strchr(p, '/')))
 		{
 		*p = '\0';						/* truncate temporarily			*/
 		if (assureDir(hp->a_name))		/* create it if not there		*/
