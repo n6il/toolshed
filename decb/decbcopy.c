@@ -51,7 +51,7 @@ int decbcopy(int argc, char *argv[])
     int	count = 0;
     int	eolTranslate = 0, tokTranslate = 0, binary_concat = 0;
     int	rewrite = 0;
-	int file_type = 0, data_type = 0;
+	int file_type = -1, data_type = -1;
     char	df[256];
 
 
@@ -454,8 +454,15 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 			
 			_decb_gs_fd(destpath->path.decb, &f);
 			
-			f.file_type = file_type;
-			f.data_type = data_type;
+			if( file_type >= 0 )
+			{
+				f.file_type = file_type;
+			}
+			
+			if( data_type >= 0 )
+			{
+				f.data_type = data_type;
+			}
 			
 			_decb_ss_fd(destpath->path.decb, &f);
 		}

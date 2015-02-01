@@ -49,7 +49,7 @@ error_code _coco_ss_fd(coco_path_id path, coco_file_stat *statbuf)
 {
 	error_code		ec = 0;
 	fd_stats		os9_stat;
-//	decb_file_stat  decb_stat;
+	decb_file_stat  decb_stat;
 	struct stat		native_stat;
 	struct tm		*timepak;	
 
@@ -109,6 +109,10 @@ error_code _coco_ss_fd(coco_path_id path, coco_file_stat *statbuf)
 			break;
 			
 		case DECB:
+			ec = _decb_gs_fd(path->path.decb, &decb_stat);
+			decb_stat.file_type = statbuf->file_type;
+			decb_stat.data_type = statbuf->data_type;
+			ec = _decb_ss_fd(path->path.decb, &decb_stat);
 			break;
 		
 		case CECB:
