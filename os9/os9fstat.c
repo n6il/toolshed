@@ -119,10 +119,9 @@ static int do_fstat(char **argv, char *p)
 		);
 		printf("  Link count         : %d\n", fdbuf.fd_lnk);
 		printf("  File size          : %d\n", int4(fdbuf.fd_siz));
-		printf("  Creation date      : %02d/%02d/%4d %02d:%02d\n",
+		printf("  Creation date      : %02d/%02d/%4d\n",
 			fdbuf.fd_creat[1], fdbuf.fd_creat[2],
-			fdbuf.fd_creat[0]+1900,
-			fdbuf.fd_creat[3], fdbuf.fd_creat[4]
+			fdbuf.fd_creat[0]+1900
 		);
 
 		printf("  Segment list:\n");
