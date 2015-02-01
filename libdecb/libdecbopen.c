@@ -437,41 +437,8 @@ error_code _decb_close(decb_path_id path)
 static int _decb_cmp(decb_dir_entry *entry, char *name)
 {
 	char modified_name[13];
-	u_char *filename = entry->filename;
-	u_char *ext = entry->file_extension;
-	char *p = modified_name;
-	int count = 0;
 	
-	
-	/* 1. Copy filename. */
-	
-	memcpy( p, filename, 8 );
-	p += 8;
-
-	while( *(p-1) == ' ' && count++ < 8)
-	{
-		p--;
-	}
-
-	/* 2. If an extension exists, add it. */
-	
-	if ( !(ext[0] == ' ' && ext[1] == ' ' && ext[2] == ' ') )
-	{
-		*(p++) = '.';
-		
-		/* 1. Copy extension. */
-	
-		count = 0;
-		memcpy( p, ext, 3 );
-		p += 3;
-	
-		while( *(p-1) == ' ' && count++ < 3)
-		{
-			p--;
-		}
-	}
-	
-	*p = '\0';
+	DECBStringToCString(entry->filename, entry->file_extension, modified_name);
 
 	return (strcasecmp(modified_name, name));
 }

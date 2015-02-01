@@ -211,30 +211,34 @@ void DECBStringToCString(u_char *filename, u_char *ext, u_char *string)
 
 
 	/* 1. Copy filename. */
+	
+	memcpy( string, filename, 8 );
+	string += 8;
 
-	while (*filename != ' ' && count++ < 8)
+	while( *(string-1) == ' ' && count++ < 8)
 	{
-		*(string++) = *(filename++);
+		string--;
 	}
-
 
 	/* 2. If an extension exists, add it. */
-
-	if (ext[0] != ' ')
+	
+	if ( !(ext[0] == ' ' && ext[1] == ' ' && ext[2] == ' ') )
 	{
 		*(string++) = '.';
-
-		count = 0;
-
+		
 		/* 1. Copy extension. */
-
-		while (*ext != ' ' && count++ < 3)
+	
+		count = 0;
+		memcpy( string, ext, 3 );
+		string += 3;
+	
+		while( *(string-1) == ' ' && count++ < 3)
 		{
-			*(string++) = *(ext++);
+			string--;
 		}
 	}
-
-	*(string) = '\0';
+	
+	*string = '\0';
 
 	return;
 }
