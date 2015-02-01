@@ -18,7 +18,6 @@ u_int buffer_size = 32768;
 error_code do_dsave(char *pgmname, char *source, char *target, int execute, int buffsize, int rewrite, int eoltranslate);
 static char *ShellEscapePath(char *source, char *src_path_seperator, u_char *direntry_name_buffer);
 static char *EscapePart( char *dest, char *src );
-static int DoFunc(int (*func)( int, char *[]), char *command);
 
 /* Help message */
 static char const * const helpMessage[] =
@@ -344,26 +343,4 @@ static char *EscapePart( char *dest, char *src )
 	*dest = '\0';
 	
 	return dest;
-}
-
-static int DoFunc(int (*func)(int, char *[]), char *command)
-{
-	error_code	ec = 0;
-	char		*argv[64];
-	char		*p;
-	int		argc = 0;
-
-	p = strtok(command, " ");
-	argv[argc++] = p;
-	do
-	{
-		p = strtok(NULL, " ");
-		argv[argc++] = p;
-	}
-	while (p != NULL);
-	argc--;
-
-	(*func)(argc, argv);
-
-	return(ec);
 }
