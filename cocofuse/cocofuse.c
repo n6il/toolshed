@@ -334,7 +334,7 @@ static int coco_chmod(const char *path, mode_t mode)
 	coco_path_id p;
 
 	sprintf(buff, "%s,%s", dsk, path);
-	if ((ec = -CoCoToUnixError(_coco_open(&p, buff, FAM_WRITE))) == 0);
+	if ((ec = -CoCoToUnixError(_coco_open(&p, buff, FAM_WRITE))) == 0)
 	{
 		ec = -CoCoToUnixError(_coco_ss_attr(p, UnixToCoCoPerms(mode)));
 		_coco_close(p);
