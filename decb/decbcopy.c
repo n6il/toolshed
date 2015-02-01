@@ -70,7 +70,7 @@ int decbcopy(int argc, char *argv[])
                         break;
 	
                     case '1':
-						file_type = 2;
+						file_type = 1;
                         break;
 	
                     case '2':
