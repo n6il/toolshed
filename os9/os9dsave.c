@@ -16,6 +16,8 @@
 u_int buffer_size = 32768;
 
 error_code do_dsave(char *pgmname, char *source, char *target, int execute, int buffsize, int rewrite, int eoltranslate);
+static char *ShellEscapePath(char *source, char *src_path_seperator, u_char *direntry_name_buffer);
+static char *EscapePart( char *dest, char *src );
 static int DoFunc(int (*func)( int, char *[]), char *command);
 
 /* Help message */
@@ -254,7 +256,7 @@ error_code do_dsave(char *pgmname, char *source, char *target, int execute, int 
 			else
 			{
 				/* We've encountered a file -- just copy */
-				char ropt[4], bopt[32];
+				char ropt[4], bopt[32], *escaped_source, *escaped_dest;
 
 				ropt[0] = 0;
 				bopt[0] = 0;
@@ -274,7 +276,10 @@ error_code do_dsave(char *pgmname, char *source, char *target, int execute, int 
 					strcat(ropt, "-l");
 				}
 				
-				snprintf(command, sizeof(command), "%s copy \"%s%s%s\" \"%s%s%s\" %s %s", pgmname, source, src_path_seperator, direntry_name_buffer, target, dst_path_seperator, direntry_name_buffer, ropt, bopt);
+				escaped_source = ShellEscapePath(source, src_path_seperator, direntry_name_buffer);
+				escaped_dest = ShellEscapePath(target, dst_path_seperator, direntry_name_buffer);
+				
+				snprintf(command, sizeof(command), "%s copy '%s' '%s' %s %s", pgmname, escaped_source, escaped_dest, ropt, bopt);
 				puts(command);
 				if (execute)
 				{
@@ -286,6 +291,16 @@ error_code do_dsave(char *pgmname, char *source, char *target, int execute, int 
 						return(ec);
 					}
 				}
+				
+				if(escaped_source != NULL)
+				{
+					free( escaped_source );
+				}
+				
+				if(escaped_dest != NULL)
+				{
+					free( escaped_dest );
+				}
 			}
 		}
 	}
@@ -295,6 +310,41 @@ error_code do_dsave(char *pgmname, char *source, char *target, int execute, int 
 	return(ec);
 }
 
+static char *ShellEscapePath(char *source, char *src_path_seperator, u_char *direntry_name_buffer)
+{
+	char *buffer = malloc((strlen(source)+strlen(src_path_seperator)+strlen((const char *)direntry_name_buffer) * 4 ) + 1 );
+	
+	if (buffer != NULL)
+	{
+		char *p;
+		
+		p = EscapePart( buffer, source );
+		p = EscapePart( p, src_path_seperator );
+		p = EscapePart( p, (char *)direntry_name_buffer );
+	}
+	
+	return buffer;
+}
+
+/* This function escapes the single quote character for later passing to a shell */
+static char *EscapePart( char *dest, char *src )
+{
+	while( *src != 0 )
+	{
+		if( *src == '\'' )
+		{
+			*dest++ = '\'';
+			*dest++ = '\\';
+			*dest++ = '\'';
+		}
+
+		*dest++ = *src++;
+	}
+	
+	*dest = '\0';
+	
+	return dest;
+}
 
 static int DoFunc(int (*func)(int, char *[]), char *command)
 {
