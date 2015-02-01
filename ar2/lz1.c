@@ -57,6 +57,19 @@ void writebuf(int cnt, FILE *fp);
 void lz1_init(int direction);
 char *emalloc(size_t);
 
+WORD		maxbits,			/* user settable max # bits/code	*/
+			n_bits,				/* initial number of bits/code		*/
+			maxmaxcode,			/* max permissible maxcode value	*/
+								/* (i.e. 2 ** BITS - 1)				*/
+			maxcode,			/* 2 ** n_bits - 1					*/
+			free_ent,			/* first unused entry				*/
+			offset;				/* cursor into buf (units of bits)	*/
+
+long		lz_bytes;
+UWORD	buf[BITS];
+COMPTBL	*CompTbl;
+DCOMPTBL	*CrakTbl;
+
 /*page*/
 /*
  *      Writes compressed file to outfile.

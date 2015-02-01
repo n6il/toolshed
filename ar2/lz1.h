@@ -108,7 +108,7 @@ typedef struct {
 			lastch;					/* last char in this entry			*/
 	} DCOMPTBL;
 
-STATIC WORD		maxbits,			/* user settable max # bits/code	*/
+extern WORD		maxbits,			/* user settable max # bits/code	*/
 				n_bits,				/* initial number of bits/code		*/
 				maxmaxcode,			/* max permissible maxcode value	*/
 									/* (i.e. 2 ** BITS - 1)				*/
@@ -116,10 +116,10 @@ STATIC WORD		maxbits,			/* user settable max # bits/code	*/
 				free_ent,			/* first unused entry				*/
 				offset;				/* cursor into buf (units of bits)	*/
 
-STATIC long		lz_bytes;
-STATIC UWORD	buf[BITS];
-STATIC COMPTBL	*CompTbl;
-STATIC DCOMPTBL	*CrakTbl;
+extern long		lz_bytes;
+extern UWORD	buf[BITS];
+extern COMPTBL	*CompTbl;
+extern DCOMPTBL	*CrakTbl;
 extern int	debug;
 
 int lz1_config(int bits);
