@@ -412,6 +412,30 @@ int readshort(FILE *fp, short *sp)
 
 	return (EOF);
 	}
+
+/*
+ * function ot read an unsigned short in a machine independent manner
+ */
+
+int readushort(FILE *fp, unsigned short *sp)
+	{
+	int		i;
+	unsigned short	s = 0;
+
+	if ((i = getc(fp)) != EOF)
+		{
+		s = i;
+		if ((i = getc(fp)) != EOF)
+			{
+			s = (s << 8) | i;
+			*sp = s;
+			return (0);
+			}
+		}
+
+	return (EOF);
+	}
+
 /*page*/
 #ifndef CKLIB
 /*

@@ -391,7 +391,7 @@ int readbuf(int cnt, FILE *fp)
 	UWORD			word;
 
 	for (lim = (cnt >> 1); lim; --lim)
-		if (readshort(fp, &word) == EOF)
+		if (readushort(fp, &word) == EOF)
 			return (EOF);
 		else
 			*bp++ = word;

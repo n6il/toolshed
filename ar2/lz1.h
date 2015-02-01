@@ -129,4 +129,4 @@ int readbuf(int cnt, FILE *fp);
 int fetch(void);
 int writeshort(FILE *fp, short s);
 int readshort(FILE *fp, short *sp);
-
+int readushort(FILE *fp, unsigned short *sp);
