@@ -8,7 +8,7 @@
 
 double cecb_threshold = 0.1;
 double cecb_frequency = 0;
-_wave_parity cecb_wave_parity = NONE;
+_wave_parity cecb_wave_parity = AUTO;
 long cecb_start_sample = 0;
 
 static error_code parse_header( cecb_path_id path  );
@@ -369,7 +369,7 @@ error_code _cecb_close(cecb_path_id path)
 			return ec;
 		}
 		
-		if( path->tape_type = WAV )
+		if( path->tape_type == WAV )
 		{
 			/* Update RIFF chunk lengths */
 			fseek( path->fd, 4, SEEK_SET );
