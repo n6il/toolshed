@@ -326,9 +326,10 @@ error_code _os9_open(os9_path_id *path, char *pathlist, int mode)
 
         if ((*path)->fd == NULL)
         {
+        	ec = UnixToCoCoError(errno);
             term_pd(*path);
 
-            return(UnixToCoCoError(errno));
+            return ec;
         }
     }
 
