@@ -223,9 +223,8 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 	if (bootfile != NULL)
 	{
 		fd_stats fdbuf;
-		u_int size = sizeof(fdbuf);
 		char *bootfileMem;
-
+		size = sizeof(fdbuf);
 		
 		/* 1. Open a path to the bootfile */
 
@@ -284,7 +283,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		/* 3. Open a path to the device raw */
 		sprintf(buffer, "%s,@", device);
 
-		ec = _os9_open(&opath, buffer, FAM_WRITE);
+		ec = _os9_open(&opath, buffer, FAM_READ | FAM_WRITE);
 		if (ec != 0)
 		{
 			return(ec);
@@ -292,6 +291,14 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 
 		size = sizeof(lsn0_sect);
 		_os9_read(opath, &LSN0, &size);
+		
+		if( size != sizeof(lsn0_sect) )
+		{
+			_os9_close( opath );
+			printf("Error reading LSN0\n");
+			return(1);
+		}
+		
 		if (extended == 0)
 		{
 			_int3(bootfile_LSN, LSN0.dd_bt);
