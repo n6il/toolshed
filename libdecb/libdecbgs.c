@@ -82,7 +82,7 @@ error_code _decb_gs_size(decb_path_id path, u_int *size)
 {
     error_code	ec = 0;
 	int curr_granule;
-	
+	int sectors_in_last_granule;
 
 	*size = 0;
 	
@@ -98,7 +98,10 @@ error_code _decb_gs_size(decb_path_id path, u_int *size)
 		*size += 2304;
 	}
 
-	*size += 256 * ((path->FAT[curr_granule] & 0x3f) - 1)+ int2(path->dir_entry.last_sector_size);
+	sectors_in_last_granule = (path->FAT[curr_granule] & 0x3f) - 1;
+	sectors_in_last_granule = sectors_in_last_granule < 0 ? 0 : sectors_in_last_granule;
+	
+	*size += (256 * sectors_in_last_granule) + int2(path->dir_entry.last_sector_size);
 	
 
     return ec;

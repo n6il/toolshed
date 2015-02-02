@@ -315,159 +315,162 @@ static error_code CopyDECBFile(char *srcfile, char *dstfile, int eolTranslate, i
 
 
 	ec = _coco_gs_size(path, &buffer_size);
-	buffer = malloc( buffer_size );
 	
-	if( buffer == NULL )
+	if (buffer_size > 0)
 	{
-		return -1;
-	};
+		buffer = malloc( buffer_size );
 	
-	ec = _coco_read(path, buffer, &buffer_size);
-
-	if (ec != 0)
-	{
-		return -1;
-	}
-	
-	if( binary_concat == 1 )
-	{
-		u_char *binconcat_buffer;
-		u_int binconcat_size;
-
-		ec = _decb_binconcat(buffer, buffer_size, &binconcat_buffer, &binconcat_size);
-		
-		if( ec == 0 )
+		if( buffer == NULL )
 		{
-			free( buffer );
-			buffer = binconcat_buffer;
-			buffer_size = binconcat_size;
-		}
-		else
 			return -1;
-	}
+		};
+	
+		ec = _coco_read(path, buffer, &buffer_size);
 
-	if( tokTranslate == 1 )
-	{
-		if( buffer[0] == 0xff )
+		if (ec != 0)
 		{
-			u_char *detokenize_buffer;
-			u_int detokenize_size;
-			
-			/* File is already a tokenized BASIC file, de-tokenize it */
-			ec = _decb_detoken( buffer, buffer_size, (char **)&detokenize_buffer, &detokenize_size);
+			return -1;
+		}
+	
+		if( binary_concat == 1 )
+		{
+			u_char *binconcat_buffer;
+			u_int binconcat_size;
 
+			ec = _decb_binconcat(buffer, buffer_size, &binconcat_buffer, &binconcat_size);
+		
 			if( ec == 0 )
 			{
 				free( buffer );
-				buffer = detokenize_buffer;
-				buffer_size = detokenize_size;
-				
-				file_type = 0;
-				data_type = 0xff;
+				buffer = binconcat_buffer;
+				buffer_size = binconcat_size;
 			}
 			else
 				return -1;
+		}
+
+		if( tokTranslate == 1 )
+		{
+			if( buffer[0] == 0xff )
+			{
+				u_char *detokenize_buffer;
+				u_int detokenize_size;
+			
+				/* File is already a tokenized BASIC file, de-tokenize it */
+				ec = _decb_detoken( buffer, buffer_size, (char **)&detokenize_buffer, &detokenize_size);
+
+				if( ec == 0 )
+				{
+					free( buffer );
+					buffer = detokenize_buffer;
+					buffer_size = detokenize_size;
+				
+					file_type = 0;
+					data_type = 0xff;
+				}
+				else
+					return -1;
+			}
+			else
+			{
+				unsigned char *entokenize_buffer;
+				u_int entokenize_size;
+			
+				/* Tokenized file */
+				ec = _decb_entoken( buffer, buffer_size, &entokenize_buffer, &entokenize_size, destpath->type==DECB);
+
+				if( ec == 0 )
+				{
+					free( buffer );
+					buffer = entokenize_buffer;
+					buffer_size = entokenize_size;
+
+					file_type = 0;
+					data_type = 0;
+				
+					eolTranslate = 0;
+				
+				}
+				else
+					return -1;
+			}
+		}
+	
+		if (eolTranslate == 1)
+		{
+			if (path->type == NATIVE && destpath->type != NATIVE)
+			{
+				/* source is native, destination is coco */
+
+				NativeToDECB((char *)buffer, buffer_size, &translation_buffer, &new_translation_size);
+
+				ec = _coco_write(destpath, translation_buffer, &new_translation_size);
+
+				free(translation_buffer);
+			}
+			else if (path->type != NATIVE && destpath->type == NATIVE)
+			{
+				/* source is coco, destination is native */
+			
+				DECBToNative((char *)buffer, buffer_size, &translation_buffer, &new_translation_size);
+				ec = _coco_write(destpath, translation_buffer, &new_translation_size);
+
+				free(translation_buffer);
+			}
 		}
 		else
 		{
-			unsigned char *entokenize_buffer;
-			u_int entokenize_size;
-			
-			/* Tokenized file */
-			ec = _decb_entoken( buffer, buffer_size, &entokenize_buffer, &entokenize_size, destpath->type==DECB);
-
-			if( ec == 0 )
-			{
-				free( buffer );
-				buffer = entokenize_buffer;
-				buffer_size = entokenize_size;
-
-				file_type = 0;
-				data_type = 0;
-				
-				eolTranslate = 0;
-				
-			}
-			else
-				return -1;
+			/* One-to-one writing of the data -- no translation needed. */
+		
+			ec = _coco_write(destpath, buffer, &buffer_size);
 		}
-	}
-	
-	if (eolTranslate == 1)
-	{
-		if (path->type == NATIVE && destpath->type != NATIVE)
+
+		if (ec != 0)
 		{
-			/* source is native, destination is coco */
-
-			NativeToDECB((char *)buffer, buffer_size, &translation_buffer, &new_translation_size);
-
-			ec = _coco_write(destpath, translation_buffer, &new_translation_size);
-
-			free(translation_buffer);
+			return -1;
 		}
-		else if (path->type != NATIVE && destpath->type == NATIVE)
+	
+
+		/* Copy meta data from file descriptor of source to destination */
+	
 		{
-			/* source is coco, destination is native */
-			
-			DECBToNative((char *)buffer, buffer_size, &translation_buffer, &new_translation_size);
-			ec = _coco_write(destpath, translation_buffer, &new_translation_size);
+			coco_file_stat fd;
+		
+		
+			_coco_gs_fd(path, &fd);
 
-			free(translation_buffer);
+			_coco_ss_fd(destpath, &fd);
 		}
-	}
-	else
-	{
-		/* One-to-one writing of the data -- no translation needed. */
-		
-		ec = _coco_write(destpath, buffer, &buffer_size);
-	}
-
-	if (ec != 0)
-	{
-		return -1;
-	}
-	
-
-    /* Copy meta data from file descriptor of source to destination */
-	
-	{
-		coco_file_stat fd;
-		
-		
-		_coco_gs_fd(path, &fd);
-
-		_coco_ss_fd(destpath, &fd);
-	}
 	
 	
-	/* Special -- if this is a DECB file we wrote to, set passed file type and data type. */
+		/* Special -- if this is a DECB file we wrote to, set passed file type and data type. */
 	
-	{
-		_path_type t;
-		
-		_coco_gs_pathtype(destpath, &t);
-		
-		if (t == DECB)
 		{
-			decb_file_stat f;
-			
-			
-			_decb_gs_fd(destpath->path.decb, &f);
-			
-			if( file_type >= 0 )
+			_path_type t;
+		
+			_coco_gs_pathtype(destpath, &t);
+		
+			if (t == DECB)
 			{
-				f.file_type = file_type;
-			}
+				decb_file_stat f;
 			
-			if( data_type >= 0 )
-			{
-				f.data_type = data_type;
-			}
 			
-			_decb_ss_fd(destpath->path.decb, &f);
+				_decb_gs_fd(destpath->path.decb, &f);
+			
+				if( file_type >= 0 )
+				{
+					f.file_type = file_type;
+				}
+			
+				if( data_type >= 0 )
+				{
+					f.data_type = data_type;
+				}
+			
+				_decb_ss_fd(destpath->path.decb, &f);
+			}
 		}
 	}
-	
 	 
     _coco_close(path);
     _coco_close(destpath);
