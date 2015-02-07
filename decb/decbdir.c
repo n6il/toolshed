@@ -109,6 +109,7 @@ static int do_dir(char **argv, char *p)
 		if (q == NULL)
 		{
 			strcpy(decbpathlist, p);
+			strcat(decbpathlist, ",");
 		}
 		else
 		{
@@ -132,6 +133,10 @@ static int do_dir(char **argv, char *p)
 		fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, decbpathlist);
 		
 		return ec;
+	}
+	else
+	{
+		printf( "Directory of: %s\n\n", decbpathlist );
 	}
 	
 	
