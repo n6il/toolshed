@@ -88,7 +88,8 @@ static int do_fstat(char **argv, char *p)
 	error_code	ec = 0;
 	decb_path_id path;
 	decb_dir_entry dentry;
-	u_int			curr_granule, size, remaining_bytes = 0;;
+	u_int curr_granule, size, remaining_bytes = 0;
+	int sectors_in_last_granule;
 	
 
 	/* 1. Open a path to the device. */
@@ -174,7 +175,10 @@ static int do_fstat(char **argv, char *p)
 			curr_granule = path->FAT[curr_granule];
 		}
 
-		remaining_bytes = (path->FAT[curr_granule] & 0x3F) * 256 + int2(path->dir_entry.last_sector_size) - 256;
+		sectors_in_last_granule = (path->FAT[curr_granule] & 0x3f) - 1;
+		sectors_in_last_granule = sectors_in_last_granule < 0 ? 0 : sectors_in_last_granule;
+
+		remaining_bytes = (sectors_in_last_granule) * 256 + int2(path->dir_entry.last_sector_size);
 	
 		printf("[%d:%d] ", curr_granule, remaining_bytes);
 	}
