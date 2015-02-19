@@ -171,13 +171,16 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 
 		_os9_read(opath, &LSN0, &size);
 
-		if (int1(LSN0.dd_fmt) & 1)
+		if (int1(LSN0.pd_typ) & 0x20)
 		{
-			/* 1. We have a double sided disk image -- compensate boot track LSN. */
-
-			if (startlsn > 18)
+			if (int1(LSN0.dd_fmt) & 1)
 			{
-				startlsn *= 2;
+				/* 1. We have a double sided disk image -- compensate boot track LSN. */
+
+				if (startlsn > 18)
+				{
+					startlsn *= 2;
+				}
 			}
 		}
 
