@@ -17,7 +17,7 @@
 
 #define DragonBootSize	16	/* Size of Dragon boot area in sectors */
 
-static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int formatEntire, int isDragon);
+static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int formatEntire, int isDragon, int isHDD);
 
 /* Help message */
 static char const * const helpMessage[] =
@@ -67,6 +67,7 @@ int os9format(int argc, char **argv)
 	int os968k = 0;		/* assume OS-9/6809 LSN0 */
 	int formatEntire = 0;	/* format entire disk image */
 	int isDragon = 0;		/* format disk as Dragon, with reserved boot sectors at begining */
+	int isHDD = 0; /* Is this image for a hard drive */
 	
 	/* if no arguments, show help and return */
 	if (argv[1] == NULL)
@@ -200,6 +201,7 @@ int os9format(int argc, char **argv)
 					case 'l':	/* logical sectors */
 						logicalSectors = atoi(p+1);
 						while (*(p + 1) != '\0') p++;
+						isHDD = 1;
 						break;
 
 					case '?':
@@ -254,7 +256,7 @@ int os9format(int argc, char **argv)
 		}
 		else
 		{
-			do_format(argv, argv[i], os968k, quiet, tracks, sectorsPerTrack, heads, bytesPerSector, clusterSize, diskName, sectorAllocationSize, tpi, density, formatEntire, isDragon);
+			do_format(argv, argv[i], os968k, quiet, tracks, sectorsPerTrack, heads, bytesPerSector, clusterSize, diskName, sectorAllocationSize, tpi, density, formatEntire, isDragon, isHDD);
 		}
 	}
 
@@ -263,7 +265,7 @@ int os9format(int argc, char **argv)
 
 
 
-static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int formatEntire, int isDragon)
+static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks, int sectorsPerTrack, int heads, int sectorSize, int clusterSize, char *diskName, int sectorAllocationSize, int tpi, int density, int formatEntire, int isDragon, int isHDD)
 {
 	error_code	ec = 0;
 	native_path_id path;
@@ -413,7 +415,8 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	_int1( DT_os9, s0.pd_dtp );
 	_int1( 1, s0.pd_drv );
 	_int1( 0, s0.pd_stp );
-	_int1( 0x20, s0.pd_typ );
+	if ( isHDD ) _int1( 0x80, s0.pd_typ );
+	else _int1( 0x20, s0.pd_typ );
 	_int1( 1, s0.pd_dns );
 	
 	_int2( tracks, s0.pd_cyl );
