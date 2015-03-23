@@ -327,7 +327,7 @@ static void dump_line(u_char *buffer, int count, int format)
         /* print character dump on right side */
         for (i = 0; i < count; i++)
         {
-            if (buffer[i] >= 32 && buffer[i] <= 127)
+            if (buffer[i] >= 32 && buffer[i] < 127)
             {
                 printf("%c", buffer[i]);
             }
