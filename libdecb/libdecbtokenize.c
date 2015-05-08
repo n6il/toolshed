@@ -246,13 +246,13 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 		(*out_buffer)[out_pos++] = 0x00;  /* Reserve two bytes for BASIC's next-line-pointer */
 		(*out_buffer)[out_pos++] = 0x00;
 		
-		while( isspace( in_buffer[in_pos] ) && in_pos < in_size )
+		while( in_pos < in_size && isspace( in_buffer[in_pos] ) )
 			in_pos++;  /* Spin past pre-line-number spaces */
 		
 		/* Enocde line number */
 
 		line_number = 0;
-		while( isdigit( in_buffer[in_pos] ) && in_pos < in_size )
+		while( in_pos < in_size && isdigit( in_buffer[in_pos] ) )
 			line_number = line_number * 10 + ( in_buffer[in_pos++] - '0' );
 	
 		if( line_number > 63999 )
@@ -264,14 +264,14 @@ error_code _decb_entoken(unsigned char *in_buffer, int in_size, unsigned char **
 		(*out_buffer)[out_pos++] = line_number >> 8;
 		(*out_buffer)[out_pos++] = line_number & 0x00ff;
 
-		while( isspace( in_buffer[in_pos] ) && in_pos < in_size )
+		while( in_pos < in_size && isspace( in_buffer[in_pos] ) )
 			in_pos++;  /* Spin past any post-line-number spaces */
 		
 		/* All literal flags get reset on a new line */
 		data_literal = quote_literal = rem_literal = var_literal = 0;
 
 		/* entoken line */
-		while( !( in_buffer[in_pos] == 0x0d || in_buffer[in_pos] == 0x0a ) && in_pos < in_size )
+		while( in_pos < in_size && !( in_buffer[in_pos] == 0x0d || in_buffer[in_pos] == 0x0a ) )
 		{
 			int i;
 			
