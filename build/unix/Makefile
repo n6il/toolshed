@@ -3,7 +3,7 @@ include rules.mak
 
 vpath %.c ../../mamou:../../os9
 
-PACKAGENAME	= toolshed$(RELEASE).tgz
+PACKAGENAME	= toolshed-$(VERSION).tgz
 ifneq ($(DESTDIR),)
 INSTALLDIR	= $(DESTDIR)/usr/bin
 else
@@ -21,15 +21,10 @@ install: all
 	    tocgen/tocgen makewav/makewav $(INSTALLDIR)
 	-$(INSTALL) cocofuse/cocofuse $(INSTALLDIR)
 
-package: all
-	rm -rf toolshed$(RELEASE)
-	mkdir toolshed$(RELEASE)
-	mkdir toolshed$(RELEASE)/bin
-	mkdir toolshed$(RELEASE)/lib
-	cp os9/os9 cecb/cecb decb/decb mamou/mamou tocgen/tocgen makewav/makewav toolshed$(RELEASE)/bin
-	cp ../../alib/alib.l toolshed$(RELEASE)/lib
-	tar czvf $(PACKAGENAME) toolshed$(RELEASE)
-	rm -rf toolshed$(RELEASE)
+package: INSTALLDIR=toolshed-$(VERSION)
+package: install
+	tar czvf $(PACKAGENAME) toolshed-$(VERSION)
+	rm -rf toolshed-$(VERSION)
 
 clean:
 	$(foreach dir, $(DIRS), (cd $(dir); $(MAKE) clean);)
