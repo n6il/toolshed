@@ -19,6 +19,7 @@ static int do_command(int argc, char **argv);
 /* Help message */
 static char const * const helpMessage[] =
 {
+    "os9 from Toolshed " TOOLSHED_VERSION "\n",
     "Syntax: os9 {[<opts>]} <command> {[<opts>]}\n",
     "Usage:  OS-9 File Tools Executive\n",
     "Options:\n",

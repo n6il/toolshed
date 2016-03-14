@@ -644,6 +644,7 @@ static struct fuse_operations coco_filesystem_operations =
 
 void usage(char* name)
 {
+	printf("cocofuse from Toolshed " TOOLSHED_VERSION "\n");
 	printf("Usage: %s: dskimage mountpoint [FUSE options]\n", name);
 	exit(1);
 }

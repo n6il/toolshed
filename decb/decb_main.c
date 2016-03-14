@@ -18,6 +18,7 @@ static int do_command(int argc, char **argv);
 /* Help message */
 static char const * const helpMessage[] =
 {
+	"decb from Toolshed " TOOLSHED_VERSION "\n",
 	"Syntax: decb {[<opts>]} <command> {[<opts>]}\n",
 	"Usage:  Disk BASIC File Tools Executive\n",
 	"Options:\n",

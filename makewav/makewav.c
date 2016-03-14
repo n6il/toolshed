@@ -233,8 +233,10 @@ int             main(int argc, char **argv)
 	
 	if (argc < 2)
 	{
-		fprintf(stderr, "\%s - S record to CoCo/MC-10 audio WAV file\n", argv[0]);
-		fprintf(stderr, "Copyright (C) 2007 tim lindner\n");
+		fprintf(stderr, "makewav from Toolshed " TOOLSHED_VERSION "\n");
+		fprintf(stderr, "makewav - S-record to CoCo/MC-10 audio WAV file\n");
+		fprintf(stderr, "Copyright (C) 2007 Tim Lindner\n");
+		fprintf(stderr, "Copyright (C) 2013 Tormod Volden\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, "This program will convert a Motorola S record file to\n");
 		fprintf(stderr, "a WAV file. The format will match Microsoft's Color BASIC and Micro\n");

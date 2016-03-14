@@ -18,6 +18,7 @@ static int do_command(int argc, char **argv);
 /* Help message */
 static char const * const helpMessage[] =
 {
+	"cecb from Toolshed " TOOLSHED_VERSION "\n",
 	"Syntax: cecb {[<opts>]} <sub command> {[<opts>]}\n",
 	"Usage:  Cassette BASIC File Tools Executive\n",
 	"Options:\n",

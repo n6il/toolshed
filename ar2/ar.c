@@ -871,8 +871,9 @@ void fatal(int code, char *msg, int arg1, int arg2)
  */
 
 static char	*hlpmsg[] = {
+	"ar2 from Toolshed " TOOLSHED_VERSION "\n",
 	"Ar V2.02 - archive file manager\n",
-	"Usage:  Ar -<cmd>[<modifier>] archive [file .. ]\n",
+	"Usage:  ar2 -<cmd>[<modifier>] archive [file .. ]\n",
 	"      <cmd> is one of the following:\n",
 	"         d   delete file(s) from the archive\n",
 	"         m   move file(s) to archive (add and delete)\n",
