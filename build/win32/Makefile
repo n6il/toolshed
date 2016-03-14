@@ -1,5 +1,10 @@
 # Makefile for ToolShed
 
+$(warning ********************************************************)
+$(warning This makefile is not maintained, use build/unix/Makefile)
+$(warning also for Windows builds)
+$(warning ********************************************************)
+
 vpath %.c ../../mamou:../../os9
 
 
