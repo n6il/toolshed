@@ -136,7 +136,7 @@ hdbdw3arduino.rom: FLAGS = -DDW -DLevel=1 -DARDUINO
 hdbdw3arduino.wav: LABEL = HDBDW3ARD
 
 
-DRAGONROM = hdbdw3dgn32ram.rom hdbdw4dgn32ram.rom hdblbadgn.rom
+DRAGONROM = hdbdw3dgn32ram.rom hdbdw4dgn32ram.rom hdblbadgn.rom hdbdw3dgn.rom hdbdw4dgn.rom
 DRAGONBIN = hdbdw3dgn32ram.bin hdbdw4dgn32ram.bin
 DRAGONWAV = hdbdw3dgn32ram.wav hdbdw4dgn32ram.wav
 
@@ -157,6 +157,12 @@ hdbdw4dgn32ram.rom: FLAGS =  -DDW -DORG=0x6000 -DLevel=1 -DDRAGON -DDW4 -b
 hdbdw4dgn32ram.wav: LABEL = HDBDW4DR
 hdbdw4dgn32ram.bin: hdbdw4dgn32ram.rom
 	$(MERGE) $+ > $@
+
+# Dragon 32, DW3 ROM cartridge
+hdbdw3dgn.rom: FLAGS = -DDW -DLevel=1 -DDRAGON
+
+# Dragon 32, DW4 (turbo speed) ROM cartridge
+hdbdw4dgn.rom: FLAGS = -DDW -DLevel=1 -DDRAGON -DDW4
 
 # Dragon, IDE LBA for ROM cartridge
 hdblbadgn.rom: FLAGS = -DIDE -DUSELBA -DLevel=1 -DDRAGON
