@@ -15,8 +15,8 @@
 	org	$4fd0		This code covers $4fd0-$4fff
 	orcc	#$50		Disable interrupts
 	lda	>$fffe		Check RESET vector
-	cmpa	#$8c		Points to ??? Basic
-	beq	reloc
+	cmpa	#$8c		Points to CoCo3 reset code?
+	beq	reloc		If yes, skip ROM copy
 
 * Copy ROMs to RAM
 
