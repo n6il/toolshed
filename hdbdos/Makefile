@@ -1,11 +1,10 @@
 HDBSCSI	= hdbtc3.rom hdbkenton.rom hdblrtech.rom hdbd4n1.rom hdbdhdii.rom
 HDBIDE  = hdblba.rom hdbchs.rom
-HDBSDC  = hdbsdc.rom
 HDBDW   = hdbdw3cc1.rom hdbdw3cc2.rom hdbdw3cc3.rom \
 	hdbdw4cc3.rom hdbdw4cc2.rom \
 	hdbdw3bck.rom hdbdw3bc3.rom hdbdw3bckt.rom hdbdw3bc3t.rom hdbdw3jc3.rom hdbdw3jc2.rom \
 	hdbdw3arduino.rom
-HDBROM  = $(HDBSCSI) $(HDBIDE) $(HDBDW) $(HDBSDC)
+HDBROM  = $(HDBSCSI) $(HDBIDE) $(HDBDW)
 HDBBIN	= hdbtc3.bin hdbkenton.bin hdblrtech.bin hdbd4n1.bin hdbdhdii.bin \
 	hdblba.bin hdbchs.bin hdbdw3cc1.bin hdbdw3cc2.bin hdbdw3cc3.bin \
 	hdbdw4cc2.bin hdbdw4cc3.bin \
@@ -78,10 +77,6 @@ hdblba.wav:    LABEL = HDBLBA
 # IDE CHS
 hdbchs.rom:    FLAGS = -DIDE -DUSECHS
 hdbchs.wav:    LABEL = HDBCHS
-
-# CoCoSDC
-hdbsdc.rom:    FLAGS = -DSDC
-hdbsdc.wav:    LABEL = HDBSDC
 
 # DW4 CoCo 3
 hdbdw4cc3.rom: FLAGS = -DDW -DLevel=2 -DDW4
