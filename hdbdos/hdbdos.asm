@@ -107,7 +107,7 @@ E$NotRdy       equ       246
 PIA1Base       equ       $FF20
 DATAADDR       equ       PIA1Base
 TDELAY         equ       8                   Retries in the case of DriveWire
-MAXDN          equ       255
+MAXDN          equ       256                 Drives 0-255
                ENDC
 
                IFDEF     IDE
