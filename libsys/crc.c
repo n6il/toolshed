@@ -3,7 +3,6 @@
  *
  * CRC computation functions for OS-9/6809 and OS-9/68K
  ********************************************************************/
-#include <stdio.h>
 #include <sys/types.h>
 
 #include <cocopath.h>

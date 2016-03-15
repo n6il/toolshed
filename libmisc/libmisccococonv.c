@@ -4,7 +4,6 @@
  * Functions to facilitate line-ending, error number, string and
  * time conversions between platforms.
  ********************************************************************/
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>

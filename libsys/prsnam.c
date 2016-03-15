@@ -3,7 +3,6 @@
  *
  * Parses the passed filename to see if it is legal.
  ********************************************************************/
-#include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <sys/types.h>
