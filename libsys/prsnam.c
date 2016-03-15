@@ -25,7 +25,7 @@ error_code _os9_prsnam(char *filename)
         {
             return(EOS_BPNAM);
         }
-        if (! (isalnum(*a) || *a == '_' || *a == '.' || *a == '-' || *a == ' ') )
+        if (! (isalnum(*a) || *a == '_' || *a == '.' || *a == '-' || *a == ' ' || *a == '$') )
 	{
             return EOS_BPNAM;
 	}
