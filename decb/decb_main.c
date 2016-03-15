@@ -36,19 +36,19 @@ struct cmdtbl
 
 static struct cmdtbl table[] =
 {
-	{decbattr,		"attr"},
-	{decbcopy,		"copy"},
-	{decbdir,		"dir"},
-	{os9dump,       "dump"},
-	{decbdskini,	"dskini"},
-	{decbfree,		"free"},
-	{decbfstat,		"fstat"},
-	{decbhdbconv,	"hdbconv"},
-	{decbkill,		"kill"},
-	{decblist,		"list"},
-	{decbrename,	"rename"},
+	{decbattr,	"attr"},
+	{decbcopy,	"copy"},
+	{decbdir,	"dir"},
 	{decbdsave,     "dsave"},
-	{NULL,			NULL}
+	{decbdskini,	"dskini"},
+	{os9dump,       "dump"},
+	{decbfree,	"free"},
+	{decbfstat,	"fstat"},
+	{decbhdbconv,	"hdbconv"},
+	{decbkill,	"kill"},
+	{decblist,	"list"},
+	{decbrename,	"rename"},
+	{NULL,		NULL}
 };
 
 
