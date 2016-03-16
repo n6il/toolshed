@@ -823,7 +823,7 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 	*sectors_per_cluster = int2(sector0.dd_bit);
 	*total_sectors = int3(sector0.dd_tot);
 
-	/* walk bitmap for 'bytes_in_bitmap * 8' times */
+	/* walk bitmap bit by bit */
 	for (i = 0; i < bytes_in_bitmap * 8; i++)
 	{
 		sector_count++;
@@ -834,6 +834,7 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 			if (*largest_count > *largest_free_block)
 			{
 				*largest_free_block = *largest_count;
+				*largest_count = 0;
 			}
 		}
 		else
@@ -841,7 +842,6 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 			/* bit is clear, sector is free */
 			(*largest_count)++;
 			(*free_sectors)++;
-			*bytes_free += *bps * *sectors_per_cluster;
 		}
 	}
 
@@ -856,8 +856,8 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 	*bytes_free = *free_sectors * *bps * *sectors_per_cluster;
 
 	*month = sector0.dd_dat[1];
-	*day = sector0.dd_dat[2];
-	*year = sector0.dd_dat[0] + 1900;
+	*day   = sector0.dd_dat[2];
+	*year  = sector0.dd_dat[0] + 1900;
 
 	OS9StringToCString((u_char *)dname);
 
