@@ -1,7 +1,9 @@
-﻿ToolShed v1.0
+ToolShed v1.0
 -------------
 
 ## A Color Computer Cross-Development Toolset
+
+![ToolShed](cover.png)
 
 <http://www.sourceforge.net/projects/toolshed>
 
@@ -22,7 +24,7 @@
   * [DUMP](#dump_os9) - Display the contents of a binary file
   * [FORMAT](#format) - Create a disk image of a given size and type
   * [FREE](#free_os9) - Display the amount of free space on an image
-  * [FSTAT](#fstat) - Display the file descriptor sector for a file
+  * [FSTAT](#fstat_os9) - Display the file descriptor sector for a file
   * [GEN](#gen) - Prepare a disk image for booting
   * [ID](#id) - Display sector 0 of an image
   * [IDENT](#ident) - Display OS-9 module information
@@ -35,8 +37,12 @@
   * [ATTR](#attr_decb) - Display or modify file attributes
   * [COPY](#copy_decb) - Copy one or more files to a target directory
   * [DIR](#dir_decb) - Display the directory of a Disk BASIC image
+  * [DSAVE](#dsave_decb) - Copy the contents of a directory or device
   * [DSKINI](#dskini) - Create a Disk BASIC image of a given size
+  * [DUMP](#dump_decb) - Display the contents of a binary file
   * [FREE](#free_decb) - Display the number of free granules
+  * [FSTAT](#fstat_decb) - Display the file descriptor sector for a file
+  * [HDBCONV](#hdbconv) - Converts an HDB-DOS disk image into a 512-byte sector compatible one
   * [KILL](#kill) - Remove files from a Disk BASIC image
   * [LIST](#list_decb) - Display the contents of a file
   * [RENAME](#rename_decb) - Give a file a new filename
@@ -276,7 +282,7 @@ This command will work on Disk BASIC and RBF disk image files as well as host fi
 <table>
 <tr><td>-b=size</td><td>size of copy buffer in bytes or K-bytes</td></tr>
 <tr><td>-l</td><td>perform end of line translation</td></tr>
-<tr><td>-w</td><td>set file's owner as id</td></tr>
+<tr><td>-o=id</td><td>set file's owner as id</td></tr>
 <tr><td>-r</td><td>rewrite if file exists</td></tr>
 </table>
 
@@ -353,7 +359,8 @@ del will delete a file from the disk. It does not delete directories (see deldir
 
 #### Examples
 
-    Deleting a file on an RBF disk image:
+Deleting a file on an RBF disk image:
+
     os9 del os9l2.dsk,sys/stdfonts
 
 ---
@@ -433,6 +440,7 @@ This command will work on Disk BASIC and RBF disk image files as well as host fi
 <table>
 <tr><td>-b=size</td><td>size of copy buffer in bytes or K-bytes</td></tr>
 <tr><td>-e</td><td>actually execute commands</td></tr>
+<tr><td>-l</td><td>perform end of line translation on copy</td></tr>
 <tr><td>-r</td><td>force rewrite on copy</td></tr>
 </table>
 
@@ -441,6 +449,7 @@ This command will work on Disk BASIC and RBF disk image files as well as host fi
 The dsave command recursively copies files from a directory to another device.
 
 ---
+
 <h3 id="dump_os9">DUMP - Display the contents of a binary file</h3>
 
 #### Syntax and Scope
@@ -566,7 +575,7 @@ free displays the amount of free space on an RBF image.
 
 ---
 
-<h3 id="fstat">FSTAT - Display the file descriptor sector for a file</h3>
+<h3 id="fstat_os9">FSTAT - Display the file descriptor sector for a file</h3>
 
 #### Syntax and Scope
 
@@ -605,6 +614,7 @@ This command will work on RBF disk images only.
 <tr><td>-b=bootfile</td><td>bootfile to copy and link to the image</td></tr>
 <tr><td>-c</td><td>CoCo disk</td></tr>
 <tr><td>-d</td><td>Dragon disk</td></tr>
+<tr><td>-e</td><td>Extended boot (fragmented)</td></tr>
 <tr><td>-t=trackfile</td><td>kernel trackfile to copy to the image</td></tr>
 </table>
 
@@ -744,6 +754,7 @@ This command will work on Disk BASIC and RBF disk image files as well as host fi
 
 #### Options
 <table>
+<tr><td>-b</td><td>place padding at the beginning of the file</td></tr>
 <tr><td>-c[=]n</td><td>character to pad (n=dec, %bin, 0oct or $hex)</td></tr>
 </table>
 #### Description
@@ -822,6 +833,7 @@ This command will work on Disk BASIC and RBF disk image files as well as host fi
 <tr><td>-l</td><td>perform end of line translation</td></tr>
 <tr><td>-r</td><td>rewrite if file exists</td></tr>
 <tr><td>-t</td><td>perform BASIC token translation</td></tr>
+<tr><td>-c</td><td>perform segment concatenation on machine language loadables</td></tr>
 </table>
 #### Description
 
@@ -843,7 +855,7 @@ Copying a file from a Disk BASIC disk image to the host:
 
 #### Syntax and Scope
 
-    dir
+    dir {[<opts>]} {<dir> [<...>]} {[<opts>]}
 
 This command is intended for Disk BASIC disk images only.
 
@@ -856,6 +868,28 @@ The dir command displays the directory of a Disk BASIC disk image or the host fi
 Displaying an extended directory
 
     decb dir decb.dsk,
+
+---
+
+<h3 id="dsave_decb">DSAVE - Copy the contents of a directory or device</h3>
+
+#### Syntax and Scope
+
+    dsave {[<opts>]} {[<source>]} <target> {[<opts>]}
+
+This command will work on Disk BASIC and RBF disk image files as well as host files.
+
+#### Options
+<table>
+<tr><td>-b=size</td><td>size of copy buffer in bytes or K-bytes</td></tr>
+<tr><td>-e</td><td>actually execute commands</td></tr>
+<tr><td>-l</td><td>perform end of line translation on copy</td></tr>
+<tr><td>-r</td><td>force rewrite on copy</td></tr>
+</table>
+
+#### Description
+
+The dsave command recursively copies files from a directory to another device.
 
 ---
 
@@ -894,11 +928,56 @@ To create an empty disk image that will fit neatly onto a 35 track single-sided 
 
 ---
 
+<h3 id="dump_decb">DUMP - Display the contents of a binary file</h3>
+
+#### Syntax and Scope
+
+    dump {[<opts>]} {<file> [<...>]} {[<opts>]}
+
+This command will work on Disk BASIC and RBF disk image files as well as host files.
+
+#### Options
+<table>
+<tr><td>-a</td><td>dump output in assembler format (hex)</td></tr>
+<tr><td>-b</td><td>dump output in assembler format (binary)</td></tr>
+<tr><td>-c</td><td>don't display ASCII character data</td></tr>
+<tr><td>-h</td><td>don't display header</td></tr>
+<tr><td>-l</td><td>don't display line label/count</td></tr>
+</table>
+#### Description
+
+The dump command allows you to see the contents of any file, including binary files. It does this by displaying the data in hexadecimal format and providing cues such as offset labels and headers so that it is easy to reference the location of a specific byte. By default, the output of a typical dump will look like this:
+
+      Addr     0 1  2 3  4 5  6 7  8 9  A B  C D  E F 0 2 4 6 8 A C E
+    --------  ---- ---- ---- ---- ---- ---- ---- ---- ----------------
+    00000000  0002 7612 004f 0001 0000 0200 00ff 5e12 ..v..O........^.
+    00000010  0200 1200 0000 0000 0000 5805 0513 004c ..........X....L
+    00000020  6576 656c 2049 4920 546f 6f6c f300 0000 evel II Tools...
+    00000030  0000 0000 0000 0000 0000 0000 0000 0001 ................
+    00000040  0003 2001 0028 0200 0012 0012 0308 0058 .. ..(.........X
+    00000050  0000 0000 0000 0000 0000 0000 0079 3600 .............y6.
+    00000060  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    00000070  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    00000080  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    00000090  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    000000a0  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    000000b0  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    000000c0  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    000000d0  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    000000e0  0000 0000 0000 0000 0000 0000 0000 0000 ................
+    000000f0  0000 0000 0000 0000 0000 0000 0000 0000 ................
+
+Note that the address of the offset on the left column increases by 16 ($10) bytes each line, and the header above shows the position of the byte into that 16 byte line. An additional piece of information provided is the ASCII character table on the right that shows the ASCII representation of the characters on that line.
+
+Additional command line options are provided to omit certain parts of the dump output, including the header and ASCII data. Also, the -a and -b options are provided to allow dumping of a file's contents into a format digestible by certain assemblers.
+
+---
+
 <h3 id="free_decb">FREE - Display the number of free granules</h3>
 
 #### Syntax and Scope
 
-    free {<disk> [<...>]}
+    free {[<opts>]} {<disk> [<...>]} {[<opts>]}
 
 This command is intended for Disk BASIC disk image files only.
 
@@ -909,6 +988,47 @@ free displays the number of free granules.
 #### Examples
 
     decb free decb.dsk,
+	Free granules: 1 (2304 bytes)
+
+---
+<h3 id="fstat_decb">FSTAT - Display the file descriptor sector for a file</h3>
+
+#### Syntax and Scope
+
+    fstat {[<opts>]} {<file> [<...>]} {[<opts>]}
+
+This command is intended for Disk BASIC disk image files only.
+
+#### Description
+
+fstat display detailed information about a file.
+
+#### Example
+	decb fstat DISK.DSK,FILE.DOC
+	File Information for DISK.DSK,FILE.DOC
+	  File type          : Data
+	  Data type          : ASCII
+	  File size          : 3769 bytes
+	  First granule      : 31
+	  Last sector        : 185 bytes
+	  FAT chain          : [31:2304] [28:1465] 
+
+---
+
+<h3 id="hdbconv">HDBCONV - Converts an HDB-DOS disk image into a 512-byte sector compatible one</h3>
+
+#### Syntax and Scope
+
+    hdbconv {[<opts>]} <srcfile> {[<...>]} <target> {[<opts>]}
+
+#### Options
+<table>
+<tr><td>-2</td><td>go from 512-byte sector to 256-byte sector</td></tr>
+<tr><td>-5</td><td>go from 256-byte sector to 512-byte sector (default)</td></tr>
+</table>
+#### Description
+
+This command converts an HDB-DOS disk image into a 512-byte sector compatible one.
 
 ---
 
@@ -916,7 +1036,7 @@ free displays the number of free granules.
 
 #### Syntax and Scope
 
-    kill {<file> [<...>]}
+    kill {[<opts>]} {<file> [<...>]} {[<opts>]}
 
 This command is intended for Disk BASIC disk images only.
 
@@ -940,12 +1060,16 @@ Killing a file on a Disk BASIC disk image:
 
 This command is intended for Disk BASIC disk image files.
 
-#### Description
+#### Options
+<table>
+<tr><td>-t</td><td>perform BASIC token translation</td></tr>
+<tr><td>-s</td><td>perform S-Record encoding of binary</td></tr>
+</table>
 
 The list command displays the contents of text files. It can list ASCII text files, as well as both ASCII and tokenized BASIC files.
 
 #### Examples
-    decb list games.dsk,start.bas
+    decb list -t games.dsk,start.bas
     10 CLS
     20 PRINT "START GAME"
     30 LOADM "GAME"
