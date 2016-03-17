@@ -52,9 +52,9 @@ ToolShed v1.0
 
 <h2 id="introduction">Introduction</h2>
 
-Some of the ToolShed Team: Tim Lindner, James Jones, Mark Marlette, Boisy Pitre, Roy Justus
+Some of the ToolShed Team: Tormod Volden, Tim Lindner, James Jones, Mark Marlette, Boisy Pitre, Roy Justus
 
-Say hello to ToolShed, a free software product which  houses a set of utilities designed  to help you create programs and applications for several computing platforms for the Color Computer and Dragon systems running BASIC or NitrOS-9.
+Say hello to ToolShed, a free software product which houses a set of utilities designed  to help you create programs and applications for several computing platforms for the Color Computer and Dragon systems running BASIC or NitrOS-9.
 
 ToolShed brings you the ease and speed of developing these programs to your modern personal computer running Windows, Mac OS X or Linux. The tools in the shed consist of a relocatable macro assembler/linker and intermediate code analyzer, a stand-alone assembler, an OS-9/Disk BASIC file manager and more.
 
@@ -127,7 +127,7 @@ Once the command is complete, the disk will contain the image and can be used in
 
 ### Pathname Elements
 
-Since ToolShed runs on various platforms, then there must be a method to differentiate between host file system pathnames and OS-9/Disk BASIC pathnames within the image itself. This is achieved by mandating the use of the , (comma) character as a delineator between the host path and the OS-9/Disk BASIC path (the path within the disk image).To better understand this, let's take a look at a few examples.
+Since ToolShed runs on various platforms, then there must be a method to differentiate between host file system pathnames and OS-9/Disk BASIC pathnames within the image itself. This is achieved by mandating the use of the , (comma) character as a delineator between the host path and the OS-9/Disk BASIC path (the path within the disk image). To better understand this, let's take a look at a few examples.
 
 On our theoretical host computer, a file exists that you wished to have copied to an OS-9 disk image. The file to copy, test1, resides on the host file system in the same directory as the disk image file, os9.dsk. To copy test1 to the disk image, you would type:
 
