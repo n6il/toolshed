@@ -470,7 +470,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 		u_char *bitmap;
 		u_int size;
 
-		size = NextHighestMultiple(bitmapSectors * sectorSize, clusterSize);
+		size = bitmapSectors * sectorSize;
 		bitmap = (u_char *)malloc(size);
 		if (bitmap == NULL)
 		{
