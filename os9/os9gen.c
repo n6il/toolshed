@@ -30,7 +30,7 @@ static char const * const helpMessage[] =
 	"Usage:  Prepare the disk image for booting.\n",
 	"Options:\n",
 	"     -b=bootfile     bootfile to copy and link to the image\n",
-	"     -c              CoCo disk\n",
+	"     -c              CoCo disk (default)\n",
 	"     -d              Dragon disk\n",
 	"     -e              Extended boot (fragmented)\n",
 	"     -t=trackfile    kernel trackfile to copy to the image\n",
@@ -138,6 +138,8 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 	char buffer[256];
 	lsn0_sect LSN0;
 	u_int size;
+	u_int sectors;
+	u_int sectorSize;
 	u_int clusterSize;
 
 	
@@ -147,10 +149,10 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 	{
 		int startlsn;
 		error_code ec;
-		char boottrack[4608];
+		char boottrack[256 * 18];
 
 		
-		/* 1. Open the device raw */
+		/* 1. Open the device raw and read LSB0 */
 
 		sprintf(buffer, "%s,@", device);
 
@@ -159,20 +161,20 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		if (ec != 0)
 		{
 			fprintf(stderr, "%s: error %d opening '%s'\n", argv[0], ec, buffer);
-
 			return 1;
 		}
 
-
-		/* 2. Determine startlsn based on single or double-sided device */
-
-		startlsn = hwtype->startlsn;
+		sectorSize = opath->bps;
 
 		size = sizeof(lsn0_sect);
 
 		_os9_read(opath, &LSN0, &size);
 
 		clusterSize = int2(LSN0.dd_bit);
+
+		/* 2. Determine startlsn based on single or double-sided device */
+
+		startlsn = hwtype->startlsn;
 
 		if (int1(LSN0.pd_typ) & 0x20)
 		{
@@ -201,7 +203,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		
 		/* 4. Read the track file. */
 		
-		size = 4608;
+		size = 256 * 18;
 		_coco_read(cpath, boottrack, &size);
 
 		_coco_close(cpath);
@@ -216,7 +218,8 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		/* TODO: Deallocate appropriate bits in bitmap sector */
 		/* Is not necesary on Dragon, but wouldn't harm */
 
-		_os9_allbit(opath->bitmap, (startlsn+clusterSize-1)/clusterSize, (((size+256-1)/256)+clusterSize-1)/clusterSize);
+		sectors = (size + sectorSize - 1) / sectorSize;
+		_os9_allbit(opath->bitmap, (startlsn + clusterSize - 1) / clusterSize, (sectors + clusterSize - 1) / clusterSize);
 
 		printf("Boot track written!  LSN: %d, size: %d\n", startlsn, size);
 
