@@ -778,9 +778,12 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 	int i;
 	char os9pathlist[256];
 	os9_path_id path;
-	int bytes_in_bitmap, sectors_in_bitmap;
+	int bytes_in_bitmap;
 	lsn0_sect sector0;
 	u_int size;
+	u_int total_clusters;
+	u_int cluster_count = 0;
+	u_int free_clusters = 0;
 
 	*bytes_free = 0;
 	*free_sectors = 0;
@@ -817,20 +820,20 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 	_os9_read(path, &sector0, &size);
 
 	/* get the number of bytes in the bitmap and compute bitmap sectors */
-	bytes_in_bitmap = int2(sector0.dd_map);
-	sectors_in_bitmap = bytes_in_bitmap / *bps +
-		(bytes_in_bitmap % *bps != 0);
 	*sectors_per_cluster = int2(sector0.dd_bit);
+	bytes_in_bitmap = int2(sector0.dd_map);
 	*total_sectors = int3(sector0.dd_tot);
+	total_clusters = *total_sectors / *sectors_per_cluster;
 
 	/* walk bitmap bit by bit */
 	for (i = 0; i < bytes_in_bitmap * 8; i++)
 	{
-		sector_count++;
+		cluster_count++;
+		if (cluster_count > total_clusters) break;
 
 		if (_os9_ckbit(path->bitmap, i))
 		{
-			/* bit is set, sector not free */
+			/* bit is set, cluster not free */
 			if (*largest_count > *largest_free_block)
 			{
 				*largest_free_block = *largest_count;
@@ -841,7 +844,7 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 		{
 			/* bit is clear, sector is free */
 			(*largest_count)++;
-			(*free_sectors)++;
+			free_clusters++;
 		}
 	}
 
@@ -851,15 +854,18 @@ error_code TSRBFFree(char *file, char *dname, u_int *month, u_int *day, u_int *y
 		*largest_free_block = *largest_count;
 	}
 
-	strcpy(dname, (char *)sector0.dd_nam);
+	*sector_count = cluster_count * *sectors_per_cluster;
+	*free_sectors = free_clusters * *sectors_per_cluster;
+	*largest_free_block *= *sectors_per_cluster;
 
-	*bytes_free = *free_sectors * *bps * *sectors_per_cluster;
+	*bytes_free = *free_sectors * *bps;
+
+	strcpy(dname, (char *)sector0.dd_nam);
+	OS9StringToCString((u_char *)dname);
 
 	*month = sector0.dd_dat[1];
 	*day   = sector0.dd_dat[2];
 	*year  = sector0.dd_dat[0] + 1900;
-
-	OS9StringToCString((u_char *)dname);
 
 	_os9_close(path);
 
