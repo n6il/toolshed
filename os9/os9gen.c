@@ -138,6 +138,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 	char buffer[256];
 	lsn0_sect LSN0;
 	u_int size;
+	u_int clusterSize;
 
 	
 	/* 1. If we have a boot track file, put it on the disk first */
@@ -170,6 +171,8 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		size = sizeof(lsn0_sect);
 
 		_os9_read(opath, &LSN0, &size);
+
+		clusterSize = int2(LSN0.dd_bit);
 
 		if (int1(LSN0.pd_typ) & 0x20)
 		{
@@ -213,7 +216,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		/* TODO: Deallocate appropriate bits in bitmap sector */
 		/* Is not necesary on Dragon, but wouldn't harm */
 
-		_os9_allbit(opath->bitmap, startlsn, (size+255)/256);
+		_os9_allbit(opath->bitmap, (startlsn+clusterSize-1)/clusterSize, (((size+256-1)/256)+clusterSize-1)/clusterSize);
 
 		printf("Boot track written!  LSN: %d, size: %d\n", startlsn, size);
 
