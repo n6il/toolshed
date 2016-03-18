@@ -272,7 +272,8 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	lsn0_sect s0;
 	unsigned int totalSectors, totalBytes, sectorsLeft;
 	int i, b;
-	unsigned int sectorsToAlloc = 0, bitmapSectors = 0;
+	unsigned int sectorsToAlloc = 0;
+	unsigned int bitmapSectors, bitmapBytes;
 	unsigned int rootSects;
 
 
@@ -328,12 +329,14 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	sectorsLeft = int3(s0.dd_tot);
 
 	_int1(sectorsPerTrack, s0.dd_tks);
-	_int2((int3(s0.dd_tot) / (8 * clusterSize)), s0.dd_map);
-	if (int3(s0.dd_map) == 0) _int3(1, s0.dd_map);
+
+	bitmapBytes = int3(s0.dd_tot) / (8 * clusterSize) + (int3(s0.dd_tot) % (8 * clusterSize) != 0);
+	_int2(bitmapBytes, s0.dd_map);
+
 	_int2(clusterSize, s0.dd_bit);
 
 	// Compute bitmap sectors here
-	bitmapSectors = (int2(s0.dd_map) / sectorSize + (int2(s0.dd_map) % sectorSize != 0));
+	bitmapSectors = bitmapBytes / sectorSize + (bitmapBytes % sectorSize != 0);
 
 	/* Compute starting location of root directory */
 	/* The dragon uses sectors 3..18 of the first track for storing the boot program */
@@ -513,10 +516,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 				rootSects += sectorsToAlloc - sectorsToAllocOld;
 			}
 
-			if ((clusters = sectorsToAlloc / clusterSize) < 1)
-			{
-				clusters = 1;
-			}
+			clusters = sectorsToAlloc / clusterSize;
 			_os9_allbit(bitmap, 0, clusters);
 
 			sectorsLeft -= sectorsToAlloc;
