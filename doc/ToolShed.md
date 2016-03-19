@@ -3,7 +3,7 @@ ToolShed v1.0
 
 ## A Color Computer Cross-Development Toolset
 
-![ToolShed](cover.png)
+![ToolShed](cover.jpg)
 
 <http://www.sourceforge.net/projects/toolshed>
 
