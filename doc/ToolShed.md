@@ -11,6 +11,9 @@ ToolShed v1.0
 
 * [Introduction](#introduction)
 * [A Tutorial On Disk Images](#tutorial)
+  * [Disk Extraction Under Windows/DOS](#de_win)
+  * [Disk Extraction Under Linux](#de_linux)
+  * [Pathname Elements](#path_elements)
 * [rma, rlink and rdump](#rma)
 * [os9](#os9) - Manipulate OS-9 formatted disk images
   * [ATTR](#attr_os9) - Display or modify file attributes
@@ -93,7 +96,7 @@ One of the most frequent questions that come up in dealing with Color Computer d
 
 The fact that ToolShed is agnostic to physical media begs the question: how does one transfer the contents of a physical disk to a location where ToolShed can work on the image, and vice versa?  The answer is dependent upon the host computer. For Windows systems, utilities exist to extract image data from physical floppy disks and onto a hard drive for use. For Linux and Mac OS X, there are varying approaches, depending on your media, for obtaining an image from a physical diskette.
 
-### Disk Extraction Under Windows/DOS
+<h3 id="de_win">Disk Extraction Under Windows/DOS</h3>
 
 For the example below, we will assume that the 3.5" 720K floppy drive is `A:`, and the 5.25" 360K floppy drive is `B:`
 
@@ -107,7 +110,7 @@ Note the use of the mangled filename form here. If you are running Windows, you 
 
 Once the transfer completes, you should have an exact image of the disk on the floppy, and can now use that floppy on a real CoCo.
 
-### Disk Extraction Under Linux
+<h3 id="de_linux">Disk Extraction Under Linux</h3>
 
 For Linux users, you will need to download the fdutils package at http://fdutils.linux.lu/. Once installed, insert a blank floppy into your 5.25" 360K or 3.5" 1.44MB/720K drive. It will be either /dev/fd0 or /dev/fd1 depending on its position in the drive chain. For this example, we will assume /dev/fd1.
 
@@ -125,7 +128,7 @@ Once the format is complete, transfer the image as follows:
 
 Once the command is complete, the disk will contain the image and can be used in a CoCo disk drive system.
 
-### Pathname Elements
+<h3 id="path_elements">Pathname Elements</h3>
 
 Since ToolShed runs on various platforms, then there must be a method to differentiate between host file system pathnames and OS-9/Disk BASIC pathnames within the image itself. This is achieved by mandating the use of the , (comma) character as a delineator between the host path and the OS-9/Disk BASIC path (the path within the disk image). To better understand this, let's take a look at a few examples.
 
