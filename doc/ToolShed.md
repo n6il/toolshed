@@ -189,6 +189,8 @@ Let's look at a hypothetical program called doesitall. This program is a whiz-ba
 <h2 id="os9">os9</h2>
 The following pages document the commands built into the os9 tool. As the examples above illustrated, the built in commands such as dir, copy, etc. must be executed from the os9 executive, and any parameters for that command follow the command name.
 
+Issuing the os9 command without any parameters will provide a list of available subcommands. Issuing a subcommand without any parameters will display help on using the subcommand.
+
 While many commands will work fine host file systems, some commands are designed to only be run on an RBF disk image or file within that image. The Scope section makes it clear in what context the command should be run.
 
 ---
@@ -780,6 +782,8 @@ The rename command renames a file with a new filename.
 <h2 id="decb">decb</h2>
 
 The following pages document the commands built into the decb tool. Its interface is similar to that of the os9 tool discussed in previous pages.
+
+Issuing the decb command without any parameters will provide a list of available subcommands. Issuing a subcommand without any parameters will display help on using the subcommand.
 
 Use decb to copy files to and from Disk BASIC formatted disk images to your host file system. While many commands will work fine host file systems, some commands are designed to only be run on a Disk BASIC disk image or file within that image. The Scope section makes it clear in what context the command should be run.
 
