@@ -118,7 +118,7 @@ error_code _coco_open(coco_path_id *path, char *pathlist, int mode)
     }
 
 
-    /* 3. Call appropriate create function. */
+    /* 3. Call appropriate open function. */
 
 	switch ((*path)->type)
 	{
@@ -232,6 +232,7 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 
 		*type = DECB;
 
+		free(tmppathlist);
 		return ec;
 	}
 
@@ -240,6 +241,7 @@ error_code _coco_identify_image(char *pathlist, _path_type *type)
 	{
 		*type = CECB;
 
+		free(tmppathlist);
 		return ec;
 	}
 
