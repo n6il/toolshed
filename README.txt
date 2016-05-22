@@ -8,9 +8,12 @@ https://sourceforge.net/projects/toolshed/
 
 == HOW TO BUILD ON WINDOWS ==
 
-The recommended build environment is MingW32 or MingW64 (http://mingw.org/)
+The recommended build environment is MingW32 or MingW64 (http://mingw.org/),
+MSYS2 (http://msys2.github.io/), or the WSL subsystem (for Windows 10+)
+(https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux).
 
-The easiest way to install MingW is using a mingw-get-inst.*.exe from http://mingw.org/wiki/Getting_Started
+The easiest way to install MingW is using a mingw-get-inst.*.exe from
+http://mingw.org/wiki/Getting_Started
 
 Inside MingW, make sure you have "make" installed. There are several options,
 but the simpler mingw-make should be good enough:
@@ -33,7 +36,11 @@ $ make -C build/unix install
 == HOW TO BUILD hdbdos and dwdos ==
 
 It is recommended to have lwtools installed (http://lwtools.projects.l-w.ca/).
-Otherwise the included (but deprecated) mamou can still be used:
+See the Makefiles for different build options. To be build all default flavors:
+$ make -C dwdos
+$ make -C hdbdos
+
+Instead of lwtools the deprecated mamou can still be used (YMMV):
 $ make -C dwdos AS="mamou -r -q"
 $ make -C hdbdos AS="mamou -r -q"
 
