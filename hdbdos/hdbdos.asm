@@ -76,6 +76,12 @@
 *                                                       BGP 04/18/2012
 * Added DWREAD/DWWRITE vectors
 *
+************** HDB-DOS 1.5 MODIFICATIONS *************
+*                                                       05/22/2016
+* Allow access to DriveWire drive #255 (Robert Gault).
+* FDC track format: Side 1 or 0 correctly encoded into track buffer
+* (David Ladd).
+*
 
 * DSKCON Equates
 DCSEC          equ       $ED                 DSKCON Sector
@@ -3715,7 +3721,7 @@ TFSIDE         pshs      x                   Backup X onto stack
 
 * HDB-DOS Version
 VMAJOR         equ       1
-VMINOR         equ       4
+VMINOR         equ       5
 VREV           equ       0
 
 
