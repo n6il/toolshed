@@ -1,0 +1,6 @@
+(non-redistributable PDF file removed)
+
+(C) ACM, 1980. This is the author's version of the work. It is posted here by permission of ACM for your personal use. Not for redistribution. The definitive version was published in ACM Transactions on Programming Languages and Systems, {2, 0164-0925, (1980)} http://doi.acm.org/10.1145/357094.357098
+
+http://www.academia.edu/15559660/The_Design_and_Application_of_a_Retargetable_Peephole_Optimizer
+
