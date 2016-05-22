@@ -8,7 +8,7 @@ $(warning ********************************************************)
 vpath %.c ../../mamou:../../os9
 
 
-RELEASE		= 2.1
+RELEASE		= 2.2
 PACKAGENAME	= toolshed_$(RELEASE)_win32.zip
 INSTALLDIR	= /usr/local/bin
 DIRS		= libnative librbf libcoco libdecb libmisc libcecb libsys  \
