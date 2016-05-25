@@ -58,8 +58,8 @@ listing: $(SUPERDOSASM)
 	
 		
 clean:
-		$(RM) -f *.bin
-		$(RM) -f *.zip
+		$(RM) -f *.bin *.zip *.lst
+		$(RM) -f $(FILESCOCO2)
 		$(RM) -f $(FILESD32)
 		$(RM) -f $(FILESD64)
 		$(RM) -f $(FILESTANOD64)
