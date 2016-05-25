@@ -1,11 +1,11 @@
 #
-# Makefile for SuperDos rom.
+# Makefile for SuperDos ROM.
 #
 # 21/11/2004, P.Harvey-Smith.
 #
-# 2006-01-16, P.Harvey-Smith, added support for RS-DOS cartrage on Tano.
+# 2006-01-16, P.Harvey-Smith, added support for RS-DOS cartridge on Tano.
 #
-# 2006-01-30, P.Harvey-Smith, added support for RS-DOS cartrage on CoCo.
+# 2006-01-30, P.Harvey-Smith, added support for RS-DOS cartridge on CoCo.
 #
 
 AS=mamou
@@ -31,22 +31,27 @@ sdcoco: $(SUPERDOSASM)
 		$(AS) $(SUPERDOSASM) $(ASFLAGS) -aRSDos=1 -aTandy=1 -osuperdos-tandy.rom 
 		
 sdd32: $(SUPERDOSASM)
+		mkdir -p dragon32
 		$(AS) $(SUPERDOSASM) $(ASFLAGS) -aDragonDos=1 -aDragon=1 -odragon32/ddos10.rom 
 #		$(ZIP) dragon32.zip $(FILESD32)
 		
 sdd64: $(SUPERDOSASM)
+		mkdir -p dragon64
 		$(AS) $(SUPERDOSASM) $(ASFLAGS) -aDragonDos=1 -aDragon=1 -odragon64/ddos10.rom 
 #		$(ZIP) dragon64.zip $(FILESD64)
 		
 sddalpha: $(SUPERDOSASM)
+		mkdir -p dgnalpha
 		$(AS) $(SUPERDOSASM) $(ASFLAGS) -aDragonAlpha=1 -aDragon=1 -odgnalpha/alpdos10.rom 
 #		$(ZIP) dgnalpha.zip $(FILESDALPHA)
 		
 sdtano: $(SUPERDOSASM)
+		mkdir -p tanodr64
 		$(AS) $(SUPERDOSASM) $(ASFLAGS) -aRSDos=1 -aDragon=1 -otanodr64/sdtandy.rom 
 #		$(ZIP) tanodr64.zip $(FILESTANOD64)
 	
 sdcoco2: $(SUPERDOSASM) 
+		mkdir -p coco2
 		$(AS) $(SUPERDOSASM) $(ASFLAGS) -aRSDos=1 -l -aTandy=1 -ococo2/disk11.rom > superdos.lst
 #		$(ZIP) coco2.zip $(FILESCOCO2)
  
