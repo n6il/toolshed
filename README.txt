@@ -36,11 +36,15 @@ $ make -C build/unix install
 == HOW TO BUILD hdbdos and dwdos ==
 
 It is recommended to have lwtools installed (http://lwtools.projects.l-w.ca/).
-See the Makefiles for different build options. To be build all default flavors:
+You will also need "makewav" from Toolshed installed to build WAV files.
+See hdbdos/README.txt and the makefiles for different build options.
+
+To be build all default flavors:
 $ make -C dwdos
 $ make -C hdbdos
+$ make -C superdos
 
 Instead of lwtools the deprecated mamou can still be used (YMMV):
 $ make -C dwdos AS="mamou -r -q"
 $ make -C hdbdos AS="mamou -r -q"
-
+Note that superdos still builds with mamou by default.
