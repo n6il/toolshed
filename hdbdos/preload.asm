@@ -18,14 +18,14 @@
 	cmpa	#$8c		Points to CoCo3 reset code?
 	beq	reloc		If yes, skip ROM copy
 
-* Copy ROMs to RAM
+* Copy BASIC ROM to RAM
 
 	ldx	#$8000		Start of ROM
 copyrom	sta	>$ffde		Switch to ROM page
 	lda	,x
 	sta	>$ffdf		Switch to RAM page
 	sta	,x+
-	cmpx	#$e000		End of ROM
+	cmpx	#$c000		End of ROM
 	bne	copyrom
 
 * Relocate HDBDOS
