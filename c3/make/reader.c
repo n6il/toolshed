@@ -34,7 +34,7 @@ char *                 msg;
  *     quoted newlines.  If EOF return TRUE.
  */
 bool
-getline(str, fd)
+getline1(str, fd)
 char *         str;
 FILE *         fd;
 {

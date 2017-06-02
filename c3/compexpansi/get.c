@@ -31,10 +31,10 @@ void getch(void)
         if((cc= *lptr++))
                 ;
         else
-                cc=getline();
+                cc=getline1();
 }
 
-char getline(void)
+char getline1(void)
 {
         int lno, n, x;
         static char temp[LINESIZE];

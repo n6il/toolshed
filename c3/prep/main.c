@@ -229,7 +229,7 @@ done: ;
 	preinit();
 
 	/* read (and expand) a line */
-	while (getline() != EOF)
+	while (getline1() != EOF)
 	{
 		if (nxtlno != lineno - 1)
 		{

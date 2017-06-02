@@ -275,7 +275,7 @@ char *                 thisfile;
        lineno = 0;
        currmake = thisfile;
 
-       if (getline(str1, fd)){  /*  Read the first line  */
+       if (getline1(str1, fd)){  /*  Read the first line  */
                lineno = 0;
                return;
        }
@@ -321,7 +321,7 @@ char *                 thisfile;
 
                        setmacro(a, q);
 
-                       if (getline(str1, fd)){
+                       if (getline1(str1, fd)){
                                lineno = 0;
                                return;
                        }
@@ -370,7 +370,7 @@ char *                 thisfile;
 
                cp = (struct cmd *)0;
 
-               if ((q1) || (getline(str2, fd) == FALSE))   /*  Get commands  */
+               if ((q1) || (getline1(str2, fd) == FALSE))   /*  Get commands  */
                {
 #ifdef OS9
                        while ((*str2 == ' ') || (*str2 == '\t'))
@@ -383,7 +383,7 @@ char *                 thisfile;
                                if (debug)
                                         printf("Command: %s.\n",str2);
 #endif
-                               if (getline(str2, fd))
+                               if (getline1(str2, fd))
                                        break;
                        }
                }

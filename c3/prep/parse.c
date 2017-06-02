@@ -18,7 +18,7 @@ preinit()
 	setfile(filename);
 }
 
-getline()
+getline1()
 {
 	register char *name = holdbuf;
 	char pline[LINESIZE];               /* finished output line */

@@ -34,10 +34,10 @@ getch()
         if(cc= *lptr++)
                 ;
         else
-                cc=getline();
+                cc=getline1();
 }
 
-getline()
+getline1()
 {
         int lno, n,x,*ptr;
         static char temp[LINESIZE];

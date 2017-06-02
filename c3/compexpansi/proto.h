@@ -71,7 +71,7 @@ void block(int stkadj);
 void preinit(void);
 void blanks(void);
 void getch(void);
-char getline(void);
+char getline1(void);
 char *cgets(void);
 
 /* inits.c */

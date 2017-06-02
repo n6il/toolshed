@@ -13,12 +13,12 @@
 */
 
 #include "cj.h"
+#include <errno.h>
 
 #define GBLB ':'    /* global asm declarator */
 #define LCLB ' '    /* local asm declarator */
 
 static direct unsigned stklab;       /* label for stack check equ value */
-extern int errno;
 
 epilogue()
 {
