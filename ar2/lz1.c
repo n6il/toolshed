@@ -47,9 +47,6 @@
 #endif
 #include "arerrs.h"
 #include "lz1.h"
-#ifdef WIN32
-# include <gmon.h>
-#endif
 
 void insert_bit(short code);
 void addentry(WORD c, WORD ent);
@@ -270,9 +267,9 @@ FILE	*infile, *outfile;
 long	bytes;
 	{
 	register DCOMPTBL	*dtp;
-	u_char				stack[MAXSTACK];
+	unsigned char			stack[MAXSTACK];
 	WORD				tag, finchar, code, oldcode, incode;
-	register u_char		*stackp = stack;
+	register unsigned char		*stackp = stack;
 	WORD				getcode();
 
 	if (readshort(infile, &tag) == EOF || tag != TAG)

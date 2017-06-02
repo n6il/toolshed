@@ -20,7 +20,6 @@ extern "C" {
 #include <sys/types.h>
 
 #ifdef  WIN32
-//#include <gmon.h>
 typedef unsigned char u_char;
 typedef unsigned int u_int;
 #else
