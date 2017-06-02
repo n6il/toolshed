@@ -39,7 +39,7 @@ It is recommended to have lwtools installed (http://lwtools.projects.l-w.ca/).
 You will also need "makewav" from Toolshed installed to build WAV files.
 See hdbdos/README.txt and the makefiles for different build options.
 
-To be build all default flavors:
+To build all default flavors:
 $ make -C dwdos
 $ make -C hdbdos
 $ make -C superdos
