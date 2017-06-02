@@ -10,7 +10,7 @@ $(BINARY):	$(OBJS) op.h actions.h
 	$(CC) $(OBJS) -o $@
 
 clean:
-	rm $(BINARY) *.o
+	rm -f $(BINARY) *.o
 
 install: $(BINARY)
 	cp $(BINARY) $(HOME)/bin
