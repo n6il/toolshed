@@ -1,22 +1,24 @@
 HDBSCSI	= hdbtc3.rom hdbkenton.rom hdblrtech.rom hdbd4n1.rom hdbdhdii.rom
 HDBIDE  = hdblba.rom hdbchs.rom
 HDBDW   = hdbdw3cc1.rom hdbdw3cc2.rom hdbdw3cc3.rom \
-	hdbdw4cc3.rom hdbdw4cc2.rom \
 	hdbdw3bck.rom hdbdw3bc3.rom hdbdw3bckt.rom hdbdw3bc3t.rom hdbdw3jc3.rom hdbdw3jc2.rom \
 	hdbdw3arduino.rom
+HDBDW4  = hdbdw4cc3.rom hdbdw4cc2.rom
 HDBROM  = $(HDBSCSI) $(HDBIDE) $(HDBDW)
 HDBBIN	= hdbtc3.bin hdbkenton.bin hdblrtech.bin hdbd4n1.bin hdbdhdii.bin \
 	hdblba.bin hdbchs.bin hdbdw3cc1.bin hdbdw3cc2.bin hdbdw3cc3.bin \
-	hdbdw4cc2.bin hdbdw4cc3.bin \
 	hdbdw3bck.bin hdbdw3bc3.bin hdbdw3bc3t.bin hdbdw3bckt.bin hdbdw3jc3.bin hdbdw3jc2.bin \
 	hdbdw3arduino.bin
+HDBBIN4 = hdbdw4cc2.bin hdbdw4cc3.bin
 HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
 	hdblba.wav hdbchs.wav hdbdw3cc1.wav hdbdw3cc2.wav hdbdw3cc3.wav \
-	hdbdw3bck.wav hdbdw3bc3.wav hdbdw3jc3.wav hdbdw3jc2.wav hdbdw4cc3.wav \
-	hdbdw4cc2.wav hdbdw3arduino.wav hdbdw3bckt.wav hdbdw3bc3t.wav \
+	hdbdw3bck.wav hdbdw3bc3.wav hdbdw3jc3.wav hdbdw3jc2.wav \
+	hdbdw3arduino.wav hdbdw3bckt.wav hdbdw3bc3t.wav \
 	hdbdw3bck.cas hdbdw3bc3.cas hdbdw3bc3t.cas hdbdw3bckt.cas
+HDBCAS4	= hdbdw4cc3.wav hdbdw4cc2.wav
 
 ALLOBJS         = preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)
+HISPEED         = $(HDBDW4) $(HDBBIN4) $(HDBCAS4)
 
 #AS		= mamou -r -q
 AS		= lwasm -r --pragma=condundefzero,nodollarlocal,noindex0tonone
@@ -25,6 +27,7 @@ MAKEWAV		= makewav -r -c
 CECB		= cecb
 
 all: $(ALLOBJS)
+experimental: all $(HISPEED)
 
 preload: preload.asm
 	$(AS) $< -opreload
@@ -47,8 +50,8 @@ postload: postload.asm
 
 
 # For CoCo 1/2/3
-$(HDBROM): EQUATES = ../cocoroms/ecb_equates.asm
-$(HDBROM): ../cocoroms/ecb_equates.asm
+$(HDBROM) $(HDBDW4): EQUATES = ../cocoroms/ecb_equates.asm
+$(HDBROM) $(HDBDW4): ../cocoroms/ecb_equates.asm
 
 # TC^3 SCSI
 hdbtc3.rom:    FLAGS = -DSCSI -DTC3
@@ -164,4 +167,4 @@ hdblbadgn.rom: FLAGS = -DIDE -DUSELBA -DLevel=1 -DDRAGON
 
 clean:
 	-rm -f preload postload $(HDBROM) $(HDBBIN) $(HDBCAS) \
-	 $(DRAGONROM) $(DRAGONWAV) $(DRAGONBIN)
+	 $(DRAGONROM) $(DRAGONWAV) $(DRAGONBIN) $(HISPEED)
