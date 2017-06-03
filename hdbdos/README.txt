@@ -1,19 +1,19 @@
+HDBDOS 1.5
 
-Do not use the dw4* files! They are for DW turbo speed (experimental
-feature in DW4, hence the name). You should use the dw3* files,
-regardless of the DriveWire server software you are using.
+Do not use the dw4* files! They are for DW turbo speed (an
+experimental feature in DW4, hence the name). You should use
+the dw3* files, regardless of the DriveWire server software
+you are using.
 
-The .rom files are for ROM: The _mb_ ones for replacing the
-motherboard ROM (bye BASIC!), and the _dsk_ ones for replacing the ROM
-in a disk controller.
+The .rom files are for replacing the ROM in a disk controller.
 
 The .bin files are DECB binaries, simply copy them to a DECB floppy.
+You can then chain-load HDBDOS from DECB, or from another flavor
+of HDBDOS.
 
-The .trk files are boot track files that can be written to track 34 on
-floppies so that the RSDOS DOS command will launch DWDOS from the
-floppy. Shorter to type than LOAD"DWDOS" :)
+The .wav files allow you to load HDBDOS via cassette.
 
-The difference between _cc1 and _cc2 flavours is the baud rate.
+The difference between _cc1 and _cc2 flavours is only the baud rate.
 
 See the Makefile for more hints about different flavours.
 
