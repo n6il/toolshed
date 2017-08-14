@@ -644,8 +644,8 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 		printf("  Sectors/track: %d\n", sectorsPerTrack);
 		printf("    Sector size: %d\n", sectorSize);
 		printf("\nLogical Data:\n");
-		printf("  Total sectors: %d\n", totalSectors);
-		printf("  Size in bytes: %d\n", totalBytes);
+		printf("  Total sectors: %u\n", totalSectors);
+		printf("  Size in bytes: %u\n", totalBytes);
 		printf("   Cluster size: %d\n", clusterSize);
 	}
 
