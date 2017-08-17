@@ -66,6 +66,11 @@
 # endif
 #endif
 
+/* missing on MinGW */
+#ifndef u_char
+typedef unsigned char u_char;
+#endif
+
 #define BITS		14				/* maximum number of bits/code		*/
 #define OLD_BITS	11				/* old maximum number of bits/code	*/
 #define DEF_BITS	12				/* default number of bits/code		*/
