@@ -139,7 +139,7 @@ void proc_cmd(char command, FILE *afp);
 void delete(FILE *afp);
 void extract(FILE *afp, int flag);
 void table(FILE *fp);
-void fatal(int code, char *msg, int arg1, int arg2);
+void fatal(int code, char *msg, char *arg1, int arg2);
 void help(void);
 void update(FILE *afp);
 int puthdr(FILE *fp, HEADER *hp);
@@ -210,18 +210,18 @@ char	**argv;
 		{
 		if ((afp = fopen(archfile, F_RP)) == NULL)	/* try old first	*/
 			if ((afp = fopen(archfile, F_WP)) == NULL)	/* create it	*/
-				fatal(errno, "can't create %s\n", (int)archfile, 0);
+				fatal(errno, "can't create %s\n", archfile, 0);
 		}
 	else
 		if (command == 'd')
 			{
 			if ((afp = fopen(archfile, F_RP)) == NULL)
-				fatal(errno, "can't find %s\n", (int)archfile, 0);
+				fatal(errno, "can't find %s\n", archfile, 0);
 			}
 		else
 			{
 			if ((afp = fopen(archfile, F_R)) == NULL)
-				fatal(errno, "can't find %s\n", (int)archfile, 0);
+				fatal(errno, "can't find %s\n", archfile, 0);
 			}
 
 	proc_cmd(command, afp);				/* process a command			*/
@@ -450,7 +450,7 @@ void table(FILE *fp)
 					&& (header.a_stat == 0 || all == TRUE))
 				printf("%-29s %2d  %04d/%02d/%02d %02d:%02d %s%s %7ld %7ld\n",	/*+ek+*/
 					header.a_name, header.a_stat, 
-					1900 + (int)header.a_attr.fd_date[0], header.a_attr.fd_date[1],
+					1900 + header.a_attr.fd_date[0], header.a_attr.fd_date[1],
 					header.a_attr.fd_date[2], header.a_attr.fd_date[3], 
 					header.a_attr.fd_date[4],
 					attrs[(header.a_attr.fd_attr >> 3) & 7],
@@ -491,10 +491,12 @@ void update(FILE *afp)
 	for (fnp = fnhead; fnp; fnp = fnp->fn_link)
 		{
 		if ((ifp = fopen(fnp->fn_name, F_R)) == NULL)
+			{
 			if (errno == 214)
 				continue;				/* a directory, we presume		*/
 			else
-				fatal(errno, "can't find %s\n", (int)fnp->fn_name, 0);
+				fatal(errno, "can't find %s\n", fnp->fn_name, 0);
+			}
 
 #if defined(SYSV) || defined(WIN32)
 		if (is_dir(fileno(ifp)))	/*It saves the header block otherwise*/
@@ -518,7 +520,7 @@ void update(FILE *afp)
 		rewind(ifp);
 		head_pos = ftell(afp);			/* save for update				*/
 		if (puthdr(afp, &header) == EOF)	/* skip ahead				*/
-			fatal(errno, "write error on header for %s\n", (int)fnp->fn_name, 0);
+			fatal(errno, "write error on header for %s\n", fnp->fn_name, 0);
 
 		bytes = head_pos + c4tol(header.a_attr.fd_fsize) + SIZEOF_HEADER;
 		set_fsize(fileno(afp), bytes);	/* make it big enough for all	*/
@@ -528,7 +530,7 @@ void update(FILE *afp)
 		fseek(afp, head_pos, SEEK_SET);			/* back up to header pos		*/
 /*		if ((fwrite(&header, SIZEOF_HEADER, 1, afp)) == NULL) */
 		if (puthdr(afp, &header) == EOF)
-			fatal(errno, "write error on header for %s\n", (int)fnp->fn_name, 0);
+			fatal(errno, "write error on header for %s\n", fnp->fn_name, 0);
 
 		fseek(afp, tail_pos, SEEK_SET);			/* go to end of file			*/
 		if (rmflag)
@@ -608,7 +610,7 @@ int stash_name(char *p)
 	FN		*q;
 
 	if (*p == '/')
-		fatal(1, "absolute path illegal <%s>\n", (int)p, 0);
+		fatal(1, "absolute path illegal <%s>\n", p, 0);
 
 	q = (FN *) emalloc(sizeof(FN) + strlen(p));
 	q->fn_link = (FN *) 0;
@@ -679,9 +681,9 @@ int gethdr(FILE *fp, HEADER *hp)
 			fatal(1, "file not archive\n", 0, 0);
 
 		if ((hp->a_hid[0] == 0) || (hp->a_hid[0] == 0x1a))
-			fatal(1, "probable XModem padding at $%lX\n", pos, 0);
+			fatal(1, "probable XModem padding at $%lX\n", (char *) pos, 0);
 
-		fatal(1, "file damaged - no header at $%lX\n", pos, 0);
+		fatal(1, "file damaged - no header at $%lX\n", (char *) pos, 0);
 		}
 
 	return (0);
@@ -722,7 +724,7 @@ HEADER	*hp;
 		{
 		*p = '\0';						/* truncate temporarily			*/
 		if (assureDir(hp->a_name))		/* create it if not there		*/
-			fatal(errno, "can't make <%s>\n", (int)hp->a_name, 0);
+			fatal(errno, "can't make <%s>\n", hp->a_name, 0);
 
 		*p++ = '/';						/* put back the delim			*/
 		}
@@ -732,7 +734,7 @@ HEADER	*hp;
 		sprintf(&buf[strlen(buf)], ".%d", hp->a_stat);	/* make unique	*/
 
 	if ((ofp = fopen(buf, F_W)) == NULL)
-		fatal(errno, "create failure on %s\n", (int)buf, 0);
+		fatal(errno, "create failure on %s\n", buf, 0);
 
 	set_fsize(fileno(ofp), c4tol(hp->a_attr.fd_fsize));
 	return (ofp);
@@ -858,7 +860,7 @@ size_t		n;
  * print a fatal error message and exit
  */
 
-void fatal(int code, char *msg, int arg1, int arg2)
+void fatal(int code, char *msg, char *arg1, int arg2)
 	{
 	fprintf(stderr, "%s: ", mod);
 	fprintf(stderr, msg, arg1, arg2);

@@ -390,10 +390,12 @@ int readbuf(int cnt, FILE *fp)
 	register int	c;
 
 	while (cnt--)
+		{
 		if (EOF != (c = getc(fp)))
 			*bp++ = c;
 		else
 			return (c);
+		}
 
 #else
 	register UWORD	*bp = buf;
@@ -408,10 +410,12 @@ int readbuf(int cnt, FILE *fp)
 
 	/* note that we use 'lim' here to get a signed variable */
 	if (cnt & 1)
+		{
 		if ((lim = getc(fp)) == EOF)
 			return (EOF);
 		else
 			*bp = (lim << 8);
+		}
 #endif
 
 	return (0);
