@@ -9,21 +9,27 @@ MAKEWAV		= makewav -r -c
 
 ROMS		= dw3dos_mb_cc3.rom dw3dos_mb_cc2.rom dw3dos_mb_cc1.rom \
 		dw3dos_dsk_cc3.rom dw3dos_dsk_cc2.rom dw3dos_dsk_cc1.rom \
-		dw3doscc3.bin dw3doscc2.bin dw3doscc1.bin \
-		dw4dos_mb_cc3.rom dw4dos_mb_cc2.rom \
+		dw3doscc3.bin dw3doscc2.bin dw3doscc1.bin
+
+HSROMS		= dw4dos_mb_cc3.rom dw4dos_mb_cc2.rom \
 		dw4dos_dsk_cc3.rom dw4dos_dsk_cc2.rom \
 		dw4doscc3.bin dw4doscc2.bin
 
-CASSFILES	= dw3doscc1.wav dw3doscc2.wav dw3doscc3.wav \
-		dw4doscc2.wav dw4doscc3.wav	
+CASSFILES	= dw3doscc1.wav dw3doscc2.wav dw3doscc3.wav
 
-TRACKS		= dw3dos_cc3.trk dw3dos_cc2.trk dw3dos_cc1.trk \
-		dw4dos_cc3.trk dw4dos_cc2.trk
+HSCASSFILES	= dw4doscc2.wav dw4doscc3.wav	
+
+TRACKS		= dw3dos_cc3.trk dw3dos_cc2.trk dw3dos_cc1.trk
+
+HSTRACKS	= dw4dos_cc3.trk dw4dos_cc2.trk
 
 ALLOBJS		= $(ROMS) $(CASSFILES) $(TRACKS)
 
+HISPEED		= $(HSROMS) $(HSCASSFILES) $(HSTRACKS)
+
 all:	banner $(ALLOBJS) $(DEPENDS) 
 
+experimental:	all $(HISPEED)
 banner:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
@@ -116,5 +122,5 @@ drivewire.zip: $(ALLOBJS)
 	zip $@ $(ALLOBJS)
 
 clean:
-	$(RM) $(ALLOBJS) drivewire.zip
+	$(RM) $(ALLOBJS) $(HISPEED) drivewire.zip
 
