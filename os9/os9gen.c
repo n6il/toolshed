@@ -34,9 +34,11 @@ static char const * const helpMessage[] =
 	"     -d              Dragon disk\n",
 	"     -e              Extended boot (fragmented)\n",
 	"     -t=trackfile    kernel trackfile to copy to the image\n",
+	"     -lX             Special boottrack/kerneltrack Start LSN\n",
 	NULL
 };
 
+int specialStartLSN = 0;
 
 int os9gen(int argc, char *argv[])
 {
@@ -84,6 +86,10 @@ int os9gen(int argc, char *argv[])
 						}
 						trackfile = p;
 						p += strlen(p) - 1;
+						break;
+					case 'l':   /* Special startLSN for boottrack/kerneltrack */
+						specialStartLSN = atoi(p+1);
+						while (*(p + 1) != '\0') p++;
 						break;
 					default:
 						fprintf(stderr, "%s: unknown option '%c'\n", argv[0], *p);
@@ -142,7 +148,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 	u_int sectorSize;
 	u_int clusterSize;
 
-	
+
 	/* 1. If we have a boot track file, put it on the disk first */
 
 	if (trackfile != NULL)
@@ -151,7 +157,7 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 		error_code ec;
 		char boottrack[256 * 18];
 
-		
+
 		/* 1. Open the device raw and read LSB0 */
 
 		sprintf(buffer, "%s,@", device);
@@ -172,24 +178,67 @@ static int do_os9gen(char **argv, char *device, char *bootfile, char *trackfile,
 
 		clusterSize = int2(LSN0.dd_bit);
 
+		/*  Diagnostic output */
+
+		/* printf("Sectors per track: %d, Heads: %d, Disk Type: %d, Total Sectors: %d \n", int2(LSN0.pd_sct), int1(LSN0.pd_sid), int1(LSN0.pd_typ), int3(LSN0.dd_tot)); */
+
 		/* 2. Determine startlsn based on single or double-sided device */
 
 		startlsn = hwtype->startlsn;
 
-		if (int1(LSN0.pd_typ) & 0x20)
-		{
-			if (int1(LSN0.dd_fmt) & 1)
-			{
-				/* 1. We have a double sided disk image -- compensate boot track LSN. */
+		/* printf("hardware type: %d\n", startlsn); */
 
-				if (startlsn > 18)
+		if ( startlsn == 2 )
+		{
+			printf("Dragon boottrack selected: ");
+			/* Check to make sure the disk image has minimum of 18 sectors per track */
+			if ( int2(LSN0.pd_sct) < 18 )
+			{
+				printf("\n");
+				fprintf(stderr, "Error: minimum sectors per track of 18 required for DragonDOS, found %d\n", int2(LSN0.pd_sct));
+				return(1);
+			}
+		} else {
+			printf("CoCo boottrack selected: ");
+			/* If special startLSN for boottrack is set then set startlsn to  */
+			/* the value stored in specialStartLSN  */
+			if ( specialStartLSN > 0 )
+			{
+				startlsn = specialStartLSN;
+			} else {
+				/* Check to see if disk image is a HDD image if so set for default  */
+				/* startLSN of 612 for the boottrack for use with CoCoSDC and DriveWire HDD images */
+				if  ( int1(LSN0.pd_typ) == 0x80 )
 				{
-					startlsn *= 2;
+					startlsn = 612;
+				} else
+				{
+					/* Check to make sure the disk image has minimum of 18 sectors per track */
+					if ( int2(LSN0.pd_sct) < 18 )
+					{
+						printf("\n");
+						fprintf(stderr, "Error: minimum sectors per track of 18 required for Disk Basic, found %d\n", int2(LSN0.pd_sct));
+						return(1);
+					}
+					/* Check to make sure the disk image has minimum of 35 tracks */
+					if ( int2(LSN0.pd_cyl) < 35 )
+					{
+						printf("\n");
+						fprintf(stderr, "Error: minimum number of tracks required for Disk Basic is 35, found %d\n", int2(LSN0.pd_cyl));
+						return(1);
+					}
+					/* Use real floppy disk geometry to figure out real startLSN for boottrack */
+					startlsn = 34 * int2(LSN0.pd_sct) * int1(LSN0.pd_sid);
 				}
 			}
 		}
+		if ( (startlsn + 18) > int3(LSN0.dd_tot))
+		{
+			printf("\n");
+			fprintf(stderr, "Error: start LSN puts boottrack outside of OS-9 volume boundery\n");
+			return(1);
+		}
 
-		
 		/* 3. Open the track file */
 
 		ec = _coco_open(&cpath, trackfile, FAM_READ);
