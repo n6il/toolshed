@@ -244,7 +244,7 @@ int os9format(int argc, char **argv)
 				heads = i;
 				i = 0;
 			}
-		}	
+		}
 	}
 
 	/* walk command line for pathnames */
@@ -271,11 +271,10 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	native_path_id path;
 	lsn0_sect s0;
 	unsigned int totalSectors, totalBytes, sectorsLeft;
-	int i, b;
+	int b;
 	unsigned int sectorsToAlloc = 0;
 	unsigned int bitmapSectors, bitmapBytes;
 	unsigned int rootSects;
-
 
 	/* 1. Open a path to the virtual disk. */
 
@@ -299,14 +298,13 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	totalBytes = totalSectors * sectorSize;
 	
 	/* Determine appropriate cluster size */
+
 	if (clusterSize == 0)
 	{
-		clusterSize = 1;
-
-		b = ((totalSectors - 1) / (65535 * 8));
-		for (i = 0; i < b; i++)
+		clusterSize = 1; /* Set cluster size to 1 to start with */
+		while ( (clusterSize * (65535 * 8)) < totalSectors ) /* test if the right amount of reserved sectors has been reached */
 		{
-			clusterSize *= 2;
+			clusterSize *= 2; /* Double Cluster Size for next test pass */
 		}
 	}
 
@@ -545,7 +543,7 @@ static int do_format(char **argv, char *vdisk, int os968k, int quiet, int tracks
 	/* Write Root Directory FD and Root Sectors */
 	{
 		char *allocedSectors;
-		int totalSectors;
+		unsigned int totalSectors;
 		u_int totalBytes;
 
 		if(isDragon)
