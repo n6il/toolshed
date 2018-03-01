@@ -31,6 +31,25 @@ loop@     tst       $FF53              ; check status register
 
           ELSE
 
+          IFNE SY6551N
+DWWrite   pshs      d,cc              ; preserve registers
+          IFEQ      NOINTMASK
+          orcc      #IntMasks         ; mask interrupts
+          ENDC
+          lda       #$10
+          sta       $FF6B
+          lda       #$0B
+          sta       $FF6A
+txByte
+          lda       $FF69
+          anda      #$10
+          beq       txByte
+          lda       ,x+
+          sta       $FF68
+          leay      -1,y              ; decrement byte counter
+          bne       txByte            ; loop if more to send
+          puls      cc,d,pc           ; restore registers and return
+          ELSE
           IFNE JMCPBCK
 DWWrite   pshs      d,cc              ; preserve registers
           IFEQ      NOINTMASK
@@ -74,8 +93,9 @@ txByte
           ENDC
           ENDC
           ENDC
+          ENDC
 
-          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO
+          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N
           IFNE BAUD38400
 *******************************************************
 * 38400 bps using 6809 code and timimg
