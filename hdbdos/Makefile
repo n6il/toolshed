@@ -111,6 +111,11 @@ hdbdw3bck.rom: FLAGS = -DDW -DLevel=1 -DBECKER
 hdbdw3bck.wav: LABEL = HDBDW3BK
 hdbdw3bck.cas: LABEL = HDBDW3BK
 
+# DW3 CoCo Becker WiFi
+hdbdw3bckwifi.rom: FLAGS = -DDW -DLevel=1 -DBECKER -DBECKBASE=65388
+hdbdw3bckwifi.wav: LABEL = HDBDW3WF
+hdbdw3bckwifi.cas: LABEL = HDBDW3WF
+
 # DW3 CoCo Mode Dragon64/Tano Dragon64  RS232 Port Base Address FF04
 hdbdw3dg.rom: FLAGS = -DDW -DLevel=1 -DSY6551N -DSY6551B=65284
 hdbdw3dg.wav: LABEL = HDBDW3DG
@@ -122,7 +127,7 @@ hdbdw3dm.wav: LABEL = HDBDW3DM
 hdbdw3dm.cas: LABEL = HDBDW3DM
 
 # DW3 CoCo 3 Direct Modem RS232 Pak Base Address FF6C
-hdbdw3d3.rom: FLAGS = -DDW -DLevel=3 -DSY6551N -DSY6551B=65388
+hdbdw3d3.rom: FLAGS = -DDW -DLevel=2 -DSY6551N -DSY6551B=65388
 hdbdw3d3.wav: LABEL = HDBDW3D3
 hdbdw3d3.cas: LABEL = HDBDW3D3
 
@@ -142,7 +147,7 @@ hdbdw3ln.wav: LABEL = HDBDW3LN
 hdbdw3ln.cas: LABEL = HDBDW3LN
 
 # DW3 CoCo 3 CoCoLINK RS232 Pak Base Address FF68
-hdbdw3l3.rom: FLAGS = -DDW -DLevel=3 -DSY6551N -DSYCONSET=15
+hdbdw3l3.rom: FLAGS = -DDW -DLevel=2 -DSY6551N -DSYCONSET=15
 hdbdw3l3.wav: LABEL = HDBDW3L3
 hdbdw3l3.cas: LABEL = HDBDW3L3
 
@@ -155,6 +160,11 @@ hdbdw3bckt.cas: LABEL = HDBDW3BK
 hdbdw3bc3.rom: FLAGS = -DDW -DLevel=2 -DBECKER
 hdbdw3bc3.wav: LABEL = HDBDW3B3
 hdbdw3bc3.cas: LABEL = HDBDW3B3
+
+# DW3 CoCo 3 Becker WiFi
+hdbdw3bc3wifi.rom: FLAGS = -DDW -DLevel=2 -DBECKER -DBECKBASE=65388
+hdbdw3bc3wifi.wav: LABEL = HDBDW3W3
+hdbdw3bc3wifi.cas: LABEL = HDBDW3W3
 
 # DW3 CoCo 3 Becker With Timeout
 hdbdw3bc3t.rom: FLAGS = -DDW -DLevel=2 -DBECKERTO
