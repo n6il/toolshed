@@ -3,14 +3,14 @@ HDBIDE  = hdblba.rom hdbchs.rom
 HDBDW   = hdbdw3cc1.rom hdbdw3cc2.rom hdbdw3cc3.rom \
 	hdbdw3bck.rom hdbdw3bc3.rom hdbdw3bckt.rom hdbdw3bc3t.rom hdbdw3jc3.rom hdbdw3jc2.rom \
 	hdbdw3arduino.rom hdbdw3sy.rom hdbdw3s3.rom hdbdw3dm.rom hdbdw3d3.rom hdbdw3dg.rom \
-	hdbdw3ln.rom hdbdw3l3.rom
+	hdbdw3ln.rom hdbdw3l3.rom hdbdw3bckwifi.rom
 HDBDW4  = hdbdw4cc3.rom hdbdw4cc2.rom
 HDBROM  = $(HDBSCSI) $(HDBIDE) $(HDBDW)
 HDBBIN	= hdbtc3.bin hdbkenton.bin hdblrtech.bin hdbd4n1.bin hdbdhdii.bin \
 	hdblba.bin hdbchs.bin hdbdw3cc1.bin hdbdw3cc2.bin hdbdw3cc3.bin \
 	hdbdw3bck.bin hdbdw3bc3.bin hdbdw3bc3t.bin hdbdw3bckt.bin hdbdw3jc3.bin hdbdw3jc2.bin \
 	hdbdw3arduino.bin hdbdw3sy.bin hdbdw3s3.bin hdbdw3dm.bin hdbdw3dg.bin hdbdw3d3.bin \
-	hdbdw3ln.bin hdbdw3l3.bin
+	hdbdw3ln.bin hdbdw3l3.bin hdbdw3bckwifi.bin
 HDBBIN4 = hdbdw4cc2.bin hdbdw4cc3.bin
 HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
 	hdblba.wav hdbchs.wav hdbdw3cc1.wav hdbdw3cc2.wav hdbdw3cc3.wav \
