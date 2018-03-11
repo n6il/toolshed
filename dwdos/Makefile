@@ -8,21 +8,23 @@ ECHO		= echo
 MAKEWAV		= makewav -r -c
 
 ROMS		= dw3dos_mb_cc3.rom dw3dos_mb_cc2.rom dw3dos_mb_cc1.rom dw3dos_mb_rs232_pak.rom \
-		dw3dos_mb_bck.rom dw3dos_mb_directmodem_pak.rom \
+		dw3dos_mb_bck.rom dw3dos_mb_directmodem_pak.rom dw3dos_mb_cocolink.rom \
 		dw3dos_dsk_cc3.rom dw3dos_dsk_cc2.rom dw3dos_dsk_cc1.rom dw3dos_dsk_rs232_pak.rom \
-		dw3dos_dsk_bck.rom dw3dos_dsk_directmodem_pak.rom \
+		dw3dos_dsk_bck.rom dw3dos_dsk_directmodem_pak.rom dw3dos_dsk_cocolink.rom \
 		dw3doscc3.bin dw3doscc2.bin dw3doscc1.bin dw3dos_rs232_pak.bin dw3dosbck.bin \
-		dw3dos_directmodem_pak.bin
+		dw3dos_directmodem_pak.bin dw3dos_cocolink.bin
 
 HSROMS		= dw4dos_mb_cc3.rom dw4dos_mb_cc2.rom \
 		dw4dos_dsk_cc3.rom dw4dos_dsk_cc2.rom \
 		dw4doscc3.bin dw4doscc2.bin
 
-CASSFILES	= dw3doscc1.wav dw3doscc2.wav dw3doscc3.wav dw3dos_rs232_pak.wav dw3dos_directmodem_pak.wav
+CASSFILES	= dw3doscc1.wav dw3doscc2.wav dw3doscc3.wav dw3dos_rs232_pak.wav dw3dos_directmodem_pak.wav \
+		dw3dos_cocolink.wav
 
 HSCASSFILES	= dw4doscc2.wav dw4doscc3.wav
 
-TRACKS		= dw3dos_cc3.trk dw3dos_cc2.trk dw3dos_cc1.trk dw3dos_rs232_pak.trk dw3dos_directmodem_pak.trk
+TRACKS		= dw3dos_cc3.trk dw3dos_cc2.trk dw3dos_cc1.trk dw3dos_rs232_pak.trk dw3dos_directmodem_pak.trk \
+			dw3dos_cocolink.trk
 
 HSTRACKS	= dw4dos_cc3.trk dw4dos_cc2.trk
 
@@ -30,7 +32,7 @@ ALLOBJS		= $(ROMS) $(CASSFILES) $(TRACKS)
 
 HISPEED		= $(HSROMS) $(HSCASSFILES) $(HSTRACKS)
 
-all:	banner $(ALLOBJS) $(DEPENDS) 
+all:	banner $(ALLOBJS) $(DEPENDS)
 
 experimental:	all $(HISPEED)
 banner:
@@ -52,6 +54,9 @@ dw3dos_mb_directmodem_pak.rom:	dw3dos.asm
 dw3dos_mb_rs232_pak.rom:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DSY6551N=1
 
+dw3dos_mb_cocolink.rom:	dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DSY6551N=1 -DSYCONSET=15
+
 dw3dos_mb_cc3.rom:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=3
 
@@ -69,6 +74,9 @@ dw3dos_dsk_directmodem_pak.rom:	dw3dos.asm
 
 dw3dos_dsk_rs232_pak.rom:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DDISKROM=1 -DSY6551N=1
+
+dw3dos_dsk_cocolink.rom:	dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DDISKROM=1 -DSY6551N=1 -DSYCONSET=15
 
 dw3dos_dsk_cc3.rom:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=3 -DDISKROM=1
@@ -88,6 +96,9 @@ dw3dos_directmodem_pak.bin:	dw3dos.asm
 dw3dos_rs232_pak.bin:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DBIN=1 -b -DSY6551N=1
 
+dw3dos_cocolink.bin:	dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DBIN=1 -b -DSY6551N=1 -DSYCONSET=15
+
 dw3doscc3.bin:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=3 -DBIN=1 -b
 
@@ -102,6 +113,9 @@ dw3dos_directmodem_pak.wav:	dw3dos_directmodem_pak.bin
 
 dw3dos_rs232_pak.wav:	dw3dos_rs232_pak.bin
 	$(MAKEWAV) -o$@ -nDW3DOSRS $<
+
+dw3dos_cocolink.wav:	dw3dos_cocolink.bin
+	$(MAKEWAV) -o$@ -nDW3DOSLN $<
 
 dw3doscc3.wav:	dw3doscc3.bin
 	$(MAKEWAV) -o$@ -nDW3DOSC3 $<
@@ -146,6 +160,9 @@ dw3dos_directmodem_pak.trk:	dw3dos.asm
 
 dw3dos_rs232_pak.trk:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DDOSTRACK -DSY6551N=1
+
+dw3dos_cocolink.trk:	dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DDOSTRACK -DSY6551N=1 -DSYCONSET=15
 
 dw3dos_cc3.trk:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=3 -DDOSTRACK

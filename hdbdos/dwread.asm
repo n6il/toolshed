@@ -41,6 +41,18 @@ loop@     tst    $FF51                  ; check for CA1 bit (1=Arduino has byte 
           IFNDEF    SY6551B
 SY6551B   EQU       $FF68            ; Set base address for future use
           ENDC
+          IFNDEF    SYDATA
+SYDATA    EQU       SY6551B
+          ENDC
+          IFNDEF    SYCONT
+SYCONT    EQU       SY6551B+3
+          ENDC
+          IFNDEF    SYCOMM
+SYCOMM    EQU       SY6551B+2
+          ENDC
+          IFNDEF    SYSTAT
+SYSTAT    EQU       SY6551B+1
+          ENDC
 * NOTE: There is no timeout currently on here...
 DWRead    clra                       ; clear Carry (no framing error)
           deca                       ; clear Z flag, A = timeout msb ($ff)
@@ -51,10 +63,10 @@ DWRead    clra                       ; clear Carry (no framing error)
           IFEQ   NOINTMASK
           orcc   #IntMasks
           ENDC
-loop@     ldb    SY6551B+1
+loop@     ldb    SYSTAT
           andb   #$08
           beq    loop@
-          ldb    SY6551B
+          ldb    SYDATA
           stb    ,u+
           abx
           leay   ,-y
@@ -101,6 +113,15 @@ loop@     ldb    $FF4C
           puls      cc,dp,x,u,pc        ; restore registers and return
           ELSE
           IFNE BECKER
+          IFNDEF    BECKBASE
+BECKBASE  EQU       $FF41               ; Set base address for future use
+          ENDC
+          IFNDEF    BECKDATA
+BECKDATA  EQU       BECKBASE+1          ; Set Becker Port Data Address Location
+          ENDC
+          IFNDEF    BECKSTAT
+BECKSTAT  EQU       BECKBASE            ; Sete Becker Port Status Register Address Location
+          ENDC
 * NOTE: There is no timeout currently on here...
 DWRead    clra                          ; clear Carry (no framing error)
           deca                          ; clear Z flag, A = timeout msb ($ff)
@@ -111,10 +132,10 @@ DWRead    clra                          ; clear Carry (no framing error)
           IFEQ   NOINTMASK
           orcc   #IntMasks
           ENDC
-loop@     ldb    $FF41
+loop@     ldb    BECKSTAT
           bitb   #$02
           beq    loop@
-          ldb    $FF42
+          ldb    BECKDATA
           stb    ,u+
           abx
           leay   ,-y
@@ -130,6 +151,15 @@ loop@     ldb    $FF41
           puls      cc,dp,x,u,pc        ; restore registers and return
           ELSE
           IFNE BECKERTO
+          IFNDEF    BECKBASE
+BECKBASE  EQU       $FF41               ; Set base address for future use
+          ENDC
+          IFNDEF    BECKDATA
+BECKDATA  EQU       BECKBASE+1          ; Set Becker Port Data Address Location
+          ENDC
+          IFNDEF    BECKSTAT
+BECKSTAT  EQU       BECKBASE            ; Sete Becker Port Status Register Address Location
+          ENDC
 ;;; I added a Vsync/IRQ timeout for 2 seconds here.  This should
 ;;; make the timeout work regardless of speed of emulated systems
 ;;; esp. Vcc and CoCoFPGA.  Vcc over 89 Mhz is known to be wonky
@@ -149,7 +179,7 @@ DWRead	  clra                  ; clear Carry, Set Z
 ini@	  lda	 #120		; set RDYTMR to 120 jiffies = 2 seconds
 	  sta	 RDYTMR		;
 loop@
-	  ldb    $FF41		; test for data ready flag
+	  ldb    BECKSTAT		; test for data ready flag
           bitb   #$02
           bne    rdy@		; byte is ready
 	  tst	 RDYTMR		; test timer
@@ -160,7 +190,7 @@ loop@
 	  comb                  ; reset Z (timeout error)
 	  puls	 x,u,pc	        ; restore registers and return
 	;; a byte is ready
-rdy@      ldb    $FF42          ; get byte from port
+rdy@      ldb    BECKDATA       ; get byte from port
           stb    ,u+            ; store in data buffer
           abx                   ; add received byte to checksum
           leay   ,-y            ; decrement byte counter

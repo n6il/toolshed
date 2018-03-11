@@ -5124,7 +5124,11 @@ SIGNON         fcc       "HDB-DOS "
                IFDEF     JMCPBCK
                fcc       "J&M CP COCO "
                ELSE
+               IFDEF     SY6551N
+               fcc       "SY6551 COCO "
+               ELSE
                fcc       "DW3 COCO "
+               ENDC
                ENDC
                ENDC
                ENDC
