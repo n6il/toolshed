@@ -96,6 +96,16 @@ FATS           equ       $800
 
 SKIP2          equ       $8C
 
+               IFDEF     SDC
+RBLK	          equ       $2             read a block opcode
+WBLK           equ       $3             write a block opcode
+DATAADDR       equ       $FF40          hardware address
+TDELAY         equ       $0             bootup delay
+SCSIRESET      equ       $0             offset to control address
+MAXDN          equ       $2             Max Two drives
+               ENDC
+
+
                IFDEF     DW
 Vi.PkSz        equ       0
 V.SCF          equ       0
@@ -3888,6 +3898,19 @@ CtlrOk         lbsr      GETMAX              Compute maximum no. of drives
                IFDEF     DW
                lbsr      GETMAX              Compute maximum no. of drives
 
+* Set Baud Rate for CoCO3FPGA WiFi Becker Port 2 and clear out input buffer
+               IFDEF     CoCo3FPGAWiFi
+               lda       #$00                Here we are loading default value to set baud rate
+               sta       $FF6C               Store the baud rate setup value into status register
+FPGAWiFiLp
+               lda       $FF6C               Load status register so we can get ready to check it
+               bita      #$02                Now lets check to see if there is data to clear out
+               bne       FPGAWiFiLpEnd       If not then bypass loop
+               lda       $FF6D               Load the data off of the input buffer
+               bra       FPGAWiFiLp          and now loop back to check if we have cleared it all
+FPGAWiFiLpEnd
+               ENDC
+
 * Turbo Mode for DW4
                IFDEF     DW4
                lda       #$E6                turbo notification command
@@ -3932,6 +3955,15 @@ CtlrOk         lbsr      GETMAX              Compute maximum no. of drives
                sta       $FF52
                lda       #$2C
                sta       $FF53
+               ENDC
+
+* setup SDC
+               IFDEF     SDC
+               lda       DEFID
+               sta       IDNUM
+               lbsr      GETMAX
+               tst       <DCSTAT
+               bne       FAIL
                ENDC
 
 ITSOK          jsr       >BEEP               Send a beep
@@ -4121,6 +4153,15 @@ DISKIO         pshs      d,x,y,u             Save registers
 
 FINIS          puls      u,y,x,d,pc          Done, restore & return
 
+
+****************************************
+* SDC START HERE
+****************************************
+
+*  CoCoSDC
+               IFDEF     SDC
+               use       sdc.asm
+               ENDC
 
 ****************************************
 * SCSI/IDE/DW START HERE
@@ -4769,6 +4810,38 @@ DSET05         jsr       EVALEXPB            Evaluate argument
                bra       IOERR
 GOBACK         rts       
 
+               IFDEF     SDC
+*
+*  Puts the size in sectors of IDNUM's capacity
+*  into VAD0, and VAD1, set's x to #VCMD
+*  the common code then calcs and sets MAXDRV from this.
+*
+GETMAX         clr       <DCSTAT
+                                             ; save query size command to SDC
+               lda       #$43                ; put controller into..
+               sta       CTRLATCH            ;   Command Mode
+               exg       a,a                 ; wait for at least 4 us
+               lbsr      wait                ; wait till not busy
+               lbcs      oops
+               lda       #'Q                 ; apply query size command
+               sta       PREG1
+               lda       IDNUM               ; the current drive no
+               ora       #0xc0               ; do a extended command
+               sta       CMDREG
+               exg       a,a                 ; wait for at least 8 us
+               exg       a,a
+               lbsr      wait	               ; wait for command to complete
+               lbcs      oops                ; Time-out error!	     
+                                             ; set return packet in VCMD from SDC's reponse 
+               ldx       #VCMD
+               lda       PREG1               ; get high byte of size 
+               sta       1,x                 ; store it in VCMD
+               ldd       PREG2               ; get low word of size
+               std       2,x                 ; store it in VCMD
+               clr       CTRLATCH            ; set sdc back to regular mode
+               exg       a,a                 ; wait at least 4 us
+               ENDC
+
                IFDEF     DW
 GETMAX         clr       <DCSTAT
                ldx       #VCMD
@@ -5095,7 +5168,10 @@ SIGNON         fcc       "HDB-DOS "
                ENDC      
                IFDEF     TC3
                fcc       "TC^3"
-               ENDC      
+               ENDC
+               IFDEF     SDC
+               fcc       "CoCoSDC"
+               ENDC
                IFDEF     KENTON
                fcc       "KENTON"
                ENDC      

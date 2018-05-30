@@ -5,12 +5,13 @@ HDBDW   = hdbdw3cc1.rom hdbdw3cc2.rom hdbdw3cc3.rom \
 	hdbdw3arduino.rom hdbdw3sy.rom hdbdw3s3.rom hdbdw3dm.rom hdbdw3d3.rom hdbdw3dg.rom \
 	hdbdw3ln.rom hdbdw3l3.rom hdbdw3bckwifi.rom
 HDBDW4  = hdbdw4cc3.rom hdbdw4cc2.rom
-HDBROM  = $(HDBSCSI) $(HDBIDE) $(HDBDW)
+HDBSDC  = hdbsdc.rom
+HDBROM  = $(HDBSDC) $(HDBSCSI) $(HDBIDE) $(HDBDW)
 HDBBIN	= hdbtc3.bin hdbkenton.bin hdblrtech.bin hdbd4n1.bin hdbdhdii.bin \
 	hdblba.bin hdbchs.bin hdbdw3cc1.bin hdbdw3cc2.bin hdbdw3cc3.bin \
 	hdbdw3bck.bin hdbdw3bc3.bin hdbdw3bc3t.bin hdbdw3bckt.bin hdbdw3jc3.bin hdbdw3jc2.bin \
 	hdbdw3arduino.bin hdbdw3sy.bin hdbdw3s3.bin hdbdw3dm.bin hdbdw3dg.bin hdbdw3d3.bin \
-	hdbdw3ln.bin hdbdw3l3.bin hdbdw3bckwifi.bin
+	hdbdw3ln.bin hdbdw3l3.bin hdbdw3bckwifi.bin hdbsdc.bin
 HDBBIN4 = hdbdw4cc2.bin hdbdw4cc3.bin
 HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
 	hdblba.wav hdbchs.wav hdbdw3cc1.wav hdbdw3cc2.wav hdbdw3cc3.wav \
@@ -19,7 +20,7 @@ HDBCAS  = hdbtc3.wav hdbkenton.wav hdblrtech.wav hdbd4n1.wav hdbdhdii.wav \
 	hdbdw3bck.cas hdbdw3bc3.cas hdbdw3bc3t.cas hdbdw3bckt.cas \
 	hdbdw3sy.wav hdbdw3sy.cas hdbdw3s3.wav hdbdw3s3.cas hdbdw3dm.cas \
 	hdbdw3d3.cas hdbdw3dg.cas hdbdw3dm.wav hdbdw3d3.wav hdbdw3dg.wav \
-	hdbdw3ln.cas hdbdw3ln.wav hdbdw3l3.cas hdbdw3l3.wav
+	hdbdw3ln.cas hdbdw3ln.wav hdbdw3l3.cas hdbdw3l3.wav hdbsdc.wav
 HDBCAS4	= hdbdw4cc3.wav hdbdw4cc2.wav
 
 ALLOBJS         = preload postload $(HDBROM) $(HDBBIN) $(HDBCAS)
@@ -59,8 +60,8 @@ $(HDBROM) $(HDBDW4): EQUATES = ../cocoroms/ecb_equates.asm
 $(HDBROM) $(HDBDW4): ../cocoroms/ecb_equates.asm
 
 # TC^3 SCSI
-hdbtc3.rom:    FLAGS = -DSCSI -DTC3
-hdbtc3.wav:    LABEL = HDBTC3
+hdbtc3.rom: FLAGS = -DSCSI -DTC3
+hdbtc3.wav: LABEL = HDBTC3
 
 # Ken-Ton SCSI
 hdbkenton.rom: FLAGS = -DSCSI -DKENTON
@@ -136,6 +137,11 @@ hdbdw3sy.rom: FLAGS = -DDW -DLevel=1 -DSY6551N
 hdbdw3sy.wav: LABEL = HDBDW3SY
 hdbdw3sy.cas: LABEL = HDBDW3SY
 
+# DW3 CoCo Deluxe RS232 Pak Base Address FF68
+hdbdw3di.rom: FLAGS = -DDW -DLevel=1 -DSY6551N -DSY6551B=65364
+hdbdw3di.wav: LABEL = HDBDW3DI
+hdbdw3di.cas: LABEL = HDBDW3DI
+
 # DW3 CoCo 3 Deluxe RS232 Pak Base Address FF68
 hdbdw3s3.rom: FLAGS = -DDW -DLevel=2 -DSY6551N
 hdbdw3s3.wav: LABEL = HDBDW3S3
@@ -162,6 +168,7 @@ hdbdw3bc3.wav: LABEL = HDBDW3B3
 hdbdw3bc3.cas: LABEL = HDBDW3B3
 
 # DW3 CoCo 3 Becker WiFi
+#hdbdw3bc3wifi.rom: FLAGS = -DDW -DLevel=2 -DBECKER -DBECKBASE=65388 -DCoCo3FPGAWiFi
 hdbdw3bc3wifi.rom: FLAGS = -DDW -DLevel=2 -DBECKER -DBECKBASE=65388
 hdbdw3bc3wifi.wav: LABEL = HDBDW3W3
 hdbdw3bc3wifi.cas: LABEL = HDBDW3W3
@@ -182,6 +189,10 @@ hdbdw3jc2.wav: LABEL = HDBDW3J2
 # DW3 Arduino (Boisy)
 hdbdw3arduino.rom: FLAGS = -DDW -DLevel=1 -DARDUINO
 hdbdw3arduino.wav: LABEL = HDBDW3ARD
+
+# CoCoSDC
+hdbsdc.rom: FLAGS = -DLevel=2 -DSDC
+hdbsdc.wav: LABEL = HDBSDC
 
 
 DRAGONROM = hdbdw3dgn32ram.rom hdbdw4dgn32ram.rom hdblbadgn.rom hdbdw3dgn.rom hdbdw4dgn.rom \
