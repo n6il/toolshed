@@ -26,7 +26,7 @@ error_code _os9_delete_directory(char *pathlist)
 	fd_stats fdbuf;
 
     /* open a path to the device */
-    ec = _os9_open(&fold_path, pathlist, FAM_WRITE | FAM_DIR);
+    ec = _os9_open(&fold_path, pathlist, FAM_READ | FAM_DIR);
 
     if( ec != 0 )
     {
@@ -35,20 +35,20 @@ error_code _os9_delete_directory(char *pathlist)
 	
     while (_os9_gs_eof(fold_path) == 0)
     {
-        u_int size, i = 0;
+        u_int i = 0;
         os9_dir_entry dentry;
-		char	*dirpath;
+        char *dirpath;
         os9_path_id path2;
 
-        size = sizeof(dentry);
-        ec = _os9_read(fold_path, &dentry, &size);
+        ec = _os9_readdir(fold_path, &dentry);
+
         if (ec != 0)
 		{
-            break;
+            return ec;
 		}
 
         OS9StringToCString(dentry.name);
-		
+
         /* Skip over dot directories and empty entries. */
         if (dentry.name[0] == '\0')
             continue;
@@ -71,10 +71,10 @@ error_code _os9_delete_directory(char *pathlist)
 
         /* Determine if file is really another directory */
         ec = _os9_open(&path2, dirpath, FAM_DIR | FAM_READ);
+        _os9_close(path2);
         if (ec == 0)
         {
             /* Yup it is a directory, we need to delete it */
-            _os9_close(path2);
             ec = _os9_delete_directory(dirpath);
 			
             if (ec != 0)
