@@ -162,15 +162,7 @@ error_code do_dsave(char *pgmname, char *source, char *target, int execute, int 
 		return(ec);
 	}
 
-	if( (sourcePath->type == OS9) || (sourcePath->type == NATIVE) )
-	{
-		/* read .. and . directories */
-		_coco_readdir(sourcePath, &dirent);
-		_coco_readdir(sourcePath, &dirent);
-		src_path_seperator = "/";
-	}
-	else
-		src_path_seperator = "";
+    src_path_seperator = "/";
 	
 	_coco_identify_image(target, &type);
 	
@@ -184,7 +176,9 @@ error_code do_dsave(char *pgmname, char *source, char *target, int execute, int 
 		u_char direntry_name_buffer[255];
 		_coco_ncpy_name( &dirent, direntry_name_buffer, 255 );
 		
-		if ( (direntry_name_buffer[0] != '\0') && (direntry_name_buffer[0] != 255))
+       if ( (direntry_name_buffer[0] != '\0') && (direntry_name_buffer[0] != 255) &&
+            (strncmp((const char *) direntry_name_buffer, ".", 2) != 0) &&
+            (strncmp((const char *) direntry_name_buffer, "..", 3) != 0) )
 		{
 			coco_path_id	filePath;
 			int		isdir = 1;
