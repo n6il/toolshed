@@ -171,7 +171,7 @@ error_code _native_open(native_path_id *path, char *pathlist, int mode)
     }
     else if (mode & FAM_WRITE)
     {
-        nativeMode = "ab";
+        nativeMode = "b";
     }
 
     (*path)->fd = fopen(pathlist, nativeMode);
