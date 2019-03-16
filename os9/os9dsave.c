@@ -233,7 +233,7 @@ error_code do_dsave(char *pgmname, char *source, char *target, int execute, int 
 				}
 
 				/* 3. make directory on target */
-				snprintf(command, sizeof(command), "os9 makdir \"%s\"", newTarget);
+				snprintf(command, sizeof(command), "os9 makdir '%s'", newTarget);
 				puts(command);
 				if (execute) 
 				{
