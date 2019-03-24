@@ -195,10 +195,9 @@ hdbsdc.rom: FLAGS = -DLevel=2 -DSDC
 hdbsdc.wav: LABEL = HDBSDC
 
 
-DRAGONROM = hdbdw3dgn32ram.rom hdbdw4dgn32ram.rom hdblbadgn.rom hdbdw3dgn.rom hdbdw4dgn.rom \
-		hdbdw3dgnsy6551.rom
-DRAGONBIN = hdbdw3dgn32ram.bin hdbdw4dgn32ram.bin
-DRAGONWAV = hdbdw3dgn32ram.wav hdbdw4dgn32ram.wav
+DRAGONROM = hdbdw3dgn32ram.rom hdblbadgn.rom hdbdw3dgn.rom hdbdw3dgnsy6551.rom
+DRAGONBIN = hdbdw3dgn32ram.bin
+DRAGONWAV = hdbdw3dgn32ram.wav
 
 dragon: $(DRAGONROM) $(DRAGONWAV)
 
@@ -212,7 +211,7 @@ hdbdw3dgn32ram.wav: LABEL = HDBDW3DR
 hdbdw3dgn32ram.bin: hdbdw3dgn32ram.rom
 	$(MERGE) $+ > $@
 
-# Dragon 32, DW4 run from lower RAM
+# Dragon 32, DW4 (turbo speed) run from lower RAM
 hdbdw4dgn32ram.rom: FLAGS =  -DDW -DORG=0x6000 -DLevel=1 -DDRAGON -DDW4 -b
 hdbdw4dgn32ram.wav: LABEL = HDBDW4DR
 hdbdw4dgn32ram.bin: hdbdw4dgn32ram.rom
@@ -221,8 +220,8 @@ hdbdw4dgn32ram.bin: hdbdw4dgn32ram.rom
 # Dragon 32, DW3 ROM cartridge
 hdbdw3dgn.rom: FLAGS = -DDW -DLevel=1 -DDRAGON
 
-# Dragon 64, DW3 ROM cartridge SY6551 RS232 Chip
-hdbdw3dgnsy6551.rom: FLAGS = -DDW -DLevel=1 -DDRAGON -DSY6551N -DSY6551B=65284
+# Dragon 64, DW3 built-in RS232 ACIA 19200 baud ROM cartridge 
+hdbdw3dgnsy6551.rom: FLAGS = -DDW -DLevel=1 -DDRAGON -DSY6551N -DSY6551B=65284 -DSYCONSET=31
 
 # Dragon 32, DW4 (turbo speed) ROM cartridge
 hdbdw4dgn.rom: FLAGS = -DDW -DLevel=1 -DDRAGON -DDW4
