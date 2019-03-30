@@ -71,10 +71,10 @@ error_code _os9_delete_directory(char *pathlist)
 
         /* Determine if file is really another directory */
         ec = _os9_open(&path2, dirpath, FAM_DIR | FAM_READ);
-        _os9_close(path2);
         if (ec == 0)
         {
             /* Yup it is a directory, we need to delete it */
+            _os9_close(path2);
             ec = _os9_delete_directory(dirpath);
 			
             if (ec != 0)
