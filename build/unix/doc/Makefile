@@ -9,7 +9,7 @@ MARKDOWN = markdown
 all: $(HTML)
 
 %.html: %.md
-	$(MARKDOWN) $< > $@
+	-$(MARKDOWN) $< > $@
 
 clean:
 	$(RM) $(HTML)
