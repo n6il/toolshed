@@ -9,19 +9,20 @@ MAKEWAV		= makewav -r -c
 
 ROMS		= dw3dos_mb_cc3.rom dw3dos_mb_cc2.rom dw3dos_mb_cc1.rom dw3dos_mb_rs232_pak.rom \
 		dw3dos_mb_bck.rom dw3dos_mb_directmodem_pak.rom dw3dos_mb_cocolink.rom \
-		dw3dos_mb_bckwifi.rom \
+		dw3dos_mb_bckwifi.rom dw3dos_mb_mmmpiu1.rom dw3dos_mb_mmmpiu2.rom \
 		dw3dos_dsk_cc3.rom dw3dos_dsk_cc2.rom dw3dos_dsk_cc1.rom dw3dos_dsk_rs232_pak.rom \
 		dw3dos_dsk_bck.rom dw3dos_dsk_directmodem_pak.rom dw3dos_dsk_cocolink.rom \
-		dw3dos_dsk_bckwifi.rom \
+		dw3dos_dsk_bckwifi.rom dw3dos_dsk_mmmpiu1.rom dw3dos_dsk_mmmpiu2.rom \
 		dw3doscc3.bin dw3doscc2.bin dw3doscc1.bin dw3dos_rs232_pak.bin dw3dosbck.bin \
-		dw3dos_directmodem_pak.bin dw3dos_cocolink.bin dw3dos_bckwifi.bin
+		dw3dos_directmodem_pak.bin dw3dos_cocolink.bin dw3dos_bckwifi.bin \
+		dw3dos_mmmpiu1.bin dw3dos_mmmpiu2.bin
 
 HSROMS		= dw4dos_mb_cc3.rom dw4dos_mb_cc2.rom \
 		dw4dos_dsk_cc3.rom dw4dos_dsk_cc2.rom \
 		dw4doscc3.bin dw4doscc2.bin
 
 CASSFILES	= dw3doscc1.wav dw3doscc2.wav dw3doscc3.wav dw3dos_rs232_pak.wav dw3dos_directmodem_pak.wav \
-		dw3dos_cocolink.wav
+		dw3dos_cocolink.wav dw3dos_mmmpiu1.wav dw3dos_mmmpiu2.wav
 
 HSCASSFILES	= dw4doscc2.wav dw4doscc3.wav
 
@@ -136,6 +137,30 @@ dw3doscc2.wav:	dw3doscc2.bin
 
 dw3doscc1.wav:	dw3doscc1.bin
 	$(MAKEWAV) -o$@ -nDW3DOSC1 $<
+
+dw3dos_mmmpiu1.bin: dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DBIN=1 -b -DMEGAMINIMPI=1 -DMMMUART=1
+
+dw3dos_mmmpiu2.bin: dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DBIN=1 -b -DMEGAMINIMPI=1 -DMMMUART=2
+
+dw3dos_dsk_mmmpiu1.rom: dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DDISKROM=1 -DMEGAMINIMPI=1 -DMMMUART=1
+
+dw3dos_dsk_mmmpiu2.rom: dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DDISKROM=1 -DMEGAMINIMPI=1 -DMMMUART=2
+
+dw3dos_mb_mmmpiu1.rom: dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DMEGAMINIMPI=1 -DMMMUART=1
+
+dw3dos_mb_mmmpiu2.rom: dw3dos.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCoCo=2 -DMEGAMINIMPI=1 -DMMMUART=2
+
+dw3dos_mmmpiu1.wav:	dw3dos_mmmpiu1.bin
+	$(MAKEWAV) -o$@ -nDW3DOSM1 $<
+
+dw3dos_mmmpiu2.wav:	dw3dos_mmmpiu2.bin
+	$(MAKEWAV) -o$@ -nDW3DOSM2 $<
 
 # DW4DOS ROMs
 dw4dos_mb_cc3.rom:	dw3dos.asm

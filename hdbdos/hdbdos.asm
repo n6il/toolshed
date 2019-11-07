@@ -536,7 +536,11 @@ LC0C2          tfr       A,B                 COPY ACCA TO ACCB
 *	LDX	#LC139-1	POINT X TO DISK BASIC COPYRIGHT MESSAGE
                ldx       #LC139-1            COPYRIGHT MESSAGE - 1
 LC0DC          jsr       STRINOUT            PRINT COPYRIGHT MESSAGE TO SCREEN
+               IFNE      MEGAMINIMPI
+               ldx       #DKWMST2             GET DISK BASIC WARM START ADDRESS
+               ELSE
                ldx       #DKWMST             GET DISK BASIC WARM START ADDRESS
+               ENDC
                stx       RSTVEC              SAVE IT IN RESET VECTOR
 *	JMP	>LA0E2	JUMP BACK TO BASIC
                jmp       >HDINIT
@@ -3911,6 +3915,10 @@ FPGAWiFiLp
 FPGAWiFiLpEnd
                ENDC
 
+               IFNE MEGAMINIMPI
+               jsr  DWInit
+               ENDC
+
 * Turbo Mode for DW4
                IFDEF     DW4
                lda       #$E6                turbo notification command
@@ -5354,9 +5362,16 @@ DOMORE         ldb       ,x+                 Get a byte
                stb       ,y+                 Put a byte
                bne       DOMORE              If not end (0) flag get more
                rts                           ALL	Done, return
+
+ IFNE MEGAMINIMPI
+ use dwinit.asm
+
+DKWMST2       nop                            WARM START INDICATOR
+              jsr        DWInit
+              jmp        DKWMST
+ ENDC
+
 ZZLAST         equ       *-1                 Cannot be > $DFFF!
-
-
 
                fill      $39,MAGICDG+$2000-*
 

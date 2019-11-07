@@ -31,6 +31,29 @@ loop@     tst       $FF53              ; check status register
 
           ELSE
 
+          IFNE MEGAMINIMPI
+DWWrite   pshs      d,cc              ; preserve registers
+          IFEQ      NOINTMASK
+          orcc      #IntMasks         ; mask interrupts
+          ENDC
+          lda       MPIREG            ; Get Current MPI Status
+          pshs      a                 ; Save it
+          anda      #CTSMASK          ; Mask out SCS, save CTS
+          ora       #MMMSLT           ; SCS Slot Selection
+          sta       MPIREG            ; write the info to MPI register
+txByte
+          lda       MMMU1A+LSR        ; read status register to check
+          anda      #LSRTHRE          ; if transmit fifo has room
+          beq       txByte            ; if not loop back and check again
+          lda       ,x+               ; load byte from buffer
+          sta       MMMU1A             ; and write it to data register
+          leay      -1,y              ; decrement byte counter
+          bne       txByte            ; loop if more to send
+          puls      a                 ; Get original MPI Register back
+          sta       MPIREG            ; Restore it
+          puls      cc,d,pc           ; restore registers and return
+          ELSE
+
           IFNE SY6551N
           IFNDEF    SY6551B
 SY6551B   EQU       $FF68             ; Set base address for future use
@@ -130,8 +153,9 @@ txByte
           ENDC
           ENDC
           ENDC
+          ENDC
 
-          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N
+          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N+MEGAMINIMPI
           IFNE BAUD38400
 *******************************************************
 * 38400 bps using 6809 code and timimg

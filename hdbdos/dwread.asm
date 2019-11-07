@@ -37,6 +37,48 @@ loop@     tst    $FF51                  ; check for CA1 bit (1=Arduino has byte 
 
           ELSE
 
+          IFNE MEGAMINIMPI
+* NOTE: There is no timeout currently on here...
+DWRead    clra                       ; clear Carry (no framing error)
+          deca                       ; clear Z flag, A = timeout msb ($ff)
+          tfr    cc,b
+          pshs   u,x,dp,b,a          ; preserve registers, push timeout msb
+          leau   ,x                  ; buffer pointer
+          ldx    #$0000
+          IFEQ   NOINTMASK
+          orcc   #IntMasks
+          ENDC
+
+          lda       MPIREG            ; Get Current MPI Status
+          pshs      a                 ; Save it
+          anda      #CTSMASK          ; Mask out SCS, save CTS
+          ora       #MMMSLT           ; SCS Slot Selection
+          sta       MPIREG            ; write the info to MPI register
+
+; Original unoptimized version - 36 cycles
+loop@     ldb    MMMUARTB+LSR	     ; Check status register
+          andb   #LSRDR              ; RX Fifo status
+          beq    loop@               ; loop until data
+          ldb    MMMUARTB            ; Read data
+          stb    ,u+                 ; save it
+          abx                        ; update checksum
+          leay   ,-y                 ; counter = counter - 1
+          bne    loop@
+
+          puls      a                 ; Get original MPI Register back
+          sta       MPIREG            ; Restore it
+
+          tfr    x,y
+          ldb    #0
+          lda    #3
+          leas   1,s                 ; remove timeout msb from stack
+          inca                       ; A = status to be returned in C and Z
+          ora    ,s                  ; place status information into the..
+          sta    ,s                  ; ..C and Z bits of the preserved CC
+          leay   ,x                  ; return checksum in Y
+          puls   cc,dp,x,u,pc        ; restore registers and return
+          ELSE
+
           IFNE SY6551N
           IFNDEF    SY6551B
 SY6551B   EQU       $FF68            ; Set base address for future use
@@ -217,8 +259,9 @@ o@	rti			; return from interrupt
           ENDC
           ENDC
           ENDC
+          ENDC
 
-          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N
+          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N+MEGAMINIMPI
           IFNE BAUD38400
 *******************************************************
 * 38400 bps using 6809 code and timimg

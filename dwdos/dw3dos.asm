@@ -197,6 +197,11 @@ Loop1    ldd   ,u++		get the bytes
 
          ENDC
 
+* MegaMiniMPI
+         IFEQ MEGAMINIMPI
+         jsr DWInit
+         ENDC
+
 * Show Boot Message
 * VDG Mode
          sta   $FFC0
@@ -415,6 +420,11 @@ eom      equ   *-Top
 
          ENDC
          ENDC
+         ENDC
+
+* MegaMiniMPI
+         IFEQ MEGAMINIMPI
+         use ../hdbdos/dwinit.asm
          ENDC
 
          end   Entry
