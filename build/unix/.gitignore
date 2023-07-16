@@ -1,0 +1,11 @@
+*.o
+*.a
+ar2/ar2
+cecb/cecb
+cocofuse/cocofuse
+decb/decb
+doc/*.html
+makewav/makewav
+mamou/mamou
+os9/os9
+tocgen/tocgen
