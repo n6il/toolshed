@@ -43,11 +43,11 @@ static char dsk[1024];
 static int coco_statfs(const char *path, struct statvfs *stbuf)
 {
 	_path_type type;
-	char buff[1024], dname[32];
+	char buff[2048], dname[32];
 	u_int month, day, year, bps, total_sectors, bytes_free, free_sectors;
 	u_int largest_free_block, sectors_per_cluster, largest_count, sector_count;
 	
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 	_coco_identify_image(buff, &type);
 	/* Here we revert to RBF or Disk BASIC to get details about the disk */
 	switch (type)
@@ -165,10 +165,10 @@ static int coco_getattr(const char *path, struct stat *stbuf)
 {
 	error_code ec = 0;
 	coco_file_stat fdbuf;
-	char buff[1024];
+	char buff[2048];
 	
     memset(stbuf, 0, sizeof(struct stat));
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 	if ((ec = -CoCoToUnixError(_coco_gs_fd_pathlist(buff, &fdbuf))) == 0)
 	{
 		u_int filesize;
@@ -211,9 +211,9 @@ static int coco_getattr(const char *path, struct stat *stbuf)
 static int coco_mkdir(const char *path, mode_t mode)
 {
 	error_code ec;
-	char buff[1024];
+	char buff[2048];
 
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 	ec = -CoCoToUnixError(_coco_makdir(buff));
 
 #ifdef DEBUG
@@ -234,9 +234,9 @@ static int coco_mkdir(const char *path, mode_t mode)
 static int coco_unlink(const char *path)
 {
 	error_code ec;
-	char buff[1024];
+	char buff[2048];
 
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 	ec = -CoCoToUnixError(_coco_delete(buff));
 
 #ifdef DEBUG
@@ -257,9 +257,9 @@ static int coco_unlink(const char *path)
 static int coco_rmdir(const char *path)
 {
 	error_code ec = 0;
-	char buff[1024];
+	char buff[2048];
 
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 //	ec = -CoCoToUnixError(_coco_deldir(buff)); //, CoCoToUnixPerm(mode));
 #ifdef DEBUG
 # if defined(__APPLE__)
@@ -330,10 +330,10 @@ static int coco_rename(const char *path, const char *newname)
 static int coco_chmod(const char *path, mode_t mode)
 {
 	error_code ec;
-	char buff[1024];
+	char buff[2048];
 	coco_path_id p;
 
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 	if ((ec = -CoCoToUnixError(_coco_open(&p, buff, FAM_WRITE))) == 0)
 	{
 		ec = -CoCoToUnixError(_coco_ss_attr(p, UnixToCoCoPerms(mode)));
@@ -358,10 +358,10 @@ static int coco_chmod(const char *path, mode_t mode)
 static int coco_truncate(const char *path, off_t size)
 {
 	error_code ec = 0;
-	char buff[1024];
+	char buff[2048];
 	coco_path_id p;
 
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 	ec = -CoCoToUnixError(_coco_open(&p, buff, FAM_WRITE));
 	if (ec == 0)
 	{
@@ -385,10 +385,10 @@ static int coco_open(const char *path, struct fuse_file_info *fi)
 {
 	error_code ec;
 	coco_path_id p;
-	char buff[1024];
+	char buff[2048];
 	int mflags = FAM_READ;
 
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 
 	if ((fi->flags & O_ACCMODE) != O_RDONLY)
 	{
@@ -487,13 +487,13 @@ static int coco_create(const char *path, mode_t perms, struct fuse_file_info * f
 {
 	error_code ec = 0;
 	coco_path_id p;
-	char buff[1024];
+	char buff[2048];
 	coco_file_stat fstat;
 	
 	int mflags = FAM_READ | FAM_WRITE;
 	fstat.perms = FAP_READ | FAP_WRITE;
 	
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 
 	if ((fi->flags & O_ACCMODE) != O_RDONLY)
 	{
@@ -523,10 +523,10 @@ static int coco_opendir(const char *path, struct fuse_file_info *fi)
 {
 	error_code ec;
 	coco_path_id p;
-	char buff[1024];
+	char buff[2048];
 	int mflags = FAM_READ;
 
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 
 	mflags |= FAM_DIR;
 
@@ -556,10 +556,10 @@ static int coco_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off
 	error_code ec = 0;
 	coco_path_id p;
 	coco_dir_entry e;
-	char buff[1024];
+	char buff[2048];
 
 #if !0
-	sprintf(buff, "%s,%s", dsk, path);
+	snprintf(buff, 2047, "%s,%s", dsk, path);
 	if (_coco_open(&p, buff, FAM_READ | FAM_DIR) != 0)
 	{
 		/* DECB doesn't use FAM_DIR */
