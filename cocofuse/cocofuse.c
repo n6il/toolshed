@@ -396,7 +396,7 @@ static int coco_open(const char *path, struct fuse_file_info *fi)
 	}
 	if ((ec =  -CoCoToUnixError(_coco_open(&p, buff, mflags))) == 0)
 	{
-		fi->fh = (uint32_t)p;
+		fi->fh = (uint64_t)p;
 	}
 
 #ifdef DEBUG
@@ -416,7 +416,7 @@ static int coco_read(const char *path, char *buf, size_t size, off_t offset, str
 	error_code ec;
 	uint32_t _size = size;
 
-	coco_path_id p = (coco_path_id)(uint32_t)fi->fh;
+	coco_path_id p = (coco_path_id)fi->fh;
 	_coco_seek(p, offset, SEEK_SET);
 	if ((ec = -CoCoToUnixError(_coco_read(p, buf, &_size))) != 0)
 	{
@@ -427,7 +427,7 @@ static int coco_read(const char *path, char *buf, size_t size, off_t offset, str
 # if defined(__APPLE__)
 	NSLog(@"coco_read(%s, $%X, %d) = %d", path, buf, size, ec);
 # else
-	syslog(LOG_DEBUG,"coco_read(%s, $%X, %ld) = %d", path, (unsigned)buf, size, ec);
+	syslog(LOG_DEBUG,"coco_read(%s, %p, %ld) = %d", path, buf, size, ec);
 # endif
 #endif
 
@@ -440,7 +440,7 @@ static int coco_write(const char *path, const char *buf, size_t size, off_t offs
 	error_code ec;
 	uint32_t _size = size;
 
-	coco_path_id p = (coco_path_id)(uint32_t)fi->fh;
+	coco_path_id p = (coco_path_id)fi->fh;
 	_coco_seek(p, offset, SEEK_SET);
 	if ((ec = -CoCoToUnixError(_coco_write(p, (char *)buf, &_size))) != 0)
 	{
@@ -451,7 +451,7 @@ static int coco_write(const char *path, const char *buf, size_t size, off_t offs
 # if defined(__APPLE__)
 	NSLog(@"coco_write(%s, $%X, %d) = %d", path, buf, size, ec);
 # else
-	syslog(LOG_DEBUG,"coco_write(%s, $%X, %ld) = %d", path, (unsigned)buf, size, ec);
+	syslog(LOG_DEBUG,"coco_write(%s, %p, %ld) = %d", path, buf, size, ec);
 # endif
 #endif
 
@@ -505,7 +505,7 @@ static int coco_create(const char *path, mode_t perms, struct fuse_file_info * f
 		return ec;
 	}
 
-	fi->fh = (uint32_t)p;
+	fi->fh = (uint64_t)p;
 
 #ifdef DEBUG
 # if defined(__APPLE__)
@@ -536,7 +536,7 @@ static int coco_opendir(const char *path, struct fuse_file_info *fi)
 	}
 	if ((ec =  -CoCoToUnixError(_coco_open(&p, buff, mflags))) == 0)
 	{
-		fi->fh = (uint32_t)p;
+		fi->fh = (uint64_t)p;
 	}
 
 #ifdef DEBUG
