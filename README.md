@@ -48,7 +48,7 @@ The best way to do this is to first [visit the Homebrew page](https://brew.sh) a
 Once that's done, use `brew` to install macfuse (`osxfuse` has been succeeded by `macfuse` as of version 4.0.0.):
 
 ```
-brew install macuse
+brew install macfuse
 ```
 
 If you have previously install osxfuse, you can use brew command to uninstall `oxsfuse` and install `macfuse`
