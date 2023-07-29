@@ -469,7 +469,7 @@ static int coco_release(const char *path, struct fuse_file_info *fi)
 {
 	error_code ec;
 	
-	ec = -CoCoToUnixError(_coco_close((coco_path_id)(int32_t)fi->fh));
+	ec = -CoCoToUnixError(_coco_close((coco_path_id)fi->fh));
 	
 #ifdef DEBUG
 # if defined(__APPLE__)
