@@ -60,6 +60,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if defined(__APPLE__)
+#include <utime.h>
+#endif
 #if defined(SYSV)
 # include "o2u.h"
 # include <sys/time.h>
@@ -197,10 +200,13 @@ void set_fstat(char *pn, FILDES *fs)
 #if !defined(WIN32)
 	struct passwd	*getpwuid();
 #endif
+#if defined(__APPLE__)
+	struct utimbuf ubuf;
+#else
 	struct  {
 		long	a, m;
 		} ubuf;
-
+#endif
 	s = (*p++&0xff);
 	s <<= 8;
 	s |= (*p & 0xff);
@@ -212,10 +218,15 @@ void set_fstat(char *pn, FILDES *fs)
 	chown(pn, s, pwdbuf ? pwdbuf->pw_gid : s);
 #endif
 
+#if defined(__APPLE__)
+	ubuf.actime = time((long *) 0);
+	ubuf.modtime = o2uDate(fs->fd_date);
+	utime(pn, &ubuf);
+#else
 	ubuf.a = time((long *) 0);
 	ubuf.m = o2uDate(fs->fd_date);
 	utime(pn, &ubuf);
-#else
+#endif
 # ifdef OSK
 	_ss_pfd(pn, fs, sizeof(FILDES));
 	_ss_attr(pn, fs->fd_attr);

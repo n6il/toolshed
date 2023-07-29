@@ -164,7 +164,7 @@ int main(argc, argv)
 int		argc;
 char	**argv;
 	{
-	char	command, *p, lc_suf[SUFSIZ + 1];
+	char	command, *p=NULL, lc_suf[SUFSIZ + 1];
 	int		n, i;
 	FILE	*afp;
 
