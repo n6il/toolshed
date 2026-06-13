@@ -37,7 +37,7 @@ static char *lbra = "lbra ";
 static char *clra = "clra";
 static char *unkopr = "unknown operator : ";
 
-void gen(int op, int rtype, int arg, expnode *val)
+void gen(int op, int rtype, long arg, expnode *val)
 {
 	register expnode	*ptr;
 	register symnode	*sptr;
@@ -45,7 +45,7 @@ void gen(int op, int rtype, int arg, expnode *val)
 	int					temp, value;
 
 	if (op == LONGOP) {
-		dolongs(rtype, arg);
+		dolongs(rtype, (int *)arg);
 		return;
 	}
 	if (op == DBLOP) {
@@ -59,7 +59,7 @@ void gen(int op, int rtype, int arg, expnode *val)
 			maxpush = sp;
 		return;
 	case JMPEQ:
-		gen(COMPARE, XREG, CONST, arg);
+		gen(COMPARE, XREG, CONST, (expnode *)arg);
 		arg = rtype;
 		rtype = EQ;
 	case CNDJMP:
@@ -227,7 +227,7 @@ dooff:
 				} else {
 					transfer(regname(temp), 'd');
 					if (value)
-						gen(PLUS, DREG, CONST, value);
+						gen(PLUS, DREG, CONST, (expnode *)(long)value);
 				}
 				return;
 			case DREG:
@@ -239,7 +239,7 @@ dooff:
 				return;
 			case CONST:
 				arg = CONST;
-				val = (expnode *) value;
+				val = (expnode *)(long) value;
 			}
 		}
 		if (rtype == DREG && arg == CONST && val == 0) {
@@ -273,7 +273,7 @@ dooff:
 	case PLUS:
 		ot("add");
 simple:
-		doref(reg, arg, val, 0);
+		doref(reg, arg, (long)val, 0);
 		return;
 	case LOADIM:
 		if (arg == NODE) {
@@ -294,7 +294,7 @@ simple:
 			}
 		}
 		ot("lea");
-		doref(reg, arg, val, 0);
+		doref(reg, arg, (long)val, 0);
 		return;
 	case EXG:
 		fprintf(code, " exg %c,%c\n", reg, regname(arg));
@@ -306,7 +306,7 @@ simple:
 			os("d,");
 			goto leaexit;
 		case CONST:
-			od(val);
+			od((int)(long)val);
 			ob(',');
 leaexit:
 			ob(reg);
@@ -347,7 +347,7 @@ void dolongs(int op, int *arg)
 {
 	switch (op) {
 	case STACK:
-		gen(LOAD, DREG, XIND, 2);
+		gen(LOAD, DREG, XIND, (expnode *)2L);
 		gen(PUSH, DREG, 0, NULL);
 		gen(LOAD, DREG, XIND, NULL);
 		gen(PUSH, DREG, 0, NULL);
@@ -426,7 +426,7 @@ void dolongs(int op, int *arg)
 		sp -= 4;
 		break;
 	case LCONST:
-		getcon(arg, 2);
+		getcon((int *)(long)arg, 2);
 		break;
 	default:
 		error("codgen - longs");
@@ -442,7 +442,7 @@ void dofloats(int op, int arg)
 {
 	switch (op) {
 	case FCONST:
-		getcon(arg, 4);
+		getcon((int *)(long)arg, 4);
 		break;
 	case STACK:
 		fcall("_dstack");
@@ -527,7 +527,7 @@ void getcon(int *p, int n)
 
 	ot("bsr ");
 	label(temp = getlabel());
-	defcon(p, n);
+	defcon((INTTYPE *)p, n);
 	olbl(temp);
 	ol("puls x");
 }
@@ -536,7 +536,7 @@ void defcon(INTTYPE *p, int n)
 {
 	defword();
 	if (n == 1)
-		od((int)p);
+		od((int)(long)p);
 	else if (p == NULL) {
 		while (--n > 0)
 			os("0,");
@@ -603,16 +603,16 @@ void trouble(int op, int arg, expnode *val)
 			if (op == AND)
 				ol(clra);
 			ot(s);
-			doref('b', arg, val, 0);
+			doref('b', arg, (long)val, 0);
 		} else {
 			ot(s);
-			doref('a', arg, val, 0);
+			doref('a', arg, (long)val, 0);
 			ot(s);
-			doref('b', arg, val, 1);
+			doref('b', arg, (long)val, 1);
 		}
 		break;
 	case CONST:
-		switch (temp = ((int) val >> 8) & 0xff) {
+		switch (temp = ((int)(long) val >> 8) & 0xff) {
 		case 0:
 			if (op == AND)
 				ol(clra);
@@ -628,7 +628,7 @@ void trouble(int op, int arg, expnode *val)
 			ot(s);
 			doref('a', CONST, temp, 0);
 		}
-		switch (temp = (int) val & 255) {
+		switch (temp = (int)(long) val & 255) {
 		case 0:
 			if (op == AND)
 				ol("clrb");
@@ -655,7 +655,7 @@ void trouble(int op, int arg, expnode *val)
 	}
 }
 
-void doref(int reg, int arg, int val, int offset)
+void doref(int reg, int arg, long val, int offset)
 {
     ob(reg);
     ob(' ');
@@ -672,7 +672,7 @@ static void addoff(int offset)
     }
 }
 
-void deref(int arg, int val, int offset)
+void deref(int arg, long val, int offset)
 {
 	register expnode	*node;
 	register symnode	*sn;
@@ -686,10 +686,10 @@ void deref(int arg, int val, int offset)
         node = (expnode *) val;
         if (node->op == AMPER) {
             ob('#');
-            deref(NODE, node->left, offset);
+            deref(NODE, (long)node->left, offset);
             return;
         }
-        deref(node->op, node->val.sp, offset + node->modifier);
+        deref(node->op, (long)node->val.sp, offset + node->modifier);
         return;
     case CONST:
         ob('#');
@@ -807,7 +807,7 @@ void ob(int b)
 
 void os(char *s)
 {
-    fprintf(code, s);
+    fprintf(code, "%s", s);
 }
 
 void od(int16_t n)

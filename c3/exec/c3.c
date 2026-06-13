@@ -28,9 +28,19 @@
 
 #define PREPNAME "c3prep"
 #define COMPNAME "c3comp"
-#define OPTZNAME "c3opt"
+/* The working optimiser is "c3optx" (built from optexp/); the original
+   "c3opt" (opt/) is incomplete and not built. */
+#define OPTZNAME "c3optx"
+#ifdef UNIX
+/* On a modern host there is no rma/rlink; default to the lwasm/lwlink
+   back-end wrappers (lwbackend/c3-as, c3-ld).  Override any of these with
+   the C3_OPT / C3_ASM / C3_LINK environment variables. */
+#define ASMBNAME "c3-as"
+#define LINKNAME "c3-ld"
+#else
 #define ASMBNAME "rma"
 #define LINKNAME "rlink"
+#endif
 
 #define CSTART  "/lib/cstart.r"
 #define CLIB    "/lib/clib.l"
@@ -130,6 +140,12 @@ int main(argc, argv)
 	register char  *p, **pp;
 	int             c, count, j;
 	int             assdel;
+	char           *optzname, *asmbname, *linkname;
+
+	/* tool names, overridable from the environment (see the #defines) */
+	if ((optzname = getenv("C3_OPT"))  == NULL) optzname = OPTZNAME;
+	if ((asmbname = getenv("C3_ASM"))  == NULL) asmbname = ASMBNAME;
+	if ((linkname = getenv("C3_LINK")) == NULL) linkname = LINKNAME;
 
 	if (argc == 1)
 	{
@@ -442,7 +458,7 @@ int main(argc, argv)
 			endargs();
 
 			dstptr = dest;
-			dofork(OPTZNAME, "optimizer", 0);
+			dofork(optzname, "optimizer", 0);
 
 			if (assdel)
 				unlink(source);
@@ -469,7 +485,7 @@ int main(argc, argv)
 
 		endargs();
 		dstptr = dest;
-		dofork(ASMBNAME, "assembler", 0);
+		dofork(asmbname, "assembler", 0);
 
 		if (assdel)
 			unlink(source);
@@ -554,7 +570,7 @@ int main(argc, argv)
 
 	endargs();
 	dstptr = NULL;
-	dofork(LINKNAME, "linker", 0);
+	dofork(linkname, "linker", 0);
 	/*
 	        chmod(outname,15);
 	*/

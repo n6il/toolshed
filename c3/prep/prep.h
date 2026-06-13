@@ -30,7 +30,7 @@ extern int errno;
 #define TRUE		1
 #define FALSE		0
 
-#define FNAMSIZE    128     /* length of file names */
+#define FNAMSIZE    256     /* length of file names, incl. include paths */
 #define NAMESIZE    256     /* length of macro names */
 #define HOLDSIZE    512     /* size of string hold buffer */
 #define LINESIZE    512     /* size of line buffer */
@@ -138,5 +138,7 @@ global direct long
 extern long parsexp();
 extern long primary();
 
-extern macro *addmac();
+extern macro *addmac(), *findmac();
+extern macdef *revlist();
 extern char *savestr(), *setfile(), *makename();
+extern char *grab(), *copystr(), *nextname();

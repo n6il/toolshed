@@ -16,8 +16,8 @@
 
 #include "cj.h"
 
-static numshf(n);
-static double normaliz(n);
+static numshf();
+static double normaliz();
 
 #define     isdigit(c)  (chartab[c]==DIGIT)
 
@@ -76,7 +76,7 @@ getsym()
                 }
             } else {
                 sym = NAME;
-                symval = (int) ptr;
+                symval = (long) ptr;
             }
             break;
         case DIGIT:
@@ -99,7 +99,7 @@ donum:
                 case LONG:
                     longp = (long *) grab(sizeof(long));
                     *longp = *np.lp;
-                    symval = (int) longp;
+                    symval = (long) longp;
 #ifdef DEBUG
 fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
 #endif
@@ -109,7 +109,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                 case DOUBLE:
                     dblp = (double *) grab(sizeof(double));
                     *dblp = *np.dp;
-                    symval = (int) dblp;
+                    symval = (long) dblp;
                     sym = FCONST;
                     break;
 #endif
@@ -551,20 +551,36 @@ fraction:
         return DOUBLE;
     }
 
-    if (*((long*)&n)) return 0;     /*  overflow  */
-    if (cc=='l' || cc=='L') {       /* explicitly long */
-        getch();
-longint:
-#ifdef DEBUG
-pflinit();
-fprintf(stderr,"number: n=%08lX%08lX\n",*((long*)&n),*((long*)&n+1));
-#endif
-        *np.lp = *((long*)&n+1);
-        return LONG;
-    } else if (*((short*)&n+2)) goto longint;   /*  implicitly long  */
-    else {                          /*  int  */
-        *np.ip = *((short*)&n+3);
-        return INT;
+    /*
+     * n[] holds the parsed value as 8 big-endian bytes (n[0] most
+     * significant).  The original code aliased it as host long/short
+     * (*((long*)&n) etc.), which assumed a big-endian host with 16-bit int
+     * and 32-bit long (the 6809).  Extract the high and low 32-bit halves
+     * by hand so it works on any host (e.g. little-endian LP64).  Target
+     * semantics are preserved: int = low 16 bits, long = low 32 bits,
+     * overflow if any of the high 32 bits are set.
+     */
+    {
+        register unsigned char *nb = (unsigned char *) &n;
+        unsigned long hi, lo;
+        int k;
+
+        hi = lo = 0;
+        for (k = 0; k < 4; k++) hi = (hi << 8) | (nb[k]     & 0xFF);
+        for (k = 4; k < 8; k++) lo = (lo << 8) | (nb[k]     & 0xFF);
+
+        if (hi) return 0;                   /*  overflow (> 32 bits)  */
+        if (cc=='l' || cc=='L') {           /* explicitly long */
+            getch();
+            *np.lp = lo;
+            return LONG;
+        } else if (lo & 0xFFFF0000UL) {     /*  implicitly long (> 16 bits)  */
+            *np.lp = lo;
+            return LONG;
+        } else {                            /*  int  */
+            *np.ip = lo;
+            return INT;
+        }
     }
 }
 

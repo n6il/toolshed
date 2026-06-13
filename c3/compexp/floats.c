@@ -48,7 +48,7 @@ register expnode *node;
 			node->op = FREG;
 			break;
         case FCONST:
-            gen(DBLOP, FCONST, node->val.dp, NULL);
+            gen(DBLOP, FCONST, (long)node->val.dp, NULL);
             node->op = XIND;
             /*  should free constant storage here  */
             node->val.dp = NULL;

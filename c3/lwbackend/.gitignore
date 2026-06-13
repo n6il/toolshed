@@ -1,0 +1,5 @@
+obj/
+crt0.o
+libc3lw.a
+*.o
+c3lw.l

@@ -30,7 +30,7 @@ extdef()
 	register symnode *ptr;
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
-	int size,ssize,tsc,sclass,type,temp;
+	long size; int ssize,tsc,sclass,type,temp;
 	elem *eptr;
 
 	while (sym == RBRACE) {
@@ -140,7 +140,7 @@ argdef()
 	register symnode *ptr;
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
-	int sclass,type,size,stemp,temp;
+	long size; int sclass,type,stemp,temp;
 	elem *eptr;
 
 	switch (sclass = setclass()) {
@@ -200,7 +200,7 @@ blkdef()
 	symnode *p, *ptemp;
 	dimnode *dimptr, *tdp;
 	expnode *ep;
-	int sclass,type,temp,size,stemp,ssize;
+	long size; int sclass,type,temp,stemp,ssize;
 	elem *eptr;
 	initnode *i;
 
@@ -301,7 +301,7 @@ register elem *eptr;
 		  error("declaration mismatch");
 		  return 1;
 	 }
-	 return NULL;
+	 return 0;
 }
 
 
@@ -561,13 +561,13 @@ setclass()
 
 
 settype(size,dimptr,ellist)
-int *size;
+long *size;		/* may carry a struct-tag pointer (USTRUCT) */
 dimnode **dimptr;
 elem **ellist;
 {
 	register symnode *ptr, *tagptr;
 	dimnode *dptr;
-	int offset,msize,mtype,savflg,dtype,s;
+	long msize; int offset,mtype,savflg,dtype,s;
 	elem *eptr,*elast,*elocal;
 	int type=0,tsize=2;
 
@@ -629,7 +629,7 @@ default:
 							*ellist=tagptr->x.elems;
 							return STRUCT;
 						}
-						*size = (int) tagptr;
+						*size = (long) tagptr;
 						return USTRUCT;
 					} else if(tagptr->type==STRUCT) multidef();
 				}
@@ -746,7 +746,7 @@ dimnode **dptr;
 	if (sym == LPAREN) {
 		dtype = (dtype<<2) + FUNCTION;
 		if (blklev) {
-			declist(&dummy);
+			declist((symnode **)&dummy);
 			clear(&dummy);
 		} else declist(&arglist);
 	} else {
@@ -798,6 +798,7 @@ shiftin (a,b)
 sizeup(ptr,dimptr,size)
 register symnode *ptr;
 register dimnode *dimptr;
+long size;
 {
 	register int n,temp;
 

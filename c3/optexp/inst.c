@@ -107,7 +107,7 @@ instruction    *insins(ins, mnem, args, l)
 				if (lp && lp->dest)
 					movlab(i, lp->dest);
 				if (i->llist == NULL
-				    && i->pred != &ilist
+				    && (chain *)i->pred != &ilist
 #if 0
 				    && (((instruction *) i->pred)->itype & CODEBRK))
 #else
@@ -202,7 +202,7 @@ void rminst()
 	register instruction *i;
 	label          *l;
 
-	if ((i = ilist.succ) == &ilist)
+	if ((chain *)(i = ilist.succ) == &ilist)
 		error("removing too many instructions");
 
 	if ((i->itype & LONGBRA) == LONGBRA)
@@ -268,7 +268,7 @@ void fix(i, direction)
 	else
 	{
 		for (c = BRALIM;
-		     c && ((ip = ip->succ) != NULL) != &ilist;
+		     c && (chain *)(ip = ip->succ) != &ilist;
 		     --c)
 		{
 			if ((ip->itype & LONGBRA) == LONGBRA)

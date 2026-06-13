@@ -813,7 +813,7 @@ fixint:
 					break;
 				case DOUBLE:
 					if (node->op == LCONST) {
-						*dblptr=grab(DOUBLESIZE);
+						dblptr = (DBLETYPE *) grab(DOUBLESIZE);
 						*dblptr = *node->val.lp;
 						goto fixf;
 					}

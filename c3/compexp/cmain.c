@@ -24,7 +24,7 @@ direct int eflag;
 #ifndef PASS2
 /* pass1 only */
 direct  int     *inclptr;       /* include stack pointer */
-#endif      <<<- inserted to match preceeding "ifndef PASS2"
+#endif      /* <<<- inserted to match preceeding "ifndef PASS2" */
 
 int main(int argc, char **argv)
 {

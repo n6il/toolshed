@@ -1,5 +1,10 @@
 #include <stdio.h>
 
+/* "direct" is a 6809 storage class (direct page); empty off-target. */
+#ifndef OS9
+#define direct
+#endif
+
 #define LABELSIZE       11
 #define MNEMSIZE        10
 #define ARGSIZE         90
@@ -29,16 +34,25 @@
 
 #define GLOBAL      0x01    /* global label flag */
 
+/*
+ * chain, label (lstruct) and instruction are intrusive circular-list nodes
+ * that all begin with succ/pred and are freely interchanged.  The original
+ * K&R sources typed the links as the generic pointer "int *"; modern C will
+ * not dereference an int * as a struct, so the links are typed as "chain *"
+ * here.  The cross-node assignments that remain are flagged only as
+ * incompatible-pointer warnings (demoted in rules.mak); the layout, and hence
+ * the runtime behaviour, is unchanged.
+ */
 typedef struct chstruct {
-    int *succ,*pred;
+    struct chstruct *succ,*pred;
 } chain;
 
 typedef union istruct {
     struct {
-        int *succ,*pred;
+        chain *succ,*pred;
         struct lstruct {
-            int *succ,*pred;
-            struct istruct *dest;
+            chain *succ,*pred;
+            union istruct *dest;        /* istruct is a union, not a struct */
             chain *rlist;
             struct lstruct *nextl;
             int lflags;
@@ -49,7 +63,7 @@ typedef union istruct {
         char *args;
     } instyp1;
     struct {
-        int *succ,*pred;
+        chain *succ,*pred;
         struct lstruct *llist;
         int itype;
         char mnem[MNEMSIZE+1];

@@ -64,7 +64,7 @@ void optim(i)
 	i = i->pred;
 	for (;;)
 	{
-loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
+loop:		if ((chain *)i == &ilist || (chain *)(i2 = i->succ) == &ilist)
 			return;
 		if (i2->llist)
 		{		/* look for jump to next instruction */
@@ -83,7 +83,7 @@ loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
 				}
 				else if ((i->itype & CODEBRK)
 					 && i->llist == NULL
-					 && (i = i->pred) != &ilist
+					 && (chain *)(i = i->pred) != &ilist
 					 && isconbra(i->itype)
 					 && i->alt.lab->dest == i2)
 				{
@@ -105,7 +105,7 @@ loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
 			c = 0;
 			for (ap = a->actp; ap; ap = ap->nxtins)
 			{
-				if (i == &ilist || i->llist)
+				if ((chain *)i == &ilist || i->llist)
 					break;
 				if (ap->mnp && match(i->mnem, ap->mnp) == 0)
 					break;
@@ -113,7 +113,7 @@ loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
 				{
 					if (ap->opp == one)
 					{
-						if (i->pred == &ilist)
+						if ((chain *)i->pred == &ilist)
 							break;
 						if (match(i->alt.args, ((instruction *) (i->pred))->alt.args) == 0)
 							break;
@@ -218,7 +218,7 @@ void finddupl(i)
 	               *rlp2,
 	               *lmovp;
 
-	if (i->pred == &ilist)
+	if ((chain *)i->pred == &ilist)
 		return;
 	/* move labels on "bra"s to here */
 	lmovp = NULL;
@@ -246,7 +246,7 @@ void finddupl(i)
 	while (lmovp)
 	{
 		movlab(ip1 = lmovp->pred, i);
-		if ((ip1 = ip1->pred) != &ilist && (ip1->itype & BRANCH))
+		if ((chain *)(ip1 = ip1->pred) != &ilist && (ip1->itype & BRANCH))
 		{
 			if (ip1->itype & CODEBRK)
 				remins(ip1->succ);
@@ -308,7 +308,7 @@ void finddupl(i)
 		else
 		{
 			/* travel down instruction list */
-			for (ip1 = i->pred; ip1 != &ilist; ip1 = ip1->pred)
+			for (ip1 = i->pred; (chain *)ip1 != &ilist; ip1 = ip1->pred)
 			{
 				if (!(ip1->itype & CODEBRK)
 				    || (ip1->itype & (BLOCKDUP | BRANCH)))
@@ -335,7 +335,7 @@ int duplsrch(ip1, ip2)
 	count = 0;
 	if ((ip1b = ip1) == (ip2b = ip2))
 		return 0;
-	while (ip1 != &ilist && ip2 != &ilist
+	while ((chain *)ip1 != &ilist && (chain *)ip2 != &ilist
 	       && ip1 != ip2b && ip2 != ip1b
 	       && (ip1->itype & BRAMASK) == (ip2->itype & BRAMASK)
 	       && !(ip1->itype & BLOCKDUP)

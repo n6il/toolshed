@@ -1,5 +1,5 @@
 #include "op.h"
-#include "../ident.c"
+/* #include "../ident.c" */     /* ident.c is absent; nothing here uses it */
 
 #define LINESIZE 100
 

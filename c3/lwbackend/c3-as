@@ -1,0 +1,25 @@
+#!/bin/sh
+# c3-as - assembler shim used by the c3 driver in place of Microware "rma".
+# The driver invokes it as:   c3-as SOURCE.a -q -o=OUTPUT.r
+# We translate the c3/RMA assembly to lwasm syntax and assemble a lwobj.
+#
+# Locates the filter relative to this script (so it works from the source
+# tree or once installed alongside it); override with C3LW_HOME.
+set -e
+self=$0
+while [ -L "$self" ]; do
+	link=$(readlink "$self")
+	case "$link" in /*) self=$link ;; *) self=$(dirname "$self")/$link ;; esac
+done
+home=${C3LW_HOME:-$(cd "$(dirname "$self")" && pwd)}
+src=; out=
+for a in "$@"; do
+	case "$a" in
+		-o=*) out=${a#-o=} ;;
+		-*)   ;;			# ignore rma flags (-q, ...)
+		*)    src=$a ;;
+	esac
+done
+[ -n "$src" ] || { echo "c3-as: no input file" >&2; exit 2; }
+[ -n "$out" ] || { echo "c3-as: no -o=output" >&2; exit 2; }
+awk -f "$home/c3lw.awk" < "$src" | lwasm --format=obj -o "$out" -

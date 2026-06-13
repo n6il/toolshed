@@ -19,8 +19,8 @@
 
 #include "cj.h"
 
-static addoff(offset);
-static outlea(reg);
+static addoff();
+static outlea();
 
 direct int datflag;
 
@@ -38,7 +38,7 @@ extern char *getrel(),regname();
 gen(op,rtype,arg,val)
 register op,rtype;
 register expnode *val;
-register int arg;
+register long arg;		/* an int (register/type/offset) or an expnode * */
 {
     register expnode *ptr;
     register symnode *sptr;
@@ -61,7 +61,7 @@ register int arg;
             if((sp-=2) < maxpush) maxpush=sp;
             return;
         case JMPEQ:
-            gen(COMPARE,XREG,CONST,arg);
+            gen(COMPARE,XREG,CONST,(expnode *)arg);
             arg=rtype;
             rtype=EQ;
         case CNDJMP:
@@ -187,7 +187,7 @@ fprintf(stderr,
                             fprintf(code,"%d,%c\n",value,regname(temp));
                         } else {
                             transfer(regname(temp),'d');
-                            if (value) gen(PLUS,DREG,CONST,value);
+                            if (value) gen(PLUS,DREG,CONST,(expnode *)(long)value);
                         }
                         return;
                     case DREG:
@@ -198,7 +198,7 @@ fprintf(stderr,
                         return;
                     case CONST:
                         arg = CONST;
-                        val = (expnode *)value;
+                        val = (expnode *)(long)value;
                 }
             }
             if(rtype==DREG && arg==CONST && val==0) {
@@ -228,7 +228,7 @@ fprintf(stderr,
             ot("sub");
             goto simple;
         case RSUB:
-            gen(NEG);
+            gen(NEG,0,0,0);
         case PLUS:
             ot("add");
 simple:
@@ -300,10 +300,10 @@ int *arg;
 {
     switch (op) {
         case STACK:
-            gen(LOAD,DREG,XIND,2);
-            gen(PUSH,DREG);
+            gen(LOAD,DREG,XIND,(expnode *)2L);
+            gen(PUSH,DREG,0,0);
             gen(LOAD,DREG,XIND,0);
-            gen(PUSH,DREG);
+            gen(PUSH,DREG,0,0);
 			break;
 		case TEST:
             ol("lda 0,x\n ora 1,x\n ora 2,x\n ora 3,x");
@@ -422,6 +422,7 @@ register int *p;
 }
 
 mwsyscall(s)
+char *s;
 {
     ot(lbsr);
     ol(s);
@@ -429,6 +430,7 @@ mwsyscall(s)
 }
 
 lcall(s)
+char *s;
 {
     ot(lbsr);
     ol(s);
@@ -436,6 +438,7 @@ lcall(s)
 }
 
 fcall(s)
+char *s;
 {
     ot(lbsr);
     ol(s);
@@ -477,7 +480,7 @@ register expnode *val;
             }
             break;
         case CONST:
-            switch (temp = ((int)val >> 8) & 0xff) {
+            switch (temp = ((int)(long)val >> 8) & 0xff) {
                 case 0:
                     if (op == AND) ol(clra);
                     break;
@@ -491,7 +494,7 @@ register expnode *val;
                     ot(s);
                     doref('a',CONST,temp,0);
             }
-            switch (temp = (int)val & 255) {
+            switch (temp = (int)(long)val & 255) {
                 case 0:
                     if (op == AND) ol("clrb");
                     break;
@@ -517,6 +520,8 @@ register expnode *val;
 }
 
 doref(reg,arg,val,offset)
+int reg,arg,offset;
+long val;			/* an expnode * in NODE mode, an int otherwise */
 {
     ob(reg);
     ob(' ');
@@ -534,6 +539,8 @@ register int offset;
 }
 
 deref(arg,val,offset)
+int arg,offset;
+long val;			/* an expnode * in NODE mode, an int otherwise */
 {
     register expnode *node;
     register symnode *sn;
@@ -546,10 +553,10 @@ deref(arg,val,offset)
             node = (expnode *)val;
             if (node->op == AMPER) {
                 ob('#');
-                deref(NODE,node->left,offset);
+                deref(NODE,(long)node->left,offset);
                 return;
             }
-            deref(node->op,node->val.sp,offset+node->modifier);
+            deref(node->op,(long)node->val.sp,offset+node->modifier);
             return;
         case CONST:
             ob('#');
@@ -632,12 +639,14 @@ char *getrel(op)
 }
 
 ot(s)
+char *s;
 {
     putc(' ',code);
     os(s);
 }
 
 ol(s)
+char *s;
 {
     ot(s);
     nl();
@@ -654,8 +663,9 @@ ob(b)
 }
 
 os(s)
+char *s;
 {
-    fprintf(code,s);
+    fprintf(code,"%s",s);
 }
 
 od(n)
@@ -677,6 +687,7 @@ olbl(n)
 }
 
 on(s)
+char *s;
 {
     fprintf(code,"%.8s",s);
 }
@@ -695,6 +706,7 @@ modstk(nsp)
 }
 
 nlabel(ptr,scope)
+char *ptr;
 {
     on(ptr);
     if (scope) ob(':');
