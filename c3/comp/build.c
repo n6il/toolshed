@@ -276,7 +276,7 @@ constop(op,r,l)
         case UGEQ:
         case UGT:
             {
-                unsigned long lp,rp;
+                unsigned lp,rp;
                 lp = (unsigned) l;  rp = (unsigned) r;
                 switch (op) {
                     case ULEQ:      return rp <= lp;

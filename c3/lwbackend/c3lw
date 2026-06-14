@@ -16,7 +16,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 c3=$(cd "$here/.." && pwd)
 B="$c3/build/unix"
 PREP="$B/prep/c3prep"; COMP="$B/comp/c3comp"; OPTX="$B/optx/c3optx"
-FILTER="$here/c3lw.awk"; CRT0="$here/crt0.o"; RTLIBDIR="$here"
+FILTER="$here/c3lw.awk"; CRT0="$here/crt0.o"; RTLIBDIR="$here"; LDSCRIPT="$here/os9c3.ld"
 
 stop=link; out=
 while [ $# -gt 0 ]; do
@@ -42,5 +42,5 @@ lwasm --format=obj -o "$base.o" "$base.lw.s"
 
 # Link an OS-9 module.  Linking from the output directory keeps the embedded
 # module name clean (lwlink uses the output filename as the module name).
-lwlink --format=os9 -o "$out" "$CRT0" "$base.o" "-L$RTLIBDIR" "-lc3lw"
+lwlink --format=os9 -s "$LDSCRIPT" -o "$out" "$CRT0" "$base.o" "-L$RTLIBDIR" "-lc3lw"
 echo "$out"

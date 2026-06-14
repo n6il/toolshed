@@ -25,4 +25,4 @@ for a in "$@"; do
 done
 [ -n "$out" ] || { echo "c3-ld: no -o=output" >&2; exit 2; }
 # shellcheck disable=SC2086
-lwlink --format=os9 -o "$out" "$home/crt0.o" $objs "-L$home" "-lc3lw"
+lwlink --format=os9 -s "$home/os9c3.ld" -o "$out" "$home/crt0.o" $objs "-L$home" "-lc3lw"

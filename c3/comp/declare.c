@@ -513,13 +513,56 @@ declist(list)
 register symnode **list;
 {
 	register symnode *ptr,*last;
+	symnode *ptemp;
+	dimnode *dimptr,*tdp;
+	long size;
+	int temp;
+	elem *eptr;
 
 	*list = NULL;
 	getsym();
 
 	for (;;) {
 		if (sym == RPAREN) break;
-		if (sym == NAME) {
+
+		if (istype() || issclass()) {
+			/*
+			 * ANSI-style typed parameter:  [register] type declarator
+			 * (also covers a prototype's abstract "type" with no name, and
+			 * "(void)").  Parse it the way argdef() parses a K&R parameter
+			 * declaration, but inline.  The register hint is accepted and
+			 * ignored (the param becomes a plain ARG); newfunc lays the
+			 * arglist out from each entry's type/size.
+			 */
+			setclass();			/* consume & ignore any 'register' */
+			if ((temp = settype(&size,&dimptr,&eptr)) == 0) temp = INT;
+			tdp = dimptr;
+			temp = declarator(&ptemp,&tdp,temp);
+			ptr = ptemp;
+
+			if (isary(temp)) {	/* array param decays to pointer */
+				temp = incref(decref(temp));
+				tdp = tdp ? tdp->dptr : 0;
+			}
+#ifdef DOFLOATS
+			else if (temp == FLOAT) temp = DOUBLE;
+#endif
+			if (ptr) {		/* a named parameter (function definition) */
+				if (ptr->storage == ARG) error("named twice");
+				else if (ptr->type != UNDECL) pushdown(ptr);
+				ptr->type = temp;
+				ptr->storage = ARG;
+				ptr->blklev = 1;
+				ptr->x.elems = eptr;
+				sizeup(ptr,tdp,size);
+				if (*list) last->snext = ptr;
+				else *list = ptr;
+				ptr->snext = NULL;
+				last = ptr;
+			}
+			/* else: abstract param ("(void)" or a prototype type) - discarded */
+		} else if (sym == NAME) {
+			/* K&R-style bare parameter name (type comes from argdef later) */
 			ptr = (symnode *) symval;
 			if (ptr->storage == ARG) error("named twice");
 			else if (ptr->type != UNDECL) pushdown(ptr);

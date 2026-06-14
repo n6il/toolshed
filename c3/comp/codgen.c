@@ -347,10 +347,10 @@ int *arg;
 
 #ifdef  DOFLOATS
 dofloats(op,arg)
-register int arg;
+register long arg;
 {
     switch (op) {
-        case FCONST:    getcon(arg,4); break;
+        case FCONST:    getcon((int *)arg,4); break;
         case STACK:     fcall("_dstack"); sp -= 8; break;
         case TEST:
             fprintf(code," lda %c,x\n",arg == FLOAT ? '3' : '7');
@@ -398,7 +398,8 @@ int *p;
 
     ot("bsr ");
     label(temp = getlabel());
-    defcon(p,n);
+    if (n == 2) deflong((char *) p);        /* LCONST: host long */
+    else        defbytes((char *) p, n * 2);/* FCONST: host double (n=4 -> 8 bytes) */
     olbl(temp);
     ol("puls x");
 }
@@ -418,6 +419,56 @@ register int *p;
             od(*p++);
             if (i != n - 1) ob(',');
         }
+    nl();
+}
+
+/*
+ * Emit long / float / double constants as TARGET (6809, big-endian) 16-bit
+ * words from the HOST-format value.  The generic defcon() above reads the
+ * constant as int-sized words: right on the 6809 (int = 16 bits) but wrong on
+ * a 64-bit host (int = 32 bits) - it over-reads and mis-orders the bytes, so
+ * float/double/long constants came out as garbage.  These helpers are
+ * host-int-size- and host-endianness-independent.
+ *
+ * float/double are emitted as IEEE big-endian (the host `double` is IEEE
+ * binary64, the same representation the MC6839 FP package uses).  long is
+ * emitted as the low 32 bits, high word first.  Both also stay correct when c3
+ * eventually self-hosts on the 6809 (big-endian, int = 16 bits): defbytes()
+ * then emits the bytes in source order, deflong() the two 16-bit halves.
+ */
+hostbig()                       /* nonzero if the host is big-endian */
+{
+    int probe;
+
+    probe = 1;
+    return *((char *) &probe) == 0;
+}
+
+defbytes(p,nbytes)              /* host-order float/double bytes -> BE words */
+char *p;
+{
+    register int i, hi, lo;
+
+    defword();
+    for (i = 0; i < nbytes; i += 2) {
+        if (hostbig()) { hi = p[i]          & 0xFF; lo = p[i+1]        & 0xFF; }
+        else           { hi = p[nbytes-1-i] & 0xFF; lo = p[nbytes-2-i] & 0xFF; }
+        od((hi << 8) | lo);
+        if (i + 2 < nbytes) ob(',');
+    }
+    nl();
+}
+
+deflong(p)                      /* host long's low 32 bits -> 2 BE words */
+char *p;
+{
+    long v;
+
+    v = *((long *) p);
+    defword();
+    od((int) (v >> 16));
+    ob(',');
+    od((int) v);
     nl();
 }
 

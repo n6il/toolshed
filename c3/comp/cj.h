@@ -93,7 +93,9 @@ typedef struct symstr {
 
 typedef struct expstr {
 	short type;				/* type of node */
-	int size;				/* size of basic type */
+	long size;				/* size of basic type (long to match symnode.size:
+				   c3 shares one member namespace, so a member name must have
+				   the same type/offset in every struct that uses it) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	short op;				/* operator */
 	union {

@@ -21,7 +21,8 @@ c3prep | c3comp | c3optx | c3lw.awk | lwasm --format=obj | lwlink --format=os9
 | File | Role |
 |------|------|
 | `c3lw.awk` | Translate c3 (RMA/OS-9) assembly → lwasm syntax (the post-pass filter) |
-| `crt0.s`   | Minimal C startup for the lwlink model (entry, Y setup, `_stkcheck`/`_rpterr` stubs, runtime globals, stack) |
+| `os9c3.ld` | lwlink script: the built-in `os9` layout + the `irec`/`ireloc`/`icreloc` init-data sections and the `stack` reservation |
+| `crt0.s`   | C startup for the lwlink model: entry/Y setup, data-area zeroing, init-image copy + pointer relocation, `_stkcheck`/`_rpterr` stubs, runtime globals |
 | `buildrt.sh` | Build the runtime: `crt0.o` + `libc3lw.a` (the C helper routines via the same filter) |
 | `c3lw`     | Driver script: `.c` → `.mod` (or `-S`/`-c` to stop at asm/object) |
 
@@ -63,13 +64,26 @@ with no environment set. Header paths up to 255 chars are fine (comp's
 
 ## What the filter does
 
-* `psect NAME,…` → `section code`; `vsect`[`dp`] → `section bss`;
-  `endsect` → return to the enclosing section (RMA nests; lwasm doesn't) or
-  `endsection` for the final one; `nam`/`ttl` → comments.
+* `psect NAME,…` → `section code`; `endsect` → return to the enclosing section
+  (RMA nests; lwasm doesn't) or `endsection` for the final one; `nam`/`ttl` →
+  comments.
 * Emits `EXPORT` for every non-temporary defined label and `EXTERN` for every
   referenced-but-undefined symbol (RMA auto-externed via ROF; lwasm needs them
   declared). The `_N`/`_ON` compiler temporaries and string labels stay local.
-* OS-9 module framing comes from `crt0.s` (`__start` entry) + lwlink defaults;
+* `vsect` (static/global data) is split for the OS-9 module model, where the
+  data area is *allocated* (not loaded) by `F$Fork`:
+  * **uninitialised** vsects (only `rmb`/`rzb`) reserve straight into `bss`;
+    `crt0` zeroes the whole data area, so they read back as 0 for free.
+  * **initialised** vsects emit a loaded *image* of the initial bytes in the
+    `data` section, a copy record (`src`/`end`/`dest`) in `irec`, and an equate
+    per symbol giving its data-area offset (derived from the image layout, so
+    `lwasm` computes the sizes — the filter doesn't). Pointer initialisers get
+    a relocation entry: into the data area → `ireloc` (`crt0` adds the data
+    base `Y`); into the module body, e.g. a string literal or function address
+    → `icreloc` (`crt0` adds the module base). `crt0` replays all three at
+    startup. See `os9c3.ld` (the matching lwlink script that carries the
+    `irec`/`ireloc`/`icreloc` sections and the runtime stack).
+* OS-9 module framing comes from `crt0.s` (`__start` entry) + `os9c3.ld`;
   `lwlink` sizes the data area from the `bss` sections and embeds the header.
 
 ## Status
@@ -78,23 +92,45 @@ Working end to end (verified by inspecting the emitted module header):
 
 * functions, recursion, locals, pointers, control flow;
 * string literals (emitted in the code section);
-* **uninitialised** globals (int and long);
+* **uninitialised** globals (int and long) — zeroed by `crt0` (`F$Fork` does
+  not zero allocated memory, so this is required, not incidental);
+* **initialised** globals and aggregates (`int x = 42;`, `int t[] = {…};`,
+  `char s[] = "hi";`) — copied into the data area at startup;
+* **pointer initialisers** — `char *p = arr;` (data pointer, relocated by the
+  data base) and `char *kw[] = {"if",…};` (string-literal pointers, relocated
+  by the module base);
 * integer `* / % << >>` (pulls `ccmult`/`ccdiv`/`ccmod`/`cshifts` from the lib);
-* long arithmetic (pulls the `cl*` helpers; `_flacc`/`_lbexit`/`_ltoacc` resolved).
+* long arithmetic (pulls the `cl*` helpers; `_flacc`/`_lbexit`/`_ltoacc` resolved);
+* float/double **constants** are emitted as big-endian IEEE-754 (binary64 /
+  binary32) on any host. float/double **arithmetic** is not usable yet — see
+  Known limitations.
+
+The init-data path was verified by decoding the linked module: the `data`
+image, the `irec` copy record, and the `ireloc`/`icreloc` entries all carry the
+expected offsets for a mixed test (`int`/array/string/`char *`-to-array/`long`
+plus a string-literal pointer array).
+
+**Runtime-verified on NitrOS-9** (USim, Pico-Thing L2): a module exercising
+every init-data path — initialised `char[]`, `int[]`, a data-pointer
+(`char *p=arr`, relocated by `+Y`), a string-literal pointer (`char *p="..."`,
+relocated by `+module base`), and an uninitialised `int` read back as 0 —
+printed all expected values (`tests/ctest.c`).
 
 The runtime library is grown incrementally by adding more `lib/imath` (etc.)
 sources to `buildrt.sh` — they translate through the same filter.
 
 ## Known limitations / next steps
 
-* **Initialised globals** (`int x = 42;`) link but are **not** initialised at
-  runtime: their values land in the `bss`-named data section, whose contents
-  lwlink's OS-9 target discards (it uses only the size). The filter warns. The
-  fix is the Microware approach: emit an init-data image in the code section
-  and have `crt0` copy it into the data area at startup (the original
-  `cstart.a` did this by reading a count+image from `etext`).
-* **`_rpterr`** (divide-by-zero / range error) is a no-op stub, and `_stkcheck`
-  does no overflow detection. Real versions need the OS-9 syscall defs.
+* **Putting a module on an OS-9 disk: set the execute attribute.** `os9 copy`
+  leaves a file `----r-wr` (no execute); OS-9 then refuses to load it
+  (`Error #214 No Permission`, or `#215 Bad Path Name` when run by path). Run
+  `os9 attr -e -pe disk,MODULE` after copying — this is what the NitrOS-9
+  makefile does (`OS9ATTR_EXEC`) for every module it installs.
+* **Stack size** is a fixed 1 KB reserved as the `stack` bss section (placed
+  last, at the top of the data area, by `os9c3.ld`). Grow it there if needed;
+  there is no overflow detection (`_stkcheck` is a stub).
+* **`_rpterr`** (divide-by-zero / range error) is a no-op stub. A real version
+  needs the OS-9 syscall defs.
 * **Direct-page data** (`vsect dp`) is mapped to ordinary bss; no `setdp`/DP
   optimisation.
 * **Static** functions/globals are over-exported (the filter can't see storage
@@ -104,5 +140,12 @@ sources to `buildrt.sh` — they translate through the same filter.
   cleaner long-term option if this back end becomes primary.
 * The embedded module name is the link output filename; pass a bare name (or
   add an `__os9` section) for a clean name.
-* `float`/`double` helpers (`_dadd`…) and the C library proper (`printf`,
-  syscalls, `lib.a`/`sys.a`) are not yet ported.
+* **float/double arithmetic gives wrong results.** The compiler emits IEEE-754
+  constants, but the ported helpers (`lib/fmath/cfloats.a`) use Microware's
+  own float format, so a program mixing literals and arithmetic computes
+  garbage. The plan is to replace the helpers with the MC6839 IEEE package —
+  see `MC6839.md`. Integer and long programs are unaffected.
+* The c3 `csect` (frame/DP work area) is handled: its `name rmb N` entries
+  become offset equates (the storage is stack-reserved at run time, accessed
+  `name,u`). cfloats relies on this.
+* The C library proper (`printf`, syscalls, `lib.a`/`sys.a`) is not yet ported.

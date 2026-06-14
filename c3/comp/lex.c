@@ -309,6 +309,9 @@ lexinit()
 #endif
      mosflg=0;
      install("char",CHAR);
+     install("void",INT);	/* ANSI void: c3 has no distinct void type, and
+				   ignores return values / treats all pointers
+				   alike, so void == int is sufficient */
      install("short",SHORT);
      install("auto",AUTO);
      install("extern",EXTERN);
@@ -561,10 +564,11 @@ fraction:
      * overflow if any of the high 32 bits are set.
      */
     {
-        register unsigned char *nb = (unsigned char *) &n;
-        unsigned long hi, lo;
+        register char *nb;
+        long hi, lo;
         int k;
 
+        nb = (char *) &n;
         hi = lo = 0;
         for (k = 0; k < 4; k++) hi = (hi << 8) | (nb[k]     & 0xFF);
         for (k = 4; k < 8; k++) lo = (lo << 8) | (nb[k]     & 0xFF);
@@ -574,7 +578,7 @@ fraction:
             getch();
             *np.lp = lo;
             return LONG;
-        } else if (lo & 0xFFFF0000UL) {     /*  implicitly long (> 16 bits)  */
+        } else if (lo & 0xffff0000) {       /*  implicitly long (> 16 bits)  */
             *np.lp = lo;
             return LONG;
         } else {                            /*  int  */
@@ -887,9 +891,21 @@ char c;
 }
 
 static double normaliz(n)
-long n[];
+char n[];
 {
-    return n[0] * 4294967296. + n[1];
+    /*
+     * n[] is the parsed digits as an 8-byte big-endian integer (n[0] most
+     * significant), built by addin().  Sum it into a double byte by byte so it
+     * is independent of host `long` width - the original `n[0]*2^32 + n[1]`
+     * aliased n as two 32-bit longs, which over-reads on a 64-bit host (where
+     * long is 64-bit), producing garbage.
+     */
+    register int i;
+    double v;
+
+    v = 0.0;
+    for (i = 0; i < 8; i++) v = v * 256.0 + (n[i] & 0xFF);
+    return v;
 }
 
 addin(n,c)
