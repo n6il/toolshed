@@ -8,6 +8,7 @@
 */
 
 #include "cj.h"
+#include "il.h"
 #define  MPOINT 1
 
 #define MAXREG  1
@@ -96,7 +97,17 @@ extdef()
 onlist:
 			ssize = sizeup(ptr,tdp,size);
 			if (!isftn(temp)) {
-				if (sym == ASSIGN) initialise(ptr,tsc,temp);
+				if (sym == ASSIGN) {
+#ifdef MKIL
+					/* the initialised-data emitters are constant (no codegen
+					   state), so run them here and pass the asm through */
+					ilwrec(IL_RAW); ilweol();
+					initialise(ptr,tsc,temp);
+					ilwrec(IL_ENDRAW); ilweol();
+#else
+					initialise(ptr,tsc,temp);
+#endif
+				}
 				else if (ssize == 0 && tsc!=EXTERN) sizerr();
 				else switch(tsc) {
 						case STATICD:
@@ -260,7 +271,18 @@ blkdef()
 
 		if (sym == ASSIGN) {
 			if (stemp == STATIC || stemp == STATICD)
+#ifdef MKIL
+			{
+				/* initialised local static: constant emitters, so run
+				   them and pass the asm through; the static's own label
+				   rides as IL_LBL so pass 2 can remap it */
+				ilwrec(IL_RAW); ilweol();
 				initialise(ptr,stemp,temp);
+				ilwrec(IL_ENDRAW); ilweol();
+			}
+#else
+				initialise(ptr,stemp,temp);
+#endif
 			else {
 				getsym();
 				if (isary(temp) || temp == STRUCT) initerr();
@@ -435,7 +457,14 @@ if (dflag) {printf("newfunc node:\n"); pnode(p1);}
 		switch (stemp = p1->storage) {
 			case UREG:
 			case YREG:
+#ifdef MKIL
+				ilwrec(IL_PARMOV);     /* pass 2 emits the spill */
+				ilwint(stemp);
+				ilwint(offset-sp);
+				ilweol();
+#else
 				gen(stemp,offset-sp);
+#endif
 				break;
 			case ARG:
 				p1->storage = AUTO;
@@ -451,7 +480,12 @@ if (dflag) {printf("newfunc node:\n"); pnode(p1);}
 
 	clear(&p2);
 	clear(&labelist);
-	if (lastst != RETURN) gen(RETURN,0,0);
+	if (lastst != RETURN)
+#ifndef MKIL
+		gen(RETURN,0,0);
+#else
+		;
+#endif
 	lastst = 0;
 
 	/* generate stack reservation */
@@ -478,6 +512,35 @@ int stkadj;
 	savlev = stlev + stkadj;
 
 	while (issclass() || istype()) blkdef();
+#ifdef MKIL
+	{
+		int hadlocals;
+
+		ilwrec(IL_BLOCK); ilwint(stlev); ilweol();
+		while (initlist) {              /* local initialisers -> IL_EXPR */
+			i = initlist;
+			p = i->initp;
+			p = newnode(NAME,0,0,i->initname,p->lno,p->pnt);
+			p = newnode(ASSIGN,p,i->initp,0,p->lno,p->pnt);
+			ilwrec(IL_EXPR); ilweol();
+			ilexpr(p);
+			ilwrec(IL_ENDE); ilweol();
+			reltree(p);
+			i = i->initnext;
+			initlist->initnext = initfree;
+			initfree = initlist;
+			initlist = i;
+		}
+		while (sym != RBRACE && sym != EOF) statement();
+		hadlocals = (vlist != NULL);
+		clear(&vlist);
+		vlist = varlist;
+		--blklev;
+		stlev = savlev;
+		ilwrec(IL_ENDBLOCK); ilwint(savlev); ilwint(hadlocals); ilweol();
+		return;
+	}
+#endif
 	if (maxpush > stlev) maxpush = stlev;
 	sp = modstk(stlev);
 
@@ -838,50 +901,6 @@ shiftin (a,b)
 }
 
 
-sizeup(ptr,dimptr,size)
-register symnode *ptr;
-register dimnode *dimptr;
-long size;
-{
-	register int n,temp;
-
-	switch (btype(temp = ptr->type)) {
-		case CHAR:		n = 1; break;
-		case INT:
-		case UNSIGN:	n = INTSIZE; break;
-		case LONG:		n = LONGSIZE; break;
-#ifdef  DOFLOATS
-		case FLOAT:		n = FLOATSIZE; break;
-		case DOUBLE:	n = DOUBLESIZE; break;
-#endif
-		case UNION:
-		case STRUCT:	n = size; break;
-		case USTRUCT:	n = 0; break;
-	}
-	ptr->size = n ? n : size;
-
-	return getsize(temp,n,ptr->dimptr = dimptr);
-}
-
-
-getsize(t,size,dptr)
-register dimnode *dptr;
-{
-	int n;
-
-	if (isptr(t) || isftn(t)) return 2;
-
-	if (isary(t)) {
-		n = 1;
-		do {
-			n *= dptr->dim;
-			dptr = dptr->dptr;
-		} while (isary(t = decref(t)));
-
-		return n * (isptr(t) ? POINTSIZE : size);
-	}
-	return size;
-}
 
 
 clear(list)

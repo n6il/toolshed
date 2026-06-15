@@ -7,6 +7,7 @@
 */
 
 #include "cj.h"
+#include "il.h"
 static ilist();
 static defobject();
 static datdef();
@@ -43,8 +44,14 @@ register symnode *ptr;
             nlabel(p,0);        /* local to file */
         }
     } else {
+#ifdef MKIL
+        ilwrec(IL_LBL);    /* function local: pass 2 owns the label */
+        ilwint(ptr->offset);
+        ilweol();
+#else
         olbl(ptr->offset);  /* function local */
         nl();
+#endif
     }
 
     if (type == (CHAR | ARRAY)) {
@@ -218,8 +225,14 @@ err:
                 datdef((int *)p->val.lval,type);
                 break;
             case STRING:
+#ifdef MKIL
+                ilwrec(IL_DWSTR);
+                ilwint(p->val.num);    /* string temp-id; pass 2 -> fdb _label */
+                ilweol();
+#else
                 defword();
                 label(p->val.num);
+#endif
                 break;
             default:
                 done = 0;

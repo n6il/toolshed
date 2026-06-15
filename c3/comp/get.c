@@ -1,4 +1,5 @@
 #include "cj.h"
+#include "il.h"
 
 #define        ESCHAR          '#'
 #define        ERROR          '0'
@@ -84,15 +85,16 @@ getline1()
                                 strcpy(temp,line);
                                 if(cgets() == NULL)
                                         return EOF;
-#ifdef SPLIT
-                                passthru();
-#endif
+#ifdef MKIL
+                                ilwrec(IL_PSECT);
+                                ilwname(temp);
+                                ilwint(atoi(line));
+                                ilweol();
+#else
                                 fprintf(code," psect %s,0,0,%d,0,0\n",
                                              temp,atoi(line));
-#ifdef SPLIT
-                                passthru();
-#endif
                                 fprintf(code," nam %s\n",temp);
+#endif
                                 continue;
                         case ERROR:
                         case FATERR:

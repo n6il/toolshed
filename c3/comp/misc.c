@@ -229,39 +229,6 @@ register dimnode *dptr;
     return dptr ? dptr->dptr : 0;
 }
 
-need(key)
-{
-    static char ptr[] = "x expected";
-    register int i;
-
-    if(sym==key) {
-        getsym();
-        return 0;
-    }
-    for (i = 0; i < 128; ++i) if (chartab[i] == key) break;
-    *ptr=i;
-    error(ptr);
-/*
-    for ( ; ; ) {
-        if(sym==key)
-            getsym();
-        else switch(sym) {
-            case SEMICOL: case RBRACE: case EOF:
-                break;
-            default:
-                getsym();
-                continue;
-        }
-        break;
-    }
-*/
-    return 1;
-}
-
-junk()
-{
-    while (sym != SEMICOL && sym != RBRACE && sym != EOF) getsym();
-}
 
 #ifdef PTREE
 prtree(node)

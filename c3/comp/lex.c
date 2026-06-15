@@ -15,6 +15,7 @@
  *************************************************/
 
 #include "cj.h"
+#include "il.h"
 
 static numshf();
 static double normaliz();
@@ -34,6 +35,7 @@ typedef union {
 extern double atoftbl[];
 #endif
 direct int stringlen;
+static int strtempid;        /* pass-1 string temp-id; pass 2 maps it to a label */
 
 extern symnode *lookup();
 extern char *grab();
@@ -268,16 +270,6 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
     return;
 }
 
-char chartab[] = {
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  109,64,105,0,0,84,65,104,45,46,66,80,48,67,69,83,
-  107,107,107,107,107,107,107,107,107,107,47,40,93,120,95,100,
-  0,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,
-  106,106,106,106,106,106,106,106,106,106,106,43,102,44,89,106,
-  0,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,
-  106,106,106,106,106,106,106,106,106,106,106,41,88,42,68,0,
-};
 
 char valtab[] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -436,19 +428,6 @@ register char *word;
     return (n & 127);
 }
 
-char *grab(size)
-int size;
-{
-    char *oldptr;
-    extern char *sbrk();
-
-    if ((oldptr = sbrk(size)) == (char *) -1) fatal("out of memory");
-
-    if (!lobrk) lobrk = oldptr;
-    hibrk = oldptr+size;
-
-    return oldptr;
-}
 
 #ifdef  DOFLOATS
 number(type,np)
@@ -738,6 +717,32 @@ extern direct int datstring;
 
 qstr()
 {
+#ifdef MKIL
+        /* code string (datstring 0) and string-pointer data initialisers
+           (datstring 2): pass 1 sends body + a temp-id; pass 2 assigns the real
+           label (so all label numbering stays in pass 2).  datstring 1 is a
+           char-array initialiser - chars go inline, handled by the old path. */
+        if (datstring != 1) {
+                extern FILE *code;
+
+                symval = strtempid++;
+                ilwrec(IL_STR); ilwint(symval); ilweol();
+                sfile = code;
+                stringlen = 0;
+                getch();
+                while (cc != '"') {
+                        if ((lptr-line) == 0) { error("unterminated string"); break; }
+                        if (cc == '\\') oc(dobslash());
+                        else { oc(cc); getch(); }
+                }
+                oc('\0');
+                putc('\n', sfile);
+                scount = 0;
+                getch();
+                ilwrec(IL_ENDRAW); ilweol();
+                return;
+        }
+#endif
         switch(datstring) {
                 case 0:
                 case 2:

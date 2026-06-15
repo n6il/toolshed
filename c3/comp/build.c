@@ -243,52 +243,6 @@ isop()
     }
 }
 
-constop(op,r,l)
-{
-    switch(op) {
-        case PLUS:      return r + l;
-        case MINUS:     return r - l;
-        case TIMES:     return r * l;
-        case DIV:       if (l) return r / l;
-                        diverr();
-                        return 0;
-        case MOD:       if(l) return r % l;
-                        diverr();
-                        return 0;
-        case AND:       return r & l;
-        case OR:        return r | l;
-        case XOR:       return r ^ l;
-        case SHL:       return r << l;
-        case SHR:       return r >> l;
-        case EQ:        return r == l;
-        case NEQ:       return r != l;
-        case GT:        return r > l;
-        case LT:        return r < l;
-        case GEQ:       return r >= l;
-        case LEQ:       return r <= l;
-        case NEG:       return -r;
-        case NOT:       return !r;
-        case COMPL:     return ~r;
-        case DBLAND:    return r && l;
-        case DBLOR:     return r || l;
-        case ULEQ:
-        case ULT:
-        case UGEQ:
-        case UGT:
-            {
-                unsigned lp,rp;
-                lp = (unsigned) l;  rp = (unsigned) r;
-                switch (op) {
-                    case ULEQ:      return rp <= lp;
-                    case ULT:       return rp < lp;
-                    case UGEQ:      return rp >= lp;
-                    default:        return rp > lp;
-                }
-            }
-        default:        error("constant operator");
-                        return 0;
-    }
-}
 
 expnode *getcast()
 {
@@ -313,27 +267,6 @@ expnode *getcast()
     return ptr;
 }
 
-expnode *newnode(op,left,right,value,lno,errpnt)
-expnode *left,*right;
-long value;			/* wide enough to carry a symnode * for NAME nodes */
-char *errpnt;
-{
-    register expnode *node;
-
-    if (freenode) {
-        node = freenode;
-        freenode = node->left;
-    } else node = (expnode *) grab(NODESIZE);
-    node->op = op;
-    node->left = left;
-    node->right = right;
-    node->val.lval = value;
-    node->lno = lno;
-    node->pnt = errpnt;
-    node->modifier = 0;
-
-    return node;
-}
 
 experr()
 {
@@ -361,3 +294,38 @@ usual:      return getsize(p->type,p->size,p->dimptr);
     }
 }
 
+
+/* parser error-recovery helpers (moved from misc.c at the split) */
+need(key)
+{
+    static char ptr[] = "x expected";
+    register int i;
+
+    if(sym==key) {
+        getsym();
+        return 0;
+    }
+    for (i = 0; i < 128; ++i) if (chartab[i] == key) break;
+    *ptr=i;
+    error(ptr);
+/*
+    for ( ; ; ) {
+        if(sym==key)
+            getsym();
+        else switch(sym) {
+            case SEMICOL: case RBRACE: case EOF:
+                break;
+            default:
+                getsym();
+                continue;
+        }
+        break;
+    }
+*/
+    return 1;
+}
+
+junk()
+{
+    while (sym != SEMICOL && sym != RBRACE && sym != EOF) getsym();
+}

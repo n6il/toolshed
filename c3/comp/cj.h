@@ -430,6 +430,15 @@ typedef struct {
 			*labxreg;
 } labstruc;
 
+/*  switch case-list node (shared: built by the parser, consumed by codegen)  */
+typedef struct casestct {
+	struct casestct *clink;		/* next case in case list */
+	int cval;					/* case value */
+	short clab;					/* case label */
+} casnode;
+
+#define CASESIZE	sizeof(casnode)
+
 
 /*  function type definitions  */
 

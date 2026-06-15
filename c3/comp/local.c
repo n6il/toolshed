@@ -13,6 +13,7 @@
 */
 
 #include "cj.h"
+#include "il.h"
 #include <errno.h>
 
 #define GBLB ':'    /* global asm declarator */
@@ -30,6 +31,14 @@ epilogue()
 
 locstat(l,size,area)
 {
+#ifdef MKIL
+     ilwrec(IL_LBSS);
+     ilwint(l);            /* the static's label (a pass-1 temp-id) */
+     ilwint(size);
+     ilwint(area);
+     ilweol();
+     return;
+#endif
      vsect(area);
      olbl(l);
      fprintf(code," rmb %d\n",size);
@@ -40,6 +49,15 @@ defglob(ptr,size,area)
 symnode *ptr;
 int size,area;
 {
+#ifdef MKIL
+     ilwrec(IL_BSS);
+     ilwname(ptr->sname);
+     ilwint(size);
+     ilwint(1);            /* global: label gets a colon */
+     ilwint(area);
+     ilweol();
+     return;
+#endif
      vsect(area);
      defvar(ptr,size,GBLB);
      endsect();
@@ -49,6 +67,15 @@ extstat(ptr,size,area)
 symnode *ptr;
 int size,area;
 {
+#ifdef MKIL
+     ilwrec(IL_BSS);
+     ilwname(ptr->sname);
+     ilwint(size);
+     ilwint(0);            /* file-local static: no colon */
+     ilwint(area);
+     ilweol();
+     return;
+#endif
      vsect(area);
      defvar(ptr,size,LCLB);
      endsect();
@@ -81,6 +108,15 @@ int paramreg;
 #ifdef FUNCNAME
     extern direct int fnline;
 #endif
+#ifdef MKIL
+    ilwrec(IL_FUNC);
+    ilwname(name);
+    ilwint(flag);
+    ilwint(paramreg);
+    ilwint(ftype);
+    ilweol();
+    return;
+#endif
     fprintf(code," ttl %.8s\n",name);
 #ifdef FUNCNAME
     printf("%-10.10s %-8.8s %5d\n",filename,name,fnline);
@@ -107,6 +143,11 @@ int paramreg;
 
 endfunc()
 {
+#ifdef MKIL
+    ilwrec(IL_ENDFUNC);
+    ilweol();
+    return;
+#endif
         /* generate stack reservation value */
      if(!sflag)
           fprintf(code,"_%d equ %d\n\n",stklab,maxpush-callflag-64);

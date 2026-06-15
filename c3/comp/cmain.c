@@ -6,6 +6,7 @@
 
 #define MAIN
 #include "cj.h"
+#include "il.h"
 #include <signal.h>
 
 char *dumname = sdummy.sname;
@@ -106,12 +107,17 @@ char **argv;
                 getkeys();
 #endif
 
+#ifdef MKIL
+        ilwinit();
+#endif
         preinit();
         getsym();
         while(sym!=EOF)
                 extdef();          /* go do it!!! */
 
+#ifndef MKIL
         epilogue();
+#endif
 
         if(ferror(code))
                 fatal("error writing assembly code file");
