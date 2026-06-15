@@ -4,3 +4,5 @@ libc3lw.a
 *.o
 c3lw.l
 *.dsk
+libc3.a
+libcobj/

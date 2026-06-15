@@ -25,6 +25,11 @@ c3prep | c3comp | c3optx | c3lw.awk | lwasm --format=obj | lwlink --format=os9
 | `crt0.s`   | C startup for the lwlink model: entry/Y setup, data-area zeroing, init-image copy + pointer relocation, `_stkcheck`/`_rpterr` stubs, runtime globals |
 | `buildrt.sh` | Build the runtime: `crt0.o` + `libc3lw.a` (the C helper routines via the same filter) |
 | `c3lw`     | Driver script: `.c` → `.mod` (or `-S`/`-c` to stop at asm/object) |
+| `buildlibc.sh` | Build the C library (`libc3.a`: stdio, strings, syscalls, memory) from `lib/lib.a`, `lib/sys.a` and the standalones here |
+| `fpwrap.a` | The float/double helpers the compiler calls, over the MC6839 IEEE package (FPO9) |
+| `fpinit.a` / `fpdummy.a` | `_fpinit`/`_fpterm`: link FPO9 at startup / no-op default for programs without FP |
+| `MC6839.md` | MC6839 linkage design and ABI |
+| `fpbench/` | Checks every `fpwrap.a` helper against the real MC6839 ROM on `usim09batch` |
 
 ## Usage
 
@@ -140,12 +145,17 @@ sources to `buildrt.sh` — they translate through the same filter.
   cleaner long-term option if this back end becomes primary.
 * The embedded module name is the link output filename; pass a bare name (or
   add an `__os9` section) for a clean name.
-* **float/double arithmetic gives wrong results.** The compiler emits IEEE-754
-  constants, but the ported helpers (`lib/fmath/cfloats.a`) use Microware's
-  own float format, so a program mixing literals and arithmetic computes
-  garbage. The plan is to replace the helpers with the MC6839 IEEE package —
-  see `MC6839.md`. Integer and long programs are unaffected.
+* **Host-linked float/double programs still use `cfloats.a`.** `buildrt.sh`
+  puts the Microware-format `lib/fmath/cfloats.a` helpers into `libc3lw.a`,
+  and they don't match the compiler's IEEE-754 constants, so float/double
+  arithmetic in a program linked by `c3lw`/`c3-ld` gives wrong results. The
+  IEEE replacement, `fpwrap.a` over the MC6839 package, is done and verified
+  (`fpbench/`, including an end-to-end smoke test of real compiler output);
+  on OS-9, `mklibs` builds it into `clib.l`. Wiring it into the host link is
+  still to do. Integer and long programs are unaffected.
 * The c3 `csect` (frame/DP work area) is handled: its `name rmb N` entries
   become offset equates (the storage is stack-reserved at run time, accessed
   `name,u`). cfloats relies on this.
-* The C library proper (`printf`, syscalls, `lib.a`/`sys.a`) is not yet ported.
+* The C library is ported as `libc3.a` (`buildlibc.sh`), which the
+  `build/os9` cross-build links. Modules that don't assemble through the filter
+  are reported by `buildlibc.sh` and left out.

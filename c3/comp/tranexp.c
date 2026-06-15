@@ -773,7 +773,7 @@ prtree(currexpr,"current expression (by dostar):");
 #endif
 				}
 				setxreg(currexpr);
-				gen(LOAD,XREG,op,lhs->val.num);
+				gen(LOAD,XREG,op,lhs->val.sp);
 				break;
 			case XIND:
 				if (xregcont) {
@@ -782,7 +782,7 @@ prtree(currexpr,"current expression (by dostar):");
 prtree(xregcont,"X given (by dostar):");
 #endif
 				}
-				gen(LOAD,XREG,op,lhs->val.num);
+				gen(LOAD,XREG,op,lhs->val.sp);
 				break;
 			default:
 			comperr(lhs,"indirection");

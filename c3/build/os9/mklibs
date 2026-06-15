@@ -1,0 +1,159 @@
+* mklibs - build the c3 version-2-ABI C libraries on the target (OS-9).
+*
+* *** UNTESTED on real OS-9 yet - this is the build-on-target starting point;
+* *** validate/adjust under emulation.  It mirrors the host makefiles:
+* ***   src/lib/sys.a/makefile   -> syslib.l, cstart.r
+* ***   src/lib/lib.a/makefile   -> main.l
+* ***   src/lib/lib.c/makefile   -> cstuff.l
+* *** and the top lib/makefile:   clib.l = cstuff.l + main.l + syslib.l (+ math)
+* *** Math (fmath/imath) is NOT built here - add it when the MC6839 FP runtime
+* *** is in place; until then programs using the math1 library will not link.
+*
+* Run it as:   chd /dd/src; mklibs
+* Needs in the execution path:  c3 rma  (from /dd/CMDS)  and  merge  (OS-9 system)
+* Produces:    /dd/lib/cstart.r  /dd/lib/sys.l  /dd/lib/clib.l
+*
+* rma assembles a .a source to a .r relocatable; c3 -r compiles a .c to a .r;
+* a .l library is just its .r modules concatenated (merge ... >lib.l).
+
+* ---- C startup + system-call library (src/lib/sys.a) ------------------------
+chd /dd/src/lib/sys.a
+rma cstart.a -o=/dd/lib/cstart.r
+rma abort.a
+rma signal.a
+rma chown.a
+rma chmod.a
+rma stat.a
+rma access.a
+rma create.a
+rma open.a
+rma read.a
+rma write.a
+rma lseek.a
+rma misc.a
+rma mod.a
+rma dir.a
+rma mem.a
+rma time.a
+rma process.a
+rma id.a
+rma intercept.a
+rma syscall.a
+rma syscommon.a
+rma cfinish.a
+rma profdummy.a
+rma tidyup.a
+merge abort.r signal.r chown.r chmod.r stat.r access.r create.r open.r read.r write.r lseek.r misc.r mod.r dir.r mem.r time.r process.r id.r intercept.r syscall.r syscommon.r cfinish.r profdummy.r tidyup.r >syslib.l
+
+* ---- main C library, assembler sources (src/lib/lib.a) ----------------------
+chd /dd/src/lib/lib.a
+rma swab.a
+rma pwcryp.a
+rma bsearch.a
+rma dirutil.a
+rma errmsg.a
+rma prgname.a
+rma datmods.a
+rma utime.a
+rma devtyp.a
+rma skip.a
+rma sets.a
+rma pflinit.a
+rma pffinit.a
+rma fopen.a
+rma puts.a
+rma gets.a
+rma mktemp.a
+rma fread.a
+rma fwrite.a
+rma printf.a
+rma scanf.a
+rma setbuf.a
+rma fseek.a
+rma putc.a
+rma ftelldummy.a
+rma getc.a
+rma flshdummy.a
+rma setbase.a
+rma findstr.a
+rma pfldummy.a
+rma pffdummy.a
+rma htoi.a
+rma htol.a
+rma ltoa.a
+rma xtoa.a
+rma system.a
+rma reverse.a
+rma strings.a
+rma strcmp.a
+rma strlen.a
+rma strncpy.a
+rma strncat.a
+rma strncmp.a
+rma strhcpy.a
+rma strtok.a
+rma strpbrk.a
+rma strspn.a
+rma index.a
+rma patmatch.a
+rma stringsu.a
+rma strucmp.a
+rma strnucmp.a
+rma case.a
+rma strclr.a
+rma memccpy.a
+rma memchr.a
+rma memcmp.a
+rma memcpy.a
+rma memset.a
+rma atol.a
+rma atoi.a
+rma iob_data.a
+rma l3tol.a
+rma ltol3.a
+rma qsort.a
+rma sleep.a
+rma setjmp.a
+rma strass.a
+rma realloc.a
+rma calloc.a
+rma memory.a
+rma rand.a
+rma atof.a
+rma scale.a
+rma gs1.a
+rma gs2.a
+rma ss1.a
+rma ss2.a
+rma ss3.a
+* chcodes is a C source, not assembler:
+c3 -r -o -v=/dd/defs chcodes.c
+merge swab.r pwcryp.r bsearch.r dirutil.r errmsg.r prgname.r datmods.r utime.r devtyp.r skip.r sets.r pflinit.r pffinit.r fopen.r puts.r gets.r mktemp.r fread.r fwrite.r printf.r scanf.r setbuf.r fseek.r putc.r ftelldummy.r getc.r flshdummy.r setbase.r findstr.r pfldummy.r pffdummy.r htoi.r htol.r ltoa.r xtoa.r system.r reverse.r strings.r strcmp.r strlen.r strncpy.r strncat.r strncmp.r strhcpy.r strtok.r strpbrk.r strspn.r index.r patmatch.r stringsu.r strucmp.r strnucmp.r case.r strclr.r memccpy.r memchr.r memcmp.r memcpy.r memset.r atol.r atoi.r iob_data.r chcodes.r l3tol.r ltol3.r qsort.r sleep.r setjmp.r strass.r realloc.r calloc.r memory.r rand.r atof.r scale.r gs1.r gs2.r ss1.r ss2.r ss3.r >main.l
+
+* ---- C-source library routines (src/lib/lib.c) ------------------------------
+chd /dd/src/lib/lib.c
+c3 -r -o -v=/dd/defs prof.c
+c3 -r -o -v=/dd/defs pwent.c
+c3 -r -o -v=/dd/defs getopt.c
+c3 -r -o -v=/dd/defs defdrive.c
+c3 -r -o -v=/dd/defs popen.c
+c3 -r -o -v=/dd/defs adump.c
+merge prof.r pwent.r getopt.r defdrive.r popen.r adump.r >cstuff.l
+
+* ---- MC6839 floating point: helper wrappers + FPO9 link/init ----------------
+chd /dd/src/fp
+rma fpwrap.a
+rma fpinit.a
+
+* ---- system descriptor stub -> sys.l  (6809 Level 1; uses os9defs.a) --------
+chd /dd/src/lib
+rma sys_6809l1.a -o=/dd/lib/sys.l
+
+* ---- merge the C library:  clib.l = cstuff + main + syslib + fp -------------
+* fpwrap supplies _dadd.._ftod over MC6839; fpinit supplies _fpinit/_fpterm
+* (cstart.r calls them).  cstart.r itself stays standalone (driver links it).
+chd /dd/lib
+merge /dd/src/lib/lib.c/cstuff.l /dd/src/lib/lib.a/main.l /dd/src/lib/sys.a/syslib.l /dd/src/fp/fpwrap.r /dd/src/fp/fpinit.r >clib.l
+
+echo c3 libraries built in /dd/lib :
+dir /dd/lib

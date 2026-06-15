@@ -31,6 +31,9 @@
 		section	code
 		export	__start
 		extern	main
+		extern	_fpinit		; link the MC6839 FP package (real fpinit.a,
+					; or the fpdummy no-op if no FP is used)
+		extern	_fpterm		; unlink it on exit
 
 ; link-time bounds of the init tables (synthesised by lwlink per os9c3.ld)
 		import	s_irec
@@ -42,14 +45,16 @@
 		import	s_stack		; data-area offset where the stack begins,
 					; i.e. the total size of all statics (bss)
 
-__start:
-		leay	0,u		; Y = global/static data base (c3 ABI)
+MAXARGS		equ	32		; argv slot count (incl argv[0])
 
+__start:
 ; ---- 1. zero the statics  [U .. U+s_stack) ----------------------------------
 ; Bound the clear by the LINK-TIME static size (s_stack), NOT the entry stack
 ; pointer S: on Level 2 the entry S is not U+datasize, so an S-U count overruns
 ; the data area and clobbers memory (this is what cstart avoids by using its
 ; link-time `end` symbol).  The stack region above the statics needs no zeroing.
+; (Y still holds the entry top here - don't disturb it until captured below.)
+		pshs	x		; save the OS-9 parameter pointer (entry X = params)
 		ldd	#s_stack	; D = number of static bytes to clear
 		beq	zdone
 		leax	0,u		; X = data base
@@ -57,6 +62,14 @@ zloop:		clr	,x+
 		subd	#1
 		bne	zloop
 zdone:
+; OS-9 passes the top of the data area in Y at entry; capture it as `memend`
+; (the high-water mark sbrk() grows the heap from, via F$Mem) BEFORE switching
+; Y to the static data base for the rest of the program (the c3 ABI).
+		tfr	y,d		; D = entry Y = real top of the data area
+		leay	0,u		; Y = global/static data base
+		std	memend,y
+		puls	x		; recover the saved parameter pointer
+		stx	_argp,y		; stash it (data area is now zeroed)
 
 ; ---- compute the module base, save base registers for the loops -------------
 ; module base = (run-time address of __start) - (link-time offset of __start)
@@ -133,8 +146,59 @@ creloc:		cmpx	0,s
 		bra	creloc
 crelocd:	leas	2,s
 
+; ---- C-library memory globals (memend was set at entry, above) --------------
+; sbrk()/malloc() grow the heap ABOVE memend on demand via F$Mem, so the heap is
+; not limited to the initial allocation.  _mtop/_stbot bound the in-area ibrk()
+; allocator and the stack check.
+		leax	s_stack,y	; end of statics = in-area heap base (ibrk)
+		stx	_mtop,y		; current non-stack memory top
+		sts	_stbot,y	; current stack bottom limit
+
+; ---- parse the OS-9 parameter string into argc / argv -----------------------
+; The shell passes the command line (CR-terminated) at _argp.  Split on spaces
+; into argv[1..]; argv[0] is a placeholder (C code skips it).  Words are
+; NUL-terminated in place.  Quotes are not handled - the c3 tools never need
+; them.  Without this, arg-taking programs (c3prep et al.) get no argv and fall
+; back to reading stdin, which blocks forever on the OS-9 console.
+		leax	_argname,pcr	; argv[0] = placeholder program name
+		stx	argv,y
+		ldd	#1
+		std	argc,y		; argc = 1 (argv[0])
+		leau	argv+2,y	; U -> argv[1] slot
+		ldx	_argp,y		; X -> parameter string
+ap_sp:		lda	,x		; skip spaces
+		cmpa	#$0d		; CR -> end of parameters
+		beq	ap_done
+		cmpa	#$20
+		bne	ap_word
+		leax	1,x
+		bra	ap_sp
+ap_word:	ldd	argc,y
+		cmpd	#MAXARGS	; bound argv
+		bhs	ap_done
+		stx	,u++		; argv[argc] = start of this word
+		addd	#1
+		std	argc,y
+ap_scan:	lda	,x		; scan to end of word
+		cmpa	#$0d
+		beq	ap_term0
+		cmpa	#$20
+		beq	ap_term
+		leax	1,x
+		bra	ap_scan
+ap_term:	clr	,x+		; space -> NUL, step over it
+		bra	ap_sp
+ap_term0:	clr	,x		; CR -> NUL (last word)
+ap_done:
+
 ; ---- run the program --------------------------------------------------------
+		lbsr	_fpinit		; link the MC6839 FP module if this program uses FP
+		leax	argv,y		; argv (2nd arg) on the stack
+		pshs	x
+		ldd	argc,y		; argc (1st arg) in D
 		lbsr	main		; return value in D
+		leas	2,s		; drop argv
+		lbsr	_fpterm		; unlink the FP module (no-op if it was never linked)
 		clrb			; exit status 0  (B = status)
 		os9	$06		; F$Exit
 
@@ -150,6 +214,10 @@ _stkcheck:	rts
 		export	_rpterr
 _rpterr:	rts
 
+; placeholder argv[0] (programs skip it; we don't get the real name from OS-9)
+_argname:	fcc	"c3"
+		fcb	0
+
 ; Shared runtime globals, accessed by the helpers as "name,y" (Y = data base).
 ; They live in the bss data area and are exported so the library resolves them.
 		section	bss
@@ -158,11 +226,37 @@ _rpterr:	rts
 errno:		rmb	2		; global errno
 _flacc:		rmb	8		; long / floating-point accumulator
 
+; MC6839 floating-point linkage.  _fpinit (fpinit.a) fills these when the
+; program uses FP; the fpdummy stub leaves them zero.  The FP helper wrappers
+; reach them as "name,y" (Y = data base), same as errno / _flacc.
+		export	_fpmod
+		export	_fpreg
+		export	_fpstak
+		export	_fpcb
+_fpmod:		rmb	2		; FPO9 module base (0 = FP not linked)
+_fpreg:		rmb	2		; MC6839 FPREG entry  (module base + $3D)
+_fpstak:	rmb	2		; MC6839 FPSTAK entry (module base + $3F)
+_fpcb:		rmb	5		; FP control block: CTL,ENB,ERR,SS,TRAPV
+
 ; crt0 startup scratch (data-area, Y-relative; zeroed then written above)
 _mbase:		rmb	2		; module base address (absolute)
 _ybase:		rmb	2		; data base address (absolute, == Y)
 _isrc:		rmb	2		; current image-copy source ptr
 _iend:		rmb	2		; current image-copy source end
+
+; command-line arguments parsed from the OS-9 parameter string
+_argp:		rmb	2		; saved parameter pointer (entry X)
+argc:		rmb	2		; argument count
+argv:		rmb	2*MAXARGS	; argument vector
+
+; C-library memory-management globals (the heap allocator and stack check use
+; these; normally set up by the Microware cstart, here by __start above).
+		export	memend
+		export	_mtop
+		export	_stbot
+memend:		rmb	2		; top of the data area
+_mtop:		rmb	2		; current non-stack memory top (heap top)
+_stbot:		rmb	2		; current stack bottom limit
 
 ; Empty init tables so s_/l_ for these sections are always defined even when a
 ; program has no initialised data; lwlink concatenates same-named sections, so
@@ -173,7 +267,9 @@ _iend:		rmb	2		; current image-copy source end
 
 ; Reserve the runtime stack in its own bss section, which os9c3.ld places LAST
 ; (top of the data area) above all statics; the stack descends from the top
-; through this gap.  Grow it if a program needs more than the default.
+; through this gap.  This is the C call/locals stack only - the heap grows
+; separately above memend via sbrk()/F$Mem - but a recursive program (e.g. the
+; compiler) needs enough here; grow it if a program overflows.
 		section	stack,bss
-STACKSIZE	equ	1024
+STACKSIZE	equ	4096
 		rmb	STACKSIZE

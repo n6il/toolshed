@@ -3,7 +3,7 @@
  * The compiler emits float/double constants as big-endian IEEE-754 on any
  * host.  The helpers linked by the lwasm back end (lib/fmath/cfloats.a) use
  * Microware's float format, so the arithmetic checks below only pass once
- * those helpers are replaced by the MC6839 IEEE package (see ../MC6839.md).
+ * the host link uses the MC6839 wrappers (../fpwrap.a) instead.
  */
 double a, b, d;
 int    i;

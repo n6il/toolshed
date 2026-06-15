@@ -139,19 +139,6 @@ getline1()
         }
 }
 
-#ifndef UNIX
-atoi(s)
-register char *s;
-{
-        int c;
-        int n = 0;
-
-        while(isdigit(c = *s++))
-                n = n * 10 + (c - '0');
-        return n;
-}
-#endif
-
 char *cgets()           /* Function to input a line of source.
                          * Returns a pointer to the start of the line
                          * if all is well.

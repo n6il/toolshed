@@ -1,0 +1,9 @@
+* mkstemp.a - temp-name generator for the OS-9 backend.
+* OS-9 has no atomic create-and-open temp primitive, and the stock c3 library
+* has only mktemp().  exec/c3.c calls mkstemp(template) purely to fill the
+* trailing XXXXX of the template in place (it ignores the return value), so we
+* defer to mktemp(), which does exactly that (returns the name pointer in D).
+ psect mkstemp_a,0,0,0,0,0
+mkstemp:
+ lbra mktemp            fill template in place; mktemp's result is returned
+ endsect

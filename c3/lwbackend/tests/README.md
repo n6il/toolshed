@@ -30,9 +30,9 @@ A missing or garbled line points straight at the broken path.
 
 `ftest` checks float/double support. The compiler now emits constants as
 IEEE-754, but the linked helpers (`cfloats.a`) use Microware's float format, so
-its arithmetic checks (`dadd`, `ddiv`) are not expected to pass until the
-helpers are replaced by the MC6839 package — see ../README.md "Known
-limitations" and ../MC6839.md.
+its arithmetic checks (`dadd`, `ddiv`) are not expected to pass while the host
+link uses those helpers. The MC6839 replacement (`fpwrap.a`) is checked by
+`../fpbench` instead — see ../README.md "Known limitations".
 
 ## Build
 

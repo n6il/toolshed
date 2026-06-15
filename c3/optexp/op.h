@@ -39,7 +39,10 @@
 
 typedef struct chstruct
 {
-	void           *succ,
+	struct chstruct *succ,		/* self-referential: c3 requires a member
+					   name's type be consistent across all
+					   structs, and rejects mixing a struct
+					   pointer with void or scalar pointers */
 	               *pred;
 }               chain;
 
@@ -49,7 +52,7 @@ typedef struct istruct
 	               *pred;
 	struct lstruct
 	{
-		int            *succ,
+		struct lstruct *succ,	/* self-referential (see chain above) */
 		               *pred;
 		struct istruct *dest;
 		chain          *rlist;
@@ -107,7 +110,7 @@ extern chain    ltable[],
                *newchain();
 extern char   *parse();
 extern void    debug(), movlab(), remins(), insref(), prtins(), error(), fix(), freechain();
-extern void    remref(), freearg(), freelabel(), endsect(), optim(), finddupl(), rminst();;
+extern void    remref(), freearg(), freelabel(), endsect(), optim(), finddupl(), rminst();
 extern void    labelinit(), insinit(), optinit(), optimise();
 extern int     estimate(), percent(), hash();
 extern char    *newarg(), *grab();

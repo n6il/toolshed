@@ -1,0 +1,11 @@
+# build artifacts (OS-9 relocatable objects, modules, install staging, disk image)
+*.r
+*.dsk
+dist/
+.diststage/
+exec/c3
+prep/c3prep
+comp/c3comp
+optx/c3optx
+lorder/lorder
+lsplit/lsplit

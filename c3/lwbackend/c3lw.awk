@@ -52,23 +52,43 @@ function tok_label(s,   t) {
 }
 function trim(s) { sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s }
 
-function collect_refs(s,   i, c, cur, inq) {
-	# pull identifier tokens out of a line's operand area and mark referenced;
-	# skip the contents of "..." strings so fcc text is not seen as symbols
-	cur = ""; inq = 0
+function collect_refs(s,   i, c, cur, inq, sep, started) {
+	# pull identifier tokens out of a line's operand area and mark referenced.
+	# `sep` is the punctuation char immediately before the current token, used
+	# to tell a hex/binary literal ($CC, %01) from an identifier (cc, add) -
+	# both look like hex once the leading $ / % is split off.  The operand is a
+	# single whitespace-free run (quoted fcc strings excepted); once it ends, an
+	# unquoted space begins an RMA inline comment, so stop - otherwise comment
+	# words would be collected as bogus external references.
+	cur = ""; inq = 0; sep = ""; started = 0
 	for (i = 1; i <= length(s); i++) {
 		c = substr(s, i, 1)
 		if (inq) { if (c == "\"") inq = 0; continue }
-		if (c == "\"") { if (cur != "") refmark(cur); cur = ""; inq = 1; continue }
+		if (c == " " || c == "\t") {
+			if (cur != "") { refmark(cur, sep); cur = "" }
+			if (started) break		# operand finished -> rest is comment
+			sep = c
+			continue
+		}
+		started = 1
+		if (c == "\"") { if (cur != "") refmark(cur, sep); cur = ""; sep = c; inq = 1; continue }
 		if (c ~ /[A-Za-z0-9_.]/) cur = cur c
-		else { if (cur != "") refmark(cur); cur = "" }
+		else { if (cur != "") refmark(cur, sep); cur = ""; sep = c }
 	}
-	if (cur != "") refmark(cur)
+	if (cur != "") refmark(cur, sep)
 }
-function refmark(t) {
-	if (t ~ /^[0-9]/) return			# number / hex
-	if (t ~ /^[0-9A-Fa-f]+$/) return
-	if (reg[t] || dirw[t]) return
+function refmark(t, sep) {
+	if (sep == "$" || sep == "%") return		# $hex / %binary literal
+	if (t ~ /^[0-9]/) return			# decimal literal
+	# A `<`/`>` prefix forces a direct/extended memory operand, so the token is
+	# a symbol even when it spells a register name (e.g. the global `<cc` vs the
+	# CC register) - take it before the register/directive filter.
+	if (sep == "<" || sep == ">") { referenced[t] = 1; return }
+	# Only filter register names here, NOT directive names: a directive only
+	# ever appears as a mnemonic, so a directive-spelled token in an operand
+	# (e.g. `lbsr vsect` calling the compiler's own vsect() function) is a
+	# symbol that must be externed.
+	if (reg[t]) return				# 6809 register
 	referenced[t] = 1
 }
 
@@ -121,18 +141,33 @@ function csize(op,   v, i, c, h) {
 # ---- flush a buffered csect (frame/DP work area) -----------------------------
 # Each `name rmb N` becomes `name equ <running offset>`; the storage itself is
 # reserved on the stack at run time, so these are pure offsets.  vb[1..vbn].
-function flush_csect(   i, off) {
+function flush_csect(   i, off, oper, sign, rest, v) {
 	off = 0
+	split("", csym)				# csect label -> offset (cleared per csect)
 	for (i = 1; i <= vbn; i++) {
 		parse_line(vb[i])
 		if (pl_mnem == "nam" || pl_mnem == "ttl") continue
 		if (pl_mnem == "rmb") {
-			if (pl_lbl != "") print pl_lbl "\tequ\t" off
+			if (pl_lbl != "") { print pl_lbl "\tequ\t" off; csym[pl_lbl] = off }
 			off += csize(pl_oper)
-		} else if (pl_lbl != "" && pl_mnem == "") {
-			print pl_lbl "\tequ\t" off	# bare label = current offset
+		} else if (pl_lbl != "" && (pl_mnem == "" || \
+		           ((pl_mnem == "equ" || pl_mnem == "set") && pl_oper ~ /^\*/))) {
+			# location-counter offsets within the frame: `*`, `*-label`,
+			# `*+label`, `*-N`, `*+N` (e.g. `vlen set *-vstart` = frame size).
+			# Here `*` is the running csect offset, NOT a code address.
+			oper = pl_oper; gsub(/[ \t]/, "", oper)
+			v = off
+			rest = substr(oper, 2)		# text after the leading '*'
+			if (rest != "") {
+				sign = substr(rest, 1, 1); rest = substr(rest, 2)
+				if (rest ~ /^[0-9]/) rest = rest + 0
+				else rest = (rest in csym) ? csym[rest] : 0
+				v = (sign == "-") ? off - rest : off + rest
+			}
+			print pl_lbl "\tequ\t" v
+			csym[pl_lbl] = v
 		} else if (vb[i] !~ /^[ \t]*$/) {
-			print vb[i]			# equ / other directive: pass through
+			print vb[i]			# equ <const> / other directive: pass through
 		}
 	}
 }
@@ -201,8 +236,12 @@ function flush_region(k,   i, hasinit, m, ops, j, il, rl, eqn, op, line) {
 				}
 			}
 		} else {
-			# fcb / fcc / fcn / rmb / rzb : emit verbatim (rmb/rzb zero-fill
-			# in a loaded section, keeping image offsets aligned)
+			# fcb / fcc / fcn pass through.  rmb / rzb reserve space that
+			# must appear as real zero bytes in the LOADED image (so the
+			# copy record covers them and later image offsets stay aligned);
+			# lwasm emits zero bytes with zmb, whereas rmb would leave a gap
+			# and rzb is not an lwasm opcode at all.
+			if (pl_mnem == "rmb" || pl_mnem == "rzb") pl_mnem = "zmb"
 			print "\t" pl_mnem (pl_oper != "" ? "\t" pl_oper : "")
 		}
 	}
@@ -226,6 +265,7 @@ END {
 	depth = 0			# >0 while inside a vsect
 	for (i = 0; i < n; i++) {
 		s = raw[i]
+		if (s ~ /^[ \t]*\*/ || s ~ /^[ \t]*$/) continue	# RMA comment / blank
 		if (s ~ /^[ \t]+psect[ \t]/) {
 			if (!gotpfx) {
 				pfx = s

@@ -46,6 +46,10 @@ _flacc: rmb 8 floating point & longs accumulator
 _mtop: rmb 2 current non-stack memory top
 _stbot: rmb 2 current stack bottom limit
 errno: rmb 2 global error holder
+_fpmod: rmb 2 MC6839 FPO9 module base (0 = FP not linked)
+_fpreg: rmb 2 MC6839 FPREG entry (module base + $3D)
+_fpstak: rmb 2 MC6839 FPSTAK entry (module base + $3F)
+_fpcb: rmb 6 MC6839 FP control block
  endsect
 
 *
@@ -189,8 +193,10 @@ final leax argv,u get the address of the arg vector
  bsr _fixtop set various variables
 
  puls d unstack argc
+ lbsr _fpinit link the MC6839 FP package (FPO9) if installed
  lbsr main call the program
  pshs d  put result on stack
+ lbsr _fpterm unlink the FP package
  
 *pushzero put a zero
 *pushzero on the stack

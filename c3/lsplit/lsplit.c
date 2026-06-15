@@ -13,6 +13,12 @@
 #include <string.h>
 #include <stdint.h>
 
+/* __attribute__ is a GCC extension; the c3 (6809) compiler has no notion of it
+   and packs structs naturally, so define it away when not building under gcc. */
+#ifndef __GNUC__
+#define __attribute__(x)
+#endif
+
 typedef int bool;
 
 #define TRUE    1
@@ -256,9 +262,9 @@ FILE *fp;
 {
 	unsigned int result;
 	
-	result = (unsigned char)getc( fp );
+	result = (getc( fp ) & 0xff);
 	result <<= 8;
-	result += (unsigned char)getc( fp );
+	result += (getc( fp ) & 0xff);
 	
 	return result;
 }

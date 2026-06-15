@@ -1,0 +1,440 @@
+* fpwrap.a - c3 floating-point helpers implemented over the MC6839 (FPO9) ROM.
+*
+* Replaces the software-FP fmath/cfloats.a: each helper marshals the c3 calling
+* convention into the MC6839 register ABI and dispatches through the ROM's FPREG
+* entry.  All bodies were verified byte-for-byte on usim09batch against known
+* IEEE-754 binary64 values (see lwbackend/fpbench/).
+*
+* Runtime globals (crt0.s data area, Y = data base):
+*   _fpreg  absolute MC6839 FPREG entry (set by fpinit.a's F$Link of FPO9)
+*   _fpcb   5/6-byte FP control block, CTL = double / round-nearest
+*   _flacc  8-byte float accumulator: every result lands here, X returns -> it
+*
+* MC6839 register ABI (REG entry, opcode in the FCB after the call):
+*   dyadic   U->arg1  Y->arg2  X->result  D->FPCB     result = arg1 OP arg2
+*   monadic           Y->arg   X->result  D->FPCB
+*   compare  U->arg1  Y->arg2             D->FPCB  X=param word; result in CC
+*   FMOV     U=prec   Y->src   X->result  D->FPCB
+* The ROM restores U/Y to their call-time values on exit; we save the data base
+* (Y) before each call and restore it after.  FPREG is reached via a saved-on-
+* stack pointer (jsr [n,s]) so X stays free for the result buffer.
+*
+* c3 conventions (from the original cfloats.a):
+*   binary  : op1 pushed on the stack (via _dstack), X->op2; op1 is cleaned off
+*   monadic : X->operand
+*   _itod/_utod : 16-bit operand in D        _dtoi : returns 16-bit int in D
+*   result  : in _flacc, X returns -> _flacc (compares: result in CC, X kept)
+
+ psect fpwrap_a,0,0,0,0,0
+
+FADD  equ $00
+FSUB  equ $02
+FMUL  equ $04
+FDIV  equ $06
+FCMP  equ $8a
+FNEG  equ $20
+FFIXS equ $16
+FFIXD equ $18
+FFLTS equ $24
+FFLTD equ $26
+FMOV  equ $9a
+
+* _dstack - push the 8-byte double at X onto the stack (sets up op1).  No FP.
+_dstack leas -8,s
+ ldd 8,s
+ std ,s
+ ldd ,x
+ std 2,s
+ ldd 2,x
+ std 4,s
+ ldd 4,x
+ std 6,s
+ ldd 6,x
+ std 8,s
+ rts
+
+* _dmove / _fmove - verbatim copy (8 / 4 bytes) from X to the 'to' pointer on
+* the stack (2,s); the 'to' slot is cleaned and X returns -> 'to'.  No FP - a
+* raw byte copy, so IEEE-safe.  (From the original cfloats.a.)
+_fmove pshs u
+ ldu 4,s
+ exg x,u
+ ldd ,u
+ std ,x
+ ldd 2,u
+ std 2,x
+ bra _dmove1
+
+_dmove pshs u
+ ldu 4,s
+ exg x,u
+ ldd ,u
+ std ,x
+ ldd 2,u
+ std 2,x
+ ldd 4,u
+ std 4,x
+ ldd 6,u
+ std 6,x
+_dmove1 puls u
+ puls b,a
+ std ,s
+ rts
+
+* ---- dyadic: op1 on stack, X->op2, result -> _flacc -------------------------
+* common frame after the 5 pushes:
+*   0:databar 2:fpreg 4:&fpcb 6:&flacc 8:op2 10:ret 12:op1[8]
+_dadd pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ leau 12,s
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FADD
+ ldy ,s
+ ldx 6,s
+ ldd 10,s
+ std 18,s
+ leas 18,s
+ rts
+
+_dsub pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ leau 12,s
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FSUB
+ ldy ,s
+ ldx 6,s
+ ldd 10,s
+ std 18,s
+ leas 18,s
+ rts
+
+_dmul pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ leau 12,s
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FMUL
+ ldy ,s
+ ldx 6,s
+ ldd 10,s
+ std 18,s
+ leas 18,s
+ rts
+
+_ddiv pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ leau 12,s
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FDIV
+ ldy ,s
+ ldx 6,s
+ ldd 10,s
+ std 18,s
+ leas 18,s
+ rts
+
+* ---- compare: op1 on stack, X->op2; result in CC (signed), X preserved ------
+* frame after 4 pushes: 0:databar 2:fpreg 4:&fpcb 6:op2 8:ret 10:op1[8]
+_dcmpr pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ leau 10,s
+ ldy 6,s
+ ldd 4,s
+ ldx #$0011
+ jsr [2,s]
+ fcb FCMP
+ tfr cc,a
+ ldy ,s
+ bita #$04
+ bne dcmeq
+ bita #$01
+ bne dcmgt
+ bita #$08
+ bne dcmlt
+dcmgt ldb #1
+ bra dcmsav
+dcmlt ldb #$ff
+ bra dcmsav
+dcmeq clrb
+dcmsav stb _flacc,y
+ ldx 6,s
+ ldd 8,s
+ std 16,s
+ leas 16,s
+ lda _flacc,y
+ rts
+
+* ---- monadic / conversions: X->operand (or D), result -> _flacc -------------
+* frame after 5 pushes: 0:databar 2:fpreg 4:&fpcb 6:&flacc 8:arg 10:ret
+_dneg pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FNEG
+ ldy ,s
+ ldx 6,s
+ leas 10,s
+ rts
+
+* _itod - 16-bit int (D) -> double.  Push D as the short-int operand.
+_itod pshs d
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ leay 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FFLTS
+ ldy ,s
+ ldx 6,s
+ leas 10,s
+ rts
+
+* _utod - 16-bit unsigned (D) -> double.  Zero-extend to 32-bit, FFLTD.
+* frame after 6 pushes: 0:databar 2:fpreg 4:&fpcb 6:&flacc 8:i32[4] 12:ret
+_utod pshs d
+ ldd #0
+ pshs d
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ leay 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FFLTD
+ ldy ,s
+ ldx 6,s
+ leas 12,s
+ rts
+
+* _ltod - 32-bit long (X->) -> double.
+_ltod pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FFLTD
+ ldy ,s
+ ldx 6,s
+ leas 10,s
+ rts
+
+* _dtoi - double (X->) -> 16-bit int, returned in D.
+_dtoi pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FFIXS
+ ldy ,s
+ ldd _flacc,y
+ leas 10,s
+ rts
+
+* _dtol - double (X->) -> 32-bit long, in _flacc (X returns -> _flacc).
+_dtol pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ jsr [2,s]
+ fcb FFIXD
+ ldy ,s
+ ldx 6,s
+ leas 10,s
+ rts
+
+* _dtof - double (X->) -> single, in _flacc (4 bytes).  FMOV src=double dst=single.
+_dtof pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ ldu #$0010
+ jsr [2,s]
+ fcb FMOV
+ ldy ,s
+ ldx 6,s
+ leas 10,s
+ rts
+
+* _ftod - single (X->) -> double, in _flacc (8 bytes).  FMOV src=single dst=double.
+_ftod pshs x
+ leax _flacc,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldx _fpreg,y
+ pshs x
+ pshs y
+ ldy 8,s
+ ldx 6,s
+ ldd 4,s
+ ldu #$0001
+ jsr [2,s]
+ fcb FMOV
+ ldy ,s
+ ldx 6,s
+ leas 10,s
+ rts
+
+* ---- in-place increment / decrement: X->value, *X = *X +/- 1 ----------------
+* frame after 4 pushes: 0:&fpcb 2:fpreg 4:databar 6:valptr 8:ret
+* (result buffer X = arg1 ptr U = the same in-place location)
+_dinc pshs x
+ pshs y
+ ldx _fpreg,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldu 6,s
+ leay fpone,pcr
+ ldx 6,s
+ ldd ,s
+ jsr [2,s]
+ fcb FADD
+ ldy 4,s
+ ldx 6,s
+ leas 8,s
+ rts
+
+_ddec pshs x
+ pshs y
+ ldx _fpreg,y
+ pshs x
+ leax _fpcb,y
+ pshs x
+ ldu 6,s
+ leay fpone,pcr
+ ldx 6,s
+ ldd ,s
+ jsr [2,s]
+ fcb FSUB
+ ldy 4,s
+ ldx 6,s
+ leas 8,s
+ rts
+
+* float in-place +/- 1: single precision (local single-precision FPCB)
+_finc pshs x
+ pshs y
+ ldx _fpreg,y
+ pshs x
+ leax fpsngl,pcr
+ pshs x
+ ldu 6,s
+ leay fpones,pcr
+ ldx 6,s
+ ldd ,s
+ jsr [2,s]
+ fcb FADD
+ ldy 4,s
+ ldx 6,s
+ leas 8,s
+ rts
+
+_fdec pshs x
+ pshs y
+ ldx _fpreg,y
+ pshs x
+ leax fpsngl,pcr
+ pshs x
+ ldu 6,s
+ leay fpones,pcr
+ ldx 6,s
+ ldd ,s
+ jsr [2,s]
+ fcb FSUB
+ ldy 4,s
+ ldx 6,s
+ leas 8,s
+ rts
+
+fpone  fcb $3f,$f0,$00,$00,$00,$00,$00,$00   IEEE double 1.0
+fpones fcb $3f,$80,$00,$00                    IEEE single 1.0
+fpsngl fcb $00,$00,$00,$00,$00,$00            single-precision FP control block
+
+ endsect

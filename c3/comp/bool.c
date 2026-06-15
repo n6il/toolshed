@@ -191,12 +191,6 @@ expnode *node;
      return 0;
 }
 
-isauto(p)
-expnode *p;
-{
-    return p->op == NAME && p->val.sp->storage == AUTO;
-}
-
 checkop(node)
 register expnode *node;
 {
