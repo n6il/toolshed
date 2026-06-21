@@ -24,8 +24,7 @@ direct int datflag;
 static char *yind = ",y";
 static char *spind = ",s";
 
-addoff(offset)
-register int offset;
+addoff(register int offset)
 {
     if(offset) {
         if(offset > 0) ob('+');
@@ -33,9 +32,8 @@ register int offset;
     }
 }
 
-deref(arg,val,offset)
-int arg,offset;
-argword val;			/* an expnode * in NODE mode, an int otherwise */
+/* val is an expnode * in NODE mode, an int otherwise - hence argword, not long. */
+deref(int arg, argword val, int offset)
 {
     register expnode *node;
     register symnode *sn;
@@ -116,8 +114,7 @@ dooff:
     if(arg & INDIRECT) ob(']');
 }
 
-defcon(p,n)
-register int *p;
+defcon(register int *p, int n)
 {
     register int i;
 
@@ -184,15 +181,13 @@ char *p;
     nl();
 }
 
-ot(s)
-char *s;
+ot(char *s)
 {
     putc(' ',code);
     os(s);
 }
 
-ol(s)
-char *s;
+ol(char *s)
 {
     ot(s);
     nl();
@@ -203,18 +198,17 @@ nl()
     putc('\n',code);
 }
 
-ob(b)
+ob(int b)
 {
     putc(b,code);
 }
 
-os(s)
-char *s;
+os(char *s)
 {
     fprintf(code,"%s",s);
 }
 
-od(n)
+od(int n)
 {
     /* Emit as a 16-bit value.  Cast to INTTYPE (16-bit on host and target) so a
        negative operand prints the SAME on both: `n & 0xFFFF` left it positive on
@@ -223,26 +217,25 @@ od(n)
     fprintf(code,"%d",(INTTYPE)n);
 }
 
-label(n)
+label(int n)
 {
     olbl(n);
     lastst = 0;
     nl();
 }
 
-olbl(n)
+olbl(int n)
 {
     ob(UNIQUE);
     od(n);
 }
 
-on(s)
-char *s;
+on(char *s)
 {
     fprintf(code,"%.8s",s);
 }
 
-modstk(nsp)
+modstk(int nsp)
 {
     int x;
 
@@ -255,8 +248,7 @@ modstk(nsp)
     return nsp;
 }
 
-nlabel(ptr,scope)
-char *ptr;
+nlabel(char *ptr, int scope)
 {
     on(ptr);
     if (scope) ob(':');

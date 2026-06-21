@@ -589,8 +589,7 @@ docont()
 }
 
 #ifndef MKIL
-modnjmp(labptr)
-register labstruc *labptr;
+modnjmp(register labstruc *labptr)
 {
     modstk(labptr->labsp);
     gen(JMP,setlabel(labptr),0);
@@ -672,7 +671,7 @@ static symnode *checklabel()
     return ptr;
 }
 
-static expnode *sidexp(l)
+static expnode *sidexp(int l)
 {
     register expnode *ptr;
 
@@ -692,8 +691,7 @@ static expnode *sidexp(l)
 }
 
 #ifndef MKIL
-static expnode *emit(ptr)
-register expnode *ptr;
+static expnode *emit(register expnode *ptr)
 {
     chkdecl(ptr);
     switch (ptr->op) {
@@ -728,9 +726,7 @@ static expnode *gettest()
     return ptr;
 }
 
-dotest(ptr,tl,fl,nj)
-register expnode *ptr;
-labstruc *tl,*fl;
+dotest(register expnode *ptr, labstruc *tl, labstruc *fl, int nj)
 {
     if (ptr) {
         tranbool(ptr,tl,fl,nj);

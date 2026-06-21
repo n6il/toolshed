@@ -97,7 +97,8 @@ void uchain();
 #endif
 void dofork();
 void error();
-void setsuf();
+void setsuf(char *, char);	/* abstract proto: gives clang the char arg type
+				   without leaking param names (c3 "named twice") */
 int getsuf();
 void addarg();
 void endargs();
@@ -135,15 +136,13 @@ void tidy()
 	return;
 }
 
-void errexit(stat)
+void errexit(int stat)
 {
 	tidy();
 	exit(stat);
 }
 
-int main(argc, argv)
-	int             argc;
-	char          **argv;
+int main(int argc, char **argv)
 {
 	register char  *p, **pp;
 	int             c, count, j;
@@ -633,9 +632,7 @@ int main(argc, argv)
 	return 0;
 }
 
-void dofork(s, s1, stat)
-	char           *s, *s1;
-	int            stat;
+void dofork(char *s, char *s1, int stat)
 {
 	if (!qflag)
 	{
@@ -682,8 +679,7 @@ void dofork(s, s1, stat)
 }
 
 #ifdef UNIX
-void uchain(prog, argstr)
-	char           *prog, *argstr;
+void uchain(char *prog, char *argstr)
 {
 	char           *args[50], **argv = args;
 
@@ -705,8 +701,7 @@ void uchain(prog, argstr)
 }
 #endif
 
-void error(s1, s2)
-	char           *s1, *s2;
+void error(char *s1, char *s2)
 {
 	int             err = errno;
 
@@ -715,9 +710,7 @@ void error(s1, s2)
 	errexit(err ? err : 1);
 }
 
-void setsuf(s, c)
-	register char  *s;
-	char            c;
+void setsuf(register char *s, char c)
 {
 	while (*s++);
 	if (s[-3] != '.')
@@ -732,8 +725,7 @@ void setsuf(s, c)
 	}
 }
 
-int getsuf(s)
-	register char  *s;
+int getsuf(register char *s)
 {
 	register int    count;
 	char            c;
@@ -753,8 +745,7 @@ int getsuf(s)
 		return 0;
 }
 
-void addarg(s)
-	register char  *s;
+void addarg(register char *s)
 {
 	register char  *p = argptr;
 

@@ -10,8 +10,7 @@
 #define swap(type,x,y)  {type t;t = x;x = y;y = t;}
 
 
-expnode *optim(tree)
-register expnode *tree;
+expnode *optim(register expnode *tree)
 {
 	register expnode *lhs,*rhs,*tptr;
 	int temp,op;
@@ -68,8 +67,7 @@ if (dflag && --tcount==0) prtree(tree,"optim (after):");
 }
 
 
-expnode *fold(tree)
-register expnode *tree;
+expnode *fold(register expnode *tree)
 {
 	register expnode *lhs,*rhs,*ptr;
 	register int op,val,opl,opr;
@@ -223,8 +221,7 @@ doop:				tree->op=CONST;
 }
 
 
-isleaf(node)
-register expnode *node;
+isleaf(register expnode *node)
 {
 	if (node)
 		switch (node->op) {
@@ -260,9 +257,7 @@ diverr()
    params are forward.  cvt() is a no-op when the types already match or the
    param is a pointer, so this only inserts real width conversions (e.g. the
    int->long that K&R calls silently mismatch on the 16-bit target). */
-static coerceargs(achain,params)
-register expnode *achain;
-symnode *params;
+static coerceargs(register expnode *achain, symnode *params)
 {
 	expnode *av[MAXCARGS];
 	register symnode *p;
@@ -276,8 +271,7 @@ symnode *params;
 		cvt(av[n-1-i], (int) p->type);
 }
 
-expnode *chtype(node)
-expnode *node;
+expnode *chtype(expnode *node)
 {
 	register expnode *lhs,*rhs,*eptr;
 	register symnode *sptr;
@@ -707,8 +701,7 @@ if (dflag) pnode(node);
 }
 
 
-chknull(node)
-register expnode *node;
+chknull(register expnode *node)
 {
 	if (node->op != CONST || node->val.num != 0) {
 		terror(node,"should be NULL");
@@ -718,8 +711,7 @@ register expnode *node;
 }
 
 
-usual(node)
-register expnode *node;
+usual(register expnode *node)
 {
 	register int t;
 
@@ -740,8 +732,7 @@ register expnode *node;
 }
 
 
-cvt(node,t)
-register expnode *node;
+cvt(register expnode *node, int t)
 {
 	expnode *ptr;
 	DBLETYPE *dblptr;
@@ -914,8 +905,7 @@ fixint:
 	return node->type = t;
 }
 
-tymatch(lhs,rhs)
-register expnode *lhs,*rhs;
+tymatch(register expnode *lhs, register expnode *rhs)
 {
 	register int tl,tr;
 
@@ -933,8 +923,7 @@ register expnode *lhs,*rhs;
 	else return INT;
 }
 
-expnode *fixup(size,t,dptr,rhs)
-register expnode *dptr,*rhs;
+expnode *fixup(int size, int t, register expnode *dptr, register expnode *rhs)
 {
 	register expnode *ptr;
 
@@ -950,8 +939,7 @@ register expnode *dptr,*rhs;
 	return ptr;
 }
 
-needlval(node,flag)
-register expnode *node;
+needlval(register expnode *node, int flag)
 {
 	int op;
 
@@ -971,8 +959,7 @@ register expnode *node;
 	makedummy(node);
 }
 
-chkdecl(node)
-register expnode *node;
+chkdecl(register expnode *node)
 {
 	if (node->op == NAME && node->type == UNDECL) {
 		terror(node,"undeclared variable");
@@ -980,9 +967,7 @@ register expnode *node;
 	}
 }
 
-needmos(node,t,mosar)
-register expnode *node;
-int *t,*mosar;
+needmos(register expnode *node, int *t, int *mosar)
 {
 	register expnode *eptr;
 	register symnode *sptr;
@@ -1015,8 +1000,7 @@ err:
 	return 2;
 }
 
-chkstrct(node)
-register expnode *node;
+chkstrct(register expnode *node)
 {
 	if ((node->type) == STRUCT || node->type == UNION) {
 		terror(node,"structure or union inappropriate");
@@ -1025,8 +1009,7 @@ register expnode *node;
 	return node->type;
 }
 
-makedummy(node)
-register expnode *node;
+makedummy(register expnode *node)
 {
 	move(&sdummy,node,6);
 	node->sux = 1;
@@ -1037,7 +1020,7 @@ register expnode *node;
 	node->val.sp = &sdummy;
 }
 
-isint(t)
+isint(int t)
 {
 	switch(t){
 		case INT:
@@ -1049,7 +1032,7 @@ isint(t)
 	return 0;
 }
 
-integerr(node)
+integerr(int node)
 {
 	terror(node,"must be integral");
 }

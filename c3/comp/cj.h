@@ -168,6 +168,13 @@ typedef struct expstr {
 
 #define NODESIZE	sizeof(expnode)
 
+/* pointer to a function returning int.  Used as a parameter type (walktree's
+   visitor, doquery's load callback): c3's ANSI param parser can't handle a
+   raw `int (*f)()` declarator nested inside the parameter-list parentheses, but
+   a typedef name parses fine - and a function-pointer typedef is the idiomatic
+   ANSI form anyway.  Same type, so codegen is identical to the old K&R param. */
+typedef int (*funcp)();
+
 typedef struct initstruct {
 	struct initstruct *initnext;	/* next initializer */
 	expnode *initp;					/* ptr to initializer expression */

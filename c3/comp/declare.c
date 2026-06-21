@@ -320,10 +320,7 @@ next:
 }
 
 
-check_same(ptr,type,eptr)
-register symnode *ptr;
-register int type;
-register elem *eptr;
+check_same(register symnode *ptr, register int type, register elem *eptr)
 {
 	 if (ptr->type != type
 				|| (type == STRUCT && ptr->x.elems != eptr)) {
@@ -334,7 +331,7 @@ register elem *eptr;
 }
 
 
-chkreg(sclass,type)
+chkreg(int sclass, int type)
 {
 	/* if the user wants a register variable
 	 * and it is allowed allocate one.
@@ -363,8 +360,7 @@ chkreg(sclass,type)
 }
 
 
-newfunc(fptr,sclass)
-symnode *fptr;
+newfunc(symnode *fptr, int sclass)
 {
 	register symnode *p1;
 	symnode *p2;
@@ -515,8 +511,7 @@ if (dflag) {printf("newfunc node:\n"); pnode(p1);}
 }
 
 
-block(stkadj)
-int stkadj;
+block(int stkadj)
 {
 	register expnode *p;
 	struct initstruct *i;
@@ -590,8 +585,7 @@ int stkadj;
 }
 
 
-declist(list)
-register symnode **list;
+declist(register symnode **list)
 {
 	register symnode *ptr,*last;
 	symnode *ptemp;
@@ -702,10 +696,8 @@ setclass()
 }
 
 
-settype(size,dimptr,ellist)
-long *size;		/* may carry a struct-tag pointer (USTRUCT) */
-dimnode **dimptr;
-elem **ellist;
+/* size may carry a struct-tag pointer (USTRUCT) */
+settype(long *size, dimnode **dimptr, elem **ellist)
 {
 	register symnode *ptr, *tagptr;
 	dimnode *dptr;
@@ -859,9 +851,7 @@ next:
 }
 
 
-declarator(ptr,dptr,bastype)
-symnode **ptr;
-dimnode **dptr;
+declarator(symnode **ptr, dimnode **dptr, int bastype)
 {
 	register dimnode *tempdim, *p, *p1;
 	int dtype, savmos, count;
@@ -924,7 +914,7 @@ dimnode **dptr;
 }
 
 
-shiftin (a,b)
+shiftin(int a, int b)
 {
 	int temp;
 
@@ -939,8 +929,7 @@ shiftin (a,b)
 
 
 
-clear(list)
-symnode **list;
+clear(symnode **list)
 {
 	register symnode *this, *next, *p, **pp;
 	char err[60];

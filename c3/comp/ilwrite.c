@@ -22,20 +22,17 @@ ilwinit()
     fprintf(code,"%s %d\n",IL_MAGIC,IL_VERSION);
 }
 
-ilwrec(op)
-int op;
+ilwrec(int op)
 {
     fprintf(code,"%d",op);
 }
 
-ilwint(n)
-int n;
+ilwint(int n)
 {
     fprintf(code," %d",n);
 }
 
-ilwname(s)
-char *s;
+ilwname(char *s)
 {
     fprintf(code," %s",s);
 }

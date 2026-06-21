@@ -151,9 +151,7 @@ static flushsyms()
 }
 
 /* conditional-jump codegen (stats.c dotest) */
-static dotest(ptr,tl,fl,nj)
-register expnode *ptr;
-labstruc *tl,*fl;
+static dotest(register expnode *ptr, labstruc *tl, labstruc *fl, int nj)
 {
     if (ptr) {
         tranbool(ptr,tl,fl,nj);
@@ -162,8 +160,7 @@ labstruc *tl,*fl;
 }
 
 /* break/continue jump (stats.c modnjmp) */
-static modnjmp(labptr)
-register labstruc *labptr;
+static modnjmp(register labstruc *labptr)
 {
     modstk(labptr->labsp);
     gen(JMP, setlabel(labptr), 0);
@@ -171,8 +168,7 @@ register labstruc *labptr;
 
 /* expression-statement codegen (stats.c emit(): chkdecl, post->pre inc/dec,
  * translate, release).  The argument must already be optim'd. */
-static emit2(ptr)
-register expnode *ptr;
+static emit2(register expnode *ptr)
 {
     if (ptr == NULL) return;
     chkdecl(ptr);
@@ -184,8 +180,7 @@ register expnode *ptr;
 }
 
 /* return-statement codegen (the post-parse half of stats.c doreturn) */
-static doret(ptr)
-register expnode *ptr;
+static doret(register expnode *ptr)
 {
     if (ptr) {
         ptr = optim(ptr);

@@ -4,10 +4,9 @@
 #include "prep.h"
 #include <string.h>
 
-void nxtch(void);       /* defined below, called before its definition */
+void nxtch();       /* defined below, called before its definition */
 
-macdef *revlist(p)
-register macdef *p;
+macdef *revlist(register macdef *p)
 {
     register macdef *prev,*next;
     
@@ -23,8 +22,7 @@ register macdef *p;
 }
 
 
-macro *addmac(name,string)
-register char *name,*string;
+macro *addmac(register char *name, register char *string)
 {
     register int n;
     register macro *mptr,*nptr;
@@ -202,8 +200,7 @@ register char *name,*string;
 }
 
 
-macro *findmac(name)
-register char *name;
+macro *findmac(register char *name)
 {
     register macro *ptr;
     register int c;
@@ -234,7 +231,7 @@ void delmac(char *name)
 }
 
 
-void nxtch(void)
+void nxtch()
 {
     while(isspace(cch))
 	{

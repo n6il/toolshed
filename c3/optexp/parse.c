@@ -2,11 +2,7 @@
 /* #include "../rma/ctype.h" */
 #include <ctype.h>
 
-char *parse(type, s, p, globflag)
-	int             type,
-	               *globflag;
-	register char  *s,
-	               *p;
+char *parse(int type, register char *s, register char *p, int *globflag)
 {
 	int             size;
 

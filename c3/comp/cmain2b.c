@@ -93,11 +93,7 @@ dostr()
 /* synthesise (or reuse) a symnode for a NAME leaf from its carried fields.
  * tagtype/tagsize are the struct tag's type+size for a USTRUCT name (chtype
  * expects size to hold a tag-symnode pointer); ignored otherwise. */
-symnode *mksym(type,size,storage,offset,name,dims,ndims,tagtype,tagsize)
-int type,size,storage,offset;
-char *name;
-int *dims;
-int ndims,tagtype,tagsize;
+symnode *mksym(int type, int size, int storage, int offset, char *name, int *dims, int ndims, int tagtype, int tagsize)
 {
     register int i;
     register symnode *s;
@@ -176,8 +172,7 @@ relsyms()
     nsyms = 0;
 }
 
-labelnum(name)
-char *name;
+labelnum(char *name)
 {
     register int i;
 

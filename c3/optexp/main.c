@@ -19,9 +19,7 @@ DIRECT int      debugon,
 
 extern int      insmax;
 
-int main(argc, argv)
-	int             argc;
-	char          **argv;
+int main(int argc, char **argv)
 {
 	int             c;
 	char           *argp,
@@ -126,14 +124,12 @@ int main(argc, argv)
 	exit(0);
 }
 
-int             estimate(n)
+int             estimate(int n)
 {
 	return n + n + (n * 3 / 5);
 }
 
-int             percent(x, y)
-	unsigned        x,
-	                y;
+int percent(unsigned x, unsigned y)
 {
 	return y ? x / ((y + 50) / 100) : 0;
 }

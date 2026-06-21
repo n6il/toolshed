@@ -15,8 +15,7 @@
  * symbol table); interior operators carry just the op - their operands are
  * already on c3comp2's rebuild stack.
  */
-ilexpr(node)
-register expnode *node;
+ilexpr(register expnode *node)
 {
     if (node == NULL) {                 /* NULL child of a binary node */
         ilwrec(IL_NULL);

@@ -61,9 +61,7 @@ FILE    *LibFP;
 Global  *HashTable[HASHSIZE];
 Module  *MList;
 
-main(argc, argv)
-int     argc;
-char    *argv[];
+main(int argc, char *argv[])
 {
         int     i;
 
@@ -83,8 +81,7 @@ char    *argv[];
 
 }
 
-DoLibFile(LibPath)
-char    *LibPath;
+DoLibFile(char *LibPath)
 {
         Module  *NewMod, *GetModule();
 
@@ -111,8 +108,7 @@ char    *LibPath;
 
 }
 
-DoGlobalDefs(Mod)
-Module  *Mod;
+DoGlobalDefs(Module *Mod)
 {
         int     GCount;
         Global  *GSym, *GetGlobal();
@@ -127,8 +123,7 @@ Module  *Mod;
 
 }
 
-DoExtRefs(Mod)
-Module  *Mod;
+DoExtRefs(Module *Mod)
 {
         int     i, ECount;
         Global  *GetGlobal(), **rlist;

@@ -15,8 +15,7 @@ static iskip();
 extern direct int stringlen;
 direct int datstring;
 
-initialise(ptr,tsc,type)
-register symnode *ptr;
+initialise(register symnode *ptr, int tsc, int type)
 {
     register char *p;
     register dimnode *dimp;
@@ -83,9 +82,7 @@ out:
 
 #define INFINITY (-1)
 
-static ilist(type,ptr,list,level)
-register symnode *ptr;
-register dimnode *list;
+static ilist(int type, register symnode *ptr, register dimnode *list, int level)
 {
     register dimnode *newlist;
     int flag,t,i;
@@ -149,15 +146,14 @@ out:
     return 0;
 }
 
-zero(n)
+zero(int n)
 {
     ot("rzb ");
     od(n);
     nl();
 }
 
-static defobject(type)
-register int type;
+static defobject(register int type)
 {
     register expnode *p, *p2;
     int addon, done, t;
@@ -245,8 +241,7 @@ finish:
     return done;
 }
 
-static datdef(p,type)
-register int *p;
+static datdef(register int *p, int type)
 {
     register int size;
 

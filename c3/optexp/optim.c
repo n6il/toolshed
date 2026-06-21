@@ -52,8 +52,7 @@ void optinit()
 
 #define isconbra(a) (((a) & BRAMASK) > (BRANCH|SUBR))
 
-void optim(i)
-	register instruction *i;
+void optim(register instruction *i)
 {
 	register instruction *i2;
 	action         *a;
@@ -164,8 +163,7 @@ loop:		if ((chain *)i == &ilist || (chain *)(i2 = i->succ) == &ilist)
 	}
 }
 
-void fixcond(i)
-	register instruction *i;
+void fixcond(register instruction *i)
 {
 	i->itype = ((i->itype & BRAMASK) ^ 1)
 		| (((instruction *) (i->succ))->itype & ~(CODEBRK | BRAMASK));
@@ -176,9 +174,7 @@ void fixcond(i)
 	++opsdone;
 }
 
-int match(s, p)
-	register char  *s,
-	               *p;
+int match(register char *s, register char *p)
 {
 	if (p == NULL)
 		return 1;
@@ -209,8 +205,7 @@ int match(s, p)
 	return (*s == '\0');
 }
 
-void finddupl(i)
-	register instruction *i;
+void finddupl(register instruction *i)
 {
 	register instruction *ip1;
 	label          *lbp;
@@ -322,9 +317,7 @@ void finddupl(i)
 	}
 }
 
-int duplsrch(ip1, ip2)
-	register instruction *ip1,
-	               *ip2;
+int duplsrch(register instruction *ip1, register instruction *ip2)
 {
 	char            bralbl[LABELSIZE + 1];
 	instruction    *ip1b,
@@ -386,9 +379,7 @@ int duplsrch(ip1, ip2)
 	return 0;
 }
 
-void duplrefs(lbp, ip)
-	label          *lbp;
-	instruction    *ip;
+void duplrefs(label *lbp, instruction *ip)
 {
 	register instruction *ip1;
 	chain          *rlp;

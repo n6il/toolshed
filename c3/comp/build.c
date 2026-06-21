@@ -12,8 +12,7 @@
 
 static elsize();
 
-expnode *parsexp(priority)
-int priority;
+expnode *parsexp(int priority)
 {
     register expnode *rhs,*lhs,*temp;
     register int op,priop,lno,rprec;
@@ -202,8 +201,7 @@ expnode *explist()
     return list;
 }
 
-constexp(p)
-int p;
+constexp(int p)
 {
     register expnode *ptr;
     register int v;
@@ -278,8 +276,7 @@ experr()
     error("expression missing");
 }
 
-static elsize(prim)
-expnode **prim;
+static elsize(expnode **prim)
 {
     register expnode *p;
 
@@ -307,7 +304,7 @@ usual:      return getsize(p->type,(int)p->size,p->dimptr);
 
 
 /* parser error-recovery helpers (moved from misc.c at the split) */
-need(key)
+need(int key)
 {
     static char ptr[] = "x expected";
     register int i;

@@ -11,8 +11,7 @@
 
 /* to push down an outer block declaration
  */
-pushdown(sptr)
-register symnode *sptr;
+pushdown(register symnode *sptr)
 {
     register symnode *nptr;
     register char *sp, *ep;
@@ -34,8 +33,7 @@ register symnode *sptr;
 
 /* to recover outer block declaration
  */
-pullup(sptr)
-register symnode *sptr;
+pullup(register symnode *sptr)
 {
     register symnode *nptr;
 
@@ -48,9 +46,7 @@ register symnode *sptr;
 
 /* byte move by count
  */
-move(p1,p2,count)
-register char *p1, *p2;
-int count;
+move(register char *p1, register char *p2, int count)
 {
     while (count--) *p2++ = *p1++;
 }
@@ -60,8 +56,7 @@ pfile()
     eprintf("%s : ",filename);
 }
 
-fatal(errstr)
-char *errstr;
+fatal(char *errstr)
 {
     error(errstr);
     fflush(stderr); /* because 'tidy()' uses '_exit()' i.e. no flush */
@@ -73,15 +68,12 @@ multidef()
     error("multiple definition");
 }
 
-error(s)
-char s[];
+error(char s[])
 {
     doerr(symptr-line,s,symline);
 }
 
-comperr(node,errstr)
-register expnode *node;
-char *errstr;
+comperr(register expnode *node, char *errstr)
 {
     char newstr[50];
 
@@ -90,16 +82,12 @@ char *errstr;
     terror(node,newstr);
 }
 
-terror(node,errstr)
-register expnode *node;
-char *errstr;
+terror(register expnode *node, char *errstr)
 {
     doerr(node->pnt - line,errstr,node->lno);
 }
 
-doerr(n,errstr,lno)
-register int n;
-char errstr[];
+doerr(register int n, char errstr[], int lno)
 {
     pfile();
     eprintf("line %d  ",lno);
@@ -120,32 +108,28 @@ dopoint:
     }
 }
 
-eprintf(s1,s2,s3)
-char *s1;		/* format string */
-argword s2, s3;		/* forwarded args: a string (%s) or an int (%d).  MUST be
-			   argword, not long: callers pass int/char* (2 bytes on
-			   the 6809) and fprintf's %d/%s read 2 bytes, so a `long`
-			   (4 bytes) here misaligns the forwarded args on the 16-bit
-			   stack ABI (invisible on the LP64 host's register ABI). */
+/* s1 is the format string; s2/s3 are forwarded args: a string (%s) or an int
+   (%d).  They MUST be argword, not long: callers pass int/char* (2 bytes on the
+   6809) and fprintf's %d/%s read 2 bytes, so a `long` (4 bytes) here misaligns
+   the forwarded args on the 16-bit stack ABI (invisible on the LP64 host's
+   register ABI). */
+eprintf(char *s1, argword s2, argword s3)
 {
     fprintf(stderr,s1,s2,s3);
 }
 
-eputs(s)
-char *s;
+eputs(char *s)
 {
     fputs(s,stderr);
     eputchar('\n');
 }
 
-eputchar(c)
-char c;
+eputchar(int c)
 {
     putc(c,stderr);
 }
 
-reltree(tree)
-register expnode *tree;
+reltree(register expnode *tree)
 {
     if (tree) {
 #ifdef DEBUG
@@ -159,8 +143,7 @@ register expnode *tree;
     }
 }
 
-release(node)
-register expnode *node;
+release(register expnode *node)
 {
     if(node) {
         node->left=freenode;
@@ -168,8 +151,7 @@ register expnode *node;
     }
 }
 
-nodecopy(n1,n2)
-char *n1,*n2;
+nodecopy(char *n1, char *n2)
 {
     move(n1,n2,NODESIZE);
 }
@@ -211,39 +193,35 @@ issclass()
     return 0;
 }
 
-decref(t)
+decref(int t)
 {
     return ((t >> 2) & (~BASICT)) + btype(t) ;
 }
 
-incref(t)
+incref(int t)
 {
     return ((t & (~BASICT)) << 2 ) + POINTER + btype(t) ;
 }
 
-isbin(op)
-register op;
+isbin(register op)
 {
     return (op>=UMOD && op<=UGT);
 }
 
-dimnode *dimwalk(dptr)
-register dimnode *dptr;
+dimnode *dimwalk(register dimnode *dptr)
 {
     return dptr ? dptr->dptr : 0;
 }
 
 
 #ifdef PTREE
-prtree(node)
-expnode *node;
+prtree(expnode *node)
 {
     puts("\naddress op        value     type        size sux left   right");
     ptree(node);
 }
 
-ptree(node)
-register expnode *node;
+ptree(register expnode *node)
 {
     if (node) {
         pnode(node);
@@ -252,8 +230,7 @@ register expnode *node;
     }
 }
 
-pnode(node)
-register expnode *node;
+pnode(register expnode *node)
 {
     int op,val,i;
 

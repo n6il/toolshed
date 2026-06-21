@@ -46,7 +46,7 @@ static direct int dflag;
 char mtemp[NAMESIZE+1];
 static char curlinebuf[32];
 
-void errexit(n)
+void errexit(int n)
 {
 #if defined(OSK) || defined(OS9)
 	if (devptr)
@@ -281,8 +281,7 @@ void setline(int n)
 }
 
 char *
-setfile(str)
-char *str;
+setfile(char *str)
 {
 	sprintf(mfilename, "\"%s\"", str);
 

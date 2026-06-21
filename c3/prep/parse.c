@@ -82,16 +82,14 @@ badhash:        error("illegal '#'");
 	return EOF;
 }
 
-quoexp(s,t)
-register char *s,*t;
+quoexp(register char *s, register char *t)
 {
 	while(*s++ = *t++)
 		if(s[-1] == HIDER)      /* if the last char was a hidden quote */
 			s[-1] = *t++ + 16;  /* then replace with the real quote */
 }
 
-char *makename(s)
-register char *s;
+char *makename(register char *s)
 {
 	static char buf[15];
 	register char *p=s;
@@ -110,9 +108,7 @@ register char *s;
 	return buf;
 }
 
-getword(word,count)
-register char *word;
-register int count;
+getword(register char *word, register int count)
 {
 	while(--count > 0 && (isalnum(cch) || cch == '_')) {
 		*word++ = cch;
@@ -148,8 +144,7 @@ newline()
 	}
 }
 
-gch(skflag)
-register int skflag;
+gch(register int skflag)
 {
 	if((cch = *lptr) == 0)
 		return;
@@ -158,8 +153,7 @@ register int skflag;
 	else ++lptr;
 }
 
-supergch(skflag)
-register int	skflag;
+supergch(register int skflag)
 {
 	register int	result;
 
@@ -174,7 +168,7 @@ register int	skflag;
 	}
 }
 
-skipsp(skflag)
+skipsp(int skflag)
 {
 	register char c;
 	register int flag = 0;

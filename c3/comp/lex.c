@@ -335,8 +335,7 @@ lexinit()
      ptr->size=4;
 }
 
-getword(name)
-register char name[];
+getword(register char name[])
 {
     int count;
 
@@ -351,16 +350,14 @@ register char name[];
     while(an(curch)) getch();
 }
 
-an(c)
-int c;
+an(int c)
 {
     return (chartab[c]==LETTER || chartab[c]==DIGIT);
 }
 
 direct  symnode *freesym;       /* list of free symbol table entries */
 
-symnode *lookup(name)
-char name[];
+symnode *lookup(char name[])
 {
     /* return a pointer to a symbol table entry for 'name'  */
     /* if one is not found create one                       */
@@ -413,9 +410,7 @@ char name[];
     return nptr;
 }
 
-install(word,typ)
-char *word;
-int typ;
+install(char *word, int typ)
 {
         /* put a keyword in the symbol table */
         register symnode *cptr;
@@ -431,8 +426,7 @@ int typ;
         cptr->storage = typ;
 }
 
-hash(word)
-register char *word;
+hash(register char *word)
 {
     register int n = 0, c;
 
@@ -443,8 +437,7 @@ register char *word;
 
 
 #ifdef  DOFLOATS
-number(type,np)
-register numptrs np;
+number(int type, register numptrs np)
 {
     long i;
     double n, scale(), normaliz();
@@ -581,8 +574,7 @@ fraction:
 }
 
 #ifndef SPLIT
-double scale(n,power,esign)
-double n;
+double scale(double n, int power, int esign)
 {
         double scale0();
 
@@ -592,8 +584,7 @@ double n;
         return scale0(n, power % 10, esign);
 }
 
-double scale0(n,power,esign)
-double n;
+double scale0(double n, int power, int esign)
 {
 
         if (power) {
@@ -641,8 +632,7 @@ double atoftbl[] = {
 };
 #endif
 #else
-number(np)
-register long *np;
+number(register long *np)
 {
        long n;
        register char *cp;
@@ -808,8 +798,7 @@ qstr()
 
 }
 
-oc(c)
-int c;
+oc(int c)
 {
 #ifdef  SPLIT
         if(c == '\0' || c == '\\')
@@ -840,7 +829,7 @@ int c;
         ++stringlen;
 }
 
-oz(n)
+oz(int n)
 {
 #ifdef SPLIT
      passthru();
@@ -896,20 +885,17 @@ dobslash()
         return c;
 }
 
-isoct(c)
-char c;
+isoct(int c)
 {
         return (c<='7' && c>='0');
 }
 
-ishex(c)
-char c;
+ishex(int c)
 {
         return ( isdigit(c) ||  ((c &=0x5f) >='A' && c<='F')) ? c : 0;
 }
 
-static double normaliz(n)
-char n[];
+static double normaliz(char n[])
 {
     /*
      * n[] is the parsed digits as an 8-byte big-endian integer (n[0] most
@@ -926,9 +912,7 @@ char n[];
     return v;
 }
 
-addin(n,c)
-register char n[];
-char c;
+addin(register char n[], int c)
 {
     register int i,x;
     char ntemp[8];
@@ -945,8 +929,7 @@ char c;
     return x;
 }
 
-static numshf(n)
-register char n[];
+static numshf(register char n[])
 {
     register int i, x = 0;
 

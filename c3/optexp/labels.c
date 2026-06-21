@@ -20,8 +20,7 @@ void labelinit()
 	}
 }
 
-label          *inslabel(s)
-	char           *s;
+label          *inslabel(char *s)
 {
 	register chain *l;
 	register label *p;
@@ -40,8 +39,7 @@ label          *inslabel(s)
 	return p;
 }
 
-label          *findlabel(s)
-	char           *s;
+label          *findlabel(char *s)
 {
 	label          *p;
 	chain          *l;
@@ -58,8 +56,7 @@ label          *findlabel(s)
 	return NULL;
 }
 
-int hash(s)
-	register char  *s;
+int hash(register char *s)
 {
 	int             i = 0;
 
@@ -87,8 +84,7 @@ label          *newlabel()
 	return p;
 }
 
-void freelabel(p)
-	register label *p;
+void freelabel(register label *p)
 {
 	if (p->dest == NULL && p->rlist == NULL)
 	{
@@ -101,8 +97,7 @@ void freelabel(p)
 	}
 }
 
-char           *newbra(lblp)
-	char           *lblp;
+char           *newbra(char *lblp)
 {
 	static int      labnum = 0;
 

@@ -97,10 +97,10 @@ static
 dobslash();
 
 /* defined below, but called from getsym() above their definitions */
-void pstr(void);
-void qstr(void);
+void pstr();
+void qstr();
 
-void getsym(void)
+void getsym()
 {
 	register int		numtype;
 	auto long			n;
@@ -373,7 +373,7 @@ static direct FILE	*sfile;
 #endif
 direct int			stringlen;           /* for inits */
 
-void pstr(void)
+void pstr()
 {
 	gch(0);
 	if (cch != '\\')
@@ -397,7 +397,7 @@ void pstr(void)
 }
 
 
-void qstr(void)
+void qstr()
 {
 #ifdef KANJI
 	static int kanji_flg;
@@ -436,7 +436,7 @@ void qstr(void)
 }
 
 
-static int dobslash(void)
+static int dobslash()
 {
 	register int	c, n;
 

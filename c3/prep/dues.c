@@ -16,9 +16,7 @@ static short nextncnt;
 /* Return the next candidate path for an #include of fname, or NULL when there
    are no more.  Every candidate fits in FNAMSIZE (so it can be copied into an
    include entry); an include directory too long to join with fname is skipped. */
-char *nextname(fname, delimiter)
-char *fname;
-char delimiter;
+char *nextname(char *fname, char delimiter)
 {
 	static char nambuf[FNAMSIZE];
 
@@ -42,7 +40,7 @@ char delimiter;
 }
 
 
-void doinclude(void)
+void doinclude()
 {
 	register char c, *nameptr;
 	static char fname[FNAMSIZE], msg[FNAMSIZE + 32];
@@ -168,7 +166,7 @@ static struct
 } ifstack[MAXIFS];
 
 
-void docond(void)
+void docond()
 {
 	if (iftop < MAXIFS)
 	{
@@ -228,7 +226,7 @@ void doifdef(int _bool)
 }
 
 
-void doelif(void)
+void doelif()
 {
 	if (elseflag)
 	{
@@ -249,7 +247,7 @@ void doelif(void)
 }
 
 
-void doelse(void)
+void doelse()
 {
 	if (elseflag)
 	{
@@ -263,7 +261,7 @@ void doelse(void)
 }
 
 
-void unstack(void)
+void unstack()
 {
 	if (iftop)
 	{
@@ -277,7 +275,7 @@ void unstack(void)
 }
 
 
-void doliner(void)
+void doliner()
 {
 	register int i;
 	char name[NAMESIZE];

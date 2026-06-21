@@ -7,15 +7,13 @@
 #include "cj.h"
 #ifdef  DOFLOATS
 
-dload(ptr)
-register expnode *ptr;
+dload(register expnode *ptr)
 {
     trandexp(ptr);
     getadd(ptr);
 }
 
-trandexp(node)
-register expnode *node;
+trandexp(register expnode *node)
 {
     register expnode *p, *rhs;
     register int op, type;

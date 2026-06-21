@@ -90,9 +90,7 @@ void PutName();
 int getw_os9();
 int putw_os9();
 
-int main(argc, argv)
-int     argc;
-char    *argv[];
+int main(int argc, char *argv[])
 {
         int     i, NMods;
         bool    GetAll;
@@ -243,22 +241,19 @@ void CopyRefs()
                 fseek(LibFP, (long) (RCount * sizeof(ref)), 1);
 }
 
-void GetName(s)
-char    *s;
+void GetName(char *s)
 {
         while ( (*(s++) = getc(LibFP)) )
                 ;
 }
 
-void PutName(s)
-char    *s;
+void PutName(char *s)
 {
         fputs(s, ModFP);
         putc('\0', ModFP);
 }
 
-int getw_os9( fp )
-FILE *fp;
+int getw_os9(FILE *fp)
 {
 	unsigned int result;
 	
@@ -269,9 +264,7 @@ FILE *fp;
 	return result;
 }
 
-int putw_os9(value, fp)
-int value;
-FILE *fp;
+int putw_os9(int value, FILE *fp)
 {
 	putc( (value>>8)&0xff, fp );
 	putc( (value)&0xff, fp );

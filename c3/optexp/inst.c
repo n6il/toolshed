@@ -24,10 +24,7 @@ char           *bratab[] = {
 
 #define NUMBRA ((sizeof bratab) / (sizeof (char *)))
 
-char          **srchmnem(mnemp, tblbeg, tblend)
-	char           *mnemp;
-	char          **tblbeg,
-	              **tblend;
+char **srchmnem(char *mnemp, char **tblbeg, char **tblend)
 {
 	register char **nxtmnem;
 
@@ -47,11 +44,7 @@ void insinit()
 	freeins = NULL;
 }
 
-instruction    *insins(ins, mnem, args, l)
-	instruction    *ins;
-	char           *mnem,
-	               *args;
-	label         **l;
+instruction *insins(instruction *ins, char *mnem, char *args, label **l)
 {
 	register instruction *i;
 	register label *lp;
@@ -165,9 +158,7 @@ instruction    *newins()
 	return i;
 }
 
-void insref(ip, lp)
-	instruction    *ip;
-	label          *lp;
+void insref(instruction *ip, label *lp)
 {
 	register chain *rlp;
 
@@ -177,9 +168,7 @@ void insref(ip, lp)
 	lp->rlist = rlp;
 }
 
-void movlab(i1, i2)
-	instruction    *i1,
-	               *i2;
+void movlab(instruction *i1, instruction *i2)
 {
 	register label *l,
 	               *lastl;
@@ -234,8 +223,7 @@ void rminst()
 	remins(i);
 }
 
-void fix(i, direction)
-	instruction    *i;
+void fix(instruction *i, int direction)
 {
 	register instruction *ip = i;
 	instruction    *dp;
@@ -290,8 +278,7 @@ void fix(i, direction)
 	}
 }
 
-void remins(i)
-	register instruction *i;
+void remins(register instruction *i)
 {
 	register label *l;
 
@@ -320,9 +307,7 @@ void remins(i)
 	--inscount;
 }
 
-void remref(ip, lp)
-	instruction    *ip;
-	label          *lp;
+void remref(instruction *ip, label *lp)
 {
 	chain          *rlp,
 	               *lastrlp;
@@ -355,8 +340,7 @@ chain          *newchain()
 	return cp;
 }
 
-void freechain(p)
-	register chain *p;
+void freechain(register chain *p)
 {
 	p->succ = _cfree;
 	_cfree = p;
@@ -365,8 +349,7 @@ void freechain(p)
 static DIRECT chain *safree = NULL,
                *lafree = NULL;
 
-char           *newarg(siz)
-	int             siz;
+char           *newarg(int siz)
 {
 	register chain *ap;
 
@@ -383,8 +366,7 @@ char           *newarg(siz)
 	return (char *)ap;
 }
 
-void freearg(p)
-	chain          *p;
+void freearg(chain *p)
 {
 	register char  *sp;
 

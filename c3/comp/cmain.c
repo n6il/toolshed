@@ -24,8 +24,7 @@ direct int eflag;
 direct  int     *inclptr;       /* include stack pointer */
 #endif      /* <<<- inserted to match preceeding "ifndef PASS2" */
 
-main(argc,argv)
-char **argv;
+main(int argc, char **argv)
 {
         register char *p;
 

@@ -25,8 +25,7 @@ getkeys()
         fclose(in1);
 }
 
-prtree(node,title)
-int *node;
+prtree(int *node, int title)
 {
     if (dflag) {
         fflush(stdout);
@@ -36,8 +35,7 @@ int *node;
     }
 }
 
-ptree(node)
-register int *node;
+ptree(register int *node)
 {
         if (node) {
                 pnode(node);
@@ -46,8 +44,7 @@ register int *node;
         }
 }
 
-pnode(node)
-register int *node;
+pnode(register int *node)
 {
         int op,val,i;
 

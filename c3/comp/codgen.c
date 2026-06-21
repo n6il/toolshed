@@ -34,10 +34,9 @@ static char *unkopr = "unknown operator : ";
 extern char *getrel(),regname();
 
 
-gen(op,rtype,arg,val)
-register op,rtype;
-register expnode *val;
-register argword arg;		/* an int (register/type/offset) or an expnode * */
+/* arg is an int (register/type/offset) or an expnode * - hence argword, not
+   long (the 6809 stack ABI pushes it pointer-width; a long would misalign). */
+gen(register int op, register int rtype, register argword arg, register expnode *val)
 {
     register expnode *ptr;
     register symnode *sptr;
@@ -278,7 +277,7 @@ leaexit:
     }
 }
 
-char regname(r)
+char regname(int r)
 {
     switch (r) {
         case DREG:  return 'd';
@@ -289,13 +288,12 @@ char regname(r)
     }
 }
 
-transfer(r1,r2)
+transfer(int r1, int r2)
 {
     fprintf(code," tfr %c,%c\n",r1,r2);
 }
 
-dolongs(op,arg)
-int *arg;
+dolongs(int op, int *arg)
 {
     switch (op) {
         case STACK:
@@ -345,8 +343,7 @@ int *arg;
 }
 
 #ifdef  DOFLOATS
-dofloats(op,arg)
-register long arg;
+dofloats(int op, register long arg)
 {
     switch (op) {
         case FCONST:    getcon((int *)arg,4); break;
@@ -390,8 +387,7 @@ register long arg;
 }
 #endif
 
-getcon(p,n)
-int *p;
+getcon(int *p, int n)
 {
     int temp;
 
@@ -404,32 +400,27 @@ int *p;
 }
 
 
-mwsyscall(s)
-char *s;
+mwsyscall(char *s)
 {
     ot(lbsr);
     ol(s);
     sp += 2;
 }
 
-lcall(s)
-char *s;
+lcall(char *s)
 {
     ot(lbsr);
     ol(s);
     sp += 4;
 }
 
-fcall(s)
-char *s;
+fcall(char *s)
 {
     ot(lbsr);
     ol(s);
 }
 
-trouble(op,arg,val)
-register int op,arg;
-register expnode *val;
+trouble(register int op, register int arg, register expnode *val)
 {
     char *s;
     int cflag,temp;
@@ -502,9 +493,8 @@ register expnode *val;
     }
 }
 
-doref(reg,arg,val,offset)
-int reg,arg,offset;
-argword val;			/* an expnode * in NODE mode, an int otherwise */
+/* val is an expnode * in NODE mode, an int otherwise - hence argword, not long. */
+doref(int reg, int arg, argword val, int offset)
 {
     ob(reg);
     ob(' ');
@@ -513,7 +503,7 @@ argword val;			/* an expnode * in NODE mode, an int otherwise */
 }
 
 
-char *getrel(op)
+char *getrel(int op)
 {
     switch (op) {
         default:    error("rel op");
@@ -531,12 +521,12 @@ char *getrel(op)
 }
 
 
-static outlea(reg)
+static outlea(int reg)
 {
     fprintf(code," lea%c ",reg);
 }
 
-outstr(reg,l)
+outstr(int reg, int l)
 {
     outlea(reg);
     fprintf(code,"%c%d,pcr\n",UNIQUE,l);

@@ -40,10 +40,7 @@ extern macro *findmac();
  * arggch function, supergch().)
  */
 
-scan(lp, dodef, arggch)
-char	*lp;
-int		dodef;
-int		(*arggch)();
+scan(char *lp, int dodef, funcp arggch)
 {
 	register macro	*nptr;
 	register char	*cptr, *savep, *saveb;
@@ -57,7 +54,7 @@ int		(*arggch)();
 	saveb = lbase;
 	lbase = lptr = lp;
 	gch(1);
-	
+
 	while (cch) {
 		if (cch == '"' || cch == '\'') {
 			char delim = cch;

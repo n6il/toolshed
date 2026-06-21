@@ -52,11 +52,9 @@ void doerr(int n, char errstr[], int lno, int ertype)
 }
 
 
-void putesc(type, arg, arg1)
-int type;
-char *arg, *arg1;		/* most callers pass strings (%s); NEWLINO passes
-				   an int line number, which still round-trips
-				   through the low word for the "%d" case */
+/* arg/arg1: most callers pass strings (%s); NEWLINO passes an int line
+   number, round-tripping through the low word for the "%d" case */
+void putesc(int type, char *arg, char *arg1)
 {
 	if (!aflag)
 	{

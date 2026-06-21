@@ -32,6 +32,12 @@ extern int errno;
 #define TRUE		1
 #define FALSE		0
 
+/* c3's declarator cannot parse a raw `int (*f)()` function-pointer parameter
+   (it mis-parses the nested parens and silently miscompiles the whole param
+   list - scan()'s first arg came through as a bad pointer on target).  A
+   typedef'd name parses cleanly; scan() takes its char-getter through this. */
+typedef int (*funcp)();
+
 #define FNAMSIZE    256     /* length of file names, incl. include paths */
 #define NAMESIZE    256     /* length of macro names */
 #define HOLDSIZE    512     /* size of string hold buffer */
@@ -143,4 +149,7 @@ extern long primary();
 extern macro *addmac(), *findmac();
 extern macdef *revlist();
 extern char *savestr(), *setfile(), *makename();
-extern char *grab(), *copystr(), *nextname();
+extern char *grab(), *copystr();
+extern char *nextname(char *, char);	/* abstract proto: gives clang the char arg
+					   type without leaking param names (c3
+					   "named twice") */

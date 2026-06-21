@@ -29,7 +29,7 @@ epilogue()
           ol("fail source errors");
 }
 
-locstat(l,size,area)
+locstat(int l, int size, int area)
 {
 #ifdef MKIL
      ilwrec(IL_LBSS);
@@ -45,9 +45,7 @@ locstat(l,size,area)
 #endif
 }
 
-defglob(ptr,size,area)
-symnode *ptr;
-int size,area;
+defglob(symnode *ptr, int size, int area)
 {
 #ifdef MKIL
      ilwrec(IL_BSS);
@@ -63,9 +61,7 @@ int size,area;
 #endif
 }
 
-extstat(ptr,size,area)
-symnode *ptr;
-int size,area;
+extstat(symnode *ptr, int size, int area)
 {
 #ifdef MKIL
      ilwrec(IL_BSS);
@@ -81,16 +77,13 @@ int size,area;
 #endif
 }
 
-defvar(ptr,size,scope)
-symnode *ptr;
-char scope;
+defvar(symnode *ptr, int size, int scope)
 {
      fprintf(code,"%.8s%c rmb %d\n",ptr->sname,scope,size);
 }
 
 #ifdef PROF
-profname(name,lab)
-char *name;
+profname(char *name, int lab)
 {
      olbl(lab);
      fprintf(code," fcc \"%.8s\"\n fcb 0\n",name);
@@ -98,12 +91,10 @@ char *name;
 #endif
 
 #ifdef PROF
-startfunc(name,flag,paramreg,lab)
+startfunc(register char *name, int flag, int paramreg, int lab)
 #else
-startfunc(name,flag,paramreg)
+startfunc(register char *name, int flag, int paramreg)
 #endif
-register char *name;
-int paramreg;
 {
 #ifdef FUNCNAME
     extern direct int fnline;
@@ -168,7 +159,7 @@ comment()
         os("* ");
 }
 
-vsect(area)
+vsect(int area)
 {
      ol(area ? "vsect dp" : "vsect");
 }

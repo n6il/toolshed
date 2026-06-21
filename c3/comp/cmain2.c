@@ -72,8 +72,7 @@ static c2init()
     for (i = 0; i < MAXSTR; i++) strmap[i] = 0;
 }
 
-main(argc,argv)
-char **argv;
+main(int argc, char **argv)
 {
     int op;
     char *nm;

@@ -27,8 +27,7 @@ char chartab[] = {
 };
 
 /* bump allocator over sbrk - all symbols and expression trees live here */
-char *grab(size)
-int size;
+char *grab(int size)
 {
     char *oldptr;
 
@@ -41,15 +40,12 @@ int size;
 }
 
 /* allocate and initialise an expression-tree node */
-expnode *newnode(op,left,right,value,lno,errpnt)
-expnode *left,*right;
-argword value;			/* the node's value: a symnode * (NAME), an int (CONST),
-				   or a precedence (operators).  MUST be argword, not
-				   long: callers pass an int precedence or symval, which
-				   on the 6809 stack ABI are pushed pointer-width - a
-				   `long` here would read 2 bytes too many and misalign
-				   lno/errpnt.  argword == long on the LP64 host (no-op). */
-char *errpnt;
+/* value is the node's value: a symnode * (NAME), an int (CONST), or a precedence
+   (operators).  MUST be argword, not long: callers pass an int precedence or
+   symval, which on the 6809 stack ABI are pushed pointer-width - a `long` here
+   would read 2 bytes too many and misalign lno/errpnt.  argword == long on the
+   LP64 host (no-op). */
+expnode *newnode(int op, expnode *left, expnode *right, argword value, int lno, char *errpnt)
 {
     register expnode *node;
 
@@ -76,7 +72,7 @@ char *errpnt;
 }
 
 /* fold a constant operator: evaluates "r OP l" (unary ops use r) */
-constop(op,r,l)
+constop(int op, int r, int l)
 {
     switch(op) {
         case PLUS:      return r + l;
@@ -124,10 +120,7 @@ constop(op,r,l)
 }
 
 /* compute and record the size of a symbol's declared type */
-sizeup(ptr,dimptr,size)
-register symnode *ptr;
-register dimnode *dimptr;
-long size;
+sizeup(register symnode *ptr, register dimnode *dimptr, long size)
 {
     register int n,temp;
 
@@ -149,8 +142,7 @@ long size;
     return getsize(temp,n,ptr->dimptr = dimptr);
 }
 
-getsize(t,size,dptr)
-register dimnode *dptr;
+getsize(int t, int size, register dimnode *dptr)
 {
     int n;
 
@@ -171,8 +163,7 @@ register dimnode *dptr;
 /* arity of an expression-tree op: 0 leaf, 1 unary, 2 binary.  Shared by the
  * IL writer (ilemit, pass 1) and reader (cmain2, pass 2) so both agree on tree
  * shape - NULL children of binary nodes are written as an IL_NULL placeholder. */
-arity(op)
-int op;
+arity(int op)
 {
     switch (op) {
         case NAME: case CONST: case LCONST: case FCONST: case STRING:
