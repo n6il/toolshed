@@ -10,7 +10,10 @@ vpath %.c ../../mamou:../../os9
 
 RELEASE		= 2.2
 PACKAGENAME	= toolshed_$(RELEASE)_win32.zip
-INSTALLDIR	= /usr/local/bin
+# PREFIX is the install prefix (/usr/local by default); DESTDIR is an optional
+# staging root prepended for package building.  Matches build/unix/Makefile.
+PREFIX		?= /usr/local
+INSTALLDIR	= $(DESTDIR)$(PREFIX)/bin
 DIRS		= libnative librbf libcoco libdecb libmisc libcecb libsys  \
 		libtoolshed os9 mamou decb cecb makewav tocgen
 # ar2
