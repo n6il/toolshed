@@ -283,7 +283,10 @@ int os9copy(int argc, char *argv[])
 	    char errorstr[TS_MAXSTR];
 
 	    TSReportError(ec, errorstr);
-            fprintf(stderr, "%s: error %d on file '%s': %s\n", argv[0], ec, argv[j], errorstr);
+            /* Name both source and destination: the error may be either the
+               source or (commonly) the target image, so reporting only the
+               source - as this did - sends you hunting the wrong path. */
+            fprintf(stderr, "%s: error %d copying '%s' to '%s': %s\n", argv[0], ec, argv[j], df, errorstr);
         }
     }
 
