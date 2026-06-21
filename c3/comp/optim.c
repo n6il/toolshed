@@ -242,7 +242,7 @@ int isleaf(register expnode *node)
 }
 
 
-void diverr()
+void diverr(void)
 {
 	error("divide by zero");
 }

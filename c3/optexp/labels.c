@@ -8,7 +8,7 @@
 chain           ltable[128];
 DIRECT label   *lfree;
 
-void labelinit()
+void labelinit(void)
 {
 	register int    i;
 	register chain *p;
@@ -66,7 +66,7 @@ int hash(register char *s)
 	return i & 127;
 }
 
-label          *newlabel()
+label          *newlabel(void)
 {
 	register label *p;
 

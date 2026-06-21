@@ -62,9 +62,9 @@ int nlabs;
  * the task 7 blocks, leaving too few free to fork).  Full capacity is preserved;
  * only strmap is zeroed, to keep its former bss behaviour (an unset string id
  * reads back as label 0). */
-static void c2init();
+static void c2init(void);
 
-static void c2init()
+static void c2init(void)
 {
     register int i;
 

@@ -125,9 +125,8 @@ extern DIRECT int dbflag;
  * functions are NOT declared here (there are none in optexp); a static helper
  * would carry its prototype in its own .c file.
  *
- * (void) is deliberately avoided for no-argument functions: this code is also
- * cross-compiled by c3 for OS-9, where void maps to int, so a bare () is used
- * for no-arg functions (accepting the host -Wstrict-prototypes warning).
+ * No-argument functions use the ANSI (void) form in both prototype and
+ * definition; c3 accepts (void) for an empty parameter list.
  *
  * error() and parse() keep their fixed four / four parameter shapes from their
  * definitions: error()/debug() are the classic "poor man's varargs" idiom that
@@ -149,14 +148,14 @@ void            freechain(chain *);
 void            remref(instruction *, label *);
 void            freearg(chain *);
 void            freelabel(label *);
-void            endsect();
+void            endsect(void);
 void            optim(instruction *);
 void            finddupl(instruction *);
-void            rminst();
-void            labelinit();
-void            insinit();
-void            optinit();
-void            optimise();
+void            rminst(void);
+void            labelinit(void);
+void            insinit(void);
+void            optinit(void);
+void            optimise(void);
 void            fixcond(instruction *);
 void            duplrefs(label *, instruction *);
 
@@ -166,12 +165,12 @@ int             hash(char *);
 int             match(char *, char *);
 int             duplsrch(instruction *, instruction *);
 
-chain          *newchain();
+chain          *newchain(void);
 label          *inslabel(char *);
-label          *newlabel();
+label          *newlabel(void);
 label          *findlabel(char *);
 instruction    *insins(instruction *, char *, char *, label **);
-instruction    *newins();
+instruction    *newins(void);
 char          **srchmnem(char *, char **, char **);
 
 #ifdef DEBUG

@@ -104,7 +104,7 @@ dyndep(struct name *np)
  *     Make the default rules
  */
 void
-makerules()
+makerules(void)
 {
        struct cmd *            cp;
        struct name *           np;

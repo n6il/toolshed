@@ -150,27 +150,27 @@ extern void scan(char *, int, funcp);
 
 /* dues.c */
 extern char *nextname(char *, char);
-extern void doinclude();
+extern void doinclude(void);
 extern void dodefine(int);
-extern void docond();
+extern void docond(void);
 extern void doifdef(int);
-extern void doelif();
-extern void doelse();
-extern void unstack();
-extern void doliner();
+extern void doelif(void);
+extern void doelse(void);
+extern void unstack(void);
+extern void doliner(void);
 
 /* eval.c */
-extern int eval();
+extern int eval(void);
 extern long parsexp(long *, int *, int);
-extern int chkpost();
+extern int chkpost(void);
 extern long primary(long *, int *);
-extern int isop();
+extern int isop(void);
 
 /* lex.c */
-extern void getsym();
+extern void getsym(void);
 extern int number(long *);
-extern void pstr();
-extern void qstr();
+extern void pstr(void);
+extern void qstr(void);
 extern int isoct(int);
 extern int ishex(int);
 extern int an(int);
@@ -181,7 +181,7 @@ extern macdef *revlist(macdef *);
 extern macro *addmac(char *, char *);
 extern macro *findmac(char *);
 extern void delmac(char *);
-extern void nxtch();
+extern void nxtch(void);
 
 /* main.c */
 extern void errexit(int);
@@ -201,13 +201,13 @@ extern char *copystr(char *, char *, int);
 extern char *savestr(char *);
 
 /* parse.c */
-extern void preinit();
-extern int getline1();
+extern void preinit(void);
+extern int getline1(void);
 extern void quoexp(char *, char *);
 extern char *makename(char *);
 extern void getword(char *, int);
-extern int newline();
+extern int newline(void);
 extern int gch(int);
 extern int supergch(int);
 extern int skipsp(int);
-extern int _inline();
+extern int _inline(void);

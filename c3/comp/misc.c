@@ -51,7 +51,7 @@ void move(register char *p1, register char *p2, int count)
     while (count--) *p2++ = *p1++;
 }
 
-void pfile()
+void pfile(void)
 {
     eprintf("%s : ",filename);
 }
@@ -63,7 +63,7 @@ void fatal(char *errstr)
     tidy();         /* get rid of temp files and exit */
 }
 
-void multidef()
+void multidef(void)
 {
     error("multiple definition");
 }
@@ -156,7 +156,7 @@ void nodecopy(char *n1, char *n2)
     move(n1,n2,NODESIZE);
 }
 
-int istype()
+int istype(void)
 {
     if (sym == KEYWORD)
         switch (symval) {
@@ -165,6 +165,7 @@ int istype()
             case UNSIGN:
             case SHORT:
             case LONG:
+            case VOID:
             case STRUCT:
             case UNION:
 #ifdef  DOFLOATS
@@ -179,7 +180,7 @@ int istype()
     return 0;
 }
 
-int issclass()
+int issclass(void)
 {
     if(sym==KEYWORD) switch(symval) {
         case EXTERN:

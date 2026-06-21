@@ -41,7 +41,7 @@ char *nextname(char *fname, char delimiter)
 }
 
 
-void doinclude()
+void doinclude(void)
 {
 	register char c, *nameptr;
 	static char fname[FNAMSIZE], msg[FNAMSIZE + 32];
@@ -167,7 +167,7 @@ static struct
 } ifstack[MAXIFS];
 
 
-void docond()
+void docond(void)
 {
 	if (iftop < MAXIFS)
 	{
@@ -227,7 +227,7 @@ void doifdef(int _bool)
 }
 
 
-void doelif()
+void doelif(void)
 {
 	if (elseflag)
 	{
@@ -248,7 +248,7 @@ void doelif()
 }
 
 
-void doelse()
+void doelse(void)
 {
 	if (elseflag)
 	{
@@ -262,7 +262,7 @@ void doelse()
 }
 
 
-void unstack()
+void unstack(void)
 {
 	if (iftop)
 	{
@@ -276,7 +276,7 @@ void unstack()
 }
 
 
-void doliner()
+void doliner(void)
 {
 	register int i;
 	char name[NAMESIZE];

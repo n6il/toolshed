@@ -27,7 +27,7 @@ static symnode *protoargs(symnode *);	/* prototype param types + unscope the nam
 direct int fnline;
 #endif
 
-void extdef()
+void extdef(void)
 {
 	register symnode *ptr;
 	symnode *ptemp;
@@ -157,7 +157,7 @@ next:
 }
 
 
-void argdef()
+void argdef(void)
 {
 	register symnode *ptr;
 	symnode *ptemp;
@@ -216,7 +216,7 @@ next:
 }
 
 
-void blkdef()
+void blkdef(void)
 {
 	register symnode *ptr;
 	symnode *p, *ptemp;
@@ -619,10 +619,10 @@ void block(int stkadj)
 void declist(register symnode **list)
 {
 	register symnode *ptr,*last;
-	symnode *ptemp;
+	symnode *ptemp, *ap;
 	dimnode *dimptr,*tdp;
 	long size;
-	int temp, sclass;
+	int temp, sclass, voidparam;
 	elem *eptr;
 
 	*list = NULL;
@@ -630,6 +630,10 @@ void declist(register symnode **list)
 
 	for (;;) {
 		if (sym == RPAREN) break;
+
+		/* note a leading `void' before settype maps it to INT, so the
+		   abstract-parameter arm below can recognise an explicit "(void)" */
+		voidparam = (sym == KEYWORD && symval == VOID);
 
 		if (istype() || issclass()) {
 			/*
@@ -669,11 +673,17 @@ void declist(register symnode **list)
 				ptr->snext = NULL;
 				last = ptr;
 			} else {
+				/* a lone "(void)" is the ANSI empty parameter list: the sole
+				   token was `void' (now INT, no declarator -> temp == INT) and
+				   the list is closing.  Take it as zero parameters.  A "void *"
+				   abstract param (temp is a pointer) is NOT this case.  (ap is
+				   declared at the top of declist so this statement may precede
+				   it - the c3 self-compile enforces K&R decls-before-stmts.) */
+				if (voidparam && *list == NULL && temp == INT && sym == RPAREN)
+					break;
 				/* abstract parameter (ANSI prototype, no name): keep only its
-				   TYPE so call sites can coerce arguments to it.  (Never write
-				   "(void)" - c3 maps void->int, so it would look like one int
-				   param; use "()" for a no-argument function.) */
-				register symnode *ap = (symnode *) grab(SYMSIZE);
+				   TYPE so call sites can coerce arguments to it. */
+				ap = (symnode *) grab(SYMSIZE);
 				ap->type = temp;
 				ap->storage = ARG;
 				ap->blklev = 1;
@@ -708,7 +718,7 @@ void declist(register symnode **list)
 }
 
 
-int setclass()
+int setclass(void)
 {
 	 int class;
 	 if(issclass()) {
@@ -743,6 +753,10 @@ int settype(long *size, dimnode **dimptr, elem **ellist)
 			case UNSIGN:
 				getsym();
 				if(sym==KEYWORD && symval==INT) getsym();
+				break;
+			case VOID:		/* c3 has no void: treat as int */
+				type=INT;	/* (tsize stays the default 2) */
+				getsym();
 				break;
 			case CHAR:  tsize=1;
 			case INT:
@@ -1057,13 +1071,13 @@ void clear(symnode **list)
 }
 
 
-void sizerr()
+void sizerr(void)
 {
 	error("cannot evaluate size");
 }
 
 
-void identerr()
+void identerr(void)
 {
 	error("identifier missing");
 }

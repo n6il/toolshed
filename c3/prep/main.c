@@ -289,7 +289,7 @@ setfile(char *str)
 }
 
 #ifdef DEBUG
-dumpmac()
+dumpmac(void)
 {
 	int n;
 	macro *p;

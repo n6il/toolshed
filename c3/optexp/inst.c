@@ -36,7 +36,7 @@ char **srchmnem(char *mnemp, char **tblbeg, char **tblend)
 	return NULL;
 }
 
-void insinit()
+void insinit(void)
 {
 	ilist.succ = ilist.pred = &ilist;
 	inscount = 0;
@@ -139,7 +139,7 @@ instruction *insins(instruction *ins, char *mnem, char *args, label **l)
 	return i;
 }
 
-instruction    *newins()
+instruction    *newins(void)
 {
 	register instruction *i;
 
@@ -186,7 +186,7 @@ void movlab(instruction *i1, instruction *i2)
 	}
 }
 
-void rminst()
+void rminst(void)
 {
 	register instruction *i;
 	label          *l;
@@ -328,7 +328,7 @@ void remref(instruction *ip, label *lp)
 
 static DIRECT chain *_cfree = NULL;
 
-chain          *newchain()
+chain          *newchain(void)
 {
 	register chain *cp;
 

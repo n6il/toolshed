@@ -94,9 +94,9 @@ char kanjtbl[] = {						/* kanji first byte table */
 static char namebuf[NAMESIZE + 1];
 
 /* static helper, defined below */
-static int dobslash();
+static int dobslash(void);
 
-void getsym()
+void getsym(void)
 {
 	register int		numtype;
 	auto long			n;
@@ -369,7 +369,7 @@ static direct FILE	*sfile;
 #endif
 direct int			stringlen;           /* for inits */
 
-void pstr()
+void pstr(void)
 {
 	gch(0);
 	if (cch != '\\')
@@ -393,7 +393,7 @@ void pstr()
 }
 
 
-void qstr()
+void qstr(void)
 {
 #ifdef KANJI
 	static int kanji_flg;
@@ -432,7 +432,7 @@ void qstr()
 }
 
 
-static int dobslash()
+static int dobslash(void)
 {
 	register int	c, n;
 

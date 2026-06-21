@@ -21,7 +21,7 @@
 
 static direct unsigned stklab;       /* label for stack check equ value */
 
-void epilogue()
+void epilogue(void)
 {
      dumpstrings();
      endsect();
@@ -132,7 +132,7 @@ void startfunc(register char *name, int flag, int paramreg)
 #endif
 }
 
-void endfunc()
+void endfunc(void)
 {
 #ifdef MKIL
     ilwrec(IL_ENDFUNC);
@@ -144,17 +144,17 @@ void endfunc()
 #endif
 }
 
-void defbyte()
+void defbyte(void)
 {
         ot("fcb ");
 }
 
-void defword()
+void defword(void)
 {
         ot("fdb ");
 }
 
-void comment()
+void comment(void)
 {
         os("* ");
 }
@@ -164,12 +164,12 @@ void vsect(int area)
      ol(area ? "vsect dp" : "vsect");
 }
 
-void endsect()
+void endsect(void)
 {
      ol("endsect");
 }
 
-void dumpstrings()
+void dumpstrings(void)
 {
      register int c;
 
@@ -190,7 +190,7 @@ void dumpstrings()
      }
 }
 
-void tidy()
+void tidy(void)
 {
      int err = errno ? errno : 1;
 

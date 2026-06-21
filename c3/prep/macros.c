@@ -229,7 +229,7 @@ void delmac(char *name)
 }
 
 
-void nxtch()
+void nxtch(void)
 {
     while(isspace(cch))
 	{

@@ -27,7 +27,9 @@
 
 #ifdef OS9
 #define uchar          char
-#define void           int
+/* NB: no "#define void int" - c3 has a real void keyword (and now parses an
+   ANSI "(void)" empty parameter list); textually mapping void->int would turn
+   "(void)" into "(int)", i.e. a phantom int parameter. */
 #define fputc          putc
 #else
 #define uchar          unsigned char
@@ -55,7 +57,7 @@
 #endif
 
 /* This is where it gets the default make rules.  If undefined, the defaults
-   are compiled in (see makerules() in rules.c, which has unix/OS9/eon arms).
+   are compiled in (see makerules(void) in rules.c, which has unix/OS9/eon arms).
    We compile them in on both the host (unix) and the c3/OS-9 cross-build so a
    freshly-built make is self-contained - no external /dd/sys/make.default
    needed.  Leave the file-based default only for the legacy eon target. */
@@ -187,12 +189,12 @@ struct cmd *           newcmd(char *, struct cmd *);
 void                   newline(struct name *, struct depend *, struct cmd *, bool);
 char *                 suffix(char *);
 void                   touch(struct name *);
-void                   makerules();
+void                   makerules(void);
 char *                 gettok(char **);
-void                   precious();
+void                   precious(void);
 bool                   getline1(char *, FILE *);
 void                   expand(char *);
-void                   prt();
-void                   circh();
+void                   prt(void);
+void                   circh(void);
 void                   modtime(struct name *);
 bool                   dyndep(struct name *);

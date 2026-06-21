@@ -70,7 +70,7 @@ int statdef(int tid)       /* allocate (once) the pass-2 label for a local stati
  * table entry (label + body lines) to strfile for dumpstrings to emit.  A
  * string is defined where it was lexed, which lands inside the expression
  * record stream, so this is called from both rdexpr and the statement loop. */
-void dostr()
+void dostr(void)
 {
     int tid = ilrint();
     int N = getlabel(0);
@@ -146,7 +146,7 @@ symnode *mksym(int type, int size, int storage, int offset, char *name, int *dim
  * Called at each IL_FUNC; by then the previous function is fully generated, so
  * its symnodes are dead.  (The block-scoped companion, flushsyms, lives in
  * cmain2.c with the control-flow frame stacks it walks.) */
-void relsyms()
+void relsyms(void)
 {
     register int i;
     register symnode *s;
@@ -183,7 +183,7 @@ int labelnum(char *name)
 }
 
 /* rebuild one postfix expression tree, up to IL_ENDE; NULL if empty */
-expnode *rdexpr()
+expnode *rdexpr(void)
 {
     expnode *stk[ESTACK];
     register expnode *n;

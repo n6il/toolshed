@@ -12,7 +12,7 @@
  *     that you make file does what you want (and for debugging make).
  */
 void
-prt()
+prt(void)
 {
        register struct name *          np;
        register struct depend *        dp;
@@ -86,7 +86,7 @@ check(struct name *np)
  *     is a circular dep
  */
 void
-circh()
+circh(void)
 {
        register struct name *  np;
 
@@ -100,7 +100,7 @@ circh()
  *     Check the target .PRECIOUS, and mark its dependentd as precious
  */
 void
-precious()
+precious(void)
 {
        register struct depend *        dp;
        register struct line *          lp;

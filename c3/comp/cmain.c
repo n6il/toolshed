@@ -127,7 +127,7 @@ int main(int argc, char **argv)
         }
 }
 
-void errexit()
+void errexit(void)
 {
 #ifdef  SPLIT
                 if(infile)

@@ -80,12 +80,12 @@ binhead header;
 FILE    *LibFP, *ModFP;
 bool    GetCurr;
 
-void CopyGlobalDefs();
-void CopyCode();
-void CopyExtRefs();
-void CopyRefs();
-void GetName();
-void PutName();
+void CopyGlobalDefs(void);
+void CopyCode(void);
+void CopyExtRefs(void);
+void CopyRefs(void);
+void GetName(char *);
+void PutName(char *);
 
 int getw_os9();
 int putw_os9();
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void CopyGlobalDefs()
+void CopyGlobalDefs(void)
 {
         int     GCount, Offset;
         char    GSym[SYMLEN + 1], flag;
@@ -187,7 +187,7 @@ void CopyGlobalDefs()
         }
 }
 
-void CopyCode()
+void CopyCode(void)
 {
         int     HowMuch;
         char    buffer[BUFSIZ];
@@ -208,7 +208,7 @@ void CopyCode()
                 fseek(LibFP, (long) HowMuch, 1);
 }
 
-void CopyExtRefs()
+void CopyExtRefs(void)
 {
         int     ECount;
         char    ESym[SYMLEN + 1];
@@ -225,7 +225,7 @@ void CopyExtRefs()
         }
 }
 
-void CopyRefs()
+void CopyRefs(void)
 {
         int     RCount;
         def_ref ref;

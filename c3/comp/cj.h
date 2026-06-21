@@ -252,6 +252,9 @@ typedef struct initstruct {
 #define	   DIRECT  33	 /* direct */
 #define	   EXTERND 34	 /* extern direct */
 #define	   STATICD 35	 /* static direct */
+#define	   VOID	   36	 /* the `void' keyword: settype maps it to INT, but
+			    keeping it distinct lets declist see an explicit
+			    "(void)" empty parameter list (c3 has no real void) */
 
 #define	   SEMICOL 40
 #define	   LBRACE  41

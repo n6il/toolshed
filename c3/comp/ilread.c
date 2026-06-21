@@ -23,11 +23,11 @@ static char ilbuf[IL_LINEMAX];          /* current record */
 static char *ilp;                       /* parse cursor within ilbuf */
 static char ilnamebuf[IL_NAMEMAX];      /* last name field returned */
 
-static int ilgetln();
-static char *iltok();
+static int ilgetln(void);
+static char *iltok(void);
 
 /* read one newline-terminated record into ilbuf; 0 at end of stream */
-static int ilgetln()
+static int ilgetln(void)
 {
     register int c;
     register char *d;
@@ -44,14 +44,14 @@ static int ilgetln()
 }
 
 /* advance to the next field; NULL at end of record */
-static char *iltok()
+static char *iltok(void)
 {
     while (*ilp == ' ' || *ilp == '\t') ilp++;
     if (*ilp == '\0') return (char *) 0;
     return ilp;
 }
 
-int ilrinit()
+int ilrinit(void)
 {
     register char *m;
 
@@ -61,13 +61,13 @@ int ilrinit()
     if (ilrint() != IL_VERSION) fatal("IL version mismatch");
 }
 
-int ilrrec()
+int ilrrec(void)
 {
     if (!ilgetln()) return ILEOF;
     return ilrint();
 }
 
-int ilrint()
+int ilrint(void)
 {
     register char *t;
     register int n, neg;
@@ -82,19 +82,19 @@ int ilrint()
 }
 
 /* read one raw line verbatim (for IL_RAW passthrough); NULL at end of stream */
-char *ilrline()
+char *ilrline(void)
 {
     if (!ilgetln()) return (char *) 0;
     return ilbuf;
 }
 
 /* the current record's raw line text (used to pass non-record lines through) */
-char *ilrbuf()
+char *ilrbuf(void)
 {
     return ilbuf;
 }
 
-char *ilrname()
+char *ilrname(void)
 {
     register char *t, *d;
 

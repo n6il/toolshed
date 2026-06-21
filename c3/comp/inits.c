@@ -11,7 +11,7 @@
 static int ilist(int, symnode *, dimnode *, int);
 static int defobject(int);
 static void datdef(int *, int);
-static void iskip();
+static void iskip(void);
 extern direct int stringlen;
 direct int datstring;
 
@@ -266,13 +266,13 @@ static void datdef(register int *p, int type)
     defcon(p,size);
 }
 
-void initerr()
+void initerr(void)
 {
     error("cannot initialize");
     iskip();
 }
 
-static void iskip()
+static void iskip(void)
 {
     for (;;)
         switch (sym) {

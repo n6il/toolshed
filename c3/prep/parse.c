@@ -6,7 +6,7 @@
 
 extern int	nxtlno;
 
-void preinit()
+void preinit(void)
 {
 	lbase = lptr = line;
 	*line = '\0';
@@ -16,7 +16,7 @@ void preinit()
 	setfile(filename);
 }
 
-int getline1()
+int getline1(void)
 {
 	register char *name = holdbuf;
 	char pline[LINESIZE];               /* finished output line */
@@ -119,7 +119,7 @@ void getword(register char *word, register int count)
 		gch(KEEPSP);
 }
 
-int newline()
+int newline(void)
 {
 	for(;;) {
 		if(_inline()) {
@@ -227,7 +227,7 @@ int skipsp(int skflag)
 }
 
 
-int _inline()
+int _inline(void)
 {
 	register char *p;
 	register int c,count = LINESIZE;

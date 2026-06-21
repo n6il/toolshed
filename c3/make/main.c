@@ -32,7 +32,7 @@
 #include <ctype.h>
 #endif
 
-static void            usage();
+static void            usage(void);
 #ifdef eon
 #include <sys/err.h>
 #endif
@@ -294,7 +294,7 @@ main(int argc, char **argv)
 
 
 static void
-usage()
+usage(void)
 {
 #ifdef eon
    /* For eon, we list the -m option */

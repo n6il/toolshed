@@ -17,7 +17,7 @@
    (c3comp1's wild-jump crash on real L2).  `direct` is now neutralised. */
 extern direct FILE *code;
 
-int ilwinit()
+int ilwinit(void)
 {
     fprintf(code,"%s %d\n",IL_MAGIC,IL_VERSION);
 }
@@ -37,7 +37,7 @@ int ilwname(char *s)
     fprintf(code," %s",s);
 }
 
-int ilweol()
+int ilweol(void)
 {
     putc('\n',code);
 }

@@ -41,7 +41,7 @@ extern symnode *lookup(char *);
 extern char *grab(int);
 
 
-void getsym()
+void getsym(void)
 {
     register symnode *ptr;
     register int numtype;
@@ -282,7 +282,7 @@ char valtab[] = {
   0,0,0,0,0,0,0,0,0,0,0,0,6,0,14,0
 };
 
-void lexinit()
+void lexinit(void)
 {
      register symnode *ptr;
 
@@ -301,9 +301,11 @@ void lexinit()
 #endif
      mosflg=0;
      install("char",CHAR);
-     install("void",INT);	/* ANSI void: c3 has no distinct void type, and
-				   ignores return values / treats all pointers
-				   alike, so void == int is sufficient */
+     install("void",VOID);	/* ANSI void: c3 has no distinct void type, so
+				   settype maps VOID->INT (return values are
+				   ignored and all pointers are alike).  It stays
+				   a distinct keyword only so declist can spot an
+				   explicit "(void)" empty parameter list */
      install("short",SHORT);
      install("auto",AUTO);
      install("extern",EXTERN);
@@ -697,7 +699,7 @@ int number(register long *np)
 }
 #endif
 
-void pstr()
+void pstr(void)
 {
         getch();
 
@@ -718,7 +720,7 @@ void pstr()
 static direct FILE *sfile;
 extern direct int datstring;
 
-void qstr()
+void qstr(void)
 {
 #ifdef MKIL
         /* code string (datstring 0) and string-pointer data initialisers
@@ -837,7 +839,7 @@ void oz(int n)
      fprintf(sfile," rzb %d\n",n);
 }
 
-int dobslash()
+int dobslash(void)
 {
         register int c,n;
 

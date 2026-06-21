@@ -140,7 +140,7 @@ static DIRECT int datflag,
 
 #define DIRECTPAGE  2
 
-void optimise()
+void optimise(void)
 {
 	char            line[LINESIZE];
 	char            lab[LABELSIZE + 1],
@@ -276,7 +276,7 @@ void optimise()
 		rminst();
 }
 
-void endsect()
+void endsect(void)
 {
 	if (endflag)
 	{

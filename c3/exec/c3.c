@@ -91,16 +91,16 @@ direct char    *argptr;
 direct int      scount, defcount, rdel;
 /* All file-local functions have internal linkage and abstract ANSI prototypes
    (parameter TYPES only, no names: c3 rejects a parameter named twice).
-   No-argument functions keep the K&R-style () rather than (void): this file is
-   also cross-compiled by c3 for OS-9, which maps void->int.  main is the only
-   non-static function and needs no prototype. */
+   No-argument functions use ANSI (void); error() keeps K&R () because it is
+   variadic in use and c3 has no <stdarg.h>.  main is the only non-static
+   function and needs no prototype. */
 #ifndef UNIX
-extern char    *sysdrive(), *attach(), *detach();
+extern char    *sysdrive(void), *attach(), *detach();
 #else
-static char    *sysdrive();
+static char    *sysdrive(void);
 static void uchain(char *, char *);
 #endif
-static void tidy();
+static void tidy(void);
 static void errexit(int);
 static void dofork(char *, char *, int);
 static void error();		/* K&R: variadic-in-use, but c3/OS-9 has no varargs */
@@ -108,10 +108,10 @@ static void rmtemp(char *);
 static void setsuf(char *, char);
 static int getsuf(char *);
 static void addarg(char *);
-static void endargs();
-static void opts();
+static void endargs(void);
+static void opts(void);
 
-static void tidy()
+static void tidy(void)
 {
 	/* first kill any running child process */
 	if (pid)
@@ -819,7 +819,7 @@ static void addarg(register char *s)
 	argptr = p - 1;
 }
 
-static void endargs()
+static void endargs(void)
 {
 #ifndef UNIX
 	*argptr++ = '\n';
@@ -856,7 +856,7 @@ static char    *cmds[] = {
 
 char          **cmdsend = cmds + (sizeof cmds) / (sizeof(char **));
 
-static void opts()
+static void opts(void)
 {
 	register char **p = cmds;
 
@@ -882,7 +882,7 @@ char           *devices[] = {
 };
 
 static char    *
-sysdrive()
+sysdrive(void)
 {
 	int i;
 	char probe[32];
@@ -907,7 +907,7 @@ sysdrive()
 }
 #else
 static char    *
-sysdrive()
+sysdrive(void)
 {
 	static char *c3base;
 	static int firsttime = 1;

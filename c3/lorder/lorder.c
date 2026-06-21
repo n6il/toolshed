@@ -68,10 +68,10 @@ Module  *MList;
 static void     DoLibFile(char *);
 static void     DoGlobalDefs(Module *);
 static void     DoExtRefs(Module *);
-static void     SkipRefs();
-static Global   *GetGlobal();
-static Module   *GetModule();
-static void     ShowDep();
+static void     SkipRefs(void);
+static Global   *GetGlobal(void);
+static Module   *GetModule(void);
+static void     ShowDep(void);
 
 int main(int argc, char *argv[])
 {
@@ -156,7 +156,7 @@ static void DoExtRefs(Module *Mod)
 
 }
 
-static void SkipRefs()
+static void SkipRefs(void)
 {
         int     RCount;
 
@@ -166,7 +166,7 @@ static void SkipRefs()
 }
 
 static Global *
-GetGlobal()
+GetGlobal(void)
 {
         char    NameIn[MAXNAME];
         Global  *NewGlob;
@@ -199,7 +199,7 @@ GetGlobal()
 }
 
 static Module *
-GetModule()
+GetModule(void)
 {
         Module  *NewMod;
         char    *scan;
@@ -217,7 +217,7 @@ GetModule()
 
 }
 
-static void ShowDep()
+static void ShowDep(void)
 {
         int     i, j, rcount;
         Global  **rlist;

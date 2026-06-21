@@ -95,19 +95,19 @@
 #define IL_PARMOV  238           /* register-param spill: int reg-op, int stack offset */
 
 /* ---- codec seam: write side (c3comp1, defined in ilwrite.c) ---- */
-extern int  ilwinit();          /* emit IL_MAGIC + IL_VERSION header */
-extern int  ilwrec();           /* ilwrec(op): begin a record */
-extern int  ilwint();           /* ilwint(n): append an integer field */
-extern int  ilwname();          /* ilwname(s): append a name field */
-extern int  ilweol();           /* terminate the current record */
+extern int  ilwinit(void);          /* emit IL_MAGIC + IL_VERSION header */
+extern int  ilwrec(int);           /* ilwrec(op): begin a record */
+extern int  ilwint(int);           /* ilwint(n): append an integer field */
+extern int  ilwname(char *);          /* ilwname(s): append a name field */
+extern int  ilweol(void);           /* terminate the current record */
 
 /* ---- codec seam: read side (c3comp2, defined in ilread.c) ---- */
-extern int   ilrinit();         /* read + verify the header (fatal on mismatch) */
-extern int   ilrrec();          /* read next record's opcode; ILEOF at end */
-extern int   ilrint();          /* read the next integer field (16-bit) */
-extern char *ilrname();         /* read the next name field (into a static buf) */
-extern char *ilrline();         /* read a whole raw line (IL_RAW passthrough); NULL at EOF */
-extern char *ilrbuf();          /* the current record's raw line text (for IL_RAW dispatch) */
+extern int   ilrinit(void);         /* read + verify the header (fatal on mismatch) */
+extern int   ilrrec(void);          /* read next record's opcode; ILEOF at end */
+extern int   ilrint(void);          /* read the next integer field (16-bit) */
+extern char *ilrname(void);         /* read the next name field (into a static buf) */
+extern char *ilrline(void);         /* read a whole raw line (IL_RAW passthrough); NULL at EOF */
+extern char *ilrbuf(void);          /* the current record's raw line text (for IL_RAW dispatch) */
 /* 32-bit fields are emitted/read as two ilwint/ilrint halves (hi, lo);
  * ilwlong/ilrlong wrappers will be added with LCONST support. */
 

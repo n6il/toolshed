@@ -438,6 +438,6 @@ extern  expnode *parsexp(), *primary(), *explist(), *getcast(),
 				*tranexp();
 /* *tranbool(), *treecopy(); */
 
-extern  dimnode *dimwalk();
+extern  dimnode *dimwalk(dimnode *);
 
 #include "proto.h"

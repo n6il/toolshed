@@ -20,13 +20,13 @@
 #include "il.h"
 
 extern char *grab(int);
-extern expnode *rdexpr();       /* IL expression-tree rebuilder (cmain2b.c) */
+extern expnode *rdexpr(void);       /* IL expression-tree rebuilder (cmain2b.c) */
 extern expnode *treecopy(expnode *);
 extern direct expnode *dregcont, *xregcont;
 
 static void marknode(expnode *);
 static void marklab(labstruc *);
-static void flushsyms();
+static void flushsyms(void);
 static void dotest(expnode *, labstruc *, labstruc *, int);
 static void modnjmp(labstruc *);
 static void emit2(expnode *);
@@ -123,7 +123,7 @@ register labstruc *L;
  * is no flush, so interning there is untouched.  marknode keeps exactly the
  * symbols the open frames' saved trees still point at, so those trees stay
  * valid when finally emitted. */
-static void flushsyms()
+static void flushsyms(void)
 {
     register int i, k;
     register symnode *s;
@@ -235,7 +235,7 @@ common:
 /* Allocate the control-flow frame stacks on the heap (like c2init's IL-rebuild
  * tables; keeping them off the bss lets c3comp2's static data area fit a single
  * 8 KB block, required for OS-9 Level-2 F$Fork).  Called once from main(). */
-void c2cinit()
+void c2cinit(void)
 {
     ifstk  = (ifframe *)    grab(MAXNEST * sizeof(ifframe));
     whstk  = (whileframe *) grab(MAXNEST * sizeof(whileframe));

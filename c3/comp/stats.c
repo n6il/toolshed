@@ -16,7 +16,7 @@
  *                             *
  *******************************/
 
-static void swcherr();
+static void swcherr(void);
 
 /* casnode / CASESIZE now live in cj.h (shared with pass 2's switch codegen) */
 
@@ -42,7 +42,7 @@ static  expnode *sidexp(int);
 static  expnode *emit(expnode *), *getptest(), *gettest();
 #endif
 
-static  symnode *checklabel();
+static  symnode *checklabel(void);
 
 #ifndef MKIL
 /* file-local helpers, used before their definitions: static, prototyped here in
@@ -53,7 +53,7 @@ static void modnjmp(labstruc *);
 static void dotest(expnode *, labstruc *, labstruc *, int);
 #endif
 
-void statement()
+void statement(void)
 {
    if (sym!=SEMICOL) lastst=0;
 
@@ -112,7 +112,7 @@ tryexp:
     need(SEMICOL);
 }
 
-void doif()
+void doif(void)
 {
     register expnode *ptr;
     labstruc tl,fl;
@@ -173,7 +173,7 @@ void doif()
 #endif
 }
 
-void dowhile()
+void dowhile(void)
 {
     register expnode *ptr;
     labstruc brk,cnt,*savbreak,*savcont;
@@ -231,7 +231,7 @@ void dowhile()
 #endif
 }
 
-void doswitch()
+void doswitch(void)
 {
     register expnode *ptr;
     labstruc brk,*savbreak;
@@ -316,7 +316,7 @@ void doswitch()
 #endif
 }
 
-void docase()
+void docase(void)
 {
     register casnode *ptr;
     register int val;
@@ -345,7 +345,7 @@ void docase()
 #endif
 }
 
-void dodefault()
+void dodefault(void)
 {
     getsym();
 #ifdef MKIL
@@ -360,12 +360,12 @@ void dodefault()
 #endif
 }
 
-static void swcherr()
+static void swcherr(void)
 {
        error("no switch statement");
 }
 
-void dodo()
+void dodo(void)
 {
     labstruc brk,cnt,*savbreak,*savcont;
     int looptop;
@@ -413,7 +413,7 @@ void dodo()
 #endif
 }
 
-void dofor()
+void dofor(void)
 {
     labstruc brk,cnt,tst,*savbreak,*savcont;
     int slab;
@@ -499,7 +499,7 @@ void dofor()
 #endif
 }
 
-void doreturn()
+void doreturn(void)
 {
 #ifdef MKIL
     {
@@ -569,7 +569,7 @@ common:
 #endif
 }
 
-void dobreak()
+void dobreak(void)
 {
 #ifdef MKIL
     ilwrec(IL_BREAK); ilweol();
@@ -583,7 +583,7 @@ void dobreak()
 #endif
 }
 
-void docont()
+void docont(void)
 {
 #ifdef MKIL
     ilwrec(IL_CONT); ilweol();
@@ -605,7 +605,7 @@ static void modnjmp(register labstruc *labptr)
 }
 #endif
 
-void dogoto()
+void dogoto(void)
 {
     register symnode *ptr;
 
@@ -630,7 +630,7 @@ void dogoto()
     lastst=GOTO;
 }
 
-void dolabel()
+void dolabel(void)
 {
     register symnode *ptr;
 
@@ -655,7 +655,7 @@ void dolabel()
 #endif
 }
 
-static symnode *checklabel()
+static symnode *checklabel(void)
 {
     register symnode *ptr;
 
@@ -716,7 +716,7 @@ static expnode *emit(register expnode *ptr)
     return ptr;
 }
 
-static expnode *getptest()
+static expnode *getptest(void)
 {
     register expnode *ptr;
 
@@ -726,7 +726,7 @@ static expnode *getptest()
     return ptr;
 }
 
-static expnode *gettest()
+static expnode *gettest(void)
 {
     register expnode *ptr;
 

@@ -36,7 +36,7 @@ static char	badtyp[]	= "invalid type for constant expression";
 static char	needexpr[]	= "missing operand";
 static long	doit(int, int, long, long);	/* evaluate constant expressions */
 
-int eval()
+int eval(void)
 {
 	int		ok, uresult;
 	long	result;
@@ -148,7 +148,7 @@ long parsexp(long *resultp, int *uresultp, int priority)
 }
 
 
-int chkpost()
+int chkpost(void)
 {
 	switch (sym)
 	{
@@ -257,7 +257,7 @@ noexp:
 }
 
 
-int isop()
+int isop(void)
 {
 	switch (sym)
 	{

@@ -8,7 +8,7 @@ void pnode(expnode *);
 
 int kw[200];
 
-void getkeys()
+void getkeys(void)
 {
         char kname[20];
         register char *p;

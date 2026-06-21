@@ -10,7 +10,7 @@ action         *acslots[128];
 extern DIRECT chain *freeins;
 extern char    *bratab[];
 
-void optinit()
+void optinit(void)
 {
 	register action *a,
 	              **slot;

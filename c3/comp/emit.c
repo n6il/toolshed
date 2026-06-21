@@ -145,7 +145,7 @@ void defcon(register int *p, int n)
  * eventually self-hosts on the 6809 (big-endian, int = 16 bits): defbytes()
  * then emits the bytes in source order, deflong() the two 16-bit halves.
  */
-int hostbig()                   /* nonzero if the host is big-endian */
+int hostbig(void)                   /* nonzero if the host is big-endian */
 {
     int probe;
 
@@ -191,7 +191,7 @@ void ol(char *s)
     nl();
 }
 
-void nl()
+void nl(void)
 {
     putc('\n',code);
 }

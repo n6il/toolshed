@@ -60,7 +60,7 @@ exit:
     return lhs;
 }
 
-expnode *primary()
+expnode *primary(void)
 {
     register expnode *nodep,*prim;
     expnode *temp;
@@ -185,7 +185,7 @@ dblop:      nodep = newnode(sym,nodep,0,14,symline,symptr);
     return nodep;
 }
 
-expnode *explist()
+expnode *explist(void)
 {
     register expnode *list = NULL, *ptr;
 
@@ -215,7 +215,7 @@ int constexp(int p)
     return v;
 }
 
-int isop()
+int isop(void)
 {
     switch (sym) {
         case AMPER:
@@ -242,7 +242,7 @@ int isop()
 }
 
 
-expnode *getcast()
+expnode *getcast(void)
 {
     expnode *ptr;
     dimnode *dptr;          /* settype writes a dimnode * here, not an expnode * */
@@ -271,7 +271,7 @@ expnode *getcast()
 }
 
 
-void experr()
+void experr(void)
 {
     error("expression missing");
 }
@@ -333,7 +333,7 @@ int need(int key)
     return 1;
 }
 
-void junk()
+void junk(void)
 {
     while (sym != SEMICOL && sym != RBRACE && sym != EOF) getsym();
 }

@@ -6,7 +6,7 @@ static void graft(expnode *, expnode *);
 direct expnode *dregcont,*xregcont,*currexpr;
 /* extern int fixnode(),graft(); */
 
-void clrconts()
+void clrconts(void)
 {
     setdreg(NULL);
     setxreg(NULL);
