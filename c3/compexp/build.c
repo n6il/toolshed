@@ -13,8 +13,7 @@
 static int elsize(expnode **prim);
 
 
-expnode *parsexp(priority)
-int priority;
+expnode *parsexp(int priority)
 {
     register expnode *rhs,*lhs,*temp;
     register int op,priop,lno,rprec;
@@ -202,8 +201,7 @@ expnode *explist(void)
     return list;
 }
 
-int constexp(p)
-int p;
+int constexp(int p)
 {
     register expnode *ptr;
     register int v;
@@ -290,7 +288,7 @@ int constop(int op, int r, int l)
     }
 }
 
-expnode *getcast()
+expnode *getcast(void)
 {
     expnode *dptr,*ptr;
     int lno,dummy,type; long size;
@@ -313,10 +311,7 @@ expnode *getcast()
     return ptr;
 }
 
-expnode *newnode(op,left,right,value,lno,errpnt)
-expnode *left,*right;
-long value;			/* wide enough to carry a symnode * for NAME nodes */
-char *errpnt;
+expnode *newnode(int op, expnode *left, expnode *right, long value, int lno, char *errpnt)
 {
     register expnode *node;
 
@@ -340,8 +335,7 @@ void experr(void)
     error("expression missing");
 }
 
-static int elsize(prim)
-expnode **prim;
+static int elsize(expnode **prim)
 {
     register expnode *p;
 

@@ -1,19 +1,18 @@
 #include "cj.h"
 
-static wlktr();
-static fixnode();
-static graft();
+static void wlktr(expnode *);
+static void fixnode(expnode *);
+static void graft(expnode *, expnode *);
 direct expnode *dregcont,*xregcont,*currexpr;
 /* extern int fixnode(),graft(); */
-extern expnode *subtree(),*treecont(),*regcont();
 
-clrconts()
+void clrconts()
 {
     setdreg(NULL);
     setxreg(NULL);
 }
 
-setdreg(register expnode *tree)
+void setdreg(register expnode *tree)
 {
     walktree(tree,fixnode);
     if (dregcont) {
@@ -40,7 +39,7 @@ prtree(dregcont,">*** D given:");
     setcurr(NULL);
 }
 
-setxreg(register expnode *tree)
+void setxreg(register expnode *tree)
 {
     walktree(tree,fixnode);
     if (xregcont) {
@@ -67,7 +66,7 @@ prtree(xregcont,">>>> X given:");
     setcurr(NULL);
 }
 
-setcurr(register expnode *tree)
+void setcurr(register expnode *tree)
 {
     walktree(tree,fixnode);
     if (currexpr) {
@@ -87,7 +86,7 @@ prtree(currexpr,">=== currexpr given:");
     }
 }
 
-cmptrees(register expnode *tree, register expnode *cont)
+int cmptrees(register expnode *tree, register expnode *cont)
 {
     if (cont == NULL) return tree == NULL;
     if (tree == NULL) return 0;
@@ -148,7 +147,7 @@ expnode *regcont(register expnode *tree)
     return t;
 }
 
-static fixnode(register expnode *tree)
+static void fixnode(register expnode *tree)
 {
     if (tree) {
         if (tree->op & INDIRECT) {
@@ -173,7 +172,7 @@ static fixnode(register expnode *tree)
     }
 }
 
-static graft(register expnode *limb, register expnode *tree)
+static void graft(register expnode *limb, register expnode *tree)
 {
     if (limb && tree->left == NULL && tree->right == NULL) {
         nodecopy(limb,tree);
@@ -194,7 +193,7 @@ expnode *treecopy(register expnode *tree)
     return t;
 }
 
-rplcnode(register expnode *tree, int reg)
+void rplcnode(register expnode *tree, int reg)
 {
     tree->op = reg;
     tree->val.num = 0;
@@ -205,13 +204,13 @@ rplcnode(register expnode *tree, int reg)
 
 static int (*walkfunc)();
 
-walktree(expnode *tree, funcp funct)
+void walktree(expnode *tree, funcp funct)
 {
     walkfunc = funct;
     wlktr(tree);
 }
 
-static wlktr(register expnode *tree)
+static void wlktr(register expnode *tree)
 {
     expnode *t;
 

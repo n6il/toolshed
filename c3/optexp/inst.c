@@ -146,7 +146,7 @@ instruction    *newins()
 	if ((i = freeins) == NULL)
 	{
 		if (++insused > insmax + 3)
-			error("run out of instructions");
+			error("run out of instructions", NULL, NULL, NULL);
 		i = (instruction *)grab(sizeof(*i));
 	}
 	else
@@ -192,7 +192,7 @@ void rminst()
 	label          *l;
 
 	if ((chain *)(i = ilist.succ) == &ilist)
-		error("removing too many instructions");
+		error("removing too many instructions", NULL, NULL, NULL);
 
 	if ((i->itype & LONGBRA) == LONGBRA)
 		fix(i, FORWARD);

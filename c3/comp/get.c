@@ -19,14 +19,14 @@ static long soffset;
 */
 
 
-preinit()
+void preinit()
 {
         lptr=line;
         *line='\0';
         curch=' ';
 }
 
-skipblanks()        /* renamed from blanks(): the c3 libc printf (printf.s)
+void skipblanks()        /* renamed from blanks(): the c3 libc printf (printf.s)
                        exports a DIFFERENT `blanks` (field padding), and c3comp1
                        links both -> the linker bound this lexer call to printf's
                        blanks, which jumps through an uninitialised stack slot
@@ -36,7 +36,7 @@ skipblanks()        /* renamed from blanks(): the c3 libc printf (printf.s)
         while(curch==' ' || curch == '\t') getch();
 }
 
-getch()
+void getch()
 {
         if(curch= *lptr++)
                 ;
@@ -44,7 +44,7 @@ getch()
                 curch=getline1();
 }
 
-getline1()
+char getline1()
 {
         int lno, n,x,*ptr;
         static char temp[LINESIZE];

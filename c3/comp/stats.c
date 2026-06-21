@@ -16,7 +16,7 @@
  *                             *
  *******************************/
 
-static swcherr();
+static void swcherr();
 
 /* casnode / CASESIZE now live in cj.h (shared with pass 2's switch codegen) */
 
@@ -37,14 +37,23 @@ static labstruc *breakptr,      /* break label */
 extern  expnode *dregcont,      /* D register content */
                 *xregcont;      /* X register content */
 
-static  expnode *sidexp();
+static  expnode *sidexp(int);
 #ifndef MKIL
-static  expnode *emit(), *getptest(), *gettest();
+static  expnode *emit(expnode *), *getptest(), *gettest();
 #endif
 
 static  symnode *checklabel();
 
-statement()
+#ifndef MKIL
+/* file-local helpers, used before their definitions: static, prototyped here in
+   their own .c (not proto.h).  They share names with the pass-2 static helpers
+   in cmain2c.c, but that is harmless - stats.c is linked only into c3comp and
+   c3comp1, cmain2c.c only into c3comp2, so the two never meet */
+static void modnjmp(labstruc *);
+static void dotest(expnode *, labstruc *, labstruc *, int);
+#endif
+
+void statement()
 {
    if (sym!=SEMICOL) lastst=0;
 
@@ -103,7 +112,7 @@ tryexp:
     need(SEMICOL);
 }
 
-doif()
+void doif()
 {
     register expnode *ptr;
     labstruc tl,fl;
@@ -164,7 +173,7 @@ doif()
 #endif
 }
 
-dowhile()
+void dowhile()
 {
     register expnode *ptr;
     labstruc brk,cnt,*savbreak,*savcont;
@@ -222,7 +231,7 @@ dowhile()
 #endif
 }
 
-doswitch()
+void doswitch()
 {
     register expnode *ptr;
     labstruc brk,*savbreak;
@@ -307,7 +316,7 @@ doswitch()
 #endif
 }
 
-docase()
+void docase()
 {
     register casnode *ptr;
     register int val;
@@ -336,7 +345,7 @@ docase()
 #endif
 }
 
-dodefault()
+void dodefault()
 {
     getsym();
 #ifdef MKIL
@@ -351,12 +360,12 @@ dodefault()
 #endif
 }
 
-static swcherr()
+static void swcherr()
 {
        error("no switch statement");
 }
 
-dodo()
+void dodo()
 {
     labstruc brk,cnt,*savbreak,*savcont;
     int looptop;
@@ -404,7 +413,7 @@ dodo()
 #endif
 }
 
-dofor()
+void dofor()
 {
     labstruc brk,cnt,tst,*savbreak,*savcont;
     int slab;
@@ -490,7 +499,7 @@ dofor()
 #endif
 }
 
-doreturn()
+void doreturn()
 {
 #ifdef MKIL
     {
@@ -560,7 +569,7 @@ common:
 #endif
 }
 
-dobreak()
+void dobreak()
 {
 #ifdef MKIL
     ilwrec(IL_BREAK); ilweol();
@@ -574,7 +583,7 @@ dobreak()
 #endif
 }
 
-docont()
+void docont()
 {
 #ifdef MKIL
     ilwrec(IL_CONT); ilweol();
@@ -589,14 +598,14 @@ docont()
 }
 
 #ifndef MKIL
-modnjmp(register labstruc *labptr)
+static void modnjmp(register labstruc *labptr)
 {
     modstk(labptr->labsp);
     gen(JMP,setlabel(labptr),0);
 }
 #endif
 
-dogoto()
+void dogoto()
 {
     register symnode *ptr;
 
@@ -621,7 +630,7 @@ dogoto()
     lastst=GOTO;
 }
 
-dolabel()
+void dolabel()
 {
     register symnode *ptr;
 
@@ -726,7 +735,7 @@ static expnode *gettest()
     return ptr;
 }
 
-dotest(register expnode *ptr, labstruc *tl, labstruc *fl, int nj)
+static void dotest(register expnode *ptr, labstruc *tl, labstruc *fl, int nj)
 {
     if (ptr) {
         tranbool(ptr,tl,fl,nj);

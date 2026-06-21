@@ -17,14 +17,17 @@
    base, the other via DP) - a wrong address that read garbage ("empty IL
    stream").  With `direct` neutralised everywhere they are plain Y-relative. */
 extern direct FILE *in;
-extern fatal();
+extern void fatal(char *);
 
 static char ilbuf[IL_LINEMAX];          /* current record */
 static char *ilp;                       /* parse cursor within ilbuf */
 static char ilnamebuf[IL_NAMEMAX];      /* last name field returned */
 
+static int ilgetln();
+static char *iltok();
+
 /* read one newline-terminated record into ilbuf; 0 at end of stream */
-static ilgetln()
+static int ilgetln()
 {
     register int c;
     register char *d;
@@ -48,7 +51,7 @@ static char *iltok()
     return ilp;
 }
 
-ilrinit()
+int ilrinit()
 {
     register char *m;
 
@@ -58,13 +61,13 @@ ilrinit()
     if (ilrint() != IL_VERSION) fatal("IL version mismatch");
 }
 
-ilrrec()
+int ilrrec()
 {
     if (!ilgetln()) return ILEOF;
     return ilrint();
 }
 
-ilrint()
+int ilrint()
 {
     register char *t;
     register int n, neg;

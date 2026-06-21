@@ -27,7 +27,7 @@ void epilogue(void)
           ol("fail source errors");
 }
 
-locstat(l,size,area)
+void locstat(int l, int size, int area)
 {
      vsect(area);
      olbl(l);
@@ -35,34 +35,27 @@ locstat(l,size,area)
      endsect();
 }
 
-defglob(ptr,size,area)
-symnode *ptr;
-int size,area;
+void defglob(symnode *ptr, int size, int area)
 {
      vsect(area);
      defvar(ptr,size,GBLB);
      endsect();
 }
 
-extstat(ptr,size,area)
-symnode *ptr;
-int size,area;
+void extstat(symnode *ptr, int size, int area)
 {
      vsect(area);
      defvar(ptr,size,LCLB);
      endsect();
 }
 
-defvar(ptr,size,scope)
-symnode *ptr;
-char scope;
+void defvar(symnode *ptr, int size, char scope)
 {
      fprintf(code,"%.8s%c rmb %d\n",ptr->sname,scope,size);
 }
 
 #ifdef PROF
-profname(name,lab)
-char *name;
+void profname(char *name, int lab)
 {
      olbl(lab);
      fprintf(code," fcc \"%.8s\"\n fcb 0\n",name);
@@ -70,12 +63,10 @@ char *name;
 #endif
 
 #ifdef PROF
-startfunc(name,flag,paramreg,lab)
+void startfunc(register char *name, int flag, int paramreg, int lab)
 #else
-startfunc(name,flag,paramreg)
+void startfunc(register char *name, int flag, int paramreg)
 #endif
-register char *name;
-int paramreg;
 {
 #ifdef FUNCNAME
     extern direct int fnline;
@@ -104,34 +95,34 @@ int paramreg;
 #endif
 }
 
-endfunc()
+void endfunc(void)
 {
         /* generate stack reservation value */
      if(!sflag)
           fprintf(code,"_%d equ %d\n\n",stklab,maxpush-callflag-64);
 }
 
-defbyte()
+void defbyte(void)
 {
         ot("fcb ");
 }
 
-defword()
+void defword(void)
 {
         ot("fdb ");
 }
 
-comment()
+void comment(void)
 {
         os("* ");
 }
 
-vsect(area)
+void vsect(int area)
 {
      ol(area ? "vsect dp" : "vsect");
 }
 
-endsect()
+void endsect(void)
 {
      ol("endsect");
 }
@@ -152,7 +143,7 @@ dumpstrings()
      }
 }
 */
-dumpstrings()
+void dumpstrings(void)
 {
      register int c;
 

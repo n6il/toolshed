@@ -2,13 +2,11 @@
 	$Id: parse.c,v 1.3 2006/09/28 03:27:09 boisy Exp $
 */
 #include "prep.h"
-
-int		supergch();		/* to snarf macro args at top level--leaps tall
-							newlines at a single bound! */
+#include <string.h>
 
 extern int	nxtlno;
-							
-preinit()
+
+void preinit()
 {
 	lbase = lptr = line;
 	*line = '\0';
@@ -18,7 +16,7 @@ preinit()
 	setfile(filename);
 }
 
-getline1()
+int getline1()
 {
 	register char *name = holdbuf;
 	char pline[LINESIZE];               /* finished output line */
@@ -62,14 +60,14 @@ badhash:        error("illegal '#'");
 		
 		if(cch == '@') {		/* special asmline indicator for OS9 */
 			if(process) {
-				putesc(ASSLINE,line+1);
+				putesc(ASSLINE,line+1,0);
 				goto restart;
 			}
 		}
 
 		if(process) {
 			if(asmflag) {
-				putesc(ASSLINE,line);
+				putesc(ASSLINE,line,0);
 				goto restart;
 			} else {
 				pptr = pline;
@@ -82,7 +80,7 @@ badhash:        error("illegal '#'");
 	return EOF;
 }
 
-quoexp(register char *s, register char *t)
+void quoexp(register char *s, register char *t)
 {
 	while(*s++ = *t++)
 		if(s[-1] == HIDER)      /* if the last char was a hidden quote */
@@ -108,7 +106,7 @@ char *makename(register char *s)
 	return buf;
 }
 
-getword(register char *word, register int count)
+void getword(register char *word, register int count)
 {
 	while(--count > 0 && (isalnum(cch) || cch == '_')) {
 		*word++ = cch;
@@ -121,12 +119,12 @@ getword(register char *word, register int count)
 		gch(KEEPSP);
 }
 
-newline()
+int newline()
 {
 	for(;;) {
 		if(_inline()) {
 			if(lflag && (asmflag == 0 && line[0] != '@'))
-				putesc(SOURCE,line);
+				putesc(SOURCE,line,0);
 			return 1;
 		}
 		fclose(in);
@@ -139,24 +137,23 @@ newline()
 			strcpy(modname,inclptr->modname);
 			inclptr = inclptr->next;
 			putesc(NEWFNAME,filename,modname);
-			putesc(NEWLINO,lineno);
+			putesc(NEWLINO,(char *) lineno,0);
 		} else return 0;
 	}
 }
 
-gch(register int skflag)
+int gch(register int skflag)
 {
 	if((cch = *lptr) == 0)
-		return;
+		return 0;
 	else if(skflag && skipsp(0))
 		cch = ' ';
 	else ++lptr;
+	return 0;
 }
 
-supergch(register int skflag)
+int supergch(register int skflag)
 {
-	register int	result;
-
 	for (;;) {
 		gch(skflag);
 		if (cch != 0 || !newline())
@@ -166,9 +163,10 @@ supergch(register int skflag)
 			break;
 		}
 	}
+	return 0;
 }
 
-skipsp(int skflag)
+int skipsp(int skflag)
 {
 	register char c;
 	register int flag = 0;
@@ -229,7 +227,7 @@ skipsp(int skflag)
 }
 
 
-_inline()
+int _inline()
 {
 	register char *p;
 	register int c,count = LINESIZE;

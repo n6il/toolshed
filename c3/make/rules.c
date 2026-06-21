@@ -4,6 +4,7 @@
  */
 
 
+#include <stdio.h>
 #include "h.h"
 
 
@@ -11,8 +12,7 @@
  *     Return a pointer to the suffix of a name
  */
 char *
-suffix(name)
-char *                 name;
+suffix(char *name)
 {
        return rindex(name, '.');
 }
@@ -26,8 +26,7 @@ char *                 name;
  *     a target.
  */
 bool
-dyndep(np)
-struct name *          np;
+dyndep(struct name *np)
 {
        register char *         p;
        register char *         q;

@@ -1,8 +1,9 @@
 #include "cj.h"
+#include <string.h>
 
 char *kw[200];		/* keyword/symbol-name strings (pointers, not ints) */
 
-getkeys()
+void getkeys(void)
 {
         char kname[20];
         register char *p;
@@ -25,9 +26,7 @@ getkeys()
         fclose(in1);
 }
 
-prtree(node,title)
-expnode *node;
-char *title;
+void prtree(expnode *node, char *title)
 {
     if (dflag) {
         fflush(stdout);
@@ -37,8 +36,7 @@ char *title;
     }
 }
 
-ptree(node)
-register expnode *node;
+void ptree(register expnode *node)
 {
         if (node) {
                 pnode(node);
@@ -47,8 +45,7 @@ register expnode *node;
         }
 }
 
-pnode(node)
-register expnode *node;
+void pnode(register expnode *node)
 {
         int op,val,i;
 

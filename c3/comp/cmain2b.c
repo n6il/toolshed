@@ -16,8 +16,8 @@
 #include "cj.h"
 #include "il.h"
 
-extern char *grab();
-extern int arity();             /* op arity 0/1/2, shared in treeutil.c */
+extern char *grab(int);
+extern int arity(int);          /* op arity 0/1/2, shared in treeutil.c */
 
 #define ESTACK 64               /* operand-stack depth while rebuilding a tree */
 #define MAXDIMS 8               /* deepest array/pointer dimension chain */
@@ -47,8 +47,7 @@ static int statlab[MAXSTAT];
 /* per-function goto-label numbers (labnames, shared, holds the names) */
 static int labnums[MAXLABS];
 
-statlabel(tid)              /* look up a ref's label (def always precedes it) */
-int tid;
+int statlabel(int tid)     /* look up a ref's label (def always precedes it) */
 {
     register int i;
 
@@ -56,8 +55,7 @@ int tid;
     return tid;             /* IL_LBSS/IL_LBL precede the refs; fall back if not */
 }
 
-statdef(tid)               /* allocate (once) the pass-2 label for a local static */
-int tid;
+int statdef(int tid)       /* allocate (once) the pass-2 label for a local static */
 {
     register int i, N;
 
@@ -72,7 +70,7 @@ int tid;
  * table entry (label + body lines) to strfile for dumpstrings to emit.  A
  * string is defined where it was lexed, which lands inside the expression
  * record stream, so this is called from both rdexpr and the statement loop. */
-dostr()
+void dostr()
 {
     int tid = ilrint();
     int N = getlabel(0);
@@ -148,7 +146,7 @@ symnode *mksym(int type, int size, int storage, int offset, char *name, int *dim
  * Called at each IL_FUNC; by then the previous function is fully generated, so
  * its symnodes are dead.  (The block-scoped companion, flushsyms, lives in
  * cmain2.c with the control-flow frame stacks it walks.) */
-relsyms()
+void relsyms()
 {
     register int i;
     register symnode *s;
@@ -172,7 +170,7 @@ relsyms()
     nsyms = 0;
 }
 
-labelnum(char *name)
+int labelnum(char *name)
 {
     register int i;
 

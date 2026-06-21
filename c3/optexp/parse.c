@@ -42,7 +42,12 @@ char *parse(int type, register char *s, register char *p, int *globflag)
 			*s++ = *p++;
 		break;
 	default:
-		error("parse called with bad type : %d", type);
+		{
+			char            badtype[32];
+
+			sprintf(badtype, "parse called with bad type : %d", type);
+			error(badtype, NULL, NULL, NULL);
+		}
 	}
 
 	*s = '\0';

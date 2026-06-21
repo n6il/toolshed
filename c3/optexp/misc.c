@@ -7,7 +7,7 @@ char           *grab(unsigned n)
 	char *             ptr;
 
 	if ((ptr = sbrk(n)) == (char *)-1)
-		error("memory overflow");
+		error("memory overflow", NULL, NULL, NULL);
 	return ptr;
 }
 

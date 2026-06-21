@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <rof.h>
 
 /* what we keep track of for symbols */
@@ -61,7 +62,18 @@ FILE    *LibFP;
 Global  *HashTable[HASHSIZE];
 Module  *MList;
 
-main(int argc, char *argv[])
+/* file-local helpers: static, with abstract ANSI prototypes (types only).
+   () (not (void)) on the no-arg ones: this file is also cross-compiled by c3
+   for OS-9, where void maps to int. */
+static void     DoLibFile(char *);
+static void     DoGlobalDefs(Module *);
+static void     DoExtRefs(Module *);
+static void     SkipRefs();
+static Global   *GetGlobal();
+static Module   *GetModule();
+static void     ShowDep();
+
+int main(int argc, char *argv[])
 {
         int     i;
 
@@ -79,11 +91,12 @@ main(int argc, char *argv[])
 
         ShowDep();
 
+        return 0;
 }
 
-DoLibFile(char *LibPath)
+static void DoLibFile(char *LibPath)
 {
-        Module  *NewMod, *GetModule();
+        Module  *NewMod;
 
         if ((LibFP = fopen(LibPath, "r")) == NULL) {
                 fprintf(stderr, "LOrder: can't open %s\n", LibPath);
@@ -108,10 +121,10 @@ DoLibFile(char *LibPath)
 
 }
 
-DoGlobalDefs(Module *Mod)
+static void DoGlobalDefs(Module *Mod)
 {
         int     GCount;
-        Global  *GSym, *GetGlobal();
+        Global  *GSym;
 
         GCount = getw(LibFP);
 
@@ -123,10 +136,10 @@ DoGlobalDefs(Module *Mod)
 
 }
 
-DoExtRefs(Module *Mod)
+static void DoExtRefs(Module *Mod)
 {
         int     i, ECount;
-        Global  *GetGlobal(), **rlist;
+        Global  **rlist;
 
         ECount = getw(LibFP);
 
@@ -143,7 +156,7 @@ DoExtRefs(Module *Mod)
 
 }
 
-SkipRefs()
+static void SkipRefs()
 {
         int     RCount;
 
@@ -152,7 +165,7 @@ SkipRefs()
 
 }
 
-Global *
+static Global *
 GetGlobal()
 {
         char    NameIn[MAXNAME];
@@ -185,7 +198,7 @@ GetGlobal()
 
 }
 
-Module *
+static Module *
 GetModule()
 {
         Module  *NewMod;
@@ -204,7 +217,7 @@ GetModule()
 
 }
 
-ShowDep()
+static void ShowDep()
 {
         int     i, j, rcount;
         Global  **rlist;

@@ -12,7 +12,9 @@
 
 #include "cj.h"
 
-extern char *sbrk();
+#ifndef UNIX
+extern char *sbrk();    /* on the host, unistd.h (via cj.h) already declares it */
+#endif
 
 /* character-classification table, indexed by character code */
 char chartab[] = {
@@ -72,7 +74,7 @@ expnode *newnode(int op, expnode *left, expnode *right, argword value, int lno, 
 }
 
 /* fold a constant operator: evaluates "r OP l" (unary ops use r) */
-constop(int op, int r, int l)
+int constop(int op, int r, int l)
 {
     switch(op) {
         case PLUS:      return r + l;
@@ -120,7 +122,7 @@ constop(int op, int r, int l)
 }
 
 /* compute and record the size of a symbol's declared type */
-sizeup(register symnode *ptr, register dimnode *dimptr, long size)
+int sizeup(register symnode *ptr, register dimnode *dimptr, long size)
 {
     register int n,temp;
 
@@ -142,7 +144,7 @@ sizeup(register symnode *ptr, register dimnode *dimptr, long size)
     return getsize(temp,n,ptr->dimptr = dimptr);
 }
 
-getsize(int t, int size, register dimnode *dptr)
+int getsize(int t, int size, register dimnode *dptr)
 {
     int n;
 
@@ -163,7 +165,7 @@ getsize(int t, int size, register dimnode *dptr)
 /* arity of an expression-tree op: 0 leaf, 1 unary, 2 binary.  Shared by the
  * IL writer (ilemit, pass 1) and reader (cmain2, pass 2) so both agree on tree
  * shape - NULL children of binary nodes are written as an IL_NULL placeholder. */
-arity(int op)
+int arity(int op)
 {
     switch (op) {
         case NAME: case CONST: case LCONST: case FCONST: case STRING:

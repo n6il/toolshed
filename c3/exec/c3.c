@@ -89,23 +89,29 @@ char            arglst[1024];
 direct int      argsize;
 direct char    *argptr;
 direct int      scount, defcount, rdel;
+/* All file-local functions have internal linkage and abstract ANSI prototypes
+   (parameter TYPES only, no names: c3 rejects a parameter named twice).
+   No-argument functions keep the K&R-style () rather than (void): this file is
+   also cross-compiled by c3 for OS-9, which maps void->int.  main is the only
+   non-static function and needs no prototype. */
 #ifndef UNIX
 extern char    *sysdrive(), *attach(), *detach();
 #else
 static char    *sysdrive();
-void uchain();
+static void uchain(char *, char *);
 #endif
-void dofork();
-void error();
-void setsuf(char *, char);	/* abstract proto: gives clang the char arg type
-				   without leaking param names (c3 "named twice") */
-int getsuf();
-void addarg();
-void endargs();
-void opts();
-void rmtemp();
+static void tidy();
+static void errexit(int);
+static void dofork(char *, char *, int);
+static void error();		/* K&R: variadic-in-use, but c3/OS-9 has no varargs */
+static void rmtemp(char *);
+static void setsuf(char *, char);
+static int getsuf(char *);
+static void addarg(char *);
+static void endargs();
+static void opts();
 
-void tidy()
+static void tidy()
 {
 	/* first kill any running child process */
 	if (pid)
@@ -137,7 +143,7 @@ void tidy()
 	return;
 }
 
-void errexit(int stat)
+static void errexit(int stat)
 {
 	tidy();
 	exit(stat);
@@ -666,7 +672,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void dofork(char *s, char *s1, int stat)
+static void dofork(char *s, char *s1, int stat)
 {
 	if (!qflag)
 	{
@@ -719,7 +725,7 @@ void dofork(char *s, char *s1, int stat)
 }
 
 #ifdef UNIX
-void uchain(char *prog, char *argstr)
+static void uchain(char *prog, char *argstr)
 {
 	char           *args[50], **argv = args;
 
@@ -741,7 +747,14 @@ void uchain(char *prog, char *argstr)
 }
 #endif
 
-void error(char *s1, char *s2)
+/*
+ * error() is variadic in use (a printf format plus a single optional
+ * argument), but the c3 6809 compiler that cross-builds this driver for OS-9
+ * has no <stdarg.h> / varargs support.  So it stays in the K&R form that both
+ * c3 and the host accept: a fixed (format, arg) definition reached through an
+ * unprototyped declaration, letting callers pass the format alone.
+ */
+static void error(char *s1, char *s2)
 {
 	int             err = errno;
 
@@ -752,7 +765,7 @@ void error(char *s1, char *s2)
 
 /* remove an intermediate/temporary file - but under -g (debug) keep every one
    and say so, so a failing build can be taken apart stage by stage. */
-void rmtemp(char *f)
+static void rmtemp(char *f)
 {
 	if (gflag)
 	{
@@ -762,7 +775,7 @@ void rmtemp(char *f)
 	unlink(f);
 }
 
-void setsuf(register char *s, char c)
+static void setsuf(register char *s, char c)
 {
 	while (*s++);
 	if (s[-3] != '.')
@@ -777,7 +790,7 @@ void setsuf(register char *s, char c)
 	}
 }
 
-int getsuf(register char *s)
+static int getsuf(register char *s)
 {
 	register int    count;
 	char            c;
@@ -797,7 +810,7 @@ int getsuf(register char *s)
 		return 0;
 }
 
-void addarg(register char *s)
+static void addarg(register char *s)
 {
 	register char  *p = argptr;
 
@@ -806,7 +819,7 @@ void addarg(register char *s)
 	argptr = p - 1;
 }
 
-void endargs()
+static void endargs()
 {
 #ifndef UNIX
 	*argptr++ = '\n';
@@ -843,7 +856,7 @@ static char    *cmds[] = {
 
 char          **cmdsend = cmds + (sizeof cmds) / (sizeof(char **));
 
-void opts()
+static void opts()
 {
 	register char **p = cmds;
 

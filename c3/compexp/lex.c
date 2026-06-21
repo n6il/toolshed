@@ -32,12 +32,8 @@ static int number(int type, DBLETYPE *np);
 #define     isdigit(c)  (chartab[(int)c]==DIGIT)
 
 extern double atoftbl[];
-extern double fadjust();
 
 direct int stringlen;
-
-extern symnode *lookup();
-extern char *grab();
 
 
 void getsym(void)
@@ -457,7 +453,6 @@ int hash(char *word)
 char *grab(int size)
 {
     char *oldptr;
-    extern char *sbrk();
 
     if ((oldptr = sbrk(size)) == (char *) -1) fatal("out of memory");
 

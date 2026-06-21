@@ -4,10 +4,6 @@
 #include "prep.h"
 #include "eval.h"
 
-/* mutually recursive; defined below but called before their definitions */
-long parsexp();
-long primary();
-
 /* Expression evaluator for cpp preprocessor:
 
 	Operators (in descending order of precedence):
@@ -38,9 +34,7 @@ long primary();
 static char	badop[]		= "invalid operator in constant expression";
 static char	badtyp[]	= "invalid type for constant expression";
 static char	needexpr[]	= "missing operand";
-static long	doit();		/* evaluate constant expressions */
-
-int			gch();		/* snarfs text -- explicitly passed to scan() now */
+static long	doit(int, int, long, long);	/* evaluate constant expressions */
 
 int eval()
 {

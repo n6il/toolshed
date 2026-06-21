@@ -6,6 +6,7 @@
 
 #include "h.h"
 
+static char *          fix_macro(char *);
 
 struct macro *         macrohead;
 
@@ -15,8 +16,7 @@ char *          rel_dir=(char *)0;
 #endif
 
 struct macro *
-getmp(name)
-char *                 name;
+getmp(char *name)
 {
        register struct macro * rp;
 
@@ -28,8 +28,7 @@ char *                 name;
 
 
 char *
-getmacro(name)
-char *                 name;
+getmacro(char *name)
 {
        struct macro *          mp;
 
@@ -41,9 +40,7 @@ char *                 name;
 
 
 struct macro *
-setmacro(name, val)
-char *                 name;
-char *                 val;
+setmacro(char *name, char *val)
 {
        register struct macro * rp;
        register char *         cp;
@@ -107,8 +104,8 @@ char *                 val;
 /*
  * Clean up a macro by removing leading and trailing spaces.
  */
-fix_macro(string)
-char *string;
+static char *
+fix_macro(char *string)
 {
    char  *p,*q,*r;
 
@@ -129,11 +126,7 @@ char *string;
  *     Do the dirty work for expand
  */
 void
-doexp(to, from, len, buf)
-char **                        to;
-char *                 from;
-int *                  len;
-char *                 buf;
+doexp(char **to, char *from, int *len, char *buf)
 {
        register char *         rp;
        register char *         p;
@@ -201,8 +194,7 @@ char *                 buf;
  *     Expand any macros in str.
  */
 void
-expand(str)
-char *         str;
+expand(char *str)
 {
        static char             a[LZ];
        static char             b[LZ];

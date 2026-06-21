@@ -13,9 +13,7 @@
 extern direct int		shiftflag;
 extern direct expnode	*dregcont, *xregcont;
 
-void tranbool(node, tlab, flab, nj)
-register expnode	*node;
-labstruc			*tlab, *flab;
+void tranbool(register expnode *node, labstruc *tlab, labstruc *flab, int nj)
 {
     int			op;
     labstruc	second;
@@ -76,9 +74,7 @@ l1:         uselabel(&second);
      }
 }
 
-void tranrel(op, node, tlab,flab,nj)
-expnode		*node;
-labstruc	*tlab, *flab;
+void tranrel(int op, expnode *node, labstruc *tlab, labstruc *flab, int nj)
 {
     labstruc			*destin;
     register expnode	*rhs, *lhs, *t;
@@ -145,8 +141,7 @@ usual:
     gen(CNDJMP, op, setlabel(destin), 0);
 }
 
-int setlabel(lab)
-register labstruc *lab;
+int setlabel(register labstruc *lab)
 {
     if (lab) {
         if (lab->labnum == 0) {
@@ -169,8 +164,7 @@ register labstruc *lab;
 	return 0; /* added BGP */
 }
 
-void uselabel(lab)
-register labstruc *lab;
+void uselabel(register labstruc *lab)
 {
     if (lab->labnum) {
         if (!cmptrees(lab->labdreg,dregcont))
@@ -184,8 +178,7 @@ register labstruc *lab;
     }
 }
 
-int isaleaf(node)
-expnode *node;
+int isaleaf(expnode *node)
 {
      switch(node->op) {
           case NAME:case CONST:return 1;
@@ -194,14 +187,12 @@ expnode *node;
      return 0;
 }
 
-int isauto(p)
-expnode *p;
+int isauto(expnode *p)
 {
     return p->op == NAME && p->val.sp->storage == AUTO;
 }
 
-void checkop(node)
-register expnode *node;
+void checkop(register expnode *node)
 {
     register expnode *lhs;
     int flag;
@@ -270,7 +261,7 @@ int invrel(int op)
      }
 }
 
-int revrel(op)
+int revrel(int op)
 {
       switch(op){
            case EQ:
@@ -281,8 +272,7 @@ int revrel(op)
       }
 }
 
-int zeroconst(node)
-register expnode *node;
+int zeroconst(register expnode *node)
 {
      return node->op == CONST && !node->val.num;
 }

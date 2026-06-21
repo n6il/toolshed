@@ -24,7 +24,7 @@ direct int datflag;
 static char *yind = ",y";
 static char *spind = ",s";
 
-addoff(register int offset)
+void addoff(register int offset)
 {
     if(offset) {
         if(offset > 0) ob('+');
@@ -33,7 +33,7 @@ addoff(register int offset)
 }
 
 /* val is an expnode * in NODE mode, an int otherwise - hence argword, not long. */
-deref(int arg, argword val, int offset)
+void deref(int arg, argword val, int offset)
 {
     register expnode *node;
     register symnode *sn;
@@ -114,7 +114,7 @@ dooff:
     if(arg & INDIRECT) ob(']');
 }
 
-defcon(register int *p, int n)
+void defcon(register int *p, int n)
 {
     register int i;
 
@@ -145,7 +145,7 @@ defcon(register int *p, int n)
  * eventually self-hosts on the 6809 (big-endian, int = 16 bits): defbytes()
  * then emits the bytes in source order, deflong() the two 16-bit halves.
  */
-hostbig()                       /* nonzero if the host is big-endian */
+int hostbig()                   /* nonzero if the host is big-endian */
 {
     int probe;
 
@@ -153,8 +153,7 @@ hostbig()                       /* nonzero if the host is big-endian */
     return *((char *) &probe) == 0;
 }
 
-defbytes(p,nbytes)              /* host-order float/double bytes -> BE words */
-char *p;
+void defbytes(char *p, int nbytes) /* host-order float/double bytes -> BE words */
 {
     register int i, hi, lo;
 
@@ -168,8 +167,7 @@ char *p;
     nl();
 }
 
-deflong(p)                      /* host long's low 32 bits -> 2 BE words */
-char *p;
+void deflong(char *p)           /* host long's low 32 bits -> 2 BE words */
 {
     long v;
 
@@ -181,34 +179,34 @@ char *p;
     nl();
 }
 
-ot(char *s)
+void ot(char *s)
 {
     putc(' ',code);
     os(s);
 }
 
-ol(char *s)
+void ol(char *s)
 {
     ot(s);
     nl();
 }
 
-nl()
+void nl()
 {
     putc('\n',code);
 }
 
-ob(int b)
+void ob(int b)
 {
     putc(b,code);
 }
 
-os(char *s)
+void os(char *s)
 {
     fprintf(code,"%s",s);
 }
 
-od(int n)
+void od(int n)
 {
     /* Emit as a 16-bit value.  Cast to INTTYPE (16-bit on host and target) so a
        negative operand prints the SAME on both: `n & 0xFFFF` left it positive on
@@ -217,25 +215,25 @@ od(int n)
     fprintf(code,"%d",(INTTYPE)n);
 }
 
-label(int n)
+void label(int n)
 {
     olbl(n);
     lastst = 0;
     nl();
 }
 
-olbl(int n)
+void olbl(int n)
 {
     ob(UNIQUE);
     od(n);
 }
 
-on(char *s)
+void on(char *s)
 {
     fprintf(code,"%.8s",s);
 }
 
-modstk(int nsp)
+int modstk(int nsp)
 {
     int x;
 
@@ -248,7 +246,7 @@ modstk(int nsp)
     return nsp;
 }
 
-nlabel(char *ptr, int scope)
+void nlabel(char *ptr, int scope)
 {
     on(ptr);
     if (scope) ob(':');

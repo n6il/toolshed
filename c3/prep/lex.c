@@ -93,12 +93,8 @@ char kanjtbl[] = {						/* kanji first byte table */
 
 static char namebuf[NAMESIZE + 1];
 
-static
-dobslash();
-
-/* defined below, but called from getsym() above their definitions */
-void pstr();
-void qstr();
+/* static helper, defined below */
+static int dobslash();
 
 void getsym()
 {

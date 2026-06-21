@@ -17,8 +17,8 @@
 #include "cj.h"
 #include "il.h"
 
-static numshf();
-static double normaliz();
+static int numshf(char *);
+static double normaliz(char *);
 
 #define     isdigit(c)  (chartab[c]==DIGIT)
 
@@ -37,11 +37,11 @@ extern double atoftbl[];
 direct int stringlen;
 static int strtempid;        /* pass-1 string temp-id; pass 2 maps it to a label */
 
-extern symnode *lookup();
-extern char *grab();
+extern symnode *lookup(char *);
+extern char *grab(int);
 
 
-getsym()
+void getsym()
 {
     register symnode *ptr;
     register int numtype;
@@ -282,7 +282,7 @@ char valtab[] = {
   0,0,0,0,0,0,0,0,0,0,0,0,6,0,14,0
 };
 
-lexinit()
+void lexinit()
 {
      register symnode *ptr;
 
@@ -335,7 +335,7 @@ lexinit()
      ptr->size=4;
 }
 
-getword(register char name[])
+void getword(register char name[])
 {
     int count;
 
@@ -350,7 +350,7 @@ getword(register char name[])
     while(an(curch)) getch();
 }
 
-an(int c)
+int an(int c)
 {
     return (chartab[c]==LETTER || chartab[c]==DIGIT);
 }
@@ -410,7 +410,7 @@ symnode *lookup(char name[])
     return nptr;
 }
 
-install(char *word, int typ)
+void install(char *word, int typ)
 {
         /* put a keyword in the symbol table */
         register symnode *cptr;
@@ -426,7 +426,7 @@ install(char *word, int typ)
         cptr->storage = typ;
 }
 
-hash(register char *word)
+int hash(register char *word)
 {
     register int n = 0, c;
 
@@ -437,7 +437,7 @@ hash(register char *word)
 
 
 #ifdef  DOFLOATS
-number(int type, register numptrs np)
+int number(int type, register numptrs np)
 {
     long i;
     double n, scale(), normaliz();
@@ -632,7 +632,7 @@ double atoftbl[] = {
 };
 #endif
 #else
-number(register long *np)
+int number(register long *np)
 {
        long n;
        register char *cp;
@@ -697,7 +697,7 @@ number(register long *np)
 }
 #endif
 
-pstr()
+void pstr()
 {
         getch();
 
@@ -718,7 +718,7 @@ pstr()
 static direct FILE *sfile;
 extern direct int datstring;
 
-qstr()
+void qstr()
 {
 #ifdef MKIL
         /* code string (datstring 0) and string-pointer data initialisers
@@ -798,7 +798,7 @@ qstr()
 
 }
 
-oc(int c)
+void oc(int c)
 {
 #ifdef  SPLIT
         if(c == '\0' || c == '\\')
@@ -829,7 +829,7 @@ oc(int c)
         ++stringlen;
 }
 
-oz(int n)
+void oz(int n)
 {
 #ifdef SPLIT
      passthru();
@@ -837,7 +837,7 @@ oz(int n)
      fprintf(sfile," rzb %d\n",n);
 }
 
-dobslash()
+int dobslash()
 {
         register int c,n;
 
@@ -885,12 +885,12 @@ dobslash()
         return c;
 }
 
-isoct(int c)
+int isoct(int c)
 {
         return (c<='7' && c>='0');
 }
 
-ishex(int c)
+int ishex(int c)
 {
         return ( isdigit(c) ||  ((c &=0x5f) >='A' && c<='F')) ? c : 0;
 }
@@ -912,7 +912,7 @@ static double normaliz(char n[])
     return v;
 }
 
-addin(register char n[], int c)
+int addin(register char n[], int c)
 {
     register int i,x;
     char ntemp[8];
@@ -929,7 +929,7 @@ addin(register char n[], int c)
     return x;
 }
 
-static numshf(register char n[])
+static int numshf(register char n[])
 {
     register int i, x = 0;
 

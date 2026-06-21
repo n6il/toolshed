@@ -2,7 +2,8 @@
 	$Id: dues.c,v 1.3 2006/09/28 02:34:33 boisy Exp $
 */
 #include "prep.h"
-#include <strings.h>
+#include <string.h>
+#include <stdlib.h>
 #include <errno.h>
 
 
@@ -92,7 +93,7 @@ void doinclude()
 					putesc(NEWFNAME, filename, modname);
 					inclptr = nptr;
 				
-					putesc(NEWLINO, 0);
+					putesc(NEWLINO, 0, 0);
 					setline(lineno = 0);
 					in = fp;
 					return;

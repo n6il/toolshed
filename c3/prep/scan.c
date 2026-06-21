@@ -2,6 +2,7 @@
 	@(#)scan.c	2.2.1	6/15/87
 */
 #include "prep.h"
+#include <string.h>
 
 /*
 	Skill with psionic powers is required is
@@ -9,9 +10,6 @@
 	is required to do an apparently simple task.
 	I hope the comments help...
 */
-
-extern char *strcpy(), *copystr();
-extern macro *findmac();
 
 /*
  * added -- dodef, a flag indicating whether we should notice the
@@ -40,7 +38,7 @@ extern macro *findmac();
  * arggch function, supergch().)
  */
 
-scan(char *lp, int dodef, funcp arggch)
+void scan(char *lp, int dodef, funcp arggch)
 {
 	register macro	*nptr;
 	register char	*cptr, *savep, *saveb;

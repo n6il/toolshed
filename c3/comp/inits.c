@@ -8,14 +8,14 @@
 
 #include "cj.h"
 #include "il.h"
-static ilist();
-static defobject();
-static datdef();
-static iskip();
+static int ilist(int, symnode *, dimnode *, int);
+static int defobject(int);
+static void datdef(int *, int);
+static void iskip();
 extern direct int stringlen;
 direct int datstring;
 
-initialise(register symnode *ptr, int tsc, int type)
+void initialise(register symnode *ptr, int tsc, int type)
 {
     register char *p;
     register dimnode *dimp;
@@ -82,7 +82,7 @@ out:
 
 #define INFINITY (-1)
 
-static ilist(int type, register symnode *ptr, register dimnode *list, int level)
+static int ilist(int type, register symnode *ptr, register dimnode *list, int level)
 {
     register dimnode *newlist;
     int flag,t,i;
@@ -146,14 +146,14 @@ out:
     return 0;
 }
 
-zero(int n)
+void zero(int n)
 {
     ot("rzb ");
     od(n);
     nl();
 }
 
-static defobject(register int type)
+static int defobject(register int type)
 {
     register expnode *p, *p2;
     int addon, done, t;
@@ -241,7 +241,7 @@ finish:
     return done;
 }
 
-static datdef(register int *p, int type)
+static void datdef(register int *p, int type)
 {
     register int size;
 
@@ -266,13 +266,13 @@ static datdef(register int *p, int type)
     defcon(p,size);
 }
 
-initerr()
+void initerr()
 {
     error("cannot initialize");
     iskip();
 }
 
-static iskip()
+static void iskip()
 {
     for (;;)
         switch (sym) {

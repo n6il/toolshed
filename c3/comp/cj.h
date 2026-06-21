@@ -1,5 +1,17 @@
 #include <stdio.h>
 
+/* Host-only standard library declarations.  On the 6809/OS-9 target these
+   functions are resolved the old K&R way (and pulling these system headers
+   into the c3 cross-compile would not even find them), so the includes are
+   gated on the UNIX host build - where strict clang needs real prototypes for
+   str*, exit/atoi/mktemp, unlink/_exit.  Gating on UNIX leaves the target's
+   generated code byte-for-byte unchanged. */
+#ifdef UNIX
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#endif
+
 #ifdef MAIN
 #define global
 #else
@@ -501,15 +513,10 @@ typedef struct casestct {
 #define CASESIZE	sizeof(casnode)
 
 
-/*  function type definitions  */
+/*  function prototypes  */
 
-extern  expnode *parsexp(), *primary(), *explist(), *getcast(),
-				*newnode(), *optim(), *fold(), *chtype(), *fixup(),
-				*tranexp(), *tranbool(), *treecopy();
-
-extern  dimnode *dimwalk();
-
-/* Declarations for the remaining non-int-returning functions, so their
-   results are not truncated to int on a 64-bit host.  See proto.h. */
+/* Every global comp function is declared (abstract ANSI prototype) in proto.h,
+   so their results are not truncated to int on a 64-bit host and every call
+   site type-checks.  See proto.h. */
 #include "proto.h"
 

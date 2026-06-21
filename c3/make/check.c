@@ -59,8 +59,7 @@ prt()
  *     Recursive routine that does the actual checking.
  */
 void
-check(np)
-struct name *          np;
+check(struct name *np)
 {
        register struct depend *        dp;
        register struct line *          lp;

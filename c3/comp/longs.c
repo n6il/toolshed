@@ -13,13 +13,13 @@
 
 #define swap(x,y)      {expnode *t;t=x;x=y;y=t;}
 
-lload(expnode *ptr)
+void lload(expnode *ptr)
 {
     tranlexp(ptr);
     getadd(ptr);
 }
 
-tranlexp(register expnode *node)
+void tranlexp(register expnode *node)
 {
     register expnode *p;
     register int op,s;
@@ -177,7 +177,7 @@ shifts:
     clrconts();          /* clear D contents */
 }
 
-getadd(register expnode *ptr)
+void getadd(register expnode *ptr)
 {
     switch(ptr->op) {
         case NAME:
@@ -192,7 +192,7 @@ getadd(register expnode *ptr)
     }
 }
 
-pushcon(register expnode *p)
+void pushcon(register expnode *p)
 {
     register long *p1;
 

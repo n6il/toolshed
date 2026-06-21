@@ -27,7 +27,7 @@ static symnode *protoargs(symnode *);	/* prototype param types + unscope the nam
 direct int fnline;
 #endif
 
-extdef()
+void extdef()
 {
 	register symnode *ptr;
 	symnode *ptemp;
@@ -157,7 +157,7 @@ next:
 }
 
 
-argdef()
+void argdef()
 {
 	register symnode *ptr;
 	symnode *ptemp;
@@ -216,7 +216,7 @@ next:
 }
 
 
-blkdef()
+void blkdef()
 {
 	register symnode *ptr;
 	symnode *p, *ptemp;
@@ -324,7 +324,7 @@ next:
 }
 
 
-check_same(register symnode *ptr, register int type, register elem *eptr)
+int check_same(register symnode *ptr, register int type, register elem *eptr)
 {
 	 if (ptr->type != type
 				|| (type == STRUCT && ptr->x.elems != eptr)) {
@@ -335,7 +335,7 @@ check_same(register symnode *ptr, register int type, register elem *eptr)
 }
 
 
-chkreg(int sclass, int type)
+int chkreg(int sclass, int type)
 {
 	/* if the user wants a register variable
 	 * and it is allowed allocate one.
@@ -386,7 +386,7 @@ static void chkproto(symnode *proto, symnode *defargs)
 }
 
 
-newfunc(symnode *fptr, int sclass)
+void newfunc(symnode *fptr, int sclass)
 {
 	register symnode *p1;
 	symnode *p2;
@@ -542,7 +542,7 @@ if (dflag) {printf("newfunc node:\n"); pnode(p1);}
 }
 
 
-block(int stkadj)
+void block(int stkadj)
 {
 	register expnode *p;
 	struct initstruct *i;
@@ -616,7 +616,7 @@ block(int stkadj)
 }
 
 
-declist(register symnode **list)
+void declist(register symnode **list)
 {
 	register symnode *ptr,*last;
 	symnode *ptemp;
@@ -708,7 +708,7 @@ declist(register symnode **list)
 }
 
 
-setclass()
+int setclass()
 {
 	 int class;
 	 if(issclass()) {
@@ -728,7 +728,7 @@ setclass()
 
 
 /* size may carry a struct-tag pointer (USTRUCT) */
-settype(long *size, dimnode **dimptr, elem **ellist)
+int settype(long *size, dimnode **dimptr, elem **ellist)
 {
 	register symnode *ptr, *tagptr;
 	dimnode *dptr;
@@ -882,7 +882,7 @@ next:
 }
 
 
-declarator(symnode **ptr, dimnode **dptr, int bastype)
+int declarator(symnode **ptr, dimnode **dptr, int bastype)
 {
 	register dimnode *tempdim, *p, *p1;
 	int dtype, savmos, count;
@@ -945,7 +945,7 @@ declarator(symnode **ptr, dimnode **dptr, int bastype)
 }
 
 
-shiftin(int a, int b)
+int shiftin(int a, int b)
 {
 	int temp;
 
@@ -1009,7 +1009,7 @@ static symnode *protoargs(symnode *list)
 }
 
 
-clear(symnode **list)
+void clear(symnode **list)
 {
 	register symnode *this, *next, *p, **pp;
 	char err[60];
@@ -1057,13 +1057,13 @@ clear(symnode **list)
 }
 
 
-sizerr()
+void sizerr()
 {
 	error("cannot evaluate size");
 }
 
 
-identerr()
+void identerr()
 {
 	error("identifier missing");
 }

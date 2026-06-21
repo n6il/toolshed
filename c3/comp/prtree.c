@@ -1,8 +1,14 @@
 #include "cj.h"
 
+/* prtree.c is a standalone PTREE-debug variant (not built by the comp/comp1/
+   comp2 makefiles).  ptree()/pnode() are mutually/forward referenced, so they
+   are forward-declared here to match their definitions. */
+void ptree(expnode *);
+void pnode(expnode *);
+
 int kw[200];
 
-getkeys()
+void getkeys()
 {
         char kname[20];
         register char *p;
@@ -25,7 +31,7 @@ getkeys()
         fclose(in1);
 }
 
-prtree(int *node, int title)
+void prtree(expnode *node, int title)
 {
     if (dflag) {
         fflush(stdout);
@@ -35,7 +41,7 @@ prtree(int *node, int title)
     }
 }
 
-ptree(register int *node)
+void ptree(register expnode *node)
 {
         if (node) {
                 pnode(node);
@@ -44,7 +50,7 @@ ptree(register int *node)
         }
 }
 
-pnode(register int *node)
+void pnode(register expnode *node)
 {
         int op,val,i;
 

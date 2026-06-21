@@ -6,15 +6,13 @@
 
 #include "cj.h"
 
-void dload(ptr)
-register expnode *ptr;
+void dload(register expnode *ptr)
 {
     trandexp(ptr);
     getadd(ptr);
 }
 
-void trandexp(node)
-register expnode *node;
+void trandexp(register expnode *node)
 {
     register expnode *p;
     register int op, type;

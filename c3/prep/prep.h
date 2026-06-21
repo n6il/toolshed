@@ -143,13 +143,71 @@ global direct long
 	sym,			/* lexical token */
 	symval;         /* value associated with lexical token */
 
-extern long parsexp();
-extern long primary();
+/* abstract ANSI prototypes for every global prep function (no param names) */
 
-extern macro *addmac(), *findmac();
-extern macdef *revlist();
-extern char *savestr(), *setfile(), *makename();
-extern char *grab(), *copystr();
-extern char *nextname(char *, char);	/* abstract proto: gives clang the char arg
-					   type without leaking param names (c3
-					   "named twice") */
+/* scan.c */
+extern void scan(char *, int, funcp);
+
+/* dues.c */
+extern char *nextname(char *, char);
+extern void doinclude();
+extern void dodefine(int);
+extern void docond();
+extern void doifdef(int);
+extern void doelif();
+extern void doelse();
+extern void unstack();
+extern void doliner();
+
+/* eval.c */
+extern int eval();
+extern long parsexp(long *, int *, int);
+extern int chkpost();
+extern long primary(long *, int *);
+extern int isop();
+
+/* lex.c */
+extern void getsym();
+extern int number(long *);
+extern void pstr();
+extern void qstr();
+extern int isoct(int);
+extern int ishex(int);
+extern int an(int);
+extern int need(char);
+
+/* macros.c */
+extern macdef *revlist(macdef *);
+extern macro *addmac(char *, char *);
+extern macro *findmac(char *);
+extern void delmac(char *);
+extern void nxtch();
+
+/* main.c */
+extern void errexit(int);
+extern void setline(int);
+extern char *setfile(char *);
+extern int findcmd(char *);
+
+/* misc.c */
+extern void fatal(char *);
+extern void error(char *);
+extern void lerror(char *);
+extern void doerr(int, char *, int, int);
+extern void putesc(int, char *, char *);
+extern int hash(char *);
+extern char *grab(unsigned);
+extern char *copystr(char *, char *, int);
+extern char *savestr(char *);
+
+/* parse.c */
+extern void preinit();
+extern int getline1();
+extern void quoexp(char *, char *);
+extern char *makename(char *);
+extern void getword(char *, int);
+extern int newline();
+extern int gch(int);
+extern int supergch(int);
+extern int skipsp(int);
+extern int _inline();

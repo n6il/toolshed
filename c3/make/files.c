@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/errno.h>
+#include <time.h>
+#include <utime.h>
 #endif
 #ifdef eon
 #include <sys/stat.h>
@@ -29,8 +31,7 @@
  *     Some stuffing around to get the modified time of a file
  *     in an OS9 file system
  */
-getmdate(fd, tbp)
-struct sgtbuf *                tbp;
+int getmdate(int fd, struct sgtbuf *tbp)
 {
        struct registers        regs;
        static struct fildes    fdbuf;
@@ -61,8 +62,7 @@ struct sgtbuf *                tbp;
  *     be linear
  */
 time_t
-cnvtime(tbp)
-struct sgtbuf          *tbp;
+cnvtime(struct sgtbuf *tbp)
 {
        long                    acc;
 
@@ -83,8 +83,7 @@ struct sgtbuf          *tbp;
 /*
  *     Get the current time in the internal format
  */
-time(tp)
-time_t *               tp;
+int time(time_t *tp)
 {
        struct sgtbuf           tbuf;
 
@@ -105,8 +104,7 @@ time_t *               tp;
  *     doesn't exist, it's modtime is set to 0.
  */
 void
-modtime(np)
-struct name *          np;
+modtime(struct name *np)
 {
 #ifdef unix
        struct stat             info;
@@ -196,8 +194,7 @@ struct name *          np;
  *     Update the mod time of a file to now.
  */
 void
-touch(np)
-struct name *          np;
+touch(struct name *np)
 {
        char                    c;
        int                     fd;

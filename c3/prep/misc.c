@@ -8,10 +8,6 @@
 #include <errno.h>
 #include <string.h>
 
-/* defined below but called before their definitions */
-void doerr();
-void putesc();
-
 void fatal(char *errstr)
 {
 	extern int errno;
@@ -44,7 +40,7 @@ void doerr(int n, char errstr[], int lno, int ertype)
 		tmp="";
 
 	if (!aflag) {
-		putesc(ertype, tmp);
+		putesc(ertype, tmp, 0);
 		fprintf(outfp, "%d\n", lno);
 		fprintf(outfp, "%d\n%s\n", n, errstr);
 	} else

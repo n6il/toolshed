@@ -29,6 +29,9 @@
 #endif
 
 #ifdef UNIX
+#include <stdlib.h>		/* malloc, free, atoi, exit, _exit */
+#include <string.h>		/* strcpy, strcat, strlen */
+#include <unistd.h>		/* unlink, sbrk */
 #define		direct
 #define		INTTYPE		short
 #define		LONGTYPE	long

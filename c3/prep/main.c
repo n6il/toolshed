@@ -208,20 +208,20 @@ done: ;
 	}
 	else if (strlen(fname) >= FNAMSIZE)
 	{
-		putesc(FATERR, fname);               /* too long for an include entry */
+		putesc(FATERR, fname, 0);            /* too long for an include entry */
 		fprintf(outfp, "0\n0\nfile name too long %s\n", fname);
 		errexit(SUCCESS);	/* let c68 report the error */
 	}
 	else if ((in = fopen(fname,"r")) == NULL)
 	{
-		putesc(FATERR, fname);               /* couldn't open file */
+		putesc(FATERR, fname, 0);            /* couldn't open file */
 		fprintf(outfp, "0\n0\ncan't open file %s (err=%d)\n", fname, errno);
 		errexit(SUCCESS);	/* let c68 report the error */	
 	}
 
 	if (badflag)
 	{
-		putesc(FATERR, badflag);
+		putesc(FATERR, badflag, 0);
 		fprintf(outfp, "0\n0\nbad argument define\n");
 		errexit(FAILURE);
 	}
@@ -241,7 +241,7 @@ done: ;
 		{
 		     /*   if line number changed */
 			nxtlno = lineno - 1;        /*   tell the compiler */
-			putesc(NEWLINO, nxtlno);
+			putesc(NEWLINO, (char *) nxtlno, 0);
 		}
 		fprintf(outfp, "%s\n", line);     /*   write out expanded line */
 		if (ferror(stdout))

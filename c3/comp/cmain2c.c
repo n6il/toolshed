@@ -19,10 +19,18 @@
 #include "cj.h"
 #include "il.h"
 
-extern char *grab();
-extern expnode *rdexpr();           /* IL expression-tree rebuilder (cmain2b.c) */
-extern expnode *treecopy();
+extern char *grab(int);
+extern expnode *rdexpr();       /* IL expression-tree rebuilder (cmain2b.c) */
+extern expnode *treecopy(expnode *);
 extern direct expnode *dregcont, *xregcont;
+
+static void marknode(expnode *);
+static void marklab(labstruc *);
+static void flushsyms();
+static void dotest(expnode *, labstruc *, labstruc *, int);
+static void modnjmp(labstruc *);
+static void emit2(expnode *);
+static void doret(expnode *);
 
 /* per-function symbol cache + free lists, defined in cmain2.c (see there) */
 extern symnode **symcache;
@@ -77,7 +85,7 @@ typedef struct {
 static switchframe *swstk;	/* [MAXNEST], heap (see c2cinit) */
 static int swsp;
 
-static marknode(t)              /* mark (blklev) every symnode a saved tree references */
+static void marknode(t)         /* mark (blklev) every symnode a saved tree references */
 register expnode *t;
 {
     if (t) {
@@ -87,7 +95,7 @@ register expnode *t;
     }
 }
 
-static marklab(L)               /* mark both register-content trees saved in a label */
+static void marklab(L)          /* mark both register-content trees saved in a label */
 register labstruc *L;
 {
     marknode(L->labdreg);
@@ -115,7 +123,7 @@ register labstruc *L;
  * is no flush, so interning there is untouched.  marknode keeps exactly the
  * symbols the open frames' saved trees still point at, so those trees stay
  * valid when finally emitted. */
-static flushsyms()
+static void flushsyms()
 {
     register int i, k;
     register symnode *s;
@@ -151,7 +159,7 @@ static flushsyms()
 }
 
 /* conditional-jump codegen (stats.c dotest) */
-static dotest(register expnode *ptr, labstruc *tl, labstruc *fl, int nj)
+static void dotest(register expnode *ptr, labstruc *tl, labstruc *fl, int nj)
 {
     if (ptr) {
         tranbool(ptr,tl,fl,nj);
@@ -160,7 +168,7 @@ static dotest(register expnode *ptr, labstruc *tl, labstruc *fl, int nj)
 }
 
 /* break/continue jump (stats.c modnjmp) */
-static modnjmp(register labstruc *labptr)
+static void modnjmp(register labstruc *labptr)
 {
     modstk(labptr->labsp);
     gen(JMP, setlabel(labptr), 0);
@@ -168,7 +176,7 @@ static modnjmp(register labstruc *labptr)
 
 /* expression-statement codegen (stats.c emit(): chkdecl, post->pre inc/dec,
  * translate, release).  The argument must already be optim'd. */
-static emit2(register expnode *ptr)
+static void emit2(register expnode *ptr)
 {
     if (ptr == NULL) return;
     chkdecl(ptr);
@@ -180,7 +188,7 @@ static emit2(register expnode *ptr)
 }
 
 /* return-statement codegen (the post-parse half of stats.c doreturn) */
-static doret(register expnode *ptr)
+static void doret(register expnode *ptr)
 {
     if (ptr) {
         ptr = optim(ptr);
@@ -227,7 +235,7 @@ common:
 /* Allocate the control-flow frame stacks on the heap (like c2init's IL-rebuild
  * tables; keeping them off the bss lets c3comp2's static data area fit a single
  * 8 KB block, required for OS-9 Level-2 F$Fork).  Called once from main(). */
-c2cinit()
+void c2cinit()
 {
     ifstk  = (ifframe *)    grab(MAXNEST * sizeof(ifframe));
     whstk  = (whileframe *) grab(MAXNEST * sizeof(whileframe));
@@ -237,8 +245,7 @@ c2cinit()
 
 /* Handle one statement / control-flow IL record (everything the cmain2.c driver
  * loop does not own itself).  Returns 1 if op was handled, 0 if unrecognised. */
-dostmt(op)
-int op;
+int dostmt(int op)
 {
     switch (op) {
         case IL_RET:

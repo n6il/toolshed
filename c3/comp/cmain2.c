@@ -18,14 +18,14 @@
 #include "cj.h"
 #include "il.h"
 
-extern char *grab();
-extern expnode *treecopy();
+extern char *grab(int);
+extern expnode *treecopy(expnode *);
 extern direct expnode *dregcont, *xregcont;
 
 char *dumname = sdummy.sname;
 char strname[] = "cstr.XXXXX";
 
-extern int dostmt();            /* statement / control-flow handler (cmain2c.c) */
+extern int dostmt(int);         /* statement / control-flow handler (cmain2c.c) */
 
 /* Per-function cache of synthesised symnodes, SHARED with cmain2b.c (the
  * IL-read/symbol-synthesis layer that populates it: mksym/relsyms live there).
@@ -62,7 +62,9 @@ int nlabs;
  * the task 7 blocks, leaving too few free to fork).  Full capacity is preserved;
  * only strmap is zeroed, to keep its former bss behaviour (an unset string id
  * reads back as label 0). */
-static c2init()
+static void c2init();
+
+static void c2init()
 {
     register int i;
 
@@ -72,7 +74,7 @@ static c2init()
     for (i = 0; i < MAXSTR; i++) strmap[i] = 0;
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     int op;
     char *nm;

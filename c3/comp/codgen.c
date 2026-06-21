@@ -19,8 +19,8 @@
 
 #include "cj.h"
 
-extern addoff();        /* now in emit.c (shared) */
-static outlea();
+extern void addoff(int); /* now in emit.c (shared) */
+static void outlea(int);
 
 
 /* no advantage putting the following ptrs on dp (ptrs always access indexed)*/
@@ -31,12 +31,13 @@ static char *lbra = "lbra ";
 static char *clra = "clra";
 static char *unkopr = "unknown operator : ";
 
-extern char *getrel(),regname();
+extern char *getrel(int);
+extern char regname(int);
 
 
 /* arg is an int (register/type/offset) or an expnode * - hence argword, not
    long (the 6809 stack ABI pushes it pointer-width; a long would misalign). */
-gen(register int op, register int rtype, register argword arg, register expnode *val)
+void gen(register int op, register int rtype, register argword arg, register expnode *val)
 {
     register expnode *ptr;
     register symnode *sptr;
@@ -288,12 +289,12 @@ char regname(int r)
     }
 }
 
-transfer(int r1, int r2)
+void transfer(int r1, int r2)
 {
     fprintf(code," tfr %c,%c\n",r1,r2);
 }
 
-dolongs(int op, int *arg)
+void dolongs(int op, int *arg)
 {
     switch (op) {
         case STACK:
@@ -343,7 +344,7 @@ dolongs(int op, int *arg)
 }
 
 #ifdef  DOFLOATS
-dofloats(int op, register long arg)
+void dofloats(int op, register long arg)
 {
     switch (op) {
         case FCONST:    getcon((int *)arg,4); break;
@@ -387,7 +388,7 @@ dofloats(int op, register long arg)
 }
 #endif
 
-getcon(int *p, int n)
+void getcon(int *p, int n)
 {
     int temp;
 
@@ -400,27 +401,27 @@ getcon(int *p, int n)
 }
 
 
-mwsyscall(char *s)
+void mwsyscall(char *s)
 {
     ot(lbsr);
     ol(s);
     sp += 2;
 }
 
-lcall(char *s)
+void lcall(char *s)
 {
     ot(lbsr);
     ol(s);
     sp += 4;
 }
 
-fcall(char *s)
+void fcall(char *s)
 {
     ot(lbsr);
     ol(s);
 }
 
-trouble(register int op, register int arg, register expnode *val)
+void trouble(register int op, register int arg, register expnode *val)
 {
     char *s;
     int cflag,temp;
@@ -494,7 +495,7 @@ trouble(register int op, register int arg, register expnode *val)
 }
 
 /* val is an expnode * in NODE mode, an int otherwise - hence argword, not long. */
-doref(int reg, int arg, argword val, int offset)
+void doref(int reg, int arg, argword val, int offset)
 {
     ob(reg);
     ob(' ');
@@ -521,12 +522,12 @@ char *getrel(int op)
 }
 
 
-static outlea(int reg)
+static void outlea(int reg)
 {
     fprintf(code," lea%c ",reg);
 }
 
-outstr(int reg, int l)
+void outstr(int reg, int l)
 {
     outlea(reg);
     fprintf(code,"%c%d,pcr\n",UNIQUE,l);

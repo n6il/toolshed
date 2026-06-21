@@ -21,7 +21,7 @@
 
 static direct unsigned stklab;       /* label for stack check equ value */
 
-epilogue()
+void epilogue()
 {
      dumpstrings();
      endsect();
@@ -29,7 +29,7 @@ epilogue()
           ol("fail source errors");
 }
 
-locstat(int l, int size, int area)
+void locstat(int l, int size, int area)
 {
 #ifdef MKIL
      ilwrec(IL_LBSS);
@@ -45,7 +45,7 @@ locstat(int l, int size, int area)
 #endif
 }
 
-defglob(symnode *ptr, int size, int area)
+void defglob(symnode *ptr, int size, int area)
 {
 #ifdef MKIL
      ilwrec(IL_BSS);
@@ -61,7 +61,7 @@ defglob(symnode *ptr, int size, int area)
 #endif
 }
 
-extstat(symnode *ptr, int size, int area)
+void extstat(symnode *ptr, int size, int area)
 {
 #ifdef MKIL
      ilwrec(IL_BSS);
@@ -77,13 +77,13 @@ extstat(symnode *ptr, int size, int area)
 #endif
 }
 
-defvar(symnode *ptr, int size, int scope)
+void defvar(symnode *ptr, int size, int scope)
 {
      fprintf(code,"%.8s%c rmb %d\n",ptr->sname,scope,size);
 }
 
 #ifdef PROF
-profname(char *name, int lab)
+void profname(char *name, int lab)
 {
      olbl(lab);
      fprintf(code," fcc \"%.8s\"\n fcb 0\n",name);
@@ -91,9 +91,9 @@ profname(char *name, int lab)
 #endif
 
 #ifdef PROF
-startfunc(register char *name, int flag, int paramreg, int lab)
+void startfunc(register char *name, int flag, int paramreg, int lab)
 #else
-startfunc(register char *name, int flag, int paramreg)
+void startfunc(register char *name, int flag, int paramreg)
 #endif
 {
 #ifdef FUNCNAME
@@ -132,7 +132,7 @@ startfunc(register char *name, int flag, int paramreg)
 #endif
 }
 
-endfunc()
+void endfunc()
 {
 #ifdef MKIL
     ilwrec(IL_ENDFUNC);
@@ -144,32 +144,32 @@ endfunc()
 #endif
 }
 
-defbyte()
+void defbyte()
 {
         ot("fcb ");
 }
 
-defword()
+void defword()
 {
         ot("fdb ");
 }
 
-comment()
+void comment()
 {
         os("* ");
 }
 
-vsect(int area)
+void vsect(int area)
 {
      ol(area ? "vsect dp" : "vsect");
 }
 
-endsect()
+void endsect()
 {
      ol("endsect");
 }
 
-dumpstrings()
+void dumpstrings()
 {
      register int c;
 
@@ -190,7 +190,7 @@ dumpstrings()
      }
 }
 
-tidy()
+void tidy()
 {
      int err = errno ? errno : 1;
 

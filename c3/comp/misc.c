@@ -11,7 +11,7 @@
 
 /* to push down an outer block declaration
  */
-pushdown(register symnode *sptr)
+void pushdown(register symnode *sptr)
 {
     register symnode *nptr;
     register char *sp, *ep;
@@ -33,7 +33,7 @@ pushdown(register symnode *sptr)
 
 /* to recover outer block declaration
  */
-pullup(register symnode *sptr)
+void pullup(register symnode *sptr)
 {
     register symnode *nptr;
 
@@ -46,34 +46,34 @@ pullup(register symnode *sptr)
 
 /* byte move by count
  */
-move(register char *p1, register char *p2, int count)
+void move(register char *p1, register char *p2, int count)
 {
     while (count--) *p2++ = *p1++;
 }
 
-pfile()
+void pfile()
 {
     eprintf("%s : ",filename);
 }
 
-fatal(char *errstr)
+void fatal(char *errstr)
 {
     error(errstr);
     fflush(stderr); /* because 'tidy()' uses '_exit()' i.e. no flush */
     tidy();         /* get rid of temp files and exit */
 }
 
-multidef()
+void multidef()
 {
     error("multiple definition");
 }
 
-error(char s[])
+void error(char s[])
 {
     doerr(symptr-line,s,symline);
 }
 
-comperr(register expnode *node, char *errstr)
+void comperr(register expnode *node, char *errstr)
 {
     char newstr[50];
 
@@ -82,12 +82,12 @@ comperr(register expnode *node, char *errstr)
     terror(node,newstr);
 }
 
-terror(register expnode *node, char *errstr)
+void terror(register expnode *node, char *errstr)
 {
     doerr(node->pnt - line,errstr,node->lno);
 }
 
-doerr(register int n, char errstr[], int lno)
+void doerr(register int n, char errstr[], int lno)
 {
     pfile();
     eprintf("line %d  ",lno);
@@ -113,23 +113,23 @@ dopoint:
    6809) and fprintf's %d/%s read 2 bytes, so a `long` (4 bytes) here misaligns
    the forwarded args on the 16-bit stack ABI (invisible on the LP64 host's
    register ABI). */
-eprintf(char *s1, argword s2, argword s3)
+void eprintf(char *s1, argword s2, argword s3)
 {
     fprintf(stderr,s1,s2,s3);
 }
 
-eputs(char *s)
+void eputs(char *s)
 {
     fputs(s,stderr);
     eputchar('\n');
 }
 
-eputchar(int c)
+void eputchar(int c)
 {
     putc(c,stderr);
 }
 
-reltree(register expnode *tree)
+void reltree(register expnode *tree)
 {
     if (tree) {
 #ifdef DEBUG
@@ -143,7 +143,7 @@ reltree(register expnode *tree)
     }
 }
 
-release(register expnode *node)
+void release(register expnode *node)
 {
     if(node) {
         node->left=freenode;
@@ -151,12 +151,12 @@ release(register expnode *node)
     }
 }
 
-nodecopy(char *n1, char *n2)
+void nodecopy(char *n1, char *n2)
 {
     move(n1,n2,NODESIZE);
 }
 
-istype()
+int istype()
 {
     if (sym == KEYWORD)
         switch (symval) {
@@ -179,7 +179,7 @@ istype()
     return 0;
 }
 
-issclass()
+int issclass()
 {
     if(sym==KEYWORD) switch(symval) {
         case EXTERN:
@@ -193,17 +193,17 @@ issclass()
     return 0;
 }
 
-decref(int t)
+int decref(int t)
 {
     return ((t >> 2) & (~BASICT)) + btype(t) ;
 }
 
-incref(int t)
+int incref(int t)
 {
     return ((t & (~BASICT)) << 2 ) + POINTER + btype(t) ;
 }
 
-isbin(register op)
+int isbin(register int op)
 {
     return (op>=UMOD && op<=UGT);
 }
@@ -215,13 +215,13 @@ dimnode *dimwalk(register dimnode *dptr)
 
 
 #ifdef PTREE
-prtree(expnode *node)
+void prtree(expnode *node)
 {
     puts("\naddress op        value     type        size sux left   right");
     ptree(node);
 }
 
-ptree(register expnode *node)
+void ptree(register expnode *node)
 {
     if (node) {
         pnode(node);
@@ -230,7 +230,7 @@ ptree(register expnode *node)
     }
 }
 
-pnode(register expnode *node)
+void pnode(register expnode *node)
 {
     int op,val,i;
 

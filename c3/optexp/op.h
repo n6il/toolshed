@@ -106,17 +106,8 @@ typedef union istruct
 typedef struct lstruct label;
 
 extern DIRECT chain ilist;
-extern chain    ltable[],
-               *newchain();
-extern char   *parse();
-extern void    debug(), movlab(), remins(), insref(), prtins(), error(), fix(), freechain();
-extern void    remref(), freearg(), freelabel(), endsect(), optim(), finddupl(), rminst();
-extern void    labelinit(), insinit(), optinit(), optimise();
-extern int     estimate(), percent(), hash();
-extern char    *newarg(), *grab();
-extern label   *inslabel(), *newlabel(), *findlabel();
+extern chain    ltable[];
 extern DIRECT label *lfree;
-extern instruction *insins(), *newins();
 extern DIRECT int inscount;
 extern FILE    *in,
                *outf,
@@ -125,3 +116,65 @@ extern DIRECT int lbf,
                 lbdone,
                 opsdone;
 extern DIRECT int dbflag;
+
+/*
+ * function prototypes - abstract (parameter TYPES only, no names).
+ *
+ * Every non-static (global) function defined across the optexp .c files is
+ * declared here so each translation unit sees a real ANSI prototype.  Static
+ * functions are NOT declared here (there are none in optexp); a static helper
+ * would carry its prototype in its own .c file.
+ *
+ * (void) is deliberately avoided for no-argument functions: this code is also
+ * cross-compiled by c3 for OS-9, where void maps to int, so a bare () is used
+ * for no-arg functions (accepting the host -Wstrict-prototypes warning).
+ *
+ * error() and parse() keep their fixed four / four parameter shapes from their
+ * definitions: error()/debug() are the classic "poor man's varargs" idiom that
+ * forwards all trailing char* slots to fprintf (the format string decides how
+ * many are read), and parse()'s fourth argument is dereferenced only for a
+ * LABEL parse.  Call sites pass the full argument count to match.
+ */
+char           *parse(int, char *, char *, int *);
+char           *newarg(int);
+char           *grab(unsigned);
+char           *newbra(char *);
+
+void            movlab(instruction *, instruction *);
+void            remins(instruction *);
+void            insref(instruction *, label *);
+void            error(char *, char *, char *, char *);
+void            fix(instruction *, int);
+void            freechain(chain *);
+void            remref(instruction *, label *);
+void            freearg(chain *);
+void            freelabel(label *);
+void            endsect();
+void            optim(instruction *);
+void            finddupl(instruction *);
+void            rminst();
+void            labelinit();
+void            insinit();
+void            optinit();
+void            optimise();
+void            fixcond(instruction *);
+void            duplrefs(label *, instruction *);
+
+int             estimate(int);
+int             percent(unsigned, unsigned);
+int             hash(char *);
+int             match(char *, char *);
+int             duplsrch(instruction *, instruction *);
+
+chain          *newchain();
+label          *inslabel(char *);
+label          *newlabel();
+label          *findlabel(char *);
+instruction    *insins(instruction *, char *, char *, label **);
+instruction    *newins();
+char          **srchmnem(char *, char **, char **);
+
+#ifdef DEBUG
+void            debug(char *, char *, char *, char *);
+void            prtins(instruction *);
+#endif

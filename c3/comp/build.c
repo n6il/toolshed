@@ -10,7 +10,7 @@
 
 #include "cj.h"
 
-static elsize();
+static int elsize(expnode **);
 
 expnode *parsexp(int priority)
 {
@@ -201,7 +201,7 @@ expnode *explist()
     return list;
 }
 
-constexp(int p)
+int constexp(int p)
 {
     register expnode *ptr;
     register int v;
@@ -215,7 +215,7 @@ constexp(int p)
     return v;
 }
 
-isop()
+int isop()
 {
     switch (sym) {
         case AMPER:
@@ -271,12 +271,12 @@ expnode *getcast()
 }
 
 
-experr()
+void experr()
 {
     error("expression missing");
 }
 
-static elsize(expnode **prim)
+static int elsize(expnode **prim)
 {
     register expnode *p;
 
@@ -304,7 +304,7 @@ usual:      return getsize(p->type,(int)p->size,p->dimptr);
 
 
 /* parser error-recovery helpers (moved from misc.c at the split) */
-need(int key)
+int need(int key)
 {
     static char ptr[] = "x expected";
     register int i;
@@ -333,7 +333,7 @@ need(int key)
     return 1;
 }
 
-junk()
+void junk()
 {
     while (sym != SEMICOL && sym != RBRACE && sym != EOF) getsym();
 }

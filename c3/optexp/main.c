@@ -60,14 +60,14 @@ int main(int argc, char **argv)
 					insmax = insmax * 10 + (c - '0');
 				break;
 			default:
-				error("unknown option '%s'\n", --argp);
+				error("unknown option '%s'\n", --argp, NULL, NULL);
 			}
 		else if (!infile)
 			infile = argp;
 		else if (!outfile)
 			outfile = argp;
 		else
-			error("too many files");
+			error("too many files", NULL, NULL, NULL);
 	}
 
 	if (infile)
@@ -75,11 +75,11 @@ int main(int argc, char **argv)
 		   reuse of path 0 leaves `in` reading the console, so getc blocks
 		   forever (same fix as comp's cmain.c). */
 		if ((in = fopen(infile, "r")) == NULL)
-			error("can't open %s", infile);
+			error("can't open %s", infile, NULL, NULL);
 
 	if (outfile)
 		if ((outf = fopen(outfile, "w")) == NULL)
-			error("can't open %s", outfile);
+			error("can't open %s", outfile, NULL, NULL);
 
 	datfile = outf;
 
@@ -182,7 +182,7 @@ void optimise()
 			continue;
 
 		p = parse(LABEL, lab, p, &globflag);
-		p = parse(MNEM, mnem, p);
+		p = parse(MNEM, mnem, p, &globflag);
 		while (*p == ' ' || *p == '\t')
 			++p;
 
@@ -256,7 +256,7 @@ void optimise()
 			}
 			if (*mnem)
 			{
-				parse(ARGS, args, p);
+				parse(ARGS, args, p, &globflag);
 				if (insins(&ilist, mnem, args, &l))
 				{
 					optim(ilist.pred);

@@ -6,7 +6,7 @@
 # ../rma/ctype.h.  The complete, working optimiser is "optx" (built from the
 # optexp/ sources), which is included below.  To work on opt, build it directly
 # with "make -C build/unix/opt" once inst.c has been restored.
-dirs	= exec prep comp comp1 comp2 compx optx lorder lsplit
+dirs	= exec prep comp comp1 comp2 compx optx lorder lsplit make
 
 # Make all components
 all:

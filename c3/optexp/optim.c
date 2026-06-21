@@ -7,11 +7,6 @@ DIRECT int      opsdone;
 int             labelnum = 0;
 action         *acslots[128];
 
-int match();
-void fixcond();
-int duplsrch();
-void duplrefs();
-
 extern DIRECT chain *freeins;
 extern char    *bratab[];
 

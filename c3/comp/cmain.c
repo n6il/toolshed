@@ -24,11 +24,9 @@ direct int eflag;
 direct  int     *inclptr;       /* include stack pointer */
 #endif      /* <<<- inserted to match preceeding "ifndef PASS2" */
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
         register char *p;
-
-        int tidy();
 
 #ifdef UNIX
         signal(2,tidy);
@@ -129,7 +127,7 @@ main(int argc, char **argv)
         }
 }
 
-errexit()
+void errexit()
 {
 #ifdef  SPLIT
                 if(infile)

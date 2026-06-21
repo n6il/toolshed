@@ -13,8 +13,8 @@
 # truncation bugs, so leaving them visible catches regressions.  They are
 # currently all fixed (zero warnings).
 KRFLAGS		= -std=c89 \
-		  -Wno-implicit-function-declaration \
-		  -Wno-implicit-int \
+		  -Werror=implicit-function-declaration \
+		  -Werror=implicit-int \
 		  -Wno-return-type \
 		  -Wno-return-mismatch \
 		  -Wno-parentheses \
