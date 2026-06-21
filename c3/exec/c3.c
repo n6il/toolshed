@@ -56,6 +56,13 @@
 #define CLIBN	"/lib/clibn.l"
 #define MATH1	"/lib/math1.l"
 
+/* Where the host driver looks for defs/ (and lib/) when $C3BASE is unset.
+   The install builds this to match its PREFIX; the fallback is the standard
+   /usr/local prefix.  (The OS-9 build probes drives instead - see sysdrive.) */
+#ifndef C3BASE_DEFAULT
+#define C3BASE_DEFAULT "/usr/local/share/toolshed"
+#endif
+
 direct short
                 kflag, lflag, oflag, tflag, iflag, sflag, nflag, rflag,
                 aflag, mflag, pflag, qflag, gflag, xflag = 0, libcount,
@@ -358,7 +365,15 @@ int main(int argc, char **argv)
 		else
 			strcpy(outname, "output");
 	}
-	mkstemp(temp);
+#ifdef UNIX
+	/* On the host mkstemp() both fills in a unique name AND creates the file,
+	   returning an open fd.  We only want the NAME - the .m/.r intermediates
+	   are derived from it below - so close the fd and remove the empty base
+	   file, otherwise every run leaks a 0-byte ctmp.XXXXXX into the cwd. */
+	{ int tfd = mkstemp(temp); if (tfd >= 0) close(tfd); unlink(temp); }
+#else
+	mkstemp(temp);		/* OS-9: mkstemp is mktemp - generates a name only */
+#endif
 	strcpy(temp2, temp);
 	strcat(temp2, ".m");
 	strcpy(temp3, temp);
@@ -919,7 +934,7 @@ sysdrive(void)
 
 		if (c3base == NULL)
 		{
-			c3base = "/opt/c3";
+			c3base = C3BASE_DEFAULT;
 		}
 	}
 

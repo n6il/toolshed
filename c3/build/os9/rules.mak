@@ -13,13 +13,18 @@
 # in the build directory.
 #
 # Assumes an installed toolchain (override these on the make command line to
-# relocate, e.g. `make C3BASE=/opt/c3 C3LIBDIR=/usr/local/bin`):
+# relocate, e.g. `make C3BASE=$PREFIX/share/toolshed C3LIBDIR=$PREFIX/bin`):
 #   - on PATH:    c3prep  c3comp  c3optx  lwasm  lwlink  awk
 #   - C3BASE/defs : the target's system headers (<stdio.h>, <string.h>, ...)
 #   - C3LIBDIR    : the lwbackend runtime — c3lw.awk, os9c3.ld, crt0.o, libc3lw.a
+#
+# The defaults match a stock `make -C build/unix install` (PREFIX=/usr/local):
+# headers under $PREFIX/share/toolshed/defs, the runtime beside the binaries in
+# $PREFIX/bin.
 
-C3BASE		?= /opt/c3
-C3LIBDIR	?= /usr/local/bin
+PREFIX		?= /usr/local
+C3BASE		?= $(PREFIX)/share/toolshed
+C3LIBDIR	?= $(PREFIX)/bin
 
 PREP		= c3prep
 COMP		= c3comp

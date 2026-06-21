@@ -52,7 +52,7 @@ host it defaults its assembler/linker to the back-end shims `c3-as`/`c3-ld`
 the tools on `PATH` and the runtime built:
 
 ```sh
-sh buildrt.sh
+sh buildrt.sh && sh buildlibc.sh   # crt0.o + libc3lw.a, and libc3.a (c3-ld links it)
 PATH=.../c3/build/unix/exec:.../prep:.../comp:.../optx:.../c3/lwbackend:$PATH
 export C3BASE=.../c3            # where prep finds defs/ headers
 c3 hello.c                      # -> hello   (OS-9 program module)
@@ -62,8 +62,10 @@ The tool names are overridable: `C3_OPT`, `C3_ASM`, `C3_LINK` (e.g. set them
 back to `rma`/`rlink` on OS-9). `c3-as`/`c3-ld` locate the runtime relative to
 themselves (resolving symlinks); override with `C3LW_HOME`.
 
-`#include` headers live under `$(C3BASE)/defs`. `make install` puts them at
-`/opt/c3/defs` (the default `C3BASE`), so an installed `c3` resolves includes
+`#include` headers live under `$(C3BASE)/defs`. `make install` from the
+top-level `build/unix` puts them at `$PREFIX/share/toolshed/defs`
+(`PREFIX` defaults to `/usr/local`), and the driver is built with that as its
+default `C3BASE`, so an installed `c3` resolves includes
 with no environment set. Header paths up to 255 chars are fine (comp's
 `filename` buffer is `LINESIZE`); longer would overflow it.
 
@@ -158,5 +160,5 @@ sources to `buildrt.sh` — they translate through the same filter.
   become offset equates (the storage is stack-reserved at run time, accessed
   `name,u`). cfloats relies on this.
 * The C library is ported as `libc3.a` (`buildlibc.sh`), which the
-  `build/os9` cross-build links. Modules that don't assemble through the filter
+  `build/os9` cross-build and the `c3-ld` shim link. Modules that don't assemble through the filter
   are reported by `buildlibc.sh` and left out.
