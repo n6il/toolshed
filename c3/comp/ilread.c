@@ -11,7 +11,12 @@
 #include <stdio.h>
 #include "il.h"
 
-extern FILE *in;
+#define direct          /* a no-op on every target now - see cj.h for why */
+/* `in`/`code` are `global direct` in cj.h; this extern MUST match its qualifier
+   exactly or the OS-9 codegen addresses it inconsistently (one site via the data
+   base, the other via DP) - a wrong address that read garbage ("empty IL
+   stream").  With `direct` neutralised everywhere they are plain Y-relative. */
+extern direct FILE *in;
 extern fatal();
 
 static char ilbuf[IL_LINEMAX];          /* current record */

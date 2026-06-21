@@ -37,12 +37,12 @@ locstat(l,size,area)
      ilwint(size);
      ilwint(area);
      ilweol();
-     return;
-#endif
+#else
      vsect(area);
      olbl(l);
      fprintf(code," rmb %d\n",size);
      endsect();
+#endif
 }
 
 defglob(ptr,size,area)
@@ -56,11 +56,11 @@ int size,area;
      ilwint(1);            /* global: label gets a colon */
      ilwint(area);
      ilweol();
-     return;
-#endif
+#else
      vsect(area);
      defvar(ptr,size,GBLB);
      endsect();
+#endif
 }
 
 extstat(ptr,size,area)
@@ -74,11 +74,11 @@ int size,area;
      ilwint(0);            /* file-local static: no colon */
      ilwint(area);
      ilweol();
-     return;
-#endif
+#else
      vsect(area);
      defvar(ptr,size,LCLB);
      endsect();
+#endif
 }
 
 defvar(ptr,size,scope)
@@ -115,8 +115,7 @@ int paramreg;
     ilwint(paramreg);
     ilwint(ftype);
     ilweol();
-    return;
-#endif
+#else
     fprintf(code," ttl %.8s\n",name);
 #ifdef FUNCNAME
     printf("%-10.10s %-8.8s %5d\n",filename,name,fnline);
@@ -139,6 +138,7 @@ int paramreg;
           os(",pcr\n pshs x\n lbsr _prof\n leas 4,s\n");
      }
 #endif
+#endif
 }
 
 endfunc()
@@ -146,11 +146,11 @@ endfunc()
 #ifdef MKIL
     ilwrec(IL_ENDFUNC);
     ilweol();
-    return;
-#endif
+#else
         /* generate stack reservation value */
      if(!sflag)
           fprintf(code,"_%d equ %d\n\n",stklab,maxpush-callflag-64);
+#endif
 }
 
 defbyte()
@@ -178,31 +178,22 @@ endsect()
      ol("endsect");
 }
 
-/*
 dumpstrings()
 {
      register int c;
 
      if(strfile) {
+          /* Close (flushing the writes) then reopen for reading, rather than
+             rewind()-ing the "w+" stream in place: OS-9 RBF does not reliably
+             read a file back after a write+rewind on the same open path, so
+             update-mode read-after-write silently lost the whole string pool on
+             the target.  A fresh read open after the close is robust on host and
+             target alike (output is identical either way). */
           fclose(strfile);
-          if((strfile=fopen(strname,"r")) == NULL)
+          if((strfile = fopen(strname,"r")) == NULL)
                fatal("can't read strings file");
           while((c = getc(strfile)) != EOF)
                putc(c,code);
-          fclose(strfile);
-          unlink(strname);
-     }
-}
-*/
-dumpstrings()
-{
-     register int c;
-
-     if(strfile) {
-          rewind(strfile);
-          while((c = getc(strfile)) != EOF)
-               putc(c,code);
-          if(ferror(strfile)) fatal("dumpstrings");
           fclose(strfile);
           unlink(strname);
      }

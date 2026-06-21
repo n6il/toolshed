@@ -222,7 +222,9 @@ err:
 #endif
             case CONST:
             case LCONST:
-                datdef((int *)p->val.lval,type);
+                datdef((int *)p->val.sp,type);	/* val.sp = union offset 0; see
+						   newnode() - val.lval is no longer
+						   written (broke on big-endian) */
                 break;
             case STRING:
 #ifdef MKIL

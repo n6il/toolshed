@@ -44,6 +44,7 @@
 		import	l_icreloc
 		import	s_stack		; data-area offset where the stack begins,
 					; i.e. the total size of all statics (bss)
+		import	l_directpage	; size of the direct-page section (must be <= 256)
 
 MAXARGS		equ	32		; argv slot count (incl argv[0])
 
@@ -70,6 +71,28 @@ zdone:
 		std	memend,y
 		puls	x		; recover the saved parameter pointer
 		stx	_argp,y		; stash it (data area is now zeroed)
+
+; ---- direct page: validate its size, then point DP at it --------------------
+; The directpage section (os9c3.ld places it first) holds the `direct` globals at
+; data-area offsets 0..255; the compiler reaches them with `<name` = (offset &
+; 0xFF) on page DP.  Refuse to run if the page overflowed 256 bytes - otherwise
+; `<name` would wrap to the wrong offset and silently corrupt memory.
+		ldd	#l_directpage
+		cmpd	#256
+		bls	dpok
+		leax	dperr,pcr	; complain to stderr and bail (this path exits,
+		ldy	#dperrlen	; so clobbering Y - the data base - is fine)
+		lda	#2		; stderr
+		os9	$8C		; I$WritLn
+		ldb	#1		; nonzero exit status
+		os9	$06		; F$Exit
+dpok:
+; Y (== the data base) is page-aligned - OS-9 F$Fork data areas start on a 256-
+; byte boundary - so DP = high(Y) makes `<name` resolve to Y+offset, the
+; variable's real, zeroed home.  crt0's own globals are plain Y-relative
+; (`name,y`, 3-byte) and are unaffected by DP.
+		tfr	y,d		; D = data base; A = its high byte = the page
+		tfr	a,dp		; set the direct page
 
 ; ---- compute the module base, save base registers for the loops -------------
 ; module base = (run-time address of __start) - (link-time offset of __start)
@@ -218,6 +241,11 @@ _rpterr:	rts
 _argname:	fcc	"c3"
 		fcb	0
 
+; diagnostic for the direct-page overflow guard above (I$WritLn, CR-terminated)
+dperr:		fcc	"c3: direct page exceeds 256 bytes"
+		fcb	$0d
+dperrlen	equ	*-dperr
+
 ; Shared runtime globals, accessed by the helpers as "name,y" (Y = data base).
 ; They live in the bss data area and are exported so the library resolves them.
 		section	bss
@@ -264,6 +292,10 @@ _stbot:		rmb	2		; current stack bottom limit
 		section	irec
 		section	ireloc
 		section	icreloc
+; Likewise anchor the direct page so s_directpage/l_directpage always exist, even
+; for a program that declares no `direct` globals (else the size-guard import
+; fails to link).  Real direct vars from compiled objects append after this.
+		section	directpage
 
 ; Reserve the runtime stack in its own bss section, which os9c3.ld places LAST
 ; (top of the data area) above all statics; the stack descends from the top

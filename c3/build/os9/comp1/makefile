@@ -12,8 +12,8 @@ INCS	= -v=../../../comp -v=../../../include
 CPPFLAGS += -DMKIL
 
 BINARY	= c3comp1
-OBJS	= bool.r build.r cmain.r codgen.r declare.r floats.r get.r inits.r lex.r \
-	  local.r longs.r misc.r optim.r regscont.r stats.r tranexp.r treeutil.r \
+OBJS	= build.r cmain.r declare.r emit.r get.r inits.r lex.r \
+	  local.r misc.r optim.r regscont.r stats.r treeutil.r \
 	  ilwrite.r ilemit.r
 
 $(BINARY):	$(OBJS)

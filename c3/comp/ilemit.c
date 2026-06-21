@@ -61,6 +61,19 @@ register expnode *node;
                 ilwint(tag->type);
                 ilwint((int) tag->size);
             }
+            {   /* a function's ANSI-prototype parameter types, so pass 2 can
+                   coerce this call's arguments exactly as single-pass does
+                   (pass 2 has no headers, so the types must travel in the IL).
+                   0 = unprototyped (K&R) -> no coercion.  Only the type code is
+                   needed: coerceargs/cvt use nothing else from the param. */
+                register symnode *a;
+                int na;
+
+                na = 0;
+                for (a = s->args; a; a = a->snext) na++;
+                ilwint(na);
+                for (a = s->args; a; a = a->snext) ilwint(a->type);
+            }
             ilweol();
             return;
         }

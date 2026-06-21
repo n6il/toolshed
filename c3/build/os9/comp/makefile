@@ -5,7 +5,7 @@ vpath %.h ../../../comp
 INCS	= -v=../../../comp -v=../../../include
 
 BINARY	= c3comp
-OBJS	= bool.r build.r cmain.r codgen.r declare.r floats.r get.r inits.r lex.r \
+OBJS	= bool.r build.r cmain.r codgen.r declare.r emit.r floats.r get.r inits.r lex.r \
 	  local.r longs.r misc.r optim.r regscont.r stats.r tranexp.r treeutil.r
 
 $(BINARY):	$(OBJS)

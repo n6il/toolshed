@@ -246,8 +246,13 @@ isop()
 
 expnode *getcast()
 {
-    expnode *dptr,*ptr;
-    int lno,dummy,size,type;
+    expnode *ptr;
+    dimnode *dptr;          /* settype writes a dimnode * here, not an expnode * */
+    elem *dummy;            /* settype writes an elem * here; ignored by a cast */
+    long size;              /* settype writes a long here: an int would be
+                               overrun by 2 bytes on the 6809 (4 on an LP64 host),
+                               smashing this frame on every cast that is parsed */
+    int lno,type;
     register char *errpnt;
 
     lno = symline;
@@ -287,7 +292,13 @@ expnode **prim;
             chkdecl(p);
             p = (expnode *) p->val.sp;
         case CAST:
-usual:      return getsize(p->type,p->size,p->dimptr);
+usual:      return getsize(p->type,(int)p->size,p->dimptr);
+            /* p->size is `long` but getsize's size parameter is a K&R int (as
+               sizeup's call already assumes); without the cast the long is read
+               from its HIGH half on the big-endian target, so sizeof(struct)
+               folded to 0 there (24 on the little-endian host) - the same width
+               trap as val.lval / argword.  Truncating to int first gives the
+               correct low 16 bits on both. */
         case DOT:
         case ARROW:
             return elsize(&p->right);

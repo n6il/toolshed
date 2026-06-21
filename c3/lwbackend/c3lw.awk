@@ -174,7 +174,11 @@ function flush_csect(   i, off, oper, sign, rest, v) {
 
 # ---- flush one buffered vsect region -----------------------------------------
 # vb[1..vbn] are the region's source lines; k is the region index.
-function flush_region(k,   i, hasinit, m, ops, j, il, rl, eqn, op, line) {
+function flush_region(k, isdp,   i, hasinit, m, ops, j, il, rl, eqn, op, line, sect) {
+	# direct-page regions (`vsect dp`) reserve into the dedicated `directpage`
+	# section instead of plain bss; everything else reserves into bss.
+	sect = isdp ? "directpage" : "bss"
+
 	# does the region initialise anything (vs. pure rmb/rzb reservation)?
 	hasinit = 0
 	for (i = 1; i <= vbn; i++) {
@@ -184,9 +188,9 @@ function flush_region(k,   i, hasinit, m, ops, j, il, rl, eqn, op, line) {
 	}
 
 	if (!hasinit) {
-		# uninitialised: reserve straight into bss (crt0 zeroes it, so an
-		# explicit rzb is equivalent to a plain rmb here).
-		print "\tsection\tbss"
+		# uninitialised: reserve straight into the target section (crt0 zeroes
+		# it, so an explicit rzb is equivalent to a plain rmb here).
+		print "\tsection\t" sect
 		for (i = 1; i <= vbn; i++) {
 			parse_line(vb[i])
 			if (pl_mnem == "nam" || pl_mnem == "ttl") continue
@@ -225,8 +229,15 @@ function flush_region(k,   i, hasinit, m, ops, j, il, rl, eqn, op, line) {
 					rl = pfx ".r." k "." nreloc
 					print rl ":\t" pl_mnem "\t" op
 					# data symbol -> +Y (ireloc); else (code label,
-					# string literal, function) -> +module base (icreloc)
-					if (op in isdata)
+					# string literal, function) -> +module base (icreloc).
+					# The operand may carry a field/element offset, e.g.
+					# `sdummy+22` for `&sdummy.sname`; isdata[] is keyed by the
+					# bare symbol, so strip the offset before classifying - else
+					# a data pointer-with-offset is wrongly treated as a code
+					# pointer (+module base), giving a wild address on target.
+					osym = op
+					sub(/[+-].*$/, "", osym)
+					if (osym in isdata)
 						drel[ndrel++] = pfx ".bss." k "+(" rl "-" pfx ".img." k ")"
 					else
 						crel[ncrel++] = pfx ".bss." k "+(" rl "-" pfx ".img." k ")"
@@ -247,7 +258,7 @@ function flush_region(k,   i, hasinit, m, ops, j, il, rl, eqn, op, line) {
 	}
 	print pfx ".end." k ":"
 
-	print "\tsection\tbss"
+	print "\tsection\t" sect
 	print pfx ".bss." k ":\trmb\t" pfx ".end." k "-" pfx ".img." k
 
 	for (i = 0; i < eqn; i++) print eq[i]	# label in column 0
@@ -308,6 +319,11 @@ END {
 		s = raw[i]
 		if (s ~ /^[ \t]+psect[ \t]/) { print "\tsection\tcode"; i++; continue }
 		if (s ~ /^[ \t]+vsect([ \t]|$)/) {
+			# a `vsect dp` carries direct-page globals; route them to the
+			# dedicated `directpage` section (os9c3.ld places it first, so the
+			# vars sit at offsets 0..255 from the data base Y, reachable as
+			# `<name` via DP = high(Y) at run time).
+			isdp = (s ~ /vsect[ \t]+dp([ \t]|$)/)
 			# buffer this vsect's body up to its matching endsect
 			i++; vbn = 0; d = 1
 			while (i < n && d > 0) {
@@ -318,7 +334,7 @@ END {
 				i++
 			}
 			i++				# consume the closing endsect
-			flush_region(region++)
+			flush_region(region++, isdp)
 			continue
 		}
 		if (s ~ /^[ \t]+csect([ \t]|$)/) {

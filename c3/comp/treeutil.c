@@ -43,7 +43,12 @@ int size;
 /* allocate and initialise an expression-tree node */
 expnode *newnode(op,left,right,value,lno,errpnt)
 expnode *left,*right;
-long value;			/* wide enough to carry a symnode * for NAME nodes */
+argword value;			/* the node's value: a symnode * (NAME), an int (CONST),
+				   or a precedence (operators).  MUST be argword, not
+				   long: callers pass an int precedence or symval, which
+				   on the 6809 stack ABI are pushed pointer-width - a
+				   `long` here would read 2 bytes too many and misalign
+				   lno/errpnt.  argword == long on the LP64 host (no-op). */
 char *errpnt;
 {
     register expnode *node;
@@ -55,7 +60,14 @@ char *errpnt;
     node->op = op;
     node->left = left;
     node->right = right;
-    node->val.lval = value;
+    node->val.sp = (symnode *) value;	/* store at the union's offset 0 (where
+					   val.num / val.sp / val.lp are read).  NOT
+					   val.lval: on a big-endian target its low
+					   half holds the value but num/sp read its
+					   HIGH half, so CONST read 0 and NAME read a
+					   wild pointer.  As a pointer cast this keeps
+					   full width on the LP64 host too, so output
+					   is unchanged there. */
     node->lno = lno;
     node->pnt = errpnt;
     node->modifier = 0;

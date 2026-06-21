@@ -11,8 +11,8 @@ vpath %.h ../../../comp
 CFLAGS += -DMKIL
 
 BINARY	= c3comp1
-OBJS	= bool.o build.o cmain.o codgen.o declare.o floats.o get.o inits.o lex.o local.o \
-	longs.o misc.o optim.o regscont.o stats.o tranexp.o treeutil.o ilwrite.o ilemit.o
+OBJS	= build.o cmain.o declare.o emit.o get.o inits.o lex.o local.o \
+	misc.o optim.o regscont.o stats.o treeutil.o ilwrite.o ilemit.o
 
 $(BINARY):	$(OBJS)
 	$(CC) $(OBJS) -o $@

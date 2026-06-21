@@ -37,7 +37,10 @@ static labstruc *breakptr,      /* break label */
 extern  expnode *dregcont,      /* D register content */
                 *xregcont;      /* X register content */
 
-static  expnode *emit(), *getptest(), *gettest(), *sidexp();
+static  expnode *sidexp();
+#ifndef MKIL
+static  expnode *emit(), *getptest(), *gettest();
+#endif
 
 static  symnode *checklabel();
 
@@ -76,8 +79,8 @@ contin:
         case 0xFFFF:
             return;   /* EOF */
         case NAME:
-            blanks();
-            if (cc==':') {
+            skipblanks();
+            if (curch==':') {
                 dolabel();
                 goto contin;
             }
@@ -126,8 +129,7 @@ doif()
         }
     }
     ilwrec(IL_ENDIF); ilweol();
-    return;
-#endif
+#else
     getsym();
     ptr = getptest();
 
@@ -159,6 +161,7 @@ doif()
         }
     }
     uselabel(et ? &tl : &fl);
+#endif
 }
 
 dowhile()
@@ -183,9 +186,8 @@ dowhile()
         if (eb) getsym();
         else statement();              /* loop body */
         ilwrec(IL_ENDWHILE); ilweol();
-        return;
     }
-#endif
+#else
     savbreak = breakptr;
     savcont = contptr;
     breakptr = &brk;
@@ -217,6 +219,7 @@ dowhile()
 
     breakptr = savbreak;
     contptr = savcont;
+#endif
 }
 
 doswitch()
@@ -238,9 +241,8 @@ doswitch()
         if (ptr) reltree(ptr);
         statement();                   /* switch body */
         ilwrec(IL_ENDSW); ilweol();
-        return;
     }
-#endif
+#else
     getsym();
     ++swflag;
 
@@ -302,6 +304,7 @@ doswitch()
     lastcase = savlast;
 
     breakptr = savbreak;
+#endif
 }
 
 docase()
@@ -314,8 +317,7 @@ docase()
     need(COLON);
 #ifdef MKIL
     ilwrec(IL_CASE); ilwint(val); ilweol();
-    return;
-#endif
+#else
     clrconts();     /* clear register contents */
 
     if (swflag) {
@@ -331,6 +333,7 @@ docase()
         ptr->cval = val;
         label(ptr->clab = getlabel());
     } else swcherr();
+#endif
 }
 
 dodefault()
@@ -339,13 +342,13 @@ dodefault()
 #ifdef MKIL
     need(COLON);
     ilwrec(IL_DEFAULT); ilweol();
-    return;
-#endif
+#else
     if (swflag == 0) swcherr();
     if (deflabel) error("multiple defaults");
     else label(deflabel = getlabel());
     need(COLON);
     clrconts();         /* clear register contents */
+#endif
 }
 
 static swcherr()
@@ -374,9 +377,8 @@ dodo()
         if (ptr) ilexpr(ptr);
         ilwrec(IL_ENDE); ilweol();
         if (ptr) reltree(ptr);
-        return;
     }
-#endif
+#else
     savbreak = breakptr;
     savcont = contptr;
     breakptr = &brk;
@@ -399,6 +401,7 @@ dodo()
 
     breakptr = savbreak;
     contptr = savcont;
+#endif
 }
 
 dofor()
@@ -431,9 +434,8 @@ dofor()
         if (up) reltree(up);
         statement();                           /* body */
         ilwrec(IL_ENDFOR); ilweol();
-        return;
     }
-#endif
+#else
     savbreak = breakptr;
     savcont = contptr;
     breakptr = &brk;
@@ -485,6 +487,7 @@ dofor()
 
     breakptr = savbreak;
     contptr = savcont;
+#endif
 }
 
 doreturn()
@@ -501,9 +504,8 @@ doreturn()
         }
         ilwrec(IL_ENDE); ilweol();
         lastst = RETURN;
-        return;
     }
-#endif
+#else
     getsym();
     if (sym != SEMICOL) {
         register expnode *ptr;
@@ -555,6 +557,7 @@ common:
     modstk(0);
     gen(RETURN,0,0);
     lastst=RETURN;
+#endif
 }
 
 dobreak()
@@ -563,12 +566,12 @@ dobreak()
     ilwrec(IL_BREAK); ilweol();
     getsym();
     lastst = BREAK;
-    return;
-#endif
+#else
     if (breakptr) modnjmp(breakptr);
     else error("break error");
     getsym();
     lastst=BREAK;
+#endif
 }
 
 docont()
@@ -577,20 +580,22 @@ docont()
     ilwrec(IL_CONT); ilweol();
     getsym();
     lastst = CONTIN;
-    return;
-#endif
+#else
     if (contptr) modnjmp(contptr);
     else error("continue error");
     getsym();
     lastst=CONTIN;
+#endif
 }
 
+#ifndef MKIL
 modnjmp(labptr)
 register labstruc *labptr;
 {
     modstk(labptr->labsp);
     gen(JMP,setlabel(labptr),0);
 }
+#endif
 
 dogoto()
 {
@@ -606,13 +611,13 @@ dogoto()
         ilweol();
         getsym();
         lastst = GOTO;
-        return;
-#endif
+#else
         if (ptr = checklabel()) {
             gen(GOTO,ptr->offset,0);
             ptr->x.labflg |= GONETO;
         }
         getsym();
+#endif
     }
     lastst=GOTO;
 }
@@ -627,8 +632,7 @@ dolabel()
     ilweol();
     getsym();
     getsym();
-    return;
-#endif
+#else
     if (ptr = checklabel()) {
         if (ptr->storage == STATIC) multidef();
         else {
@@ -640,6 +644,7 @@ dolabel()
     clrconts();         /* clear register contents */
     getsym();
     getsym();
+#endif
 }
 
 static symnode *checklabel()
@@ -686,6 +691,7 @@ static expnode *sidexp(l)
 #endif
 }
 
+#ifndef MKIL
 static expnode *emit(ptr)
 register expnode *ptr;
 {
@@ -731,4 +737,5 @@ labstruc *tl,*fl;
         reltree(ptr);
     }
 }
+#endif
 

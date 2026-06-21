@@ -89,11 +89,12 @@ char **argv;
                         if(tflag)
                                 continue;       /* have we one open already? */
                         ++tflag;
-#ifdef DEBUG
+                        /* fopen, not freopen(...,stdin): on OS-9 freopen's
+                           fclose(stdin)+reuse of path 0 leaves `in` reading the
+                           console (getc blocks -> hang).  A fresh stream works
+                           (same as c3comp2's cmain2.c), and an unused stdin slot
+                           is harmless given the small iob table. */
                         if((in = fopen(*argv,"r")) == NULL)
-#else
-                        if((in = freopen(*argv,"r",stdin)) == NULL)
-#endif
                                 fatal("can't open input file");
 #       ifdef   SPLIT
                         infile = *argv;
@@ -121,7 +122,7 @@ char **argv;
 
         if(ferror(code))
                 fatal("error writing assembly code file");
-        fflush(stdout);
+        fflush(code);       /* the output stream is `code` (stdout, or the -o file) */
 
         if (errcount) {
                 fprintf(stderr,"errors in compilation : %d\n",errcount);

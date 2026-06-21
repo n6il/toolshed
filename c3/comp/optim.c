@@ -255,6 +255,27 @@ diverr()
  * fills in various node fields according to types and operators.
  * tree should not present any problems to the translator after this.
  */
+/* Coerce each argument of a call to its ANSI-prototype parameter type.  The
+   ARG chain is built reversed (explist prepends), so the head is the LAST arg;
+   params are forward.  cvt() is a no-op when the types already match or the
+   param is a pointer, so this only inserts real width conversions (e.g. the
+   int->long that K&R calls silently mismatch on the 16-bit target). */
+static coerceargs(achain,params)
+register expnode *achain;
+symnode *params;
+{
+	expnode *av[MAXCARGS];
+	register symnode *p;
+	register int n, i;
+
+	n = 0;
+	for ( ; achain && achain->op == ARG; achain = achain->right)
+		if (n < MAXCARGS) av[n++] = achain->left;
+	p = params;
+	for (i = 0; p && i < n; i++, p = p->snext)
+		cvt(av[n-1-i], (int) p->type);
+}
+
 expnode *chtype(node)
 expnode *node;
 {
@@ -444,6 +465,9 @@ strcommon:
 			}
 			dptr = lhs->dimptr;
 			size = lhs->size;
+			/* ANSI prototype: coerce each argument to its parameter type */
+			if (node->left->op == NAME && node->left->val.sp->args)
+				coerceargs(node->right, node->left->val.sp->args);
 		case ARG:
 			chkdecl(lhs);
 			chkstrct(lhs);
@@ -485,7 +509,12 @@ strcommon:
 			needlval(lhs,0);
 			size = lhs->size;
 			node->val.num = (t = lhs->type) & XTYPE ?
-					getsize(decref(t),lhs->size,lhs->dimptr) : 1;
+					getsize(decref(t),size,lhs->dimptr) : 1;
+					/* pass the int `size`, NOT lhs->size: getsize's size
+					   parameter is a K&R int, so a `long` arg is read from
+					   its HIGH half on the big-endian target -> the ++/--
+					   step came out 0 there (a register `char *p; *p++`
+					   never advanced).  Same width trap as build.c elsize. */
 			xtype = lhs->sux;
 			if (lhs->op == STAR) ++xtype;
 			break;

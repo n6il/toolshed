@@ -10,7 +10,12 @@
 #include <stdio.h>
 #include "il.h"
 
-extern FILE *code;
+#define direct          /* a no-op on every target now - see cj.h for why */
+/* `code` is `global direct` in cj.h; this extern MUST match its qualifier
+   exactly or the OS-9 codegen addresses it inconsistently (data base vs DP) - a
+   wrong address that made every fprintf(code,...) write through a garbage FILE*
+   (c3comp1's wild-jump crash on real L2).  `direct` is now neutralised. */
+extern direct FILE *code;
 
 ilwinit()
 {

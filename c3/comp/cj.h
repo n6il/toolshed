@@ -12,7 +12,21 @@
  *  see also 'local.c'.
  */
 
+/* `direct` requests direct-page storage for hot globals, and on the OS-9 target
+   it now reaches c3 as the real DIRECT storage class (the keyword is NOT defined
+   away below).  c3 emits those globals into `vsect dp`; the c3lw backend gives
+   them a genuine direct page: c3lw.awk collects every `vsect dp` into one
+   dedicated `directpage` bss section, os9c3.ld places that section FIRST in the
+   data area (offsets 0..255 from the data base Y), and crt0 sets DP = high(Y).
+   A `<name` access (offset & 0xFF, page DP) then resolves to Y+offset - the
+   variable's real, zeroed home.  The page must stay within 256 bytes (currently
+   ~90 bytes of direct globals); the link step checks l_directpage at link time.
+
+   The UNIX host has no such page, so `direct` is defined away there (clang does
+   not know the keyword) and every host global stays Y-relative - which is also
+   what keeps the host two-pass output byte-identical to single-pass. */
 #ifdef OS9
+#define		direct
 #define		INTTYPE		int
 #define		LONGTYPE	long
 #define		FLOATYPE	float
@@ -32,6 +46,24 @@
 #define		LONGTYPE	long
 #define		FLOATYPE	float
 #define		DBLETYPE	double
+#endif
+
+/* A pointer-width integer (this codebase's intptr_t) for K&R parameters that
+   genuinely carry EITHER an int or a pointer depending on a mode flag - gen's
+   `arg`, deref/doref's `val`, eprintf's forwarded `s2`/`s3`.  It MUST be exactly
+   pointer-width on each target, for two reasons: (1) the K&R stacked-argument
+   ABI - the param's width must match what callers push (a 2-byte int/pointer on
+   the 6809), so a wider `long` would misalign the following args; (2) on the
+   big-endian 6809 a too-wide member is read from its high half, so the value
+   would come back shifted (the same trap that bit val.lval - see expnode).
+   Hence `int` on the 6809 (int == pointer == 2 bytes) and `long` on the LP64
+   host (pointer == 8).  This is the right abstraction, NOT a workaround: a
+   single fixed C type cannot be pointer-width on both, and call-arg coercion
+   cannot help a parameter that has no single type. */
+#ifdef UNIX
+typedef long argword;
+#else
+typedef int argword;
 #endif
 
 #define		MICRO				/* suppresses word boundary forcing */
@@ -87,9 +119,23 @@ typedef struct symstr {
 				  *snext,	/* ptr to entry in various lists */
 				  *hlink;	/* ptr to next symbol in hash chain */
 	char sname[NAMESIZE+1]; /* name entry */
+	struct symstr *args;	/* FUNCTION ONLY: ANSI-prototype parameter list
+				   (snext-chained, types only) for call-argument
+				   coercion; NULL = unprototyped (K&R "()" or
+				   implicit).  A dedicated field, NOT in the x union:
+				   a function's x.elems holds its return-type's
+				   struct members, so the two must not alias - and
+				   keeping args separate lets a prototype survive the
+				   function's later definition.  Placed after sname so
+				   it is outside the DOWNSIZE (pushdown) copy region;
+				   functions are top-level (blklev 0) and never pushed
+				   down, so pshnode need not mirror it. */
 } symnode;
 
 #define SYMSIZE	   sizeof(symnode)
+
+#define MAXCARGS	24	/* max call arguments handled by prototype coercion
+				   (optim.c coerceargs / cmain2.c IL reader) */
 
 typedef struct expstr {
 	short type;				/* type of node */
@@ -100,8 +146,12 @@ typedef struct expstr {
 	short op;				/* operator */
 	union {
 		int num;			/* numeric value */
-		long lval;			/* full-width value (carries a pointer) */
-		symnode *sp;		/* symbol pointer */
+		symnode *sp;		/* symbol pointer (also the pointer-width carry:
+					   newnode() stores every value here as (symnode *),
+					   at the union's offset 0, so all readers agree on
+					   both endiannesses - do NOT re-add a wider `long`
+					   member and store into it, that put the value in the
+					   wrong half on the big-endian target) */
 		long *lp;			/* long constant ptr */
 #ifdef DOFLOATS
 		FLOATYPE *fp;		/* float constant ptr */
@@ -378,10 +428,14 @@ global direct int	lineno,		/* current line number */
 					symline,	/* lineno of current symbol */
 					maxpush;	/* maximum push level */
 
-/* symval holds the current token's value, which for a NAME is a symnode *
-   and for long/double constants is a pointer to the constant.  It must be
-   wide enough to hold a pointer (int == pointer only on the 16-bit 6809). */
-global long		symval;		/* value associated with sym */
+/* symval holds the current token's value: an int for a CONST, a symnode * for a
+   NAME, a pointer to the constant for long/double.  It is therefore the same
+   dual int/pointer quantity as argword, and MUST be argword (pointer-width) -
+   not long.  As `long` (4 bytes on the 6809) it is pushed 2 bytes too wide when
+   passed to newnode()'s value parameter, misaligning newnode's later args
+   (lno/pnt) on the stack ABI; argword (int on the 6809) matches what callers
+   actually push.  On the LP64 host argword == long, so this is a no-op there. */
+global argword	symval;		/* value associated with sym */
 
 global char	filename[FNAMESIZE];	/* current filename buffer */
 
@@ -391,7 +445,7 @@ global direct symnode *freedown,  /* list of free push-down entries */
 					*vlist;		/* list of declared variables */
 
 global direct char	*symptr,	/* start of current symbol */
-					cc,			/* current character */
+					curch,			/* current character */
 					*lobrk,		/* lower store bound */
 					*hibrk,		/* upper store bound */
 					*lptr;		/* input line pointer */

@@ -24,7 +24,13 @@ section .data
 section irec
 section ireloc
 section icreloc
-section bss,bss load 0000
+; The direct page: a bss section listed FIRST so lwlink anchors it at data-area
+; offset 0.  c3lw.awk routes every `vsect dp` here, so all direct-page globals
+; sit at offsets 0..255 from the data base Y; crt0 sets DP = high(Y), making a
+; `<name` access (offset & 0xFF, page DP) resolve to the variable's real home.
+; Must not exceed 256 bytes - crt0 checks l_directpage at startup.
+section directpage,bss load 0000
+section bss,bss
 section .bss,bss
 ; The runtime stack: a bss section listed LAST so lwlink places it at the top of
 ; the data area, above all statics.  crt0 reserves it (section stack); the

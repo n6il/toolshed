@@ -36,18 +36,22 @@ extern int arity();             /* op arity 0/1/2, shared in treeutil.c */
  * must share one symnode: the register-content tracker (cmptrees) compares the
  * symbol pointer (val.num), so distinct symnodes for the same var would defeat
  * it and force redundant reloads.  Reset at each IL_FUNC. */
-#define MAXSYMS 256
-static symnode *symcache[MAXSYMS];
+#define MAXSYMS 256             /* max distinct symbols interned per function;
+                                   cmain2.c's main() needs 220 (overflow is fatal,
+                                   not a silent drop - see mksym) */
+static symnode **symcache;      /* [MAXSYMS], heap-allocated (see c2init) */
 static int nsyms;
+static symnode *symfree;        /* reclaimed synthesised symnodes (link: snext) */
+static dimnode *dimfree;        /* reclaimed dim-chain nodes      (link: dptr)  */
 
-#define MAXSTR 1024             /* string temp-id -> label map (pass 2 owns labels) */
-static int strmap[MAXSTR];
+#define MAXSTR 192              /* string temp-id -> label map (pass 2 owns labels) */
+static int *strmap;             /* [MAXSTR], heap-allocated (see c2init) */
 
 /* Per-function map of a local static's pass-1 temp-id to the label pass 2 owns.
  * locstat emits IL_LBSS with the temp-id; the data and every code reference must
  * use the same pass-2 label, so STATIC/STATICD NAME refs are remapped through
  * this (like strings/goto, pass 2 owns the numbering to avoid label collisions). */
-#define MAXSTAT 64
+#define MAXSTAT 8
 static int stattmp[MAXSTAT];
 static int statlab[MAXSTAT];
 static int nstat;
@@ -68,7 +72,8 @@ int tid;
 
     for (i = 0; i < nstat; i++) if (stattmp[i] == tid) return statlab[i];
     N = getlabel(0);
-    if (nstat < MAXSTAT) { stattmp[nstat] = tid; statlab[nstat] = N; nstat++; }
+    if (nstat >= MAXSTAT) fatal("IL: too many local statics in one function");
+    stattmp[nstat] = tid; statlab[nstat] = N; nstat++;
     return N;
 }
 
@@ -82,7 +87,8 @@ static dostr()
     int N = getlabel(0);
     register char *ln;
 
-    if (tid >= 0 && tid < MAXSTR) strmap[tid] = N;
+    if (tid < 0 || tid >= MAXSTR) fatal("IL: too many string constants");
+    strmap[tid] = N;
     if (strfile == NULL && (strfile = fopen(strname,"w+")) == (FILE *) 0)
         fatal("can't open strings file");
     fprintf(strfile, "%c%d", UNIQUE, N);    /* the table label */
@@ -115,10 +121,13 @@ int ndims,tagtype,tagsize;
            differently-typed locals can share name+offset+storage (e.g. fold's
            long *p and double *p) and must NOT be interned together */
     }
-    s = (symnode *) grab(SYMSIZE);
+    if (s = symfree) symfree = s->snext;        /* reuse a reclaimed symnode */
+    else s = (symnode *) grab(SYMSIZE);
     s->type = type;
     if (btype(type) == USTRUCT) {       /* rebuild the tag symnode chtype reads */
-        register symnode *tag = (symnode *) grab(SYMSIZE);
+        register symnode *tag;
+        if (tag = symfree) symfree = tag->snext;
+        else tag = (symnode *) grab(SYMSIZE);
         tag->type = tagtype;
         tag->size = tagsize;
         s->size = (long) tag;
@@ -128,23 +137,94 @@ int ndims,tagtype,tagsize;
     s->offset = offset;
     s->dimptr = NULL;
     for (i = ndims - 1; i >= 0; i--) {      /* rebuild the dimension chain */
-        d = (dimnode *) grab(sizeof(dimnode));
+        if (d = dimfree) dimfree = d->dptr;     /* reuse a reclaimed dimnode */
+        else d = (dimnode *) grab(sizeof(dimnode));
         d->dim = dims[i];
         d->dptr = s->dimptr;
         s->dimptr = d;
     }
     s->blklev = 0;
     s->x.labflg = 0;
+    s->args = NULL;     /* pass 2 has no prototype info from the IL yet, so a
+			   reconstructed function has no arglist -> chtype's call
+			   coercion stays inert here (must be NULL, not garbage) */
     strcpy(s->sname,name);
-    if (nsyms < MAXSYMS) symcache[nsyms++] = s;
+    if (nsyms >= MAXSYMS) fatal("IL: too many symbols in one function");
+    symcache[nsyms++] = s;      /* MUST cache to intern repeat refs: a silent
+                                   drop here defeats the register tracker and
+                                   miscompiles (don't revert to a capped store) */
     return s;
 }
+
+/* Reclaim a finished function's synthesised symnodes (and their dim chains and
+ * any USTRUCT tag symnodes) onto free lists for the next function to reuse.
+ * Without this every function's symnodes leaked on the bump heap; c3comp2's L2
+ * heap is tight (the IL-rebuild tables live on it too, see c2init), so a real
+ * multi-function source exhausted it ("out of memory").  Called at each IL_FUNC;
+ * by then the previous function is fully generated, so its symnodes are dead. */
+static relsyms()
+{
+    register int i;
+    register symnode *s;
+    register dimnode *d, *dn;
+
+    for (i = 0; i < nsyms; i++) {
+        s = symcache[i];
+        for (d = s->dimptr; d; d = dn) {        /* its dimension chain */
+            dn = d->dptr;
+            d->dptr = dimfree;
+            dimfree = d;
+        }
+        if (btype(s->type) == USTRUCT && s->size) {     /* tag symnode off ->size */
+            register symnode *tag = (symnode *) s->size;
+            tag->snext = symfree;
+            symfree = tag;
+        }
+        s->snext = symfree;
+        symfree = s;
+    }
+    nsyms = 0;
+}
+
+/* Block-scoped symbol reclaim - the companion to relsyms's whole-function one.
+ * relsyms holds every symnode for a whole function, so the biggest function
+ * (cmain2.c's main, 220 distinct symbols) needs more heap than OS-9 Level 2 can
+ * give one process.  But a synthesised symnode only has to stay interned while
+ * something can still REFERENCE it by identity: the register-content tracker
+ * (cmptrees compares the symbol pointer), or a control-flow frame that saved a
+ * tree to emit later (a loop/if test, or a register snapshot in a frame label).
+ *
+ * flushsyms() is called at the statement-level clrconts points.  clrconts has
+ * just cleared dregcont/xregcont/currexpr, so the only live symnode references
+ * left are in OPEN frames; everything else is dead now and can return to the
+ * free lists instead of waiting for IL_FUNC.  That bounds the working set to a
+ * basic block's symbols, which is what lets main() fit.
+ *
+ * Byte-identical to the no-flush build: across a clrconts the register state is
+ * empty, so symnode identity never feeds a comparison that spans the boundary -
+ * a symbol re-referenced after the flush gets a fresh symnode but is reloaded
+ * anyway (registers were cleared), emitting the same code.  WITHIN a block there
+ * is no flush, so interning there is untouched.  marknode keeps exactly the
+ * symbols the open frames' saved trees still point at, so those trees stay
+ * valid when finally emitted. */
+static marknode(t)              /* mark (blklev) every symnode a saved tree references */
+register expnode *t;
+{
+    if (t) {
+        if (t->op == NAME && t->val.sp) t->val.sp->blklev = 1;
+        marknode(t->left);
+        marknode(t->right);
+    }
+}
+/* flushsyms() is defined after the frame-stack declarations below (it walks
+ * ifstk/whstk/forstk/swstk, which are static and declared further down). */
+static flushsyms();
 
 /* Per-function cache of user goto-label numbers, keyed by name.  Pass 2 owns
  * ALL label numbering, so user labels can never collide with the if/loop
  * labels it allocates; pass 1 emits the label name and we assign the number. */
-#define MAXLABS 64
-static char labnames[MAXLABS][IL_NAMEMAX];
+#define MAXLABS 12
+static char *labnames;          /* [MAXLABS][IL_NAMEMAX] flat, heap (see c2init) */
 static int labnums[MAXLABS];
 static int nlabs;
 
@@ -154,9 +234,9 @@ char *name;
     register int i;
 
     for (i = 0; i < nlabs; i++)
-        if (strcmp(labnames[i], name) == 0) return labnums[i];
+        if (strcmp(&labnames[i*IL_NAMEMAX], name) == 0) return labnums[i];
     if (nlabs >= MAXLABS) fatal("IL: too many labels");
-    strcpy(labnames[nlabs], name);
+    strcpy(&labnames[nlabs*IL_NAMEMAX], name);
     labnums[nlabs] = getlabel(0);
     return labnums[nlabs++];
 }
@@ -181,7 +261,14 @@ static expnode *rdexpr()
             dostr();
             continue;
         }
-        n = (expnode *) grab(NODESIZE);
+        if (freenode) {                 /* reuse a released expnode instead of always */
+            register char *q;           /* grab'ing a fresh one: rdexpr never reused  */
+            register int z;             /* the pool reltree fills, leaking the heap.  */
+            n = freenode; freenode = n->left;
+            for (q = (char *)n, z = NODESIZE; z--; ) *q++ = 0;   /* sbrk zeroes a fresh
+                                           node; match that so fields rdexpr leaves
+                                           unset (val on operators, ...) read as 0. */
+        } else n = (expnode *) grab(NODESIZE);
         n->op = op;
         n->left = n->right = NULL;
         n->dimptr = NULL;
@@ -192,6 +279,7 @@ static expnode *rdexpr()
         switch (op) {
             case NAME: {
                 int dims[MAXDIMS], nd, k, tagty, tagsz;
+                int ptypes[MAXCARGS], np;
 
                 ty = ilrint(); sz = ilrint(); sto = ilrint();
                 off = ilrint(); mod = ilrint(); nm = ilrname();
@@ -203,6 +291,9 @@ static expnode *rdexpr()
                     tagty = ilrint();
                     tagsz = ilrint();
                 }
+                np = ilrint();                  /* prototype param-type count */
+                if (np > MAXCARGS) fatal("IL: too many prototype params");
+                for (k = 0; k < np; k++) ptypes[k] = ilrint();
                 /* a local static is referenced by its label (offset); remap the
                    pass-1 temp-id to the label pass 2 assigned at its IL_LBSS */
                 if (sto == STATIC || sto == STATICD) off = statlabel(off);
@@ -211,6 +302,18 @@ static expnode *rdexpr()
                 n->modifier = mod;
                 n->val.sp = mksym(ty,sz,sto,off,nm,dims,nd,tagty,tagsz);
                 n->dimptr = n->val.sp->dimptr;
+                /* rebuild the prototype arg-type list (forward snext order) so
+                   chtype coerces this call exactly as single-pass does */
+                if (np && n->val.sp->args == NULL) {
+                    register symnode *prev = NULL, *a;
+                    for (k = np - 1; k >= 0; k--) {
+                        a = (symnode *) grab(SYMSIZE);
+                        a->type = ptypes[k];
+                        a->snext = prev;
+                        prev = a;
+                    }
+                    n->val.sp->args = prev;
+                }
                 break;
             }
             case CONST:
@@ -313,9 +416,9 @@ labstruc *tl,*fl;
  * labels (the locals stats.c doif keeps on the C stack).  The IL marker
  * stream (IL_IF/IL_ELSE/IL_ENDIF) drives push/pop; bodies are processed by
  * the normal record loop in between, so nesting falls out for free. */
-#define MAXNEST 64
+#define MAXNEST 12
 typedef struct { labstruc itl, ifl; int iet; } ifframe;
-static ifframe ifstk[MAXNEST];
+static ifframe *ifstk;		/* [MAXNEST], heap (see c2init) */
 static int ifsp;
 
 /* nesting stack for while loops; carries the break/continue labels and the
@@ -326,7 +429,7 @@ typedef struct {
     expnode *cond;
     labstruc *whsavb, *whsavc;
 } whileframe;
-static whileframe whstk[MAXNEST];
+static whileframe *whstk;	/* [MAXNEST], heap (see c2init) */
 static int whsp;
 static labstruc *breakptr, *contptr;
 
@@ -346,7 +449,7 @@ typedef struct {
     expnode *testp, *updp;
     labstruc *frsavb, *frsavc;
 } forframe;
-static forframe forstk[MAXNEST];
+static forframe *forstk;		/* [MAXNEST], heap (see c2init) */
 static int forsp;
 
 /* switch state (pass 2's own copy; the parser's live in stats.c).  The case
@@ -361,8 +464,53 @@ typedef struct {
     int savdef;
     labstruc *swsavb;
 } switchframe;
-static switchframe swstk[MAXNEST];
+static switchframe *swstk;	/* [MAXNEST], heap (see c2init) */
 static int swsp;
+
+/* block-scoped symbol reclaim (declared after relsyms; see the comment there).
+ * Keeps only the symnodes the open frames' saved trees still reference, freeing
+ * the rest at each statement-level clrconts so a big function fits the L2 heap. */
+static marklab(L)               /* mark both register-content trees saved in a label */
+register labstruc *L;
+{
+    marknode(L->labdreg);
+    marknode(L->labxreg);
+}
+
+static flushsyms()
+{
+    register int i, k;
+    register symnode *s;
+    register dimnode *d, *dn;
+
+    /* mark symbols still reachable from open frames: saved loop/if tests and the
+       register-content snapshots stashed in each frame's labels (IL_ELSE,
+       IL_WHILE, IL_ENDSW save dregcont/xregcont into label.lab[dx]reg) */
+    for (i = 0; i < ifsp; i++) { marklab(&ifstk[i].itl); marklab(&ifstk[i].ifl); }
+    for (i = 0; i < whsp; i++) {
+        marknode(whstk[i].cond); marklab(&whstk[i].brk); marklab(&whstk[i].cnt);
+    }
+    for (i = 0; i < forsp; i++) {
+        marknode(forstk[i].testp); marknode(forstk[i].updp);
+        marklab(&forstk[i].brk); marklab(&forstk[i].cnt); marklab(&forstk[i].tst);
+    }
+    for (i = 0; i < swsp; i++) marklab(&swstk[i].brk);
+
+    /* sweep: keep the marked symbols (compacting the cache), reclaim the rest
+       onto the free lists exactly as relsyms does per symbol */
+    k = 0;
+    for (i = 0; i < nsyms; i++) {
+        s = symcache[i];
+        if (s->blklev) { s->blklev = 0; symcache[k++] = s; continue; }
+        for (d = s->dimptr; d; d = dn) { dn = d->dptr; d->dptr = dimfree; dimfree = d; }
+        if (btype(s->type) == USTRUCT && s->size) {
+            register symnode *tag = (symnode *) s->size;
+            tag->snext = symfree; symfree = tag;
+        }
+        s->snext = symfree; symfree = s;
+    }
+    nsyms = k;
+}
 
 /* expression-statement codegen (stats.c emit(): chkdecl, post->pre inc/dec,
  * translate, release).  The argument must already be optim'd. */
@@ -424,14 +572,54 @@ common:
     lastst = RETURN;
 }
 
-main()
+/* Allocate the IL-rebuild tables on the heap.  They need no static storage, and
+ * keeping them off the bss lets c3comp2's static data area fit in a single 8 KB
+ * block - required for OS-9 Level-2 F$Fork to load it (a 2-block data area makes
+ * the task 7 blocks, leaving too few free to fork).  Full capacity is preserved;
+ * only strmap is zeroed, to keep its former bss behaviour (an unset string id
+ * reads back as label 0). */
+static c2init()
+{
+    register int i;
+
+    symcache = (symnode **)   grab(MAXSYMS * sizeof(symnode *));
+    strmap   = (int *)        grab(MAXSTR  * sizeof(int));
+    labnames = (char *)       grab(MAXLABS * IL_NAMEMAX);
+    ifstk    = (ifframe *)    grab(MAXNEST * sizeof(ifframe));
+    whstk    = (whileframe *) grab(MAXNEST * sizeof(whileframe));
+    forstk   = (forframe *)   grab(MAXNEST * sizeof(forframe));
+    swstk    = (switchframe *)grab(MAXNEST * sizeof(switchframe));
+    for (i = 0; i < MAXSTR; i++) strmap[i] = 0;
+}
+
+main(argc,argv)
+char **argv;
 {
     int op;
     char *nm;
     int flag, paramreg, dp;
+    register char *p;
 
+    c2init();
     in = stdin;
     code = stdout;
+
+    /* Optional args: a bare name is the input IL file (read instead of stdin),
+       -o=FILE redirects the output.  The OS-9 pipeline needs this: its
+       per-process memory forbids piping (one pass at a time, intermediate
+       files), and stdin redirection is unreliable on this runtime, so pass 2
+       takes its IL as a file argument like pass 1 does.  No args -> stdin/stdout
+       (the host `c3comp1 | c3comp2` pipe is unchanged). */
+    while (--argc > 0) {
+        if (*(p = *++argv) == '-') {
+            if (p[1] == 'o' && p[2] == '=') {
+                if ((code = fopen(p+3,"w")) == NULL)
+                    fatal("can't open output file");
+            } else
+                fatal("c3comp2: unknown flag");
+        } else if ((in = fopen(p,"r")) == NULL)
+            fatal("can't open input file");
+    }
 
     /* the codegen references sdummy as a placeholder symbol */
     sdummy.type = INT;
@@ -514,7 +702,7 @@ main()
                 callflag = 0;
                 sp = stlev = (paramreg == DREG) ? -2 : 0;
                 maxpush = (stlev < 0) ? stlev : 0;
-                nsyms = 0;              /* fresh symnode cache per function */
+                relsyms();              /* reclaim prev function's symnodes; nsyms = 0 */
                 nlabs = 0;              /* fresh goto-label cache per function */
                 nstat = 0;              /* fresh local-static label map per function */
                 clrconts();
@@ -643,7 +831,7 @@ main()
                 if (fr->testp) { fr->testp = optim(fr->testp); chkdecl(fr->testp); }
                 if (fr->updp)  { fr->updp  = optim(fr->updp);  chkdecl(fr->updp); }
                 if (fr->testp) gen(JMP, setlabel(&fr->tst), 0);
-                clrconts();
+                clrconts(); flushsyms();
                 label(fr->slab);
                 break;
             }
@@ -675,7 +863,10 @@ main()
                 w->brk.labnum = w->cnt.labnum = 0;
                 w->brk.labdreg = w->brk.labxreg = w->cnt.labdreg =
                     w->cnt.labxreg = NULL;
-                clrconts();
+                w->cond = NULL;         /* a do-loop never saves a cond here (the
+                                           test is read at IL_DOWHILE); NULL it so
+                                           flushsyms doesn't walk a garbage tree */
+                clrconts(); flushsyms();
                 label(w->tlab = getlabel(0));
                 break;
             }
@@ -700,7 +891,7 @@ main()
                 break;
             case IL_LABEL:                      /* label name */
                 gen(LABEL, labelnum(ilrname()), 0);
-                clrconts();
+                clrconts(); flushsyms();
                 break;
             case IL_SWITCH: {                   /* control expr + ENDE */
                 register expnode *ptr;
@@ -736,7 +927,7 @@ main()
                 register casnode *ptr;
                 int val = ilrint();
 
-                clrconts();
+                clrconts(); flushsyms();
                 if (ptr = freecase) freecase = ptr->clink;
                 else ptr = (casnode *) grab(CASESIZE);
                 if (caseptr) lastcase->clink = ptr;
@@ -750,7 +941,7 @@ main()
             case IL_DEFAULT:
                 if (deflabel) error("multiple defaults");
                 else label(deflabel = getlabel(0));
-                clrconts();
+                clrconts(); flushsyms();
                 break;
             case IL_ENDSW: {
                 register switchframe *s = &swstk[swsp-1];
@@ -766,7 +957,7 @@ main()
                     freecase = cptr;
                     cptr = temp;
                 }
-                clrconts();
+                clrconts(); flushsyms();
                 if (deflabel) {
                     gen(JMP, deflabel, 0);
                     dregcont = treecopy(s->brk.labdreg);
@@ -792,7 +983,7 @@ main()
                 int savlev = ilrint();
                 int hadlocals = ilrint();
 
-                if (hadlocals) clrconts();
+                if (hadlocals) { clrconts(); flushsyms(); }
                 stlev = savlev;
                 sp = (lastst != RETURN) ? modstk(savlev) : savlev;
                 break;
@@ -811,14 +1002,9 @@ main()
     epilogue();
 
     if (ferror(code)) fatal("error writing assembly code file");
-    fflush(stdout);
+    fflush(code);       /* the output stream is `code` (stdout, or the -o file) */
     if (errcount) {
         fprintf(stderr,"errors in code generation : %d\n",errcount);
         exit(1);
     }
-}
-
-errexit()
-{
-    exit(1);
 }

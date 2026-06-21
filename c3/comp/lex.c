@@ -55,17 +55,17 @@ getsym()
 #endif
     char name[NAMESIZE+1];
 
-    blanks();
-    if (cc==EOF) {sym=EOF; return; }
+    skipblanks();
+    if (curch==EOF) {sym=EOF; return; }
 
     symptr=lptr-1;
     symline=lineno;
-    while(!(sym=chartab[cc])) {
+    while(!(sym=chartab[curch])) {
         error("bad character");
         getch();
         symptr=lptr;
     }
-    symval=valtab[cc];
+    symval=valtab[curch];
 
     switch(sym) {
         case LETTER:
@@ -78,7 +78,7 @@ getsym()
                 }
             } else {
                 sym = NAME;
-                symval = (long) ptr;
+                symval = (argword) ptr;
             }
             break;
         case DIGIT:
@@ -101,7 +101,7 @@ donum:
                 case LONG:
                     longp = (long *) grab(sizeof(long));
                     *longp = *np.lp;
-                    symval = (long) longp;
+                    symval = (argword) longp;
 #ifdef DEBUG
 fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
 #endif
@@ -111,7 +111,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                 case DOUBLE:
                     dblp = (double *) grab(sizeof(double));
                     *dblp = *np.dp;
-                    symval = (long) dblp;
+                    symval = (argword) dblp;
                     sym = FCONST;
                     break;
 #endif
@@ -130,14 +130,14 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
             switch(sym) {
 #ifdef  DOFLOATS
                 case DOT:
-                    if(isdigit(cc)) {
+                    if(isdigit(curch)) {
                         numtype=number(DOUBLE,&n);
                         goto donum;
                     }
                     break;
 #endif
                 case AMPER :
-                    switch(cc) {
+                    switch(curch) {
                         case '&':
                             sym=DBLAND;
                             getch();
@@ -151,14 +151,14 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case ASSIGN:
-                    if (cc=='=') {
+                    if (curch=='=') {
                         sym=EQ;
                         symval=9;
                         getch();
                     }
                     break;
                 case OR :
-                    switch (cc) {
+                    switch (curch) {
                         case '|':
                             sym=DBLOR;
                             getch();
@@ -172,14 +172,14 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case NOT:
-                    if(cc=='=') {
+                    if(curch=='=') {
                         sym=NEQ;
                         getch();
                         symval=9;
                     }
                     break;
                 case STAR:
-                    if (cc=='=') {
+                    if (curch=='=') {
                         sym=ASSMUL;
                         getch();
                         symval=2;
@@ -188,19 +188,19 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                 case DIV:
                 case MOD:
                 case XOR:
-                    if(cc=='=') {
+                    if(curch=='=') {
                         sym=sym+(ASSPLUS-PLUS);
                         getch();
                         symval=2;
                     }
                     break;
                 case LT:
-                    switch (cc) {
+                    switch (curch) {
                         case '<':
                             sym=SHL;
                             symval=11;
                             getch();
-                            if (cc=='='){
+                            if (curch=='='){
                                 sym=ASSSHL;
                                 symval=2;
                                 getch();
@@ -214,12 +214,12 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case GT:
-                    switch (cc) {
+                    switch (curch) {
                         case '>':
                             sym=SHR;
                             symval=11;
                             getch();
-                            if (cc=='=') {
+                            if (curch=='=') {
                                 sym=ASSSHR;
                                 symval=2;
                                 getch();
@@ -233,7 +233,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case PLUS :
-                    switch(cc){
+                    switch(curch){
                         case '+':
                             sym=INCBEF;
                             symval=14;
@@ -247,7 +247,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case NEG:
-                    switch(cc){
+                    switch(curch){
                         case '-':
                             sym=DECBEF;
                             symval=14;
@@ -340,15 +340,15 @@ register char name[];
 {
     int count;
 
-    for (count=1; an(cc) && count<=NAMESIZE ; ++count) {
-        *name++=cc;
+    for (count=1; an(curch) && count<=NAMESIZE ; ++count) {
+        *name++=curch;
         getch();
     }
 
     if(count == 2) *name++ = UNIQUE;
     *name='\0';
 
-    while(an(cc)) getch();
+    while(an(curch)) getch();
 }
 
 an(c)
@@ -387,6 +387,9 @@ char name[];
     strncpy(nptr->sname,name,NAMESIZE);
     nptr->type = UNDECL;
     nptr->storage = 0;
+    nptr->args = NULL;      /* no prototype yet: an unprototyped (incl.
+			       implicitly-declared) function must have args NULL
+			       so call coercion does not walk a wild list */
 
     /* put the new entry on the front of the list;  the chance  */
     /* that a lookup is for a recently declared variable is     */
@@ -444,26 +447,26 @@ register numptrs np;
 
     if (type == DOUBLE) goto fraction;
 
-    if (cc == '0') {
+    if (curch == '0') {
         getch();
-        if (cc == '.') {
+        if (curch == '.') {
             getch();
             goto fraction;
         }
-        if (cc == 'x' || cc == 'X') {
+        if (curch == 'x' || curch == 'X') {
             int c;
             getch();
-            while (c = ishex(cc)) {
+            while (c = ishex(curch)) {
                 i = (i << 4) + (c - (c >= 'A' ? 'A' - 10 : '0'));
                 getch();
             }
         } else
-            while (isoct(cc)) {
-                i = (i << 3) + (cc - '0');
+            while (isoct(curch)) {
+                i = (i << 3) + (curch - '0');
                 getch();
             }
 
-        if (cc == 'L' || cc == 'l') {
+        if (curch == 'L' || curch == 'l') {
             getch();
             goto retlong;
         }
@@ -479,8 +482,8 @@ retlong:
     }
 
     /* here all types still possible; collect in 8 byte integer */
-    while (isdigit(cc)) {
-        if (addin(&n,cc)) { /* overflow */
+    while (isdigit(curch)) {
+        if (addin(&n,curch)) { /* overflow */
             getch();
             return 0;
         }
@@ -491,12 +494,12 @@ retlong:
      * there must be either a '.' or 'e'
      * here if it is to be double
      */
-    if (cc=='.' || cc=='e' || cc=='E') { /* double */
-        if (cc == '.') {
+    if (curch=='.' || curch=='e' || curch=='E') { /* double */
+        if (curch == '.') {
             getch();
 fraction:
-            while (isdigit(cc)) {
-                if (addin(&n,cc)) { /* overflow */
+            while (isdigit(curch)) {
+                if (addin(&n,curch)) { /* overflow */
                     getch();
                     return 0;
                 }
@@ -507,17 +510,17 @@ fraction:
 
         n = normaliz(&n);
 
-        if (cc=='E' || cc=='e') {
+        if (curch=='E' || curch=='e') {
             esign=1;
             getch();
-            if (cc=='+') getch();
-            else if(cc=='-') {
+            if (curch=='+') getch();
+            else if(curch=='-') {
                 getch();
                 esign=0;
             }
             exp=0;
-            while(isdigit(cc)) {
-                exp=exp*10 + (cc - '0');
+            while(isdigit(curch)) {
+                exp=exp*10 + (curch - '0');
                 getch();
             }
 
@@ -553,7 +556,7 @@ fraction:
         for (k = 4; k < 8; k++) lo = (lo << 8) | (nb[k]     & 0xFF);
 
         if (hi) return 0;                   /*  overflow (> 32 bits)  */
-        if (cc=='l' || cc=='L') {           /* explicitly long */
+        if (curch=='l' || curch=='L') {           /* explicitly long */
             getch();
             *np.lp = lo;
             return LONG;
@@ -637,28 +640,28 @@ register long *np;
        n=0;
        cp= &n;
 
-       if (cc=='0') {
+       if (curch=='0') {
                long n1;
                int *ip;
 
                getch();
 
                n1=0;
-               if (cc=='x' || cc=='X'){
+               if (curch=='x' || curch=='X'){
                        int c;
                        getch();
-                       while(c=ishex(cc)) {
+                       while(c=ishex(curch)) {
                                n1=(n1<<4)+ (c- (c>='A' ? 'A'-10 : '0'));
                                getch();
                        }
                }
-               else while(isoct(cc)) {
-                       n1=(n1<<3)+(cc-'0');
+               else while(isoct(curch)) {
+                       n1=(n1<<3)+(curch-'0');
                        getch();
                }
 
                ip= &n1;
-               if(cc=='L' || cc=='l') {
+               if(curch=='L' || curch=='l') {
                        getch();
                        goto retlong;
                }
@@ -674,12 +677,12 @@ register long *np;
        }
 
        /* here all types still possible; collect in 4 byte integer */
-       while(isdigit(cc)) {
-                n = (n * 10) + (cc - '0');
+       while(isdigit(curch)) {
+                n = (n * 10) + (curch - '0');
                 getch();
        }
 
-       if(cc=='l' || cc=='L') { /* explicitly long */
+       if(curch=='l' || curch=='L') { /* explicitly long */
                getch();
        longint:
                *np = n;
@@ -698,15 +701,15 @@ pstr()
 {
         getch();
 
-        if (cc=='\\')
+        if (curch=='\\')
                 symval=dobslash();
 
         else {
-                symval=cc;
+                symval=curch;
                 getch();
         }
 
-        if (cc!='\'')
+        if (curch!='\'')
                 error("unterminated character constant");
         else
                 getch();
@@ -730,10 +733,10 @@ qstr()
                 sfile = code;
                 stringlen = 0;
                 getch();
-                while (cc != '"') {
+                while (curch != '"') {
                         if ((lptr-line) == 0) { error("unterminated string"); break; }
-                        if (cc == '\\') oc(dobslash());
-                        else { oc(cc); getch(); }
+                        if (curch == '\\') oc(dobslash());
+                        else { oc(curch); getch(); }
                 }
                 oc('\0');
                 putc('\n', sfile);
@@ -770,16 +773,16 @@ qstr()
 #ifdef  SPLIT
         putc('s',sfile);
 #endif
-        while(cc!='"') {
+        while(curch!='"') {
                 if ((lptr-line)==0) {
                         error("unterminated string");
                         break;
                 }
 
-                if (cc=='\\')
+                if (curch=='\\')
                         oc(dobslash());
                 else {
-                        oc(cc);
+                        oc(curch);
                         getch();
                 }
         }
@@ -840,7 +843,7 @@ dobslash()
         register int c,n;
 
         getch();
-        c=cc;
+        c=curch;
         getch();
 
         switch(c) {
@@ -858,15 +861,15 @@ dobslash()
                 int c1;
 
                 c = n = 0;
-                while((c1 = ishex(cc)) && n++ < 2) {
+                while((c1 = ishex(curch)) && n++ < 2) {
                         c =(c<<4)+ (c1 < 'A' ? c1-'0' : c1-'A'+10);
                         getch();
                 }
         }
         else if (c=='d') {
                 c=n=0;
-                while(isdigit(cc) && n++<3) {
-                        c= c*10 + cc - '0';
+                while(isdigit(curch) && n++<3) {
+                        c= c*10 + curch - '0';
                         getch();
                 }
         }
@@ -874,8 +877,8 @@ dobslash()
         else if (isoct(c)) {
                 c -= '0';
                 n=0;
-                while(isoct(cc) && n++<3) {
-                        c = (c << 3) + (cc - '0');
+                while(isoct(curch) && n++<3) {
+                        c = (c << 3) + (curch - '0');
                         getch();
                 }
         }

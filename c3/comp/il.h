@@ -51,7 +51,7 @@
 #define ILEOF      (-1)          /* ilrrec() return at end of stream */
 
 #define IL_LINEMAX 256           /* longest IL record (read side line buffer) */
-#define IL_NAMEMAX 32            /* longest name field (>= cj.h NAMESIZE) */
+#define IL_NAMEMAX 16            /* longest name field (>= cj.h NAMESIZE) */
 
 /* ---- structural opcodes (range 200+, disjoint from cj.h expnode ops) ---- */
 #define IL_ENDE    200           /* end of a postfix expression tree */

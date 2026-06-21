@@ -131,8 +131,15 @@ onlist:
 				ptr->type = INT | FUNCTION;
 				temp = INT;
 			}
-			if (tsc == EXTERN) clear(&arglist);
-			else {
+			if (tsc == EXTERN) {
+				/* a function DECLARATION (prototype): keep its parameter-type
+				   list on the symnode so calls can coerce their arguments.
+				   arglist is empty for a K&R "()" decl -> args NULL -> no
+				   coercion (back-compatible).  Uses the dedicated args field,
+				   so it survives a later definition of the same function. */
+				ptr->args = arglist;
+				arglist = NULL;
+			} else {
 				ftype = temp;
 				newfunc(ptr,sclass);
 				return;
@@ -538,9 +545,8 @@ int stkadj;
 		--blklev;
 		stlev = savlev;
 		ilwrec(IL_ENDBLOCK); ilwint(savlev); ilwint(hadlocals); ilweol();
-		return;
 	}
-#endif
+#else
 	if (maxpush > stlev) maxpush = stlev;
 	sp = modstk(stlev);
 
@@ -569,6 +575,7 @@ int stkadj;
 	 else sp=savlev;
 */
 	 sp = (lastst != RETURN) ? modstk(savlev) : savlev;
+#endif
 }
 
 
@@ -622,8 +629,23 @@ register symnode **list;
 				else *list = ptr;
 				ptr->snext = NULL;
 				last = ptr;
+			} else {
+				/* abstract parameter (ANSI prototype, no name): keep only its
+				   TYPE so call sites can coerce arguments to it.  (Never write
+				   "(void)" - c3 maps void->int, so it would look like one int
+				   param; use "()" for a no-argument function.) */
+				register symnode *ap = (symnode *) grab(SYMSIZE);
+				ap->type = temp;
+				ap->storage = ARG;
+				ap->blklev = 1;
+				ap->x.elems = eptr;
+				sizeup(ap,tdp,size);
+				ap->sname[0] = '\0';
+				if (*list) last->snext = ap;
+				else *list = ap;
+				ap->snext = NULL;
+				last = ap;
 			}
-			/* else: abstract param ("(void)" or a prototype type) - discarded */
 		} else if (sym == NAME) {
 			/* K&R-style bare parameter name (type comes from argdef later) */
 			ptr = (symnode *) symval;

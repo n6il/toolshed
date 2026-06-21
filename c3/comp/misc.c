@@ -122,7 +122,11 @@ dopoint:
 
 eprintf(s1,s2,s3)
 char *s1;		/* format string */
-long s2, s3;		/* forwarded args: a string (%s) or an int (%d) */
+argword s2, s3;		/* forwarded args: a string (%s) or an int (%d).  MUST be
+			   argword, not long: callers pass int/char* (2 bytes on
+			   the 6809) and fprintf's %d/%s read 2 bytes, so a `long`
+			   (4 bytes) here misaligns the forwarded args on the 16-bit
+			   stack ABI (invisible on the LP64 host's register ABI). */
 {
     fprintf(stderr,s1,s2,s3);
 }
