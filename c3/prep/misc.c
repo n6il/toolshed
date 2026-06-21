@@ -45,10 +45,10 @@ void doerr(int n, char errstr[], int lno, int ertype)
 
 	if (!aflag) {
 		putesc(ertype, tmp);
-		fprintf(out, "%d\n", lno);
-		fprintf(out, "%d\n%s\n", n, errstr);
+		fprintf(outfp, "%d\n", lno);
+		fprintf(outfp, "%d\n%s\n", n, errstr);
 	} else
-		fprintf(out, " fatal line #%d - %s\n", lno, errstr);
+		fprintf(outfp, " fatal line #%d - %s\n", lno, errstr);
 }
 
 
@@ -65,13 +65,13 @@ char *arg, *arg1;		/* most callers pass strings (%s); NEWLINO passes
 		case NEWFNAME:
 		case OLDFNAME:
 		case PSECT:
-			fprintf(out, "%c%c\n%s\n%s\n", ESCHAR, type, arg, arg1);
+			fprintf(outfp, "%c%c\n%s\n%s\n", ESCHAR, type, arg, arg1);
 			break;
 		case NEWLINO:
-			fprintf(out,"%c%c\n%d\n",ESCHAR,type,arg);
+			fprintf(outfp,"%c%c\n%d\n",ESCHAR,type,arg);
 			break;
 		default:
-			fprintf(out,"%c%c\n%s\n",ESCHAR,type,arg);
+			fprintf(outfp,"%c%c\n%s\n",ESCHAR,type,arg);
 			break;
 		}
 	}

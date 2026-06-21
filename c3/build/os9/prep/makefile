@@ -5,7 +5,7 @@ vpath %.h ../../../prep
 INCS	= -v=../../../prep -v=../../../include
 
 BINARY	= c3prep
-OBJS	= scan.r dues.r eval.r history.r lex.r macros.r main.r misc.r parse.r
+OBJS	= scan.r dues.r eval.r lex.r macros.r main.r misc.r parse.r
 
 $(BINARY):	$(OBJS)
 	$(OS9LINK)

@@ -5,7 +5,7 @@
 #define LINESIZE 100
 
 FILE           *in,
-               *out,
+               *outf,
                *datfile;
 DIRECT int      dbflag,
                 inserts,
@@ -29,7 +29,7 @@ int main(argc, argv)
 	               *outfile;
 
 	in = stdin;
-	out = stdout;
+	outf = stdout;
 	infile = outfile = NULL;
 
 #ifdef DEBUG
@@ -73,14 +73,17 @@ int main(argc, argv)
 	}
 
 	if (infile)
-		if ((in = freopen(infile, "r", stdin)) == NULL)
+		/* fopen, not freopen(...,stdin): on OS-9 freopen's fclose(stdin) +
+		   reuse of path 0 leaves `in` reading the console, so getc blocks
+		   forever (same fix as comp's cmain.c). */
+		if ((in = fopen(infile, "r")) == NULL)
 			error("can't open %s", infile);
 
 	if (outfile)
-		if ((out = fopen(outfile, "w")) == NULL)
+		if ((outf = fopen(outfile, "w")) == NULL)
 			error("can't open %s", outfile);
 
-	datfile = out;
+	datfile = outf;
 
 #ifdef DEBUG
 	debug("files open,");
@@ -164,7 +167,10 @@ void optimise()
 		{
 			register char  *lp = line;
 
-			while (*lp != '\n')
+			/* Strip the line terminator without running off the end:
+			   fgets may not store a newline (last line / EOF), and on
+			   OS-9 the line end is CR.  Stop at CR, LF, or the NUL. */
+			while (*lp && *lp != '\n' && *lp != '\r')
 				++lp;
 			*lp = '\0';
 		}
@@ -205,7 +211,7 @@ void optimise()
 		case 'n':
 			if (strcmp(mnem, "nam") == 0)
 			{
-		put:		fprintf(out, "%s\n", line);
+		put:		fprintf(outf, "%s\n", line);
 				continue;
 			}
 			break;
@@ -283,7 +289,7 @@ void endsect()
 		else
 			while (inscount)
 				rminst();
-		fprintf(out, " endsect\n");
+		fprintf(outf, " endsect\n");
 		endflag = FALSE;
 	}
 }

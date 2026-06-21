@@ -8,7 +8,7 @@ vpath %.h ../../../comp
 # end (optim type-check, tranexp, codgen, local).  No parser, no symbol table -
 # cmain2.c rebuilds postfix trees from the IL and replays the codegen.
 BINARY	= c3comp2
-OBJS	= cmain2.o ilread.o codgen.o emit.o tranexp.o optim.o local.o bool.o longs.o \
+OBJS	= cmain2.o cmain2b.o cmain2c.o ilread.o codgen.o emit.o tranexp.o optim.o local.o bool.o longs.o \
 	regscont.o floats.o misc.o treeutil.o
 
 $(BINARY):	$(OBJS)

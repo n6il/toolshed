@@ -390,6 +390,16 @@ char name[];
     nptr->args = NULL;      /* no prototype yet: an unprototyped (incl.
 			       implicitly-declared) function must have args NULL
 			       so call coercion does not walk a wild list */
+    /* Fully reset the rest of the entry too.  An entry reused from the freesym
+       list (a symbol freed at an earlier block/parameter-scope exit) keeps its
+       old blklev/size/etc.; a fresh symbol must read as clean, otherwise e.g. a
+       reused parameter name still shows blklev==1 and trips the "named twice"
+       check in declist. */
+    nptr->blklev = 0;
+    nptr->size = 0;
+    nptr->dimptr = NULL;
+    nptr->offset = 0;
+    nptr->x.labflg = 0;
 
     /* put the new entry on the front of the list;  the chance  */
     /* that a lookup is for a recently declared variable is     */

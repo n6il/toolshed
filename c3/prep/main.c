@@ -192,9 +192,9 @@ done: ;
 
 	if (outfname == NULL)
 	{
-		out = stdout;	/* make sure output is good */
+		outfp = stdout;	/* make sure output is good */
 	}
-	else if ((out = fopen(outfname,"w")) == NULL)
+	else if ((outfp = fopen(outfname,"w")) == NULL)
 	{
 		fprintf(stderr, "can't open output file %s (err=%d)\n", outfname,
 			errno);
@@ -209,20 +209,20 @@ done: ;
 	else if (strlen(fname) >= FNAMSIZE)
 	{
 		putesc(FATERR, fname);               /* too long for an include entry */
-		fprintf(out, "0\n0\nfile name too long %s\n", fname);
+		fprintf(outfp, "0\n0\nfile name too long %s\n", fname);
 		errexit(SUCCESS);	/* let c68 report the error */
 	}
 	else if ((in = fopen(fname,"r")) == NULL)
 	{
 		putesc(FATERR, fname);               /* couldn't open file */
-		fprintf(out, "0\n0\ncan't open file %s (err=%d)\n", fname, errno);
+		fprintf(outfp, "0\n0\ncan't open file %s (err=%d)\n", fname, errno);
 		errexit(SUCCESS);	/* let c68 report the error */	
 	}
 
 	if (badflag)
 	{
 		putesc(FATERR, badflag);
-		fprintf(out, "0\n0\nbad argument define\n");
+		fprintf(outfp, "0\n0\nbad argument define\n");
 		errexit(FAILURE);
 	}
 
@@ -243,7 +243,7 @@ done: ;
 			nxtlno = lineno - 1;        /*   tell the compiler */
 			putesc(NEWLINO, nxtlno);
 		}
-		fprintf(out, "%s\n", line);     /*   write out expanded line */
+		fprintf(outfp, "%s\n", line);     /*   write out expanded line */
 		if (ferror(stdout))
 		{
 			fatal("error writing output file");
@@ -332,25 +332,3 @@ int findcmd(char *s)
 }
 
 
-#if defined(OSK) || defined(OS9)
-char *
-sysdrive()
-{
-	register char *p;
-
-	if (defdev)
-		return defdev;
-	else if ((int)(devptr = attach((p = DEFNAME) + 1, 1)) != -1)
-		return p;
-	else {
-		devptr = NULL;
-		return DEVNAME;
-	}
-}
-#else
-char *
-sysdrive()
-{
-	return DEFNAME;
-}
-#endif

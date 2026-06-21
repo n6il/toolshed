@@ -23,9 +23,11 @@
 extern int errno;
 #endif
 
-#ifndef OS9
+/* `direct` is a no-op on every target.  On OS-9 the direct-page section aliases
+   the stdio iob, so direct-page globals (inclcount, fname, in/out, ...) come up
+   as garbage and corrupt argument parsing; keep prep's globals in normal,
+   crt0-zeroed data instead (same decision as comp/cj.h). */
 #define direct
-#endif
 
 #define TRUE		1
 #define FALSE		0
@@ -95,7 +97,7 @@ typedef struct{
 } cmdstruct;
 
 global direct FILE
-	*out,					/* output file ptr */
+	*outfp,					/* output file ptr */
     *in;                    /* current input file ptr */
     
 global char

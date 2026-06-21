@@ -379,6 +379,17 @@ symnode *fptr;
 
 	while (sym != LBRACE) argdef();
 
+	/* ANSI parameters (built by declist before this point) carry a raw storage
+	   class; now that reguse is reset, run each through chkreg so a 'register'
+	   parameter is assigned U/Y exactly as the K&R argdef path does.  No-op for
+	   K&R params, which argdef already mapped to UREG/YREG/AUTO. */
+	{
+		register symnode *pp;
+		for (pp = arglist; pp; pp = pp->snext)
+			if (pp->storage == REG || pp->storage == AUTO)
+				pp->storage = chkreg(pp->storage, pp->type);
+	}
+
 	cp = fptr->sname;
 
 #ifdef PROF
@@ -586,7 +597,7 @@ register symnode **list;
 	symnode *ptemp;
 	dimnode *dimptr,*tdp;
 	long size;
-	int temp;
+	int temp, sclass;
 	elem *eptr;
 
 	*list = NULL;
@@ -600,11 +611,14 @@ register symnode **list;
 			 * ANSI-style typed parameter:  [register] type declarator
 			 * (also covers a prototype's abstract "type" with no name, and
 			 * "(void)").  Parse it the way argdef() parses a K&R parameter
-			 * declaration, but inline.  The register hint is accepted and
-			 * ignored (the param becomes a plain ARG); newfunc lays the
-			 * arglist out from each entry's type/size.
+			 * declaration, but inline.  A 'register' hint is recorded as the
+			 * raw storage class (REG); newfunc runs it through chkreg() once
+			 * reguse has been reset, so an ANSI definition gets the same
+			 * register-parameter ABI a K&R one does (first arg in D, register
+			 * params in U/Y).  Without this the hint was dropped and every
+			 * register parameter spilled to the stack - different code.
 			 */
-			setclass();			/* consume & ignore any 'register' */
+			if ((sclass = setclass()) == 0) sclass = AUTO;
 			if ((temp = settype(&size,&dimptr,&eptr)) == 0) temp = INT;
 			tdp = dimptr;
 			temp = declarator(&ptemp,&tdp,temp);
@@ -618,10 +632,10 @@ register symnode **list;
 			else if (temp == FLOAT) temp = DOUBLE;
 #endif
 			if (ptr) {		/* a named parameter (function definition) */
-				if (ptr->storage == ARG) error("named twice");
+				if (ptr->blklev == 1) error("named twice");
 				else if (ptr->type != UNDECL) pushdown(ptr);
 				ptr->type = temp;
-				ptr->storage = ARG;
+				ptr->storage = sclass;	/* raw REG/AUTO; newfunc -> chkreg */
 				ptr->blklev = 1;
 				ptr->x.elems = eptr;
 				sizeup(ptr,tdp,size);

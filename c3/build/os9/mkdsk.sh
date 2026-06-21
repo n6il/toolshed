@@ -33,7 +33,7 @@ LSECTORS=${LSECTORS:-16384}			# flat OS-9 logical sectors (256B); 4MB
 FPO9=${FPO9:-${NFP09:+$NFP09/ROM/Float09.bin}}
 
 # c3 command modules (built by the per-tool makefiles) -> CMDS
-C3MODS="$here/exec/c3 $here/prep/c3prep $here/comp/c3comp \
+C3MODS="$here/exec/c3 $here/prep/c3prep $here/comp1/c3comp1 $here/comp2/c3comp2 \
         $here/optx/c3optx $here/lorder/lorder $here/lsplit/lsplit"
 # Microware assembler / linker / librarian / ROF dumper -> CMDS
 RUTILS="rma rlink mold rdump"
@@ -92,15 +92,33 @@ for d in prep comp optexp exec; do
 	cp "$c3/$d"/*.h "$stage/src/$d/" 2>/dev/null || true
 done
 
-# library sources (the v2-ABI C library we build on-target)
-for d in lib.a sys.a lib.c; do
+# library sources, pre-substituted for rma the same way the host build does:
+# strip `use'/IFP1, then os9defs.sed (syscall/error-code names -> codes) and
+# libdefs.sed (stdio FILE offsets -> literals), so on-target rma needs none of
+# the lwasm-flavoured defs files (which it cannot assemble).
+STRIP='/^[ \t]*[Ii][Ff][Pp]1/,/^[ \t]*[Ee][Nn][Dd][Cc]/d;/^[ \t]*[Uu][Ss][Ee][ \t]/d'
+ppa() { sed -e "$STRIP" "$1" | sed -f "$c3/lwbackend/os9defs.sed" | sed -f "$c3/lwbackend/libdefs.sed"; }
+for d in lib.a sys.a; do
 	mkdir -p "$stage/src/lib/$d"
-	cp "$c3/lib/$d"/* "$stage/src/lib/$d/" 2>/dev/null || true
+	for f in "$c3/lib/$d"/*.a; do ppa "$f" > "$stage/src/lib/$d/$(basename "$f")"; done
+done
+cp "$c3/lib/lib.a/chcodes.c" "$stage/src/lib/lib.a/"	# C: compiled (c3 -2), not rma'd
+
+# long (32-bit) integer arithmetic (fseek/scanf reference _ladd/_lcmpr/...)
+mkdir -p "$stage/src/imath"
+for f in claddsub clbits clcommon clcompare clconvert cldiv \
+         clincdec clmove clmul clnegcompl clshifts \
+         ccmult ccmod ccdiv cshifts rpterr; do
+	ppa "$c3/lib/imath/$f.a" > "$stage/src/imath/$f.a"
 done
 
-# MC6839 floating-point sources (mklibs assembles these into clib.l on-target)
-mkdir -p "$stage/src/fp"
-cp "$c3/lwbackend/fpwrap.a" "$c3/lwbackend/fpinit.a" "$stage/src/fp/"
+# back-end standalones not in the stock lib (getpid/attach/getenv/mkstemp and
+# the no-op FP stub _fpinit/_fpterm), plus a minimal valid ROF for sys.l
+mkdir -p "$stage/src/back"
+for f in getpid attach getenv mkstemp fpdummy; do
+	ppa "$c3/lwbackend/$f.a" > "$stage/src/back/$f.a"
+done
+printf ' psect sysstub_a,0,0,0,0,0\n endsect\n' > "$stage/src/sysstub.a"
 
 # the on-target library-build procedure
 cp "$here/mklibs" "$stage/src/mklibs"
@@ -123,8 +141,8 @@ fi
 
 rm -rf "$stage"
 echo "mkdsk: done -> $DSK"
-echo "  CMDS:    c3 c3prep c3comp c3optx lorder lsplit + $RUTILS"
+echo "  CMDS:    c3 c3prep c3comp1 c3comp2 c3optx lorder lsplit + $RUTILS"
 echo "  defs:    c3 v2-ABI headers"
-echo "  src:     compiler + library sources (incl fp/), mklibs"
-echo "  lib:     (build on-target:  chd /dd/src; mklibs)"
+echo "  src:     compiler sources + rma-ready library sources (lib/ imath/ back/), mklibs"
+echo "  lib:     (build on-target:  chx /dd/cmds; chd /dd/src; shell </dd/src/mklibs)"
 echo "  Modules: FPO9 (MC6839 floating point)"

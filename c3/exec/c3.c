@@ -5,6 +5,13 @@
  */
 
 #include <stdio.h>
+
+/* `direct` is a no-op on every target: the OS-9 direct page aliases the stdio
+   iob and comes up as garbage, corrupting the driver's globals (flags, scount,
+   the arg pointers); keep them in normal, crt0-zeroed data (same decision as
+   comp/cj.h and prep). */
+#define direct
+
 #ifdef UNIX
 #include <stdlib.h>
 #include <unistd.h>
@@ -15,7 +22,6 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <errno.h>
-#define direct
 #define vfork fork
 #endif
 
@@ -28,6 +34,8 @@
 
 #define PREPNAME "c3prep"
 #define COMPNAME "c3comp"
+#define COMP1NAME "c3comp1"
+#define COMP2NAME "c3comp2"
 /* The working optimiser is "c3optx" (built from optexp/); the original
    "c3opt" (opt/) is incomplete and not built. */
 #define OPTZNAME "c3optx"
@@ -51,7 +59,7 @@
 direct short
                 kflag, lflag, oflag, tflag, iflag, sflag, nflag, rflag,
                 aflag, mflag, pflag, qflag, dflag, xflag = 0, libcount,
-                term, pid, nocode, yflag = 0;
+                term, pid, nocode, twoflag, yflag = 0;
 direct short    optflag = 1;
 direct int      wstat;
 char           *libs[MAXLIBS];
@@ -140,12 +148,14 @@ int main(argc, argv)
 	register char  *p, **pp;
 	int             c, count, j;
 	int             assdel;
-	char           *optzname, *asmbname, *linkname;
+	char           *optzname, *asmbname, *linkname, *comp1name, *comp2name;
 
 	/* tool names, overridable from the environment (see the #defines) */
 	if ((optzname = getenv("C3_OPT"))  == NULL) optzname = OPTZNAME;
 	if ((asmbname = getenv("C3_ASM"))  == NULL) asmbname = ASMBNAME;
 	if ((linkname = getenv("C3_LINK")) == NULL) linkname = LINKNAME;
+	if ((comp1name = getenv("C3_COMP1")) == NULL) comp1name = COMP1NAME;
+	if ((comp2name = getenv("C3_COMP2")) == NULL) comp2name = COMP2NAME;
 
 	if (argc == 1)
 	{
@@ -268,6 +278,9 @@ int main(argc, argv)
 				case 'i':
 					iflag++;
 					break;
+				case '2':
+					twoflag = 1;
+					break;
 				default:
 					opts();
 					error("unknown flag : -%c\n", *p);
@@ -341,6 +354,7 @@ int main(argc, argv)
 		if (suffs[count] == 'c')
 		{
 			int i;
+			char ilfile[128];
 
 
 			assdel = 1;
@@ -389,23 +403,10 @@ int main(argc, argv)
 			term = 0;
 
 			strcpy(source, dest);
-			argptr = arglst;
 
-			srcptr = source;
-			addarg(source);
-			if (sflag)
-			{
-				addarg("-s");
-			}
-
-			if (xflag)
-			{
-				addarg("-t");
-			}
-
+			/* compute the compiler's final output (.a) name */
 			if (nocode)
 			{
-				addarg("-n");
 				strcpy(dest, "/nil");
 				assdel = 0;
 			} else if (aflag)
@@ -415,20 +416,72 @@ int main(argc, argv)
 			} else
 				setsuf(dest, 'a');
 
-			strcpy(temp1, "-o=");
-			strcat(temp1, dest);
-			addarg(temp1);
-			if (pflag)
-				addarg("-p");
+			if (twoflag && !nocode)
+			{
+				/*
+				 * two-pass: c3comp1 emits the intermediate language
+				 * to a temp file, c3comp2 reads it and generates the
+				 * assembler.  The IL temp shares the .m basename with
+				 * an 'i' suffix.  Same one-process-at-a-time,
+				 * file-between-stages model as the other stages -
+				 * which is what lets it run on OS-9 Level 2, where
+				 * the single-pass compiler is too big to load.
+				 */
+				strcpy(ilfile, source);
+				setsuf(ilfile, 'i');
 
-			endargs();
+				/* pass 1: preprocessed source -> IL */
+				argptr = arglst;
+				srcptr = source;
+				addarg(source);
+				strcpy(temp1, "-o=");
+				strcat(temp1, ilfile);
+				addarg(temp1);
+				endargs();
+				dstptr = ilfile;
+				dofork(comp1name, "compiler pass 1", 0);
+				unlink(source);
 
-			dstptr = dest;
-
-			dofork(kflag ? alt_comp :
-		      	COMPNAME, "compiler mainline", 0);
-
-			unlink(source);
+				/*
+				 * pass 2: IL -> assembler.  -s (stack-check
+				 * suppression) is a codegen flag, so it is handed
+				 * to this pass, not pass 1.
+				 */
+				argptr = arglst;
+				srcptr = ilfile;
+				addarg(ilfile);
+				if (sflag)
+					addarg("-s");
+				strcpy(temp1, "-o=");
+				strcat(temp1, dest);
+				addarg(temp1);
+				endargs();
+				dstptr = dest;
+				dofork(comp2name, "compiler pass 2", 0);
+				unlink(ilfile);
+			} else
+			{
+				/* single-pass compiler */
+				argptr = arglst;
+				srcptr = source;
+				addarg(source);
+				if (sflag)
+					addarg("-s");
+				if (xflag)
+					addarg("-t");
+				if (nocode)
+					addarg("-n");
+				strcpy(temp1, "-o=");
+				strcat(temp1, dest);
+				addarg(temp1);
+				if (pflag)
+					addarg("-p");
+				endargs();
+				dstptr = dest;
+				dofork(kflag ? alt_comp : COMPNAME,
+				       "compiler mainline", 0);
+				unlink(source);
+			}
 		} else
 			assdel = 0;
 
@@ -741,6 +794,7 @@ static char    *cmds[] = {
 	"    -y         Don't add cstart.r and standard libs\n",
 	"    -q         Quiet mode. Don't output command names\n",
 	"    -i         Verbose mode. Output exact command executed\n",
+	"    -2         Two-pass (c3comp1+c3comp2; required on OS-9 L2)\n",
 };
 
 char          **cmdsend = cmds + (sizeof cmds) / (sizeof(char **));
@@ -772,25 +826,16 @@ char           *devices[] = {
 static char    *
 sysdrive()
 {
-	static char     buf[20];
-	register char **p = devices;
-	int             devptr;
+	int i, dt;
 
-	while (*p)
-	{
-		if ((devptr = attach(*p + 1, 1)) != -1)
-		{
-			detach(devptr);
-			break;
-		} else
-			++p;
-	}
-#ifdef OSK
-	return *p;
-#else
-	strhcpy(buf, *p);
-	return buf;
-#endif
+	/* Probe the candidate system drives; return the name of the first that
+	   attaches.  Return the literal directly (no strcpy into a buffer), and
+	   do NOT detach: I$Detach of the active boot device hangs on NitrOS-9,
+	   and a short-lived process's attaches are released by F$Exit anyway. */
+	for (i = 0; devices[i] != 0; i++)
+		if ((dt = attach(devices[i] + 1, 1)) != -1)
+			return devices[i];
+	return 0;
 }
 #else
 static char    *

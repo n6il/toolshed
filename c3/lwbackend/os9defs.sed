@@ -52,6 +52,7 @@ s/F\$CRC/\$17/g
 # ---- error codes (E$), counted from E$PthFul=200 ($C8) in lib/os9defs.a ----
 s/E\$SeekRg/\$D2/g
 s/E\$EOF/\$D3/g
+s/E\$MemFul/\$CF/g
 s/E\$FNA/\$D6/g
 s/E\$BPNam/\$D7/g
 s/E\$PNNF/\$D8/g

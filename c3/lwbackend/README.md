@@ -150,9 +150,10 @@ sources to `buildrt.sh` — they translate through the same filter.
   and they don't match the compiler's IEEE-754 constants, so float/double
   arithmetic in a program linked by `c3lw`/`c3-ld` gives wrong results. The
   IEEE replacement, `fpwrap.a` over the MC6839 package, is done and verified
-  (`fpbench/`, including an end-to-end smoke test of real compiler output);
-  on OS-9, `mklibs` builds it into `clib.l`. Wiring it into the host link is
-  still to do. Integer and long programs are unaffected.
+  (`fpbench/`, including an end-to-end smoke test of real compiler output),
+  but neither the host link nor the on-target library (`mklibs`, which ships
+  only the no-op `fpdummy.a`) uses it yet. Integer and long programs are
+  unaffected.
 * The c3 `csect` (frame/DP work area) is handled: its `name rmb N` entries
   become offset equates (the storage is stack-reserved at run time, accessed
   `name,u`). cfloats relies on this.

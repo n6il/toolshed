@@ -119,7 +119,7 @@ extern DIRECT label *lfree;
 extern instruction *insins(), *newins();
 extern DIRECT int inscount;
 extern FILE    *in,
-               *out,
+               *outf,
                *datfile;
 extern DIRECT int lbf,
                 lbdone,

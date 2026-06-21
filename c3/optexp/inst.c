@@ -211,26 +211,26 @@ void rminst()
 		fix(i, BACK);
 	while (l)
 	{
-		fprintf(out, "%s", l->lname);
+		fprintf(outf, "%s", l->lname);
 		if (l->lflags & GLOBAL)
-			putc(':', out);
+			putc(':', outf);
 		if ((l = l->nextl) != 0)
-			putc('\n', out);
+			putc('\n', outf);
 	}
 
-	putc(' ', out);
+	putc(' ', outf);
 	if (i->itype & BRANCH)
 	{
-		fprintf(out, "%sb%s %s", (i->itype & LONG ? "l" : ""), i->mnem,
+		fprintf(outf, "%sb%s %s", (i->itype & LONG ? "l" : ""), i->mnem,
 		    (i->itype & DESTPTR ? i->alt.lab->lname : i->alt.args));
 	}
 	else
 	{
-		fprintf(out, "%s", i->mnem);
+		fprintf(outf, "%s", i->mnem);
 		if (i->alt.args[0])
-			fprintf(out, " %s", i->alt.args);
+			fprintf(outf, " %s", i->alt.args);
 	}
-	putc('\n', out);
+	putc('\n', outf);
 	remins(i);
 }
 

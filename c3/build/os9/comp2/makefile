@@ -10,7 +10,7 @@ INCS	= -v=../../../comp -v=../../../include
 # symbol table - cmain2.c rebuilds postfix trees from the IL and replays the
 # codegen.  Mirrors build/unix/comp2.
 BINARY	= c3comp2
-OBJS	= cmain2.r ilread.r codgen.r emit.r tranexp.r optim.r local.r bool.r longs.r \
+OBJS	= cmain2.r cmain2b.r cmain2c.r ilread.r codgen.r emit.r tranexp.r optim.r local.r bool.r longs.r \
 	  regscont.r floats.r misc.r treeutil.r
 
 $(BINARY):	$(OBJS)
