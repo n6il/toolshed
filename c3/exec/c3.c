@@ -58,7 +58,7 @@
 
 direct short
                 kflag, lflag, oflag, tflag, iflag, sflag, nflag, rflag,
-                aflag, mflag, pflag, qflag, dflag, xflag = 0, libcount,
+                aflag, mflag, pflag, qflag, gflag, xflag = 0, libcount,
                 term, pid, nocode, twoflag, yflag = 0;
 direct short    optflag = 1;
 direct int      wstat;
@@ -103,6 +103,7 @@ int getsuf();
 void addarg();
 void endargs();
 void opts();
+void rmtemp();
 
 void tidy()
 {
@@ -125,12 +126,12 @@ void tidy()
 
 	if (srcptr)
 	{
-		unlink(srcptr);
+		rmtemp(srcptr);
 	}
 
 	if (dstptr)
 	{
-		unlink(dstptr);
+		rmtemp(dstptr);
 	}
 
 	return;
@@ -209,6 +210,11 @@ int main(int argc, char **argv)
 					break;
 				case 'q':
 					qflag = 1;
+					break;
+				case 'g':	/* debug: echo every sub-command in
+						   full and keep all intermediate
+						   files (do not unlink them) */
+					gflag = 1;
 					break;
 				case 'x':
 					xflag = 0;
@@ -312,6 +318,21 @@ int main(int argc, char **argv)
 	if ((devptr = sysdrive()) == 0)
 	{
 		error("Cannot find default system drive");
+	}
+#ifndef UNIX
+	/* Default the temp-file directory to the system drive, so the .r object
+	   the driver hands to rlink is an ABSOLUTE path: rlink fails silently on
+	   a relative object (or relative -o) on OS-9.  -t=<dir> still overrides. */
+	if (tdirname[0] == '\0')
+	{
+		strcpy(tdirname, devptr);
+		strcat(tdirname, "/");
+	}
+#endif
+	if (gflag)
+	{
+		fprintf(stderr, "+ sysdrive=%s  tmpdir=\"%s\"  outdir=\"%s\"\n",
+			devptr, tdirname, odirname);
 	}
 
 	if (aflag && rflag)
@@ -439,7 +460,7 @@ int main(int argc, char **argv)
 				endargs();
 				dstptr = ilfile;
 				dofork(comp1name, "compiler pass 1", 0);
-				unlink(source);
+				rmtemp(source);
 
 				/*
 				 * pass 2: IL -> assembler.  -s (stack-check
@@ -457,7 +478,7 @@ int main(int argc, char **argv)
 				endargs();
 				dstptr = dest;
 				dofork(comp2name, "compiler pass 2", 0);
-				unlink(ilfile);
+				rmtemp(ilfile);
 			} else
 			{
 				/* single-pass compiler */
@@ -479,7 +500,7 @@ int main(int argc, char **argv)
 				dstptr = dest;
 				dofork(kflag ? alt_comp : COMPNAME,
 				       "compiler mainline", 0);
-				unlink(source);
+				rmtemp(source);
 			}
 		} else
 			assdel = 0;
@@ -513,7 +534,7 @@ int main(int argc, char **argv)
 			dofork(optzname, "optimizer", 0);
 
 			if (assdel)
-				unlink(source);
+				rmtemp(source);
 			strcpy(source, dest);
 			srcptr = source;
 		}
@@ -540,7 +561,7 @@ int main(int argc, char **argv)
 		dofork(asmbname, "assembler", 0);
 
 		if (assdel)
-			unlink(source);
+			rmtemp(source);
 	}
 
 	if (nocode || aflag || rflag)
@@ -566,12 +587,22 @@ int main(int argc, char **argv)
 			addarg(snames[count]);
 	}
 
-	strcpy(temp1, "-o=");
 	setsuf(outname, 0);
-
-	/*
-	        fprintf(stderr,"\n'%s'\n",outname);
-	*/
+#ifndef UNIX
+	/* Make outname absolute (in place): rlink silently produces nothing for a
+	   relative -o on OS-9, and the chmod after the link must name the same
+	   file.  Skip if already absolute (a user-given -f=/dd/foo).  Build it in
+	   temp2, NOT dest: dest is the object temp that srcptr points at and tidy()
+	   deletes - clobbering it would make tidy() delete the output instead. */
+	if (outname[0] != '/')
+	{
+		strcpy(temp2, devptr);
+		strcat(temp2, "/");
+		strcat(temp2, outname);
+		strcpy(outname, temp2);
+	}
+#endif
+	strcpy(temp1, "-o=");
 	strcat(temp1, outname);
 
 	addarg(temp1);
@@ -623,9 +654,12 @@ int main(int argc, char **argv)
 	endargs();
 	dstptr = NULL;
 	dofork(linkname, "linker", 0);
-	/*
-	        chmod(outname,15);
-	*/
+#ifndef UNIX
+	/* mark the linked module executable (r/w/e + public read): rlink does not
+	   set the OS-9 execute attribute itself, so the output was not runnable
+	   without a manual `attr -e'.  outname was made absolute above. */
+	chmod(outname, 15);
+#endif
 
 	tidy();
 
@@ -643,6 +677,12 @@ void dofork(char *s, char *s1, int stat)
 	{
 		fprintf(stderr, arglst);
 		putc('\n', stderr);
+	}
+	if (gflag)	/* debug: log the exact command (tool + full arglist).
+			   arglst is passed as data, not a format string, so a
+			   '%' in a path can't misfire (unlike the iflag line). */
+	{
+		fprintf(stderr, "+ %s%s\n", s, arglst);
 	}
 #ifdef UNIX
 	if ((pid = vfork()) == -1)
@@ -708,6 +748,18 @@ void error(char *s1, char *s2)
 	fprintf(stderr, s1, s2);
 	putc('\n', stderr);
 	errexit(err ? err : 1);
+}
+
+/* remove an intermediate/temporary file - but under -g (debug) keep every one
+   and say so, so a failing build can be taken apart stage by stage. */
+void rmtemp(char *f)
+{
+	if (gflag)
+	{
+		fprintf(stderr, "+ keep %s\n", f);
+		return;
+	}
+	unlink(f);
 }
 
 void setsuf(register char *s, char c)
@@ -785,6 +837,7 @@ static char    *cmds[] = {
 	"    -y         Don't add cstart.r and standard libs\n",
 	"    -q         Quiet mode. Don't output command names\n",
 	"    -i         Verbose mode. Output exact command executed\n",
+	"    -g         Debug. Echo every sub-command and keep all temp files\n",
 	"    -2         Two-pass (c3comp1+c3comp2; required on OS-9 L2)\n",
 };
 
@@ -811,21 +864,32 @@ char           *devices[] = {
 	"/dd",
 	"/h0",
 	"/d0",
+	"/j0",
 	0,
 };
 
 static char    *
 sysdrive()
 {
-	int i, dt;
+	int i;
+	char probe[32];
+	FILE *f;
 
-	/* Probe the candidate system drives; return the name of the first that
-	   attaches.  Return the literal directly (no strcpy into a buffer), and
-	   do NOT detach: I$Detach of the active boot device hangs on NitrOS-9,
-	   and a short-lived process's attaches are released by F$Exit anyway. */
-	for (i = 0; devices[i] != 0; i++)
-		if ((dt = attach(devices[i] + 1, 1)) != -1)
+	/* Return the drive that actually holds the c3 toolchain - the one whose
+	   cmds/ has the assembler - NOT merely the first that attaches.  The boot
+	   drive (/dd) always attaches but, during development, the toolchain may
+	   live on a slave (/j0); a bare attach-probe wrongly picked the boot drive
+	   and then looked for defs/lib that were not there.  Probe a stable file
+	   present on every c3 disk (cmds/rma) so the right drive is found wherever
+	   it is mounted; opening a path auto-attaches its device. */
+	for (i = 0; devices[i] != 0; i++) {
+		strcpy(probe, devices[i]);
+		strcat(probe, "/cmds/rma");
+		if ((f = fopen(probe, "r")) != NULL) {
+			fclose(f);
 			return devices[i];
+		}
+	}
 	return 0;
 }
 #else

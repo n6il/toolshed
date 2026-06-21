@@ -48,6 +48,12 @@ char *                 val;
        register struct macro * rp;
        register char *         cp;
 
+       /* A NULL value means an empty macro (e.g. $< when a target has no
+          implicit prerequisite).  On OS9, address 0 was readable so strlen
+          returned 0; on a modern host it faults, so map NULL to "" here. */
+       if (val == (char *)0)
+               val = "";
+
 #ifdef DEBUG
        if (debug) printf("Setting macro '%s' = '%s'.\n",name,val);
 #endif

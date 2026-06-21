@@ -10,7 +10,11 @@
 # NOTE: all six tools now build and link to valid OS-9 modules.  What remains is
 # runtime correctness of the generated code at this scale (FP especially, via the
 # MC6839 shim) - i.e. getting the modules to actually RUN under OS-9.
-dirs	= exec prep comp optx lorder lsplit
+# The disk uses the two-pass compiler (comp1+comp2); single-pass c3comp is too
+# big to F$Fork on an OS-9 Level-2 task, so it is not built or shipped here.
+# make is cross-built like the c3 tools (it drives on-target builds, e.g. the
+# library build); the r-utils rma/rlink come prebuilt from CoCoC (see mkdsk.sh).
+dirs	= exec prep comp1 comp2 optx lorder lsplit make
 
 # dsk target knobs (override on the command line):
 #   DSK     output image (in this directory)

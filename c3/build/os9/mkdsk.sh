@@ -34,7 +34,7 @@ FPO9=${FPO9:-${NFP09:+$NFP09/ROM/Float09.bin}}
 
 # c3 command modules (built by the per-tool makefiles) -> CMDS
 C3MODS="$here/exec/c3 $here/prep/c3prep $here/comp1/c3comp1 $here/comp2/c3comp2 \
-        $here/optx/c3optx $here/lorder/lorder $here/lsplit/lsplit"
+        $here/optx/c3optx $here/lorder/lorder $here/lsplit/lsplit $here/make/make"
 # Microware assembler / linker / librarian / ROF dumper -> CMDS
 RUTILS="rma rlink mold rdump"
 
@@ -141,7 +141,7 @@ fi
 
 rm -rf "$stage"
 echo "mkdsk: done -> $DSK"
-echo "  CMDS:    c3 c3prep c3comp1 c3comp2 c3optx lorder lsplit + $RUTILS"
+echo "  CMDS:    c3 c3prep c3comp1 c3comp2 c3optx lorder lsplit make + $RUTILS"
 echo "  defs:    c3 v2-ABI headers"
 echo "  src:     compiler sources + rma-ready library sources (lib/ imath/ back/), mklibs"
 echo "  lib:     (build on-target:  chx /dd/cmds; chd /dd/src; shell </dd/src/mklibs)"

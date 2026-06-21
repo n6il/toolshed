@@ -5,7 +5,7 @@ vpath %.h ../../../optexp
 INCS	= -v=../../../optexp -v=../../../include
 
 BINARY	= c3optx
-OBJS	= inst.r labels.r main.r misc.r optim.r parse.r
+OBJS	= inst.r labels.r main.r misc.r optim.r parse.r actions.r
 
 $(BINARY):	$(OBJS)
 	$(OS9LINK)

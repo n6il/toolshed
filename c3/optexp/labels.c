@@ -33,7 +33,7 @@ label          *inslabel(char *s)
 	/* put at back of list */
 	p->succ = (int *)l;
 	p->pred = l->pred;
-	((instruction *) (l->pred))->succ = (struct istruct *)p;
+	((instruction *) (l->pred))->succ = (instruction *)p;
 	l->pred = p;
 
 	return p;
@@ -89,8 +89,8 @@ void freelabel(register label *p)
 	if (p->dest == NULL && p->rlist == NULL)
 	{
 		/* remove from ltable */
-		((instruction *) (p->pred))->succ = (struct istruct *)p->succ;
-		((instruction *) (p->succ))->pred = (struct istruct *)p->pred;
+		((instruction *) (p->pred))->succ = (instruction *)p->succ;
+		((instruction *) (p->succ))->pred = (instruction *)p->pred;
 		/* add to free list */
 		p->succ = (int *)lfree;
 		lfree = p;

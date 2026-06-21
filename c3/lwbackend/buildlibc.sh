@@ -56,7 +56,7 @@ done
 
 echo "syscalls (sys.a):" >&2
 for s in syscommon write read open create misc mem access process intercept \
-         lseek dir stat time signal; do
+         lseek dir stat time signal chmod syscall; do
 	[ -f "$c3/lib/sys.a/$s.a" ] && asma "$s" "$c3/lib/sys.a/$s.a"
 done
 asma getpid "$here/getpid.a"		# standalone (vs all of id.a)

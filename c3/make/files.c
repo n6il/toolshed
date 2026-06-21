@@ -247,3 +247,18 @@ struct name *          np;
                } else if ((strcmp(suff,".r")==0) && (rules)) { /*Is it .r ?*/
                        strcpy(fullname,rel_dir);
                        if (strlen(rel_dir) != 0)
+                               strcat(fullname,"/");
+               }
+               strcat(fullname,np->n_name);
+
+               if (debug)
+                   printf("Touching %s with mode %d.\n",fullname,mode);
+
+               if ((fd = open(fullname, S_IWRITE | mode )) < 0) {
+                       printf("%s: '%s' not touched - non-existent.\n",
+                                       myname, fullname);
+               }
+               close(fd);
+#endif
+       }
+}

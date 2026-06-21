@@ -35,10 +35,12 @@ rma time.a -o=time.r
 rma signal.a -o=signal.r
 rma cfinish.a -o=cfinish.r
 rma profdummy.a -o=profdummy.r
+rma syscall.a -o=syscall.r
 * syscommon (defines _os9err/_sysret, used by every wrapper) goes LAST so a
 * one-pass library scan resolves the wrapper -> syscommon back reference.
+* syscall.r defines the raw _os9 trap (used by make's files.c modtime/touch).
 merge write.r read.r open.r create.r misc.r mem.r access.r process.r >s1.l
-merge intercept.r lseek.r dir.r stat.r time.r signal.r cfinish.r profdummy.r >s2.l
+merge intercept.r lseek.r dir.r stat.r time.r signal.r cfinish.r profdummy.r syscall.r >s2.l
 merge s1.l s2.l syscommon.r >syslib.l
 
 * ---- strings + stdio + misc (lib.a); chcodes is C, the rest assembler ------

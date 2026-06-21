@@ -195,7 +195,7 @@ char **                        argv;
        if (debug)
                 printf("Opening makefile.\n");
 
-       if (strcmp(makefile, "-") == 0) /*  Can use stdin as makefile  */
+       if (makefile && strcmp(makefile, "-") == 0) /* Can use stdin as makefile */
                ifd = stdin;
        else
                if (!makefile)          /*  If no file, then use default */

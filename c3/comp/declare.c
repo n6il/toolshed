@@ -21,6 +21,7 @@
 
 static direct int reguse;
 static direct struct initstruct *initlist,*initlast,*initfree;
+static symnode *protoargs(symnode *);	/* prototype param types + unscope the names */
 
 #ifdef FUNCNAME
 direct int fnline;
@@ -136,8 +137,11 @@ onlist:
 				   list on the symnode so calls can coerce their arguments.
 				   arglist is empty for a K&R "()" decl -> args NULL -> no
 				   coercion (back-compatible).  Uses the dedicated args field,
-				   so it survives a later definition of the same function. */
-				ptr->args = arglist;
+				   so it survives a later definition of the same function.
+				   protoargs() also takes any NAMED parameters back out of
+				   scope, so an ANSI prototype may name its parameters without
+				   leaking them (no more "named twice" against the definition). */
+				ptr->args = protoargs(arglist);
 				arglist = NULL;
 			} else {
 				ftype = temp;
@@ -360,6 +364,28 @@ chkreg(int sclass, int type)
 }
 
 
+/* A function DEFINITION whose name was already prototyped must agree with the
+ * prototype's parameter types and count (proto = fptr->args, built by protoargs).
+ * c3 already rejects a return-type mismatch (via the symbol's type), but never
+ * checked the arguments - so a wrong prototype silently miscompiled every caller,
+ * which coerces its arguments to the PROTOTYPE's types.  Reports "declaration
+ * mismatch" on the first differing parameter, or on a differing parameter count.
+ * Both declist (ANSI params) and argdef (K&R params) apply the same FLOAT->DOUBLE
+ * and array->pointer adjustments, so an exact type compare is correct. */
+static void chkproto(symnode *proto, symnode *defargs)
+{
+	register symnode *a, *b;
+
+	for (a = proto, b = defargs; a && b; a = a->snext, b = b->snext)
+		if (a->type != b->type) {
+			error("declaration mismatch");
+			return;
+		}
+	if (a || b)
+		error("declaration mismatch");	/* parameter count differs */
+}
+
+
 newfunc(symnode *fptr, int sclass)
 {
 	register symnode *p1;
@@ -385,6 +411,11 @@ newfunc(symnode *fptr, int sclass)
 			if (pp->storage == REG || pp->storage == AUTO)
 				pp->storage = chkreg(pp->storage, pp->type);
 	}
+
+	/* if this function was prototyped, the definition's parameters (now fully
+	   typed, K&R or ANSI) must match the prototype's recorded types/count */
+	if (fptr->args)
+		chkproto(fptr->args, arglist);
 
 	cp = fptr->sname;
 
@@ -927,6 +958,55 @@ shiftin(int a, int b)
 }
 
 
+
+
+/* Build a prototype's call-coercion arg list (nameless, type-only symnodes) and
+ * take its NAMED parameters back out of scope.  A prototype's parameter names
+ * must not persist: left in scope they shadow file scope and make a later
+ * definition - or any other use of the name - "named twice".  The parsed param
+ * symnode is dual-purpose (the in-scope name AND the type entry ->args needs),
+ * and pushdown/pullup is in-place, so we copy each type into a fresh symnode for
+ * ->args and then release the original exactly as clear() (block exit) does: a
+ * freshly-inserted name is unhashed, a name that shadowed an outer one is pulled
+ * back up.  An abstract param (no name) was a private grab() - just recycle it. */
+static symnode *protoargs(symnode *list)
+{
+	register symnode *s, *nxt, *cp, *p, **pp;
+	symnode *head, *tail;
+	extern symnode *freesym;
+
+	head = tail = NULL;
+	for (s = list; s; s = nxt) {
+		nxt = s->snext;
+
+		cp = (symnode *) grab(SYMSIZE);
+		cp->type    = s->type;
+		cp->size    = s->size;
+		cp->dimptr  = s->dimptr;
+		cp->x.elems = s->x.elems;
+		cp->storage = ARG;
+		cp->blklev  = 1;
+		cp->args    = NULL;
+		cp->sname[0] = '\0';
+		cp->snext   = NULL;
+		if (tail) tail->snext = cp; else head = cp;
+		tail = cp;
+
+		if (s->sname[0]) {		/* a named parameter: take it out of scope */
+			pp = (symnode **) s->downptr;
+			if ((pp >= hashtab && pp < hashtab + 128)
+					|| (pp >= mostab && pp < mostab + 128)) {
+				if (*pp == s) *pp = s->hlink;
+				else { for (p = *pp; p->hlink != s; p = p->hlink) ; p->hlink = s->hlink; }
+				s->hlink = freesym; freesym = s;
+			} else
+				pullup(s);	/* restore the symbol it shadowed */
+		} else {			/* abstract param: a private symnode */
+			s->hlink = freesym; freesym = s;
+		}
+	}
+	return head;
+}
 
 
 clear(symnode **list)

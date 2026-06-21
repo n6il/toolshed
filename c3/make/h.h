@@ -42,9 +42,14 @@
 #define DEFSHELL        "shell"
 #endif
 
-/* This is where it gets the default make rules */
-/* If undefined, defaults will be compiled in */
+/* This is where it gets the default make rules.  If undefined, the defaults
+   are compiled in (see makerules() in rules.c, which has unix/OS9/eon arms).
+   We compile them in on both the host (unix) and the c3/OS-9 cross-build so a
+   freshly-built make is self-contained - no external /dd/sys/make.default
+   needed.  Leave the file-based default only for the legacy eon target. */
+#ifdef eon
 #define DEFN0          "/dd/sys/make.default"
+#endif
 
 /* Default Makefile names. */
 #define DEFN1          "makefile"

@@ -246,7 +246,7 @@ void finddupl(register instruction *i)
 			if (ip1->itype & CODEBRK)
 				remins(ip1->succ);
 			else if (isconbra(ip1->itype)
-				 && ((struct lstruct *) (ip1->alt.lab))->dest == ((instruction *) (ip1->succ))->succ)
+				 && ((label *) (ip1->alt.lab))->dest == ((instruction *) (ip1->succ))->succ)
 				fixcond(ip1);
 		}
 		rlp2 = lmovp->succ;
@@ -279,7 +279,7 @@ void finddupl(register instruction *i)
 		if (i->itype & BRANCH)
 		{
 			/* does branch label know its destination ? */
-			if (ip1 = ((struct lstruct *) (i->alt.lab))->dest)
+			if (ip1 = ((label *) (i->alt.lab))->dest)
 			{
 
 				/*
