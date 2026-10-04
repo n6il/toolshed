@@ -11,7 +11,7 @@
 * command lines, so the .l libraries are merged in small chunks.
 *
 * Run as:   chx /dd/cmds; chd /dd/src; shell <mklibs
-* Produces: /dd/lib/cstart.r  /dd/lib/clib.l  /dd/lib/sys.l
+* Produces: /dd/lib/cstart.r  /dd/lib/clib.l  /dd/lib/sys.l  /dd/lib/fp.l
 
 * ---- C startup -> cstart.r (the driver links this standalone) ---------------
 chd /dd/src/lib/sys.a
@@ -84,14 +84,23 @@ merge gets.r setbase.r printf.r scanf.r pflinit.r pffdummy.r >m4.l
 merge memory.r calloc.r atoi.r xtoa.r chcodes.r >m5.l
 merge m1.l m2.l m3.l m4.l m5.l >main.l
 
-* ---- back-end standalones (getpid attach getenv mkstemp + no-op FP) --------
+* ---- back-end standalones (getpid attach getenv mkstemp, the MC6839 FP
+* helpers fpwrap, and the no-op FP startup fpdummy) ---------------------------
 chd /dd/src/back
 rma getpid.a -o=getpid.r
 rma attach.a -o=attach.r
 rma getenv.a -o=getenv.r
 rma mkstemp.a -o=mkstemp.r
+rma fpwrap.a -o=fpwrap.r
 rma fpdummy.a -o=fpdummy.r
-merge getpid.r attach.r getenv.r mkstemp.r fpdummy.r >back.l
+merge getpid.r attach.r getenv.r mkstemp.r fpwrap.r fpdummy.r >back.l
+
+* ---- fp.l: the real FP startup (_fpinit/_fpterm link the MC6839 FPO9 module).
+* A program that uses floating point links it AHEAD of clib.l, so it resolves
+* cstart's _fpinit/_fpterm before clib.l's no-op fpdummy is reached:
+*     c3 -2 prog.c -l=/dd/lib/fp.l
+* FPO9 must be resident or in /DD/Modules (mkdsk installs it there). ---------
+rma fpinit.a -o=/dd/lib/fp.l
 
 * ---- integer arithmetic runtime (imath).  cl* = long (32-bit) math used by
 * fseek/scanf; cc*/cshifts = the INT (16-bit) codegen helpers the compiler

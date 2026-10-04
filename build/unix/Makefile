@@ -46,7 +46,8 @@ install: all
 	# artifacts have not been built (no lwtools).
 	$(INSTALL) $(C3LWDIR)/c3-as $(C3LWDIR)/c3-ld $(C3LWDIR)/c3lw $(INSTALLDIR)
 	$(INSTALL) -m 0644 $(C3LWDIR)/c3lw.awk $(C3LWDIR)/os9c3.ld $(INSTALLDIR)
-	-$(INSTALL) -m 0644 $(C3LWDIR)/crt0.o $(C3LWDIR)/libc3.a $(C3LWDIR)/libc3lw.a $(INSTALLDIR)
+	-$(INSTALL) -m 0644 $(C3LWDIR)/crt0.o $(C3LWDIR)/fpdummy.o $(C3LWDIR)/fpinit.o \
+	    $(C3LWDIR)/libc3.a $(C3LWDIR)/libc3lw.a $(INSTALLDIR)
 	# c3 preprocessor headers, under $(C3BASE)/defs so #include resolves
 	$(INSTALL) -d $(C3BASEDIR)/defs $(C3BASEDIR)/defs/cgfx
 	$(INSTALL) -m 0644 $(C3DEFSDIR)/*.h $(C3BASEDIR)/defs

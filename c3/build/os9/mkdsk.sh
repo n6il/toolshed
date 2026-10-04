@@ -112,10 +112,11 @@ for f in claddsub clbits clcommon clcompare clconvert cldiv \
 	ppa "$c3/lib/imath/$f.a" > "$stage/src/imath/$f.a"
 done
 
-# back-end standalones not in the stock lib (getpid/attach/getenv/mkstemp and
-# the no-op FP stub _fpinit/_fpterm), plus a minimal valid ROF for sys.l
+# back-end standalones not in the stock lib (getpid/attach/getenv/mkstemp, the
+# MC6839 FP helpers fpwrap, and both FP startups: the no-op fpdummy for clib.l
+# and fpinit for the opt-in fp.l), plus a minimal valid ROF for sys.l
 mkdir -p "$stage/src/back"
-for f in getpid attach getenv mkstemp fpdummy; do
+for f in getpid attach getenv mkstemp fpwrap fpdummy fpinit; do
 	ppa "$c3/lwbackend/$f.a" > "$stage/src/back/$f.a"
 done
 printf ' psect sysstub_a,0,0,0,0,0\n endsect\n' > "$stage/src/sysstub.a"

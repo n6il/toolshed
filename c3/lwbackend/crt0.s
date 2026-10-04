@@ -31,8 +31,8 @@
 		section	code
 		export	__start
 		extern	main
-		extern	_fpinit		; link the MC6839 FP package (real fpinit.a,
-					; or the fpdummy no-op if no FP is used)
+		extern	_fpinit		; link the MC6839 FP package (fpinit.o when the
+					; program opts in to FP, else the fpdummy.o no-op)
 		extern	_fpterm		; unlink it on exit
 
 ; link-time bounds of the init tables (synthesised by lwlink per os9c3.ld)
@@ -255,7 +255,7 @@ errno:		rmb	2		; global errno
 _flacc:		rmb	8		; long / floating-point accumulator
 
 ; MC6839 floating-point linkage.  _fpinit (fpinit.a) fills these when the
-; program uses FP; the fpdummy stub leaves them zero.  The FP helper wrappers
+; program opts in to FP; the fpdummy stub leaves them zero.  The FP helper wrappers
 ; reach them as "name,y" (Y = data base), same as errno / _flacc.
 		export	_fpmod
 		export	_fpreg

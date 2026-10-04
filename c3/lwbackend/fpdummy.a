@@ -1,9 +1,10 @@
 * fpdummy.a - no-op floating-point startup, for programs that do not use FP.
 *
-* crt0 unconditionally calls _fpinit / _fpterm; this is the link default that
-* satisfies those calls when the program references no FP helpers, so it neither
-* links the MC6839 FPO9 module nor requires it to be present.  Programs that use
-* floating point pull in fpinit.a instead (with the FP helper wrappers).
+* crt0/cstart unconditionally call _fpinit / _fpterm; this is the default that
+* satisfies those calls for a program that doesn't opt in to floating point, so
+* it neither links the MC6839 FPO9 module nor requires it to be present.  A
+* program that uses FP links fpinit.a's object instead (host: fpinit.o, via
+* c3lw -f or c3-ld -l=...fp.l; OS-9: -l=/dd/lib/fp.l ahead of clib.l).
  psect fpdummy_a,0,0,0,0,0
 
 _fpinit:

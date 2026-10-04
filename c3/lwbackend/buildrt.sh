@@ -28,9 +28,10 @@ echo "crt0:"
 lwasm --format=obj -o "$here/crt0.o" "$here/crt0.s"
 echo "  ok   crt0"
 
-# Helper routines to attempt.  Integer + long math known-good; cfloats.a adds
-# the float/double helpers (arithmetic, compare, move, and the int/long<->double
-# conversions).  Each is attempted and included if it assembles.
+# Helper routines to attempt: the integer + long math.  Each is attempted and
+# included if it assembles.  The float/double helpers are NOT here: they are
+# fpwrap.a (MC6839, IEEE-754), which buildlibc.sh puts in libc3.a.  The old
+# Microware-format fmath/cfloats.a doesn't match the compiler's IEEE constants.
 objs=""
 echo "runtime helpers:"
 for src in \
@@ -51,8 +52,7 @@ for src in \
 	"$c3"/lib/imath/clnegcompl.a \
 	"$c3"/lib/imath/clbits.a \
 	"$c3"/lib/imath/clincdec.a \
-	"$c3"/lib/imath/clconvert.a \
-	"$c3"/lib/fmath/cfloats.a
+	"$c3"/lib/imath/clconvert.a
 do
 	[ -f "$src" ] || continue
 	name=$(basename "$src" .a)

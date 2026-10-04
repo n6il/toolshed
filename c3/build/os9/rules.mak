@@ -16,7 +16,8 @@
 # relocate, e.g. `make C3BASE=$PREFIX/share/toolshed C3LIBDIR=$PREFIX/bin`):
 #   - on PATH:    c3prep  c3comp  c3optx  lwasm  lwlink  awk
 #   - C3BASE/defs : the target's system headers (<stdio.h>, <string.h>, ...)
-#   - C3LIBDIR    : the lwbackend runtime — c3lw.awk, os9c3.ld, crt0.o, libc3lw.a
+#   - C3LIBDIR    : the lwbackend runtime — c3lw.awk, os9c3.ld, crt0.o, fpdummy.o,
+#                   libc3.a, libc3lw.a
 #
 # The defaults match a stock `make -C build/unix install` (PREFIX=/usr/local):
 # headers under $PREFIX/share/toolshed/defs, the runtime beside the binaries in
@@ -34,6 +35,7 @@ LWLINK		= lwlink
 FILTER		= $(C3LIBDIR)/c3lw.awk
 LDSCRIPT	= $(C3LIBDIR)/os9c3.ld
 CRT0		= $(C3LIBDIR)/crt0.o
+FPSTART		= $(C3LIBDIR)/fpdummy.o	# the tools use no floating point
 
 # Preprocessor flags: cross-target define + the target system headers.  Each
 # component adds its own source include directory(ies) via INCS.
@@ -52,7 +54,7 @@ SHELL		= /bin/bash
 # module name embedded in the file is the output basename, so link to a bare
 # name (e.g. c3comp), not a path.
 OS9LINK		= $(LWLINK) --format=os9 -s $(LDSCRIPT) -o $@ \
-		      $(CRT0) $(OBJS) -L$(C3LIBDIR) -lc3 -lc3lw
+		      $(CRT0) $(FPSTART) $(OBJS) -L$(C3LIBDIR) -lc3 -lc3lw
 
 # ---- install: OS-9 idioms only; never touch the host's native dirs ----------
 # OS-9 keeps command modules in a CMDS directory.  Two modes:

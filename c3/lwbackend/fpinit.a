@@ -1,10 +1,10 @@
 * fpinit.a - link the MC6839 IEEE floating-point package (FPO9) at startup.
 *
 * crt0 calls _fpinit after the data area is zeroed / before main, and _fpterm
-* after main returns.  This object is selected (over the fpdummy.a no-op) only
-* when the program is known to use floating point - it is meant to live with the
-* FP helper wrappers, so any FP operation pulls it in; a program that never
-* touches FP gets fpdummy and so never links FPO9.
+* after main returns.  A program opts in to it (over the fpdummy.a no-op) at
+* link time when it uses floating point - host: fpinit.o via c3lw -f or c3-ld
+* -l=...fp.l; OS-9: -l=/dd/lib/fp.l ahead of clib.l.  A program that doesn't
+* opt in gets fpdummy and so never links FPO9.
 *
 * MC6839 module:  name "FPO9", type/language $B1.  Its named entries sit at
 * fixed offsets from the module base:  FPREG at +$3D, FPSTAK at +$3F.  We
@@ -47,10 +47,9 @@ fphave:
  clr _fpcb+4,y                  TRAPV
  rts
 
-* FPO9 unavailable: leave _fpmod/_fpreg zero and return.  crt0/cstart call
-* _fpinit for every program, so this must be non-fatal - a no-FP program must
-* still run when FPO9 is absent.  (A program that *does* use FP will then fault
-* on its first FP op; the fix is to install FPO9, see fppath.)
+* FPO9 unavailable: leave _fpmod/_fpreg zero and return, so the program still
+* starts.  Its first FP op will then fault; the fix is to install FPO9 (see
+* fppath).
 fpfail:
  ldd #0
  std _fpmod,y

@@ -77,9 +77,14 @@ asma pffloat "$c3/lib/lib.a/pffdummy.a"
 echo "process / memory:" >&2
 asma cfinish  "$c3/lib/sys.a/cfinish.a"
 asma profdummy "$c3/lib/sys.a/profdummy.a"
-# crt0 calls _fpinit/_fpterm; the cross-built tools use no FP, so the no-op stub
-# is the default.  FP-using programs link fpinit.a instead (F$Links MC6839 FPO9).
-asma fpdummy  "$here/fpdummy.a"
+# Floating point: fpwrap.a is every float/double helper the compiler calls,
+# over the MC6839 package (FPO9).  The _fpinit/_fpterm that crt0 calls in every
+# program are NOT archived: lwlink binds crt0's call to an archive member even
+# when an explicit object also defines it, so a library default could never be
+# overridden.  Instead both providers are built below as standalone objects and
+# every link names exactly one - fpdummy.o (no-op, the default) or fpinit.o
+# (link FPO9; `c3-ld ... -l=fp.l` or `c3lw -f`).
+asma fpwrap   "$here/fpwrap.a"
 asma memory   "$c3/lib/lib.a/memory.a" io
 asma calloc   "$c3/lib/lib.a/calloc.a"
 asma atoi     "$c3/lib/lib.a/atoi.a"
@@ -91,3 +96,10 @@ rm -f "$here/libc3.a"
 # shellcheck disable=SC2086
 lwar -c "$here/libc3.a" $objs
 echo "  libc3.a: $(echo $objs | wc -w | tr -d ' ') modules" >&2
+
+echo "FP startup objects (every link names exactly one of these):" >&2
+for s in fpdummy fpinit; do
+	objs=""
+	asma $s "$here/$s.a"
+	[ -n "$objs" ] && cp "$out/$s.o" "$here/$s.o"
+done

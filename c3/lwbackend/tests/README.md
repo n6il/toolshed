@@ -28,17 +28,26 @@ zero ok     int zero;  (uninitialised)      -> crt0 zeroed the data area
 
 A missing or garbled line points straight at the broken path.
 
-`ftest` checks float/double support. The compiler now emits constants as
-IEEE-754, but the linked helpers (`cfloats.a`) use Microware's float format, so
-its arithmetic checks (`dadd`, `ddiv`) are not expected to pass while the host
-link uses those helpers. The MC6839 replacement (`fpwrap.a`) is checked by
-`../fpbench` instead — see ../README.md "Known limitations".
+`ftest` checks float/double support. It uses floating point, so
+`mktestdisk.sh` links it with `fpinit.o`; set `NFP09` to an nfp09 checkout to
+put the FPO9 module on the disk too. On NitrOS-9 it prints:
+
+```
+const 5.0 -> nonzero (constants fixed!)
+itod 5 -> nonzero (helper works)
+dadd ok
+ddiv ok
+```
+
+`fpinit` `F$Link`s FPO9, falling back to `F$Load /DD/Modules/FPO9`, so when
+running it also copy FPO9 into the boot disk's `Modules` directory (see Run).
 
 ## Build
 
 Prerequisites: the c3 unix build (`make -C build/unix all` from `c3/`), the
-runtime (`sh ../buildrt.sh` → `crt0.o` + `libc3lw.a`), `lwasm`/`lwlink`, and
-Toolshed `os9`.
+runtime (`sh ../buildrt.sh` → `crt0.o` + `libc3lw.a`), the C library
+(`sh ../buildlibc.sh` → `libc3.a` + `fpdummy.o`/`fpinit.o`), `lwasm`/`lwlink`,
+and Toolshed `os9`.
 
 ```sh
 sh mktestdisk.sh            # -> ./ctest_j0.dsk  (module name "ctest", execute attr set)
@@ -74,6 +83,13 @@ usim09pt -d boot.dsk rel_picothing.srec
 ```
 
 At the `User name?:` prompt press Enter (empty = superuser), then run `ctest`.
+
+For `ftest`, also put the FPO9 module where `fpinit` loads it from:
+
+```sh
+os9 copy -r /path/to/ftest_j0.dsk,FPO9 boot.dsk,Modules/FPO9   # or $NFP09/ROM/Float09.bin
+os9 attr -e -pe boot.dsk,Modules/FPO9
+```
 
 ## Gotchas learned the hard way
 

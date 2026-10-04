@@ -27,7 +27,7 @@ c3prep | c3comp | c3optx | c3lw.awk | lwasm --format=obj | lwlink --format=os9
 | `c3lw`     | Driver script: `.c` → `.mod` (or `-S`/`-c` to stop at asm/object) |
 | `buildlibc.sh` | Build the C library (`libc3.a`: stdio, strings, syscalls, memory) from `lib/lib.a`, `lib/sys.a` and the standalones here |
 | `fpwrap.a` | The float/double helpers the compiler calls, over the MC6839 IEEE package (FPO9) |
-| `fpinit.a` / `fpdummy.a` | `_fpinit`/`_fpterm`: link FPO9 at startup / no-op default for programs without FP |
+| `fpinit.a` / `fpdummy.a` | `_fpinit`/`_fpterm`, built as standalone `fpinit.o` (link FPO9 at startup) and `fpdummy.o` (no-op); every link names exactly one |
 | `MC6839.md` | MC6839 linkage design and ABI |
 | `fpbench/` | Checks every `fpwrap.a` helper against the real MC6839 ROM on `usim09batch` |
 
@@ -38,8 +38,9 @@ Two front ends drive the same back end:
 ### `c3lw` — standalone driver (simplest)
 
 ```sh
-sh buildrt.sh                 # once: build crt0.o + libc3lw.a
+sh buildrt.sh && sh buildlibc.sh   # once: crt0.o + libc3lw.a, libc3.a + fpdummy.o/fpinit.o
 ./c3lw hello.c                # -> hello.mod  (OS-9 program module)
+./c3lw -f calc.c              # -> calc.mod   (uses floating point: links fpinit.o)
 ./c3lw -S hello.c             # -> hello.s    (lwasm assembly)
 ./c3lw -c hello.c             # -> hello.o    (lwobj object)
 ```
@@ -68,6 +69,27 @@ top-level `build/unix` puts them at `$PREFIX/share/toolshed/defs`
 default `C3BASE`, so an installed `c3` resolves includes
 with no environment set. Header paths up to 255 chars are fine (comp's
 `filename` buffer is `LINESIZE`); longer would overflow it.
+
+### Floating point
+
+float/double arithmetic uses the MC6839 IEEE package (the `FPO9` module from
+[nfp09](https://github.com/markrvmurray/nfp09)) through `fpwrap.a`, which is in
+`libc3.a`. `crt0` calls `_fpinit`/`_fpterm` in every program, and a program
+**opts in** to floating point at link time:
+
+* host: `c3lw -f`, or pass the driver the on-target spelling `-l=/dd/lib/fp.l`
+  (`c3-ld` maps any `-l=…fp.l` to `fpinit.o`);
+* on OS-9: `c3 -2 prog.c -l=/dd/lib/fp.l` (`mklibs` builds `fp.l`).
+
+Without the opt-in a program gets the no-op `fpdummy`, never links FPO9, and
+any float/double operation calls through a null FPREG. With it, `_fpinit`
+`F$Link`s FPO9, or `F$Load`s it from `/DD/Modules/FPO9`, at startup (8K of the
+process's address space on Level 2), and `_fpterm` unlinks it on exit.
+
+`fpinit` and `fpdummy` are standalone objects rather than library members
+because `lwlink` binds `crt0`'s reference to an archive member even when an
+explicitly linked object also defines it, so a library default could never be
+overridden. Each link names exactly one of them.
 
 ## What the filter does
 
@@ -108,9 +130,9 @@ Working end to end (verified by inspecting the emitted module header):
   by the module base);
 * integer `* / % << >>` (pulls `ccmult`/`ccdiv`/`ccmod`/`cshifts` from the lib);
 * long arithmetic (pulls the `cl*` helpers; `_flacc`/`_lbexit`/`_ltoacc` resolved);
-* float/double **constants** are emitted as big-endian IEEE-754 (binary64 /
-  binary32) on any host. float/double **arithmetic** is not usable yet — see
-  Known limitations.
+* float/double — IEEE-754 constants, arithmetic, compares and int/long
+  conversions over the MC6839 package, for programs that opt in (see
+  Floating point above). `tests/ftest.c` passes on NitrOS-9.
 
 The init-data path was verified by decoding the linked module: the `data`
 image, the `irec` copy record, and the `ireloc`/`icreloc` entries all carry the
@@ -147,18 +169,12 @@ sources to `buildrt.sh` — they translate through the same filter.
   cleaner long-term option if this back end becomes primary.
 * The embedded module name is the link output filename; pass a bare name (or
   add an `__os9` section) for a clean name.
-* **Host-linked float/double programs still use `cfloats.a`.** `buildrt.sh`
-  puts the Microware-format `lib/fmath/cfloats.a` helpers into `libc3lw.a`,
-  and they don't match the compiler's IEEE-754 constants, so float/double
-  arithmetic in a program linked by `c3lw`/`c3-ld` gives wrong results. The
-  IEEE replacement, `fpwrap.a` over the MC6839 package, is done and verified
-  (`fpbench/`, including an end-to-end smoke test of real compiler output),
-  but neither the host link nor the on-target library (`mklibs`, which ships
-  only the no-op `fpdummy.a`) uses it yet. Integer and long programs are
-  unaffected.
+* **Floating point is opt-in** (see Floating point above): forgetting
+  `-l=…fp.l`/`-f` in a program that uses float/double links the no-op
+  `fpdummy` and the first FP operation jumps through a null FPREG.
 * The c3 `csect` (frame/DP work area) is handled: its `name rmb N` entries
   become offset equates (the storage is stack-reserved at run time, accessed
-  `name,u`). cfloats relies on this.
+  `name,u`).
 * The C library is ported as `libc3.a` (`buildlibc.sh`), which the
   `build/os9` cross-build and the `c3-ld` shim link. Modules that don't assemble through the filter
   are reported by `buildlibc.sh` and left out.
