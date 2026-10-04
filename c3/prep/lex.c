@@ -96,6 +96,10 @@ static char namebuf[NAMESIZE + 1];
 static
 dobslash();
 
+/* defined below, but called from getsym() above their definitions */
+void pstr(void);
+void qstr(void);
+
 void getsym(void)
 {
 	register int		numtype;

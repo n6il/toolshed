@@ -1,0 +1,46 @@
+#!/bin/sh
+# c3lw - compile a C source with the c3 compiler and the lwasm/lwlink
+# (OS-9 module) back end, in place of the Microware rma/rlink tools.
+#
+#   c3lw [-S] [-c] [-o OUT] FILE.c
+#     -S   stop after generating lwasm assembly (FILE.s)
+#     -c   stop after assembling          (FILE.o)
+#     (default: link an OS-9 module        FILE.mod)
+#
+# Pipeline:  c3prep | c3comp | c3optx | c3lw.awk | lwasm | lwlink --format=os9
+#
+# Requires the c3 unix build (build/unix/{prep,comp,optx}) and the runtime
+# built by buildrt.sh (crt0.o + c3lw.l).
+set -e
+here=$(cd "$(dirname "$0")" && pwd)
+c3=$(cd "$here/.." && pwd)
+B="$c3/build/unix"
+PREP="$B/prep/c3prep"; COMP="$B/comp/c3comp"; OPTX="$B/optx/c3optx"
+FILTER="$here/c3lw.awk"; CRT0="$here/crt0.o"; RTLIBDIR="$here"; LDSCRIPT="$here/os9c3.ld"
+
+stop=link; out=
+while [ $# -gt 0 ]; do
+	case "$1" in
+		-S) stop=asm ;;
+		-c) stop=obj ;;
+		-o) out="$2"; shift ;;
+		-*) echo "c3lw: unknown option $1" >&2; exit 2 ;;
+		*)  src="$1" ;;
+	esac
+	shift
+done
+[ -n "$src" ] || { echo "usage: c3lw [-S|-c] [-o OUT] FILE.c" >&2; exit 2; }
+
+base=$(basename "$src" .c)
+[ -n "$out" ] || case "$stop" in asm) out=$base.s;; obj) out=$base.o;; link) out=$base.mod;; esac
+
+"$PREP" "$src" | "$COMP" | "$OPTX" | awk -f "$FILTER" > "$base.lw.s"
+[ "$stop" = asm ] && { mv "$base.lw.s" "$out"; echo "$out"; exit 0; }
+
+lwasm --format=obj -o "$base.o" "$base.lw.s"
+[ "$stop" = obj ] && { [ "$base.o" = "$out" ] || mv "$base.o" "$out"; echo "$out"; exit 0; }
+
+# Link an OS-9 module.  Linking from the output directory keeps the embedded
+# module name clean (lwlink uses the output filename as the module name).
+lwlink --format=os9 -s "$LDSCRIPT" -o "$out" "$CRT0" "$base.o" "-L$RTLIBDIR" "-lc3lw"
+echo "$out"

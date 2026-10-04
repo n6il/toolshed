@@ -185,7 +185,12 @@ makezero:			tree->op=CONST;
 				if(lhs->op==CONST) {
 doop:				tree->op=CONST;
 					tree->sux = 0;
-					tree->val.num=constop(op,lhs->val.num,rhs->val.num);
+					/* rhs is NULL for unary ops (NEG/NOT/COMPL); constop
+					   ignores that operand, but it must not be dereferenced
+					   (harmless garbage read on the 6809, a fault on a
+					   protected host). */
+					tree->val.num=constop(op,lhs->val.num,
+								rhs ? rhs->val.num : 0);
 					tree->left=tree->right=NULL;
 					release(lhs);
 					release(rhs);
@@ -813,7 +818,7 @@ fixint:
 					break;
 				case DOUBLE:
 					if (node->op == LCONST) {
-						*dblptr=grab(DOUBLESIZE);
+						dblptr = (DBLETYPE *) grab(DOUBLESIZE);
 						*dblptr = *node->val.lp;
 						goto fixf;
 					}

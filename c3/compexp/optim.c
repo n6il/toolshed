@@ -867,7 +867,7 @@ register expnode *dptr,*rhs;
 {
 	register expnode *ptr;
 
-	if ((size = getsize(decref(t),size,dptr)) == 1) return rhs;
+	if ((size = getsize(decref(t),size,(dimnode *)dptr)) == 1) return rhs;
 
 	ptr = newnode(CONST,0,0,size,rhs->lno,rhs->pnt);
 	ptr->type = INT;
@@ -978,6 +978,7 @@ int isint(int t)
 }
 
 void integerr(node)
+expnode *node;
 {
 	terror(node,"must be integral");
 }

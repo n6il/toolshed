@@ -4,6 +4,8 @@
 #include "prep.h"
 #include <string.h>
 
+void nxtch(void);       /* defined below, called before its definition */
+
 macdef *revlist(p)
 register macdef *p;
 {

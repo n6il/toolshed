@@ -30,7 +30,7 @@ direct  casnode *caseptr,   /* list of cases */
                 *lastcase,  /* last case in current list */
                 *freecase;  /* list of spare case nodes */
 
-static int  //swflag,         /* current switch level */
+static int  /*swflag,*/       /* current switch level */
             deflabel;       /* switch default label */
 
 static labstruc *breakptr,      /* break label */

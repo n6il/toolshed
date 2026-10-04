@@ -10,7 +10,7 @@
 
 #include "cj.h"
 
-static elsize(prim);
+static elsize();
 
 expnode *parsexp(priority)
 int priority;
@@ -276,8 +276,8 @@ constop(op,r,l)
         case UGEQ:
         case UGT:
             {
-                char *lp,*rp;
-                lp = (char *) l;  rp = (char *) r;
+                unsigned lp,rp;
+                lp = (unsigned) l;  rp = (unsigned) r;
                 switch (op) {
                     case ULEQ:      return rp <= lp;
                     case ULT:       return rp < lp;
@@ -315,6 +315,7 @@ expnode *getcast()
 
 expnode *newnode(op,left,right,value,lno,errpnt)
 expnode *left,*right;
+long value;			/* wide enough to carry a symnode * for NAME nodes */
 char *errpnt;
 {
     register expnode *node;
@@ -326,7 +327,7 @@ char *errpnt;
     node->op = op;
     node->left = left;
     node->right = right;
-    node->val.num = value;
+    node->val.lval = value;
     node->lno = lno;
     node->pnt = errpnt;
     node->modifier = 0;

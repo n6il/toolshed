@@ -22,9 +22,14 @@ register symnode *sptr;
 
     move(sptr,nptr,DOWNSIZE);
     sptr->downptr = nptr;
-	sptr->type = sptr->size = sptr->dimptr =
-			sptr->offset = sptr->storage = sptr->x.labflg =
-					sptr->blklev = sptr->snext = 0;
+	sptr->type = 0;
+	sptr->size = 0;
+	sptr->dimptr = NULL;
+	sptr->offset = 0;
+	sptr->storage = 0;
+	sptr->x.labflg = 0;
+	sptr->blklev = 0;
+	sptr->snext = NULL;
 }
 
 /* to recover outer block declaration
@@ -116,11 +121,14 @@ dopoint:
 }
 
 eprintf(s1,s2,s3)
+char *s1;		/* format string */
+long s2, s3;		/* forwarded args: a string (%s) or an int (%d) */
 {
     fprintf(stderr,s1,s2,s3);
 }
 
 eputs(s)
+char *s;
 {
     fputs(s,stderr);
     eputchar('\n');

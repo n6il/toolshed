@@ -81,7 +81,7 @@ void getsym(void)
                 }
             } else {
                 sym = NAME;
-                symval = (int)ptr;
+                symval = (long)ptr;
             }
             break;
 
@@ -98,7 +98,7 @@ donum:
                 case LONG:
                     longp = (long *) grab(sizeof(long));
                     *longp = *np.lp;
-                    symval = (int)longp;
+                    symval = (long)longp;
 #ifdef DEBUG
 fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
 #endif
@@ -107,7 +107,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                 case DOUBLE:
                     dblp = (double *) grab(sizeof(double));
                     *dblp = *np.dp;
-                    symval = (int) dblp;
+                    symval = (long) dblp;
                     sym = FCONST;
                     break;
                 default:
@@ -133,7 +133,7 @@ donum:
                 case LONG:
                     longp = (long *)grab(sizeof(long));
                     *longp = *np.dp;
-                    symval = (int)longp;
+                    symval = (long)longp;
 #ifdef DEBUG
 fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
 #endif
@@ -142,7 +142,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                 case DOUBLE:
                     dblp = (double *)grab(sizeof(double));
                     *dblp = *np.dp;
-                    symval = (int)dblp;
+                    symval = (long)dblp;
                     sym = FCONST;
                     break;
                 default:

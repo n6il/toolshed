@@ -1,4 +1,12 @@
-dirs	= exec prep comp opt compx optx lorder lsplit
+# NOTE: "opt" (the original optimiser) is intentionally excluded from the
+# default build.  Its source directory is incomplete: inst.c -- which defines
+# the instruction-list routines (remove, insins, insref, newins, insinit, ...)
+# -- is absent from the tree, so opt cannot link (its own makefile already
+# comments inst.o out of OBJS).  It also #includes the non-existent
+# ../rma/ctype.h.  The complete, working optimiser is "optx" (built from the
+# optexp/ sources), which is included below.  To work on opt, build it directly
+# with "make -C build/unix/opt" once inst.c has been restored.
+dirs	= exec prep comp compx optx lorder lsplit
 
 # Make all components
 all:

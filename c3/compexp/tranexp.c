@@ -136,7 +136,7 @@ prtree(tree,"tranexp (before):");
 				break;
 			case LTOI:
 				tranlexp(tree->left);
-				gen(LTOI, NODE, tree->left, 0);
+				gen(LTOI, NODE, (long)tree->left, 0);
 				tree->op = DREG;
 				break;
 			case DTOI:
@@ -155,7 +155,7 @@ prtree(tree,"tranexp (before):");
 			case COMPL:
 			case NEG:
 				lddexp(tree->left);
-				gen(op, NULL, 0, 0);
+				gen(op, 0, 0, NULL);
 				setdreg(tree);		/* set D contents */
 				break;
 			case QUERY:
@@ -363,7 +363,7 @@ register expnode *tree;
 
 	/*  put in 'true' condition */
 	uselabel(&l1);
-	gen(LOAD, DREG, CONST, 1);
+	gen(LOAD, DREG, CONST, (expnode *)1L);
 	gen(JMP, l1.labnum=getlabel(), 1, NULL);
 
 	/* put in 'false' condition */
@@ -454,7 +454,7 @@ void docall(expnode *node)
 			lddexp(lhs);
 		}
 	}
-	gen(CALL, NODE, node->left, NULL);
+	gen(CALL, NODE, (long)node->left, NULL);
 
 	sp = modstk(oldsp);
 
@@ -652,7 +652,7 @@ expnode *node;
 			case PLUS:
 			case MINUS:
 				if (rhs->op == CONST) {
-					gen(LEA, lhs->op, CONST, (op == PLUS ? rhs->val.num
+					gen(LEA, lhs->op, CONST, (expnode *)(long)(op == PLUS ? rhs->val.num
 													  : -rhs->val.num));
 				} else {
 					lddexp(rhs);
@@ -731,7 +731,7 @@ register expnode *node;
 {
 	if ((node->op & NOTIND) == NAME) return;
 	getinx(node);
-	if(node->val.num) gen(LEA, XREG, CONST, node->val.num);
+	if(node->val.num) gen(LEA, XREG, CONST, (expnode *)(long)node->val.num);
 	gen(PUSH, XREG, 0, NULL);
 	node->op=STACK | INDIRECT;
 }
@@ -760,7 +760,7 @@ prtree(currexpr,"current expression (by dostar):");
 #endif
 				}
 				setxreg(currexpr);
-				gen(LOAD, XREG, op, lhs->val.num);
+				gen(LOAD, XREG, op, (expnode *)(long)lhs->val.num);
 				break;
 			case XIND:
 				if (xregcont) {
@@ -769,7 +769,7 @@ prtree(currexpr,"current expression (by dostar):");
 prtree(xregcont,"X given (by dostar):");
 #endif
 				}
-				gen(LOAD, XREG, op, lhs->val.num);
+				gen(LOAD, XREG, op, (expnode *)(long)lhs->val.num);
 				break;
 			default:
 			comperr(lhs,"indirection");
@@ -863,8 +863,8 @@ printf("dotoggle: reg %s(%x) dest %s(%x)\n",kw[reg],reg,kw[dest],dest);
 		case DECAFT:
 			size = -size;
 		default:
-			reg == DREG ? gen(PLUS, reg, CONST, size)
-						: gen(LEA, reg, CONST, size);
+			reg == DREG ? gen(PLUS, reg, CONST, (expnode *)(long)size)
+						: gen(LEA, reg, CONST, (expnode *)(long)size);
 	}
 
 	if (temp) {
@@ -878,7 +878,7 @@ printf("dotoggle: reg %s(%x) dest %s(%x)\n",kw[reg],reg,kw[dest],dest);
 		case INCAFT:
 		case DECAFT:
 			if (reg == DREG) {
-				gen(MINUS, DREG, CONST, size);
+				gen(MINUS, DREG, CONST, (expnode *)(long)size);
 				setdreg(NULL);
 			} else node->val.num = -size;
 			break;

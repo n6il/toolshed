@@ -5,7 +5,7 @@ static void fixnode(expnode *tree);
 static void graft(expnode *limb, expnode *tree);
 
 direct expnode	*dregcont, *xregcont, *currexpr;
-//extern int		fixnode(), graft();
+/* extern int fixnode(), graft(); */
 extern expnode	*subtree(), *treecont(), *regcont();
 
 expnode *treecopy(expnode *tree);

@@ -30,7 +30,7 @@ extdef()
 	register symnode *ptr;
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
-	int size,ssize,tsc,sclass,type,temp;
+	long size; int ssize,tsc,sclass,type,temp;
 	elem *eptr;
 
 	while (sym == RBRACE) {
@@ -140,7 +140,7 @@ argdef()
 	register symnode *ptr;
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
-	int sclass,type,size,stemp,temp;
+	long size; int sclass,type,stemp,temp;
 	elem *eptr;
 
 	switch (sclass = setclass()) {
@@ -200,7 +200,7 @@ blkdef()
 	symnode *p, *ptemp;
 	dimnode *dimptr, *tdp;
 	expnode *ep;
-	int sclass,type,temp,size,stemp,ssize;
+	long size; int sclass,type,temp,stemp,ssize;
 	elem *eptr;
 	initnode *i;
 
@@ -301,7 +301,7 @@ register elem *eptr;
 		  error("declaration mismatch");
 		  return 1;
 	 }
-	 return NULL;
+	 return 0;
 }
 
 
@@ -513,13 +513,56 @@ declist(list)
 register symnode **list;
 {
 	register symnode *ptr,*last;
+	symnode *ptemp;
+	dimnode *dimptr,*tdp;
+	long size;
+	int temp;
+	elem *eptr;
 
 	*list = NULL;
 	getsym();
 
 	for (;;) {
 		if (sym == RPAREN) break;
-		if (sym == NAME) {
+
+		if (istype() || issclass()) {
+			/*
+			 * ANSI-style typed parameter:  [register] type declarator
+			 * (also covers a prototype's abstract "type" with no name, and
+			 * "(void)").  Parse it the way argdef() parses a K&R parameter
+			 * declaration, but inline.  The register hint is accepted and
+			 * ignored (the param becomes a plain ARG); newfunc lays the
+			 * arglist out from each entry's type/size.
+			 */
+			setclass();			/* consume & ignore any 'register' */
+			if ((temp = settype(&size,&dimptr,&eptr)) == 0) temp = INT;
+			tdp = dimptr;
+			temp = declarator(&ptemp,&tdp,temp);
+			ptr = ptemp;
+
+			if (isary(temp)) {	/* array param decays to pointer */
+				temp = incref(decref(temp));
+				tdp = tdp ? tdp->dptr : 0;
+			}
+#ifdef DOFLOATS
+			else if (temp == FLOAT) temp = DOUBLE;
+#endif
+			if (ptr) {		/* a named parameter (function definition) */
+				if (ptr->storage == ARG) error("named twice");
+				else if (ptr->type != UNDECL) pushdown(ptr);
+				ptr->type = temp;
+				ptr->storage = ARG;
+				ptr->blklev = 1;
+				ptr->x.elems = eptr;
+				sizeup(ptr,tdp,size);
+				if (*list) last->snext = ptr;
+				else *list = ptr;
+				ptr->snext = NULL;
+				last = ptr;
+			}
+			/* else: abstract param ("(void)" or a prototype type) - discarded */
+		} else if (sym == NAME) {
+			/* K&R-style bare parameter name (type comes from argdef later) */
 			ptr = (symnode *) symval;
 			if (ptr->storage == ARG) error("named twice");
 			else if (ptr->type != UNDECL) pushdown(ptr);
@@ -561,13 +604,13 @@ setclass()
 
 
 settype(size,dimptr,ellist)
-int *size;
+long *size;		/* may carry a struct-tag pointer (USTRUCT) */
 dimnode **dimptr;
 elem **ellist;
 {
 	register symnode *ptr, *tagptr;
 	dimnode *dptr;
-	int offset,msize,mtype,savflg,dtype,s;
+	long msize; int offset,mtype,savflg,dtype,s;
 	elem *eptr,*elast,*elocal;
 	int type=0,tsize=2;
 
@@ -629,7 +672,7 @@ default:
 							*ellist=tagptr->x.elems;
 							return STRUCT;
 						}
-						*size = (int) tagptr;
+						*size = (long) tagptr;
 						return USTRUCT;
 					} else if(tagptr->type==STRUCT) multidef();
 				}
@@ -746,7 +789,7 @@ dimnode **dptr;
 	if (sym == LPAREN) {
 		dtype = (dtype<<2) + FUNCTION;
 		if (blklev) {
-			declist(&dummy);
+			declist((symnode **)&dummy);
 			clear(&dummy);
 		} else declist(&arglist);
 	} else {
@@ -798,6 +841,7 @@ shiftin (a,b)
 sizeup(ptr,dimptr,size)
 register symnode *ptr;
 register dimnode *dimptr;
+long size;
 {
 	register int n,temp;
 

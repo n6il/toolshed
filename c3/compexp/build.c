@@ -276,8 +276,8 @@ int constop(int op, int r, int l)
         case UGEQ:
         case UGT:
             {
-                char *lp,*rp;
-                lp = (char *) l;  rp = (char *) r;
+                unsigned long lp,rp;
+                lp = (unsigned) l;  rp = (unsigned) r;
                 switch (op) {
                     case ULEQ:      return rp <= lp;
                     case ULT:       return rp < lp;
@@ -293,28 +293,29 @@ int constop(int op, int r, int l)
 expnode *getcast()
 {
     expnode *dptr,*ptr;
-    int lno,dummy,size,type;
+    int lno,dummy,type; long size;
     register char *errpnt;
 
     lno = symline;
     errpnt = symptr;
-    type = settype(&size,&dptr,&dummy);
+    type = settype(&size,(dimnode **)&dptr,(elem **)&dummy);
     if (type == USTRUCT) {
         error("undefined struct");
         ptr = NULL;
     } else {
-        type = declarator(&ptr,&dptr,type);
+        type = declarator((symnode **)&ptr,(dimnode **)&dptr,type);
         clear(&arglist);
         if (ptr) error("name in a cast");
         ptr = newnode(CAST,0,0,0,lno,errpnt);
         ptr->type = type;
-        sizeup(ptr,dptr,size);
+        sizeup((symnode *)ptr,(dimnode *)dptr,size);
     }
     return ptr;
 }
 
 expnode *newnode(op,left,right,value,lno,errpnt)
 expnode *left,*right;
+long value;			/* wide enough to carry a symnode * for NAME nodes */
 char *errpnt;
 {
     register expnode *node;
@@ -326,7 +327,7 @@ char *errpnt;
     node->op = op;
     node->left = left;
     node->right = right;
-    node->val.num = value;
+    node->val.lval = value;
     node->lno = lno;
     node->pnt = errpnt;
     node->modifier = 0;

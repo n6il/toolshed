@@ -8,13 +8,13 @@
 /* DO NOT USE FOR ANYTHING ELSE */
 
 #include <stdio.h>
-static putstr1(s,len,len1);
-static _dofp(fmt,args);
-static putch(c);
-static utoa(s,n);
-static xtoa(n);
-static itoa(n);
-static putstr(s,len);
+static putstr1();
+static _dofp();
+static putch();
+static utoa();
+static xtoa();
+static itoa();
+static putstr();
 #ifdef UNIX
 #define direct
 #endif

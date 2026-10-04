@@ -37,6 +37,8 @@ locstat(l,size,area)
 }
 
 defglob(ptr,size,area)
+symnode *ptr;
+int size,area;
 {
      vsect(area);
      defvar(ptr,size,GBLB);
@@ -44,6 +46,8 @@ defglob(ptr,size,area)
 }
 
 extstat(ptr,size,area)
+symnode *ptr;
+int size,area;
 {
      vsect(area);
      defvar(ptr,size,LCLB);

@@ -36,7 +36,7 @@
 
 #define		MICRO				/* suppresses word boundary forcing */
 #define		DOFLOATS			/*  include floating point code */
-#define		FNAMESIZE	30		/* file name size */
+#define		FNAMESIZE	256		/* file name size (host paths can be long) */
 
 #define		LINESIZE	256
 #define		MODNAMSIZE  15	  /* module name */
@@ -57,7 +57,7 @@ typedef struct dimstr {
 
 typedef struct downsym {
 	short type;				/* type of entry */
-	int size;				/* size of entry */
+	long size;				/* size of entry (or a struct-tag ptr for USTRUCT) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	int offset;				/* general purpose */
 	int storage;			/* storage class */
@@ -74,7 +74,7 @@ typedef struct downsym {
 
 typedef struct symstr {
 	short type;				/* type of entry */
-	int size;				/* size of entry */
+	long size;				/* size of entry (or a struct-tag ptr for USTRUCT) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	int offset;				/* general purpose */
 	int storage;			/* storage class */
@@ -93,11 +93,14 @@ typedef struct symstr {
 
 typedef struct expstr {
 	short type;				/* type of node */
-	int size;				/* size of basic type */
+	long size;				/* size of basic type (long to match symnode.size:
+				   c3 shares one member namespace, so a member name must have
+				   the same type/offset in every struct that uses it) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	short op;				/* operator */
 	union {
 		int num;			/* numeric value */
+		long lval;			/* full-width value (carries a pointer) */
 		symnode *sp;		/* symbol pointer */
 		long *lp;			/* long constant ptr */
 #ifdef DOFLOATS
@@ -371,10 +374,14 @@ global direct int	lineno,		/* current line number */
 					swflag,		/* current switch level */
 					mosflg,		/* member of structure flag */
 					sym,		/* current lexical token */
-					symval,		/* and its associated value */
 					scount,		/* chars on current line of string */
 					symline,	/* lineno of current symbol */
 					maxpush;	/* maximum push level */
+
+/* symval holds the current token's value, which for a NAME is a symnode *
+   and for long/double constants is a pointer to the constant.  It must be
+   wide enough to hold a pointer (int == pointer only on the 16-bit 6809). */
+global long		symval;		/* value associated with sym */
 
 global char	filename[FNAMESIZE];	/* current filename buffer */
 
@@ -431,4 +438,8 @@ extern  expnode *parsexp(), *primary(), *explist(), *getcast(),
 				*tranexp(), *tranbool(), *treecopy();
 
 extern  dimnode *dimwalk();
+
+/* Declarations for the remaining non-int-returning functions, so their
+   results are not truncated to int on a 64-bit host.  See proto.h. */
+#include "proto.h"
 

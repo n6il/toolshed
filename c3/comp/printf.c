@@ -12,13 +12,13 @@
 #define direct
 #endif
 
-static _dofp(fmt,args);
-static itoa(n);
-static xtoa(n);
-static utoa(s,n);
-static putstr(s,len);
-static putstr1(s,len,len1);
-static putch(c);
+static _dofp();
+static itoa();
+static xtoa();
+static utoa();
+static putstr();
+static putstr1();
+static putch();
 
 #define DIGIT  107
 

@@ -8,6 +8,10 @@
 #include <errno.h>
 #include <string.h>
 
+/* defined below but called before their definitions */
+void doerr();
+void putesc();
+
 void fatal(char *errstr)
 {
 	extern int errno;
@@ -49,6 +53,10 @@ void doerr(int n, char errstr[], int lno, int ertype)
 
 
 void putesc(type, arg, arg1)
+int type;
+char *arg, *arg1;		/* most callers pass strings (%s); NEWLINO passes
+				   an int line number, which still round-trips
+				   through the low word for the "%d" case */
 {
 	if (!aflag)
 	{

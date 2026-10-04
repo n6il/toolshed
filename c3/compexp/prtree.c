@@ -1,6 +1,6 @@
 #include "cj.h"
 
-int kw[200];
+char *kw[200];		/* keyword/symbol-name strings (pointers, not ints) */
 
 getkeys()
 {
@@ -13,7 +13,7 @@ getkeys()
         for (i=0;i<200; kw[i++]="UNKN") ;
 
         if((in1=fopen("/h0/lib/ckeys","r")) == NULL) {
-                fprintf(stderr,"no keys file\n",0);
+                fprintf(stderr,"no keys file\n");
                 errexit();
         }
         for(i=c=0; ++i<200 && c!=EOF ;){
@@ -26,7 +26,8 @@ getkeys()
 }
 
 prtree(node,title)
-int *node;
+expnode *node;
+char *title;
 {
     if (dflag) {
         fflush(stdout);
@@ -54,7 +55,7 @@ register expnode *node;
         op=node->op;
         printf("%04x %04x %-10.8s%04x %04x",
                     node,op,
-                    op == NAME ? (int) node->val.sp->sname : kw[op],
+                    op == NAME ? node->val.sp->sname : kw[op],
                     node->val.num,node->modifier);
         val=node->type;
         for(i=14; i>=4 ; i-=2) {

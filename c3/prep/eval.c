@@ -4,6 +4,10 @@
 #include "prep.h"
 #include "eval.h"
 
+/* mutually recursive; defined below but called before their definitions */
+long parsexp();
+long primary();
+
 /* Expression evaluator for cpp preprocessor:
 
 	Operators (in descending order of precedence):

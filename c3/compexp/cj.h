@@ -59,7 +59,7 @@ typedef struct dimstr {
 
 typedef struct downsym {
 	short type;				/* type of entry */
-	int size;				/* size of entry */
+	long size;				/* size of entry (struct-tag ptr for USTRUCT) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	int offset;				/* general purpose */
 	int storage;			/* storage class */
@@ -76,7 +76,7 @@ typedef struct downsym {
 
 typedef struct symstr {
 	short type;				/* type of entry */
-	int size;				/* size of entry */
+	long size;				/* size of entry (struct-tag ptr for USTRUCT) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	int offset;				/* general purpose */
 	int storage;			/* storage class */
@@ -100,6 +100,7 @@ typedef struct expstr {
 	short op;				/* operator */
 	union {
 		int num;			/* numeric value */
+		long lval;			/* full-width value (carries a pointer) */
 		symnode *sp;		/* symbol pointer */
 		long *lp;			/* long constant ptr */
 		FLOATYPE *fp;		/* float constant ptr */
@@ -370,10 +371,14 @@ global direct int	lineno,		/* current line number */
 					swflag,		/* current switch level */
 					mosflg,		/* member of structure flag */
 					sym,		/* current lexical token */
-					symval,		/* and its associated value */
 					scount,		/* chars on current line of string */
 					symline,	/* lineno of current symbol */
 					maxpush;	/* maximum push level */
+
+/* symval holds the current token's value, which for a NAME is a symnode *
+   and for long/double constants is a pointer to the constant.  It must be
+   wide enough to hold a pointer (int == pointer only on the 16-bit 6809). */
+global long		symval;		/* value associated with sym */
 
 global char	filename[FNAMESIZE];	/* current filename buffer */
 
@@ -397,7 +402,7 @@ global symnode	*hashtab[128],  /* main hash table */
 				*mostab[128];	/* structure hash table */
 
 #ifdef PTREE
-extern int  kw[200];		/* pointers to symbol names */
+extern char *kw[200];		/* pointers to symbol names */
 #endif
 
 global direct int	dflag,  /* debug flag; if set causes tree prints */

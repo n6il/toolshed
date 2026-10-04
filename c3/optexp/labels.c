@@ -32,9 +32,9 @@ label          *inslabel(s)
 	strcpy(p->lname, s);
 
 	/* put at back of list */
-	p->succ = l;
+	p->succ = (int *)l;
 	p->pred = l->pred;
-	((instruction *) (l->pred))->succ = p;
+	((instruction *) (l->pred))->succ = (struct istruct *)p;
 	l->pred = p;
 
 	return p;
@@ -49,11 +49,11 @@ label          *findlabel(s)
 	l = &ltable[hash(s)];
 
 
-	for (p = l->succ; p != l;)
+	for (p = l->succ; (chain *)p != l;)
 	{
 		if (strcmp(s, p->lname) == 0)
 			return p;
-		p = p->succ;
+		p = (label *)p->succ;
 	}
 	return NULL;
 }
@@ -75,11 +75,14 @@ label          *newlabel()
 
 	if ((p = lfree) != NULL)
 	{
-		lfree = p->succ;
-		p->dest = p->rlist = p->nextl = p->lflags = NULL;
+		lfree = (label *)p->succ;
+		p->dest = NULL;
+		p->rlist = NULL;
+		p->nextl = NULL;
+		p->lflags = 0;
 	}
 	else
-		p = grab(sizeof(*p));
+		p = (label *)grab(sizeof(*p));
 
 	return p;
 }
@@ -90,10 +93,10 @@ void freelabel(p)
 	if (p->dest == NULL && p->rlist == NULL)
 	{
 		/* remove from ltable */
-		((instruction *) (p->pred))->succ = p->succ;
-		((instruction *) (p->succ))->pred = p->pred;
+		((instruction *) (p->pred))->succ = (struct istruct *)p->succ;
+		((instruction *) (p->succ))->pred = (struct istruct *)p->pred;
 		/* add to free list */
-		p->succ = lfree;
+		p->succ = (int *)lfree;
 		lfree = p;
 	}
 }

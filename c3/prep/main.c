@@ -23,18 +23,18 @@ static direct char
 
 cmdstruct cmds[] =
 {
-	"define",   DEFINE,
-	"elif",		ELIF,
-	"include",  INCLUDE,
-	"ifdef",    IFDEF,
-	"ifndef",   IFNDEF,
-	"endif",    ENDIF,
-	"if",		IF,
-	"else",     ELSE,
-	"undef",    UNDEF,
-	"asm",      ASM,
-	"endasm",   ENDASM,
-	"line",     LINE,
+	{"define",   DEFINE},
+	{"elif",		ELIF},
+	{"include",  INCLUDE},
+	{"ifdef",    IFDEF},
+	{"ifndef",   IFNDEF},
+	{"endif",    ENDIF},
+	{"if",		IF},
+	{"else",     ELSE},
+	{"undef",    UNDEF},
+	{"asm",      ASM},
+	{"endasm",   ENDASM},
+	{"line",     LINE},
 };
 
 cmdstruct *endcmds = cmds + (sizeof cmds) / (sizeof(cmdstruct));
@@ -205,6 +205,12 @@ done: ;
 	{
 		fname = "stdin";
 		in = stdin;
+	}
+	else if (strlen(fname) >= FNAMSIZE)
+	{
+		putesc(FATERR, fname);               /* too long for an include entry */
+		fprintf(out, "0\n0\nfile name too long %s\n", fname);
+		errexit(SUCCESS);	/* let c68 report the error */
 	}
 	else if ((in = fopen(fname,"r")) == NULL)
 	{

@@ -7,9 +7,9 @@
 */
 
 #include "cj.h"
-static ilist(type,ptr,list,level);
-static defobject(type);
-static datdef(p,type);
+static ilist();
+static defobject();
+static datdef();
 static iskip();
 extern direct int stringlen;
 direct int datstring;
@@ -215,7 +215,7 @@ err:
 #endif
             case CONST:
             case LCONST:
-                datdef(p->val.num,type);
+                datdef((int *)p->val.lval,type);
                 break;
             case STRING:
                 defword();
@@ -244,10 +244,13 @@ register int *p;
         case INT:
         case UNSIGN:    size = (INTSIZE/2);     break;
         default:        size = (POINTSIZE/2);   break;
-        case LONG:      size = (LONGSIZE/2);    break;
+        /* long / float / double: emit from the host-format value as target
+           big-endian words (see codgen.c) - defcon()'s int-word read mangles
+           them on a 64-bit host. */
+        case LONG:      deflong((char *) p);            return;
 #ifdef DOFLOATS
-        case FLOAT:     size = (FLOATSIZE/2);   break;
-        case DOUBLE:    size = (DOUBLESIZE/2);  break;
+        case FLOAT:     defbytes((char *) p, FLOATSIZE);  return;
+        case DOUBLE:    defbytes((char *) p, DOUBLESIZE); return;
 #endif
     }
     defcon(p,size);

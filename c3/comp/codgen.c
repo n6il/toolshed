@@ -19,8 +19,8 @@
 
 #include "cj.h"
 
-static addoff(offset);
-static outlea(reg);
+static addoff();
+static outlea();
 
 direct int datflag;
 
@@ -38,7 +38,7 @@ extern char *getrel(),regname();
 gen(op,rtype,arg,val)
 register op,rtype;
 register expnode *val;
-register int arg;
+register long arg;		/* an int (register/type/offset) or an expnode * */
 {
     register expnode *ptr;
     register symnode *sptr;
@@ -61,7 +61,7 @@ register int arg;
             if((sp-=2) < maxpush) maxpush=sp;
             return;
         case JMPEQ:
-            gen(COMPARE,XREG,CONST,arg);
+            gen(COMPARE,XREG,CONST,(expnode *)arg);
             arg=rtype;
             rtype=EQ;
         case CNDJMP:
@@ -187,7 +187,7 @@ fprintf(stderr,
                             fprintf(code,"%d,%c\n",value,regname(temp));
                         } else {
                             transfer(regname(temp),'d');
-                            if (value) gen(PLUS,DREG,CONST,value);
+                            if (value) gen(PLUS,DREG,CONST,(expnode *)(long)value);
                         }
                         return;
                     case DREG:
@@ -198,7 +198,7 @@ fprintf(stderr,
                         return;
                     case CONST:
                         arg = CONST;
-                        val = (expnode *)value;
+                        val = (expnode *)(long)value;
                 }
             }
             if(rtype==DREG && arg==CONST && val==0) {
@@ -228,7 +228,7 @@ fprintf(stderr,
             ot("sub");
             goto simple;
         case RSUB:
-            gen(NEG);
+            gen(NEG,0,0,0);
         case PLUS:
             ot("add");
 simple:
@@ -300,10 +300,10 @@ int *arg;
 {
     switch (op) {
         case STACK:
-            gen(LOAD,DREG,XIND,2);
-            gen(PUSH,DREG);
+            gen(LOAD,DREG,XIND,(expnode *)2L);
+            gen(PUSH,DREG,0,0);
             gen(LOAD,DREG,XIND,0);
-            gen(PUSH,DREG);
+            gen(PUSH,DREG,0,0);
 			break;
 		case TEST:
             ol("lda 0,x\n ora 1,x\n ora 2,x\n ora 3,x");
@@ -347,10 +347,10 @@ int *arg;
 
 #ifdef  DOFLOATS
 dofloats(op,arg)
-register int arg;
+register long arg;
 {
     switch (op) {
-        case FCONST:    getcon(arg,4); break;
+        case FCONST:    getcon((int *)arg,4); break;
         case STACK:     fcall("_dstack"); sp -= 8; break;
         case TEST:
             fprintf(code," lda %c,x\n",arg == FLOAT ? '3' : '7');
@@ -398,7 +398,8 @@ int *p;
 
     ot("bsr ");
     label(temp = getlabel());
-    defcon(p,n);
+    if (n == 2) deflong((char *) p);        /* LCONST: host long */
+    else        defbytes((char *) p, n * 2);/* FCONST: host double (n=4 -> 8 bytes) */
     olbl(temp);
     ol("puls x");
 }
@@ -421,7 +422,58 @@ register int *p;
     nl();
 }
 
+/*
+ * Emit long / float / double constants as TARGET (6809, big-endian) 16-bit
+ * words from the HOST-format value.  The generic defcon() above reads the
+ * constant as int-sized words: right on the 6809 (int = 16 bits) but wrong on
+ * a 64-bit host (int = 32 bits) - it over-reads and mis-orders the bytes, so
+ * float/double/long constants came out as garbage.  These helpers are
+ * host-int-size- and host-endianness-independent.
+ *
+ * float/double are emitted as IEEE big-endian (the host `double` is IEEE
+ * binary64, the same representation the MC6839 FP package uses).  long is
+ * emitted as the low 32 bits, high word first.  Both also stay correct when c3
+ * eventually self-hosts on the 6809 (big-endian, int = 16 bits): defbytes()
+ * then emits the bytes in source order, deflong() the two 16-bit halves.
+ */
+hostbig()                       /* nonzero if the host is big-endian */
+{
+    int probe;
+
+    probe = 1;
+    return *((char *) &probe) == 0;
+}
+
+defbytes(p,nbytes)              /* host-order float/double bytes -> BE words */
+char *p;
+{
+    register int i, hi, lo;
+
+    defword();
+    for (i = 0; i < nbytes; i += 2) {
+        if (hostbig()) { hi = p[i]          & 0xFF; lo = p[i+1]        & 0xFF; }
+        else           { hi = p[nbytes-1-i] & 0xFF; lo = p[nbytes-2-i] & 0xFF; }
+        od((hi << 8) | lo);
+        if (i + 2 < nbytes) ob(',');
+    }
+    nl();
+}
+
+deflong(p)                      /* host long's low 32 bits -> 2 BE words */
+char *p;
+{
+    long v;
+
+    v = *((long *) p);
+    defword();
+    od((int) (v >> 16));
+    ob(',');
+    od((int) v);
+    nl();
+}
+
 mwsyscall(s)
+char *s;
 {
     ot(lbsr);
     ol(s);
@@ -429,6 +481,7 @@ mwsyscall(s)
 }
 
 lcall(s)
+char *s;
 {
     ot(lbsr);
     ol(s);
@@ -436,6 +489,7 @@ lcall(s)
 }
 
 fcall(s)
+char *s;
 {
     ot(lbsr);
     ol(s);
@@ -477,7 +531,7 @@ register expnode *val;
             }
             break;
         case CONST:
-            switch (temp = ((int)val >> 8) & 0xff) {
+            switch (temp = ((int)(long)val >> 8) & 0xff) {
                 case 0:
                     if (op == AND) ol(clra);
                     break;
@@ -491,7 +545,7 @@ register expnode *val;
                     ot(s);
                     doref('a',CONST,temp,0);
             }
-            switch (temp = (int)val & 255) {
+            switch (temp = (int)(long)val & 255) {
                 case 0:
                     if (op == AND) ol("clrb");
                     break;
@@ -517,6 +571,8 @@ register expnode *val;
 }
 
 doref(reg,arg,val,offset)
+int reg,arg,offset;
+long val;			/* an expnode * in NODE mode, an int otherwise */
 {
     ob(reg);
     ob(' ');
@@ -534,6 +590,8 @@ register int offset;
 }
 
 deref(arg,val,offset)
+int arg,offset;
+long val;			/* an expnode * in NODE mode, an int otherwise */
 {
     register expnode *node;
     register symnode *sn;
@@ -546,10 +604,10 @@ deref(arg,val,offset)
             node = (expnode *)val;
             if (node->op == AMPER) {
                 ob('#');
-                deref(NODE,node->left,offset);
+                deref(NODE,(long)node->left,offset);
                 return;
             }
-            deref(node->op,node->val.sp,offset+node->modifier);
+            deref(node->op,(long)node->val.sp,offset+node->modifier);
             return;
         case CONST:
             ob('#');
@@ -632,12 +690,14 @@ char *getrel(op)
 }
 
 ot(s)
+char *s;
 {
     putc(' ',code);
     os(s);
 }
 
 ol(s)
+char *s;
 {
     ot(s);
     nl();
@@ -654,8 +714,9 @@ ob(b)
 }
 
 os(s)
+char *s;
 {
-    fprintf(code,s);
+    fprintf(code,"%s",s);
 }
 
 od(n)
@@ -677,6 +738,7 @@ olbl(n)
 }
 
 on(s)
+char *s;
 {
     fprintf(code,"%.8s",s);
 }
@@ -695,6 +757,7 @@ modstk(nsp)
 }
 
 nlabel(ptr,scope)
+char *ptr;
 {
     on(ptr);
     if (scope) ob(':');
