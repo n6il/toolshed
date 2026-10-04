@@ -2,46 +2,50 @@
 	$Id: dues.c,v 1.3 2006/09/28 02:34:33 boisy Exp $
 */
 #include "prep.h"
-#include <strings.h>
+#include <string.h>
+#include <stdlib.h>
 #include <errno.h>
 
 
 #define MAXIFS 32
 
-//extern char *defdev;
+/* extern char *defdev; */
 
 static short nextncnt;
 
 
-char *nextname(fname, delimiter)
-char *fname;
-char delimiter;
+/* Return the next candidate path for an #include of fname, or NULL when there
+   are no more.  Every candidate fits in FNAMSIZE (so it can be copied into an
+   include entry); an include directory too long to join with fname is skipped. */
+char *nextname(char *fname, char delimiter)
 {
-	static char nambuf[100];
+	static char nambuf[FNAMSIZE];
 
 	if (delimiter == '"' && nextncnt == -1)
 	{
 		nextncnt = 0;
-		return strcpy(nambuf, fname);
+		return strcpy(nambuf, fname);	/* doinclude bounds fname */
 	}
 
-	if (nextncnt++ < inclcount)
+	while (nextncnt < inclcount)
 	{
-		strcpy(nambuf, incl[nextncnt-1]);
-		strcat(nambuf, "/");
-		return strcat(nambuf, fname);
+		if (strlen(incl[nextncnt]) + 1 + strlen(fname) < FNAMSIZE)
+		{
+			strcpy(nambuf, incl[nextncnt++]);
+			strcat(nambuf, "/");
+			return strcat(nambuf, fname);
+		}
+		nextncnt++;
 	}
-	else
-	{
-		return NULL;
-	}
+	return NULL;
 }
 
 
 void doinclude(void)
 {
 	register char c, *nameptr;
-	char fname[64], *last;
+	static char fname[FNAMSIZE], msg[FNAMSIZE + 32];
+	char *last;
 	register FILE *fp;
 	int lasterr;
 
@@ -66,7 +70,8 @@ void doinclude(void)
 			}
 			while (cch && cch != c)
 			{
-				*nameptr++ = cch;
+				if (nameptr < fname + FNAMSIZE - 1)
+					*nameptr++ = cch;	/* longer names are cut short */
 				gch(SKIPSP);
 			}
 			*nameptr = '\0';
@@ -88,7 +93,7 @@ void doinclude(void)
 					putesc(NEWFNAME, filename, modname);
 					inclptr = nptr;
 				
-					putesc(NEWLINO, 0);
+					putesc(NEWLINO, 0, 0);
 					setline(lineno = 0);
 					in = fp;
 					return;
@@ -98,10 +103,10 @@ void doinclude(void)
 					lasterr = errno;
 				}
 			}
-			strcpy(fname, "can't open ");
-			strcat(fname, last);
-			sprintf(fname+strlen(fname), " (err=%d)", lasterr);
-			fatal(fname);
+			strcpy(msg, "can't open ");
+			strcat(msg, last);
+			sprintf(msg+strlen(msg), " (err=%d)", lasterr);
+			fatal(msg);
 		}
 		else
 		{

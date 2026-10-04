@@ -8,13 +8,14 @@
 /* DO NOT USE FOR ANYTHING ELSE */
 
 #include <stdio.h>
-static putstr1(s,len,len1);
-static _dofp(fmt,args);
-static putch(c);
-static utoa(s,n);
-static xtoa(n);
-static itoa(n);
-static putstr(s,len);
+#include <string.h>
+static void putstr1(char *, int, int);
+static void _dofp(char *, int *);
+static void putch(int);
+static char *utoa(char *, int);
+static char *xtoa(unsigned);
+static char *itoa(int);
+static void putstr(char *, int);
 #ifdef UNIX
 #define direct
 #endif
@@ -65,9 +66,7 @@ char *s,*fmt;
 }
 #endif
 
-static _dofp(fmt,args)
-register char *fmt;
-register int *args;
+static void _dofp(register char *fmt, register int *args)
 {
     char *ptr,c;
     int digits1,point,digits2;
@@ -130,7 +129,7 @@ register int *args;
      }
 }
 
-static itoa(n)
+static char *itoa(int n)
 {
        char *p;
 
@@ -152,8 +151,7 @@ static int tens[] = {
 
 static direct int *tensend = &tens[4];
 
-static utoa(s,n)
-char *s;
+static char *utoa(char *s, int n)
 {
        register char *p;
        register int *ip;
@@ -183,8 +181,7 @@ char *s;
        return s;
 }
 
-static xtoa(n)
-unsigned n;
+static char *xtoa(unsigned n)
 {
        register char *p,*s1;
        int n1;
@@ -202,9 +199,7 @@ unsigned n;
        return buf0;
 }
 
-static putstr(s,len)
-register int len;
-register char *s;
+static void putstr(register char *s, register int len)
 {
        int c;
 
@@ -217,9 +212,7 @@ register char *s;
        if (leftflag) while(len-- >0 ) putch(pad);
 }
 
-static putstr1(s,len,len1)
-register char *s;
-register int len;
+static void putstr1(register char *s, register int len, int len1)
 {
         int padding = len1 - len;
 
@@ -234,7 +227,7 @@ register int len;
                         putch(pad);
 }
 
-static putch(c)
+static void putch(int c)
 {
         if(flag == string)
                 *pointer++ = c;

@@ -35,7 +35,7 @@ void extdef(void)
 	register symnode *ptr;
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
-	int size, ssize, tsc, sclass, type, temp;
+	long size; int ssize, tsc, sclass, type, temp;
 	elem *eptr;
 
 	while (sym == RBRACE)
@@ -64,7 +64,7 @@ void extdef(void)
 
 	if ((type = settype(&size,&dimptr,&eptr)) == 0)
 	{
-		// Here the type is inferred.
+		/* Here the type is inferred. */
 		type = INT;
 	}
 
@@ -207,7 +207,7 @@ void argdef(void)
 	register symnode *ptr;
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
-	int sclass, type, size, stemp, temp;
+	long size; int sclass, type, stemp, temp;
 	elem *eptr;
 
 	switch (sclass = setclass())
@@ -298,7 +298,7 @@ void blkdef(void)
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
 	expnode *ep;
-	int sclass, type, temp, size, stemp, ssize;
+	long size; int sclass, type, temp, stemp, ssize;
 	elem *eptr;
 	initnode *i;
 
@@ -785,11 +785,11 @@ int setclass(void)
 }
 
 
-int settype(int *size, dimnode **dimptr, elem **ellist)
+int settype(long *size, dimnode **dimptr, elem **ellist)
 {
 	register symnode *ptr, *tagptr;
 	dimnode *dptr;
-	int offset, msize, mtype, savflg, dtype, s;
+	long msize; int offset, mtype, savflg, dtype, s;
 	elem *eptr, *elast, *elocal;
 	int type = 0, tsize = 2;
 
@@ -864,7 +864,7 @@ default:
 							*ellist = tagptr->x.elems;
 							return STRUCT;
 						}
-						*size = (int)tagptr;
+						*size = (long)tagptr;
 						return USTRUCT;
 					}
 					else
@@ -1034,8 +1034,8 @@ int declarator(symnode **ptr, dimnode **dptr, int bastype)
 		dtype = (dtype << 2) + FUNCTION;
 		if (blocklevel)
 		{
-			declist(&dummy);
-			clear(&dummy);
+			declist((symnode **)&dummy);
+			clear((symnode **)&dummy);
 		}
 		else
 		{
@@ -1110,7 +1110,7 @@ int shiftin(int a, int b)
 }
 
 
-int sizeup(symnode *ptr, dimnode *dimptr, int size)
+int sizeup(symnode *ptr, dimnode *dimptr, long size)
 {
 	register int n,temp;
 

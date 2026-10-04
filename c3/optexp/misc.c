@@ -2,21 +2,16 @@
 
 #define GRABSIZE 512
 
-char           *grab(n)
-	unsigned        n;
+char           *grab(unsigned n)
 {
 	char *             ptr;
 
 	if ((ptr = sbrk(n)) == (char *)-1)
-		error("memory overflow");
+		error("memory overflow", NULL, NULL, NULL);
 	return ptr;
 }
 
-void error(s1, s2, s3, s4)
-	char           *s1,
-	               *s2,
-	               *s3,
-	               *s4;
+void error(char *s1, char *s2, char *s3, char *s4)
 {
 	fprintf(stderr, "C optimiser error: ");
 	fprintf(stderr, s1, s2, s3, s4);
@@ -25,19 +20,13 @@ void error(s1, s2, s3, s4)
 }
 
 #ifdef DEBUG
-void debug(fmt, s1, s2, s3, s4)
-	char           *fmt,
-	               *s1,
-	               *s2,
-	               *s3,
-	               *s4;
+void debug(char *fmt, char *s1, char *s2, char *s3, char *s4)
 {
 	if (dbflag)
 		fprintf(stderr, fmt, s1, s2, s3, s4);
 }
 
-void prtins(i)
-	instruction    *i;
+void prtins(instruction *i)
 {
 	register label *l;
 

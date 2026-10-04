@@ -13,6 +13,7 @@
 */
 
 #include "cj.h"
+#include "il.h"
 #include <errno.h>
 
 #define GBLB ':'    /* global asm declarator */
@@ -20,7 +21,7 @@
 
 static direct unsigned stklab;       /* label for stack check equ value */
 
-epilogue()
+void epilogue(void)
 {
      dumpstrings();
      endsect();
@@ -28,38 +29,61 @@ epilogue()
           ol("fail source errors");
 }
 
-locstat(l,size,area)
+void locstat(int l, int size, int area)
 {
+#ifdef MKIL
+     ilwrec(IL_LBSS);
+     ilwint(l);            /* the static's label (a pass-1 temp-id) */
+     ilwint(size);
+     ilwint(area);
+     ilweol();
+#else
      vsect(area);
      olbl(l);
      fprintf(code," rmb %d\n",size);
      endsect();
+#endif
 }
 
-defglob(ptr,size,area)
+void defglob(symnode *ptr, int size, int area)
 {
+#ifdef MKIL
+     ilwrec(IL_BSS);
+     ilwname(ptr->sname);
+     ilwint(size);
+     ilwint(1);            /* global: label gets a colon */
+     ilwint(area);
+     ilweol();
+#else
      vsect(area);
      defvar(ptr,size,GBLB);
      endsect();
+#endif
 }
 
-extstat(ptr,size,area)
+void extstat(symnode *ptr, int size, int area)
 {
+#ifdef MKIL
+     ilwrec(IL_BSS);
+     ilwname(ptr->sname);
+     ilwint(size);
+     ilwint(0);            /* file-local static: no colon */
+     ilwint(area);
+     ilweol();
+#else
      vsect(area);
      defvar(ptr,size,LCLB);
      endsect();
+#endif
 }
 
-defvar(ptr,size,scope)
-symnode *ptr;
-char scope;
+void defvar(symnode *ptr, int size, int scope)
 {
      fprintf(code,"%.8s%c rmb %d\n",ptr->sname,scope,size);
 }
 
 #ifdef PROF
-profname(name,lab)
-char *name;
+void profname(char *name, int lab)
 {
      olbl(lab);
      fprintf(code," fcc \"%.8s\"\n fcb 0\n",name);
@@ -67,16 +91,22 @@ char *name;
 #endif
 
 #ifdef PROF
-startfunc(name,flag,paramreg,lab)
+void startfunc(register char *name, int flag, int paramreg, int lab)
 #else
-startfunc(name,flag,paramreg)
+void startfunc(register char *name, int flag, int paramreg)
 #endif
-register char *name;
-int paramreg;
 {
 #ifdef FUNCNAME
     extern direct int fnline;
 #endif
+#ifdef MKIL
+    ilwrec(IL_FUNC);
+    ilwname(name);
+    ilwint(flag);
+    ilwint(paramreg);
+    ilwint(ftype);
+    ilweol();
+#else
     fprintf(code," ttl %.8s\n",name);
 #ifdef FUNCNAME
     printf("%-10.10s %-8.8s %5d\n",filename,name,fnline);
@@ -99,48 +129,59 @@ int paramreg;
           os(",pcr\n pshs x\n lbsr _prof\n leas 4,s\n");
      }
 #endif
+#endif
 }
 
-endfunc()
+void endfunc(void)
 {
+#ifdef MKIL
+    ilwrec(IL_ENDFUNC);
+    ilweol();
+#else
         /* generate stack reservation value */
      if(!sflag)
           fprintf(code,"_%d equ %d\n\n",stklab,maxpush-callflag-64);
+#endif
 }
 
-defbyte()
+void defbyte(void)
 {
         ot("fcb ");
 }
 
-defword()
+void defword(void)
 {
         ot("fdb ");
 }
 
-comment()
+void comment(void)
 {
         os("* ");
 }
 
-vsect(area)
+void vsect(int area)
 {
      ol(area ? "vsect dp" : "vsect");
 }
 
-endsect()
+void endsect(void)
 {
      ol("endsect");
 }
 
-/*
-dumpstrings()
+void dumpstrings(void)
 {
      register int c;
 
      if(strfile) {
+          /* Close (flushing the writes) then reopen for reading, rather than
+             rewind()-ing the "w+" stream in place: OS-9 RBF does not reliably
+             read a file back after a write+rewind on the same open path, so
+             update-mode read-after-write silently lost the whole string pool on
+             the target.  A fresh read open after the close is robust on host and
+             target alike (output is identical either way). */
           fclose(strfile);
-          if((strfile=fopen(strname,"r")) == NULL)
+          if((strfile = fopen(strname,"r")) == NULL)
                fatal("can't read strings file");
           while((c = getc(strfile)) != EOF)
                putc(c,code);
@@ -148,22 +189,8 @@ dumpstrings()
           unlink(strname);
      }
 }
-*/
-dumpstrings()
-{
-     register int c;
 
-     if(strfile) {
-          rewind(strfile);
-          while((c = getc(strfile)) != EOF)
-               putc(c,code);
-          if(ferror(strfile)) fatal("dumpstrings");
-          fclose(strfile);
-          unlink(strname);
-     }
-}
-
-tidy()
+void tidy(void)
 {
      int err = errno ? errno : 1;
 

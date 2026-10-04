@@ -4,6 +4,7 @@
  */
 
 
+#include <stdio.h>
 #include "h.h"
 
 
@@ -11,8 +12,7 @@
  *     Return a pointer to the suffix of a name
  */
 char *
-suffix(name)
-char *                 name;
+suffix(char *name)
 {
        return rindex(name, '.');
 }
@@ -26,8 +26,7 @@ char *                 name;
  *     a target.
  */
 bool
-dyndep(np)
-struct name *          np;
+dyndep(struct name *np)
 {
        register char *         p;
        register char *         q;
@@ -105,7 +104,7 @@ struct name *          np;
  *     Make the default rules
  */
 void
-makerules()
+makerules(void)
 {
        struct cmd *            cp;
        struct name *           np;
@@ -193,32 +192,26 @@ makerules()
 #endif
 #ifdef OS9
 /*
- *     Default compilation rules to build .r files
+ *     Default rules for the c3 toolchain.  The c3 driver runs the whole
+ *     pipeline (c3prep | c3comp1 | c3comp2 | c3optx | rma | rlink) and writes
+ *     an executable module named after the source.  -2 selects the two-pass
+ *     compiler, the only one that fits an OS-9 Level-2 task.
  */
-       setmacro("CC", "cc");
-       setmacro("CFLAGS", "-dOS9");
-       cp = newcmd("$(CC) $(CFLAGS) -r $<", 0);
+       setmacro("CC", "c3");
+       setmacro("CFLAGS", "-2");
 
-       np = newname(".c.r");
-       newline(np, 0, cp, 0);
+/*
+ *     .a (rma assembler source) -> .r relocatable, via the standalone rma.
+ */
+       setmacro("AS", "rma");
+       cp = newcmd("$(AS) $< -o=$@", 0);
        np = newname(".a.r");
        newline(np, 0, cp, 0);
 
 /*
- *     Default rule to link .r files
+ *     .c -> executable module (no suffix): the c3 driver compiles and links.
  */
-       setmacro("LINK", "cc");
-       setmacro("LFLAGS", "");
-       cp = newcmd("$(LINK) $(LFLAGS) $< -f=$@", 0);
-
-       np = newname(".r");
-       newline(np, 0, cp, 0);
-
-/*
- *     Default rule to compile .c files in one pass
- */
-       cp = newcmd("$(CC) $(CFLAGS) $(LFLAGS) $<", 0);
-       
+       cp = newcmd("$(CC) $(CFLAGS) $<", 0);
        np = newname(".c");
        newline(np, 0, cp, 0);
 

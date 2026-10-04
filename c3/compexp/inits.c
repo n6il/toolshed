@@ -64,7 +64,7 @@ void initialise(symnode *ptr, int tsc, int type)
         getsym();
     }
 
-    if (type == STRUCT) ilist(type, ptr, ptr->x.elems, 0);
+    if (type == STRUCT) ilist(type, ptr, (dimnode *)ptr->x.elems, 0);
     else if (isary(type)) ilist(type, ptr, ptr->dimptr, 0);
     else if (ilist(type, ptr, ptr->dimptr, 1)) ;
     else iskip();
@@ -196,7 +196,7 @@ err:
             case EXTERND:
                 defword();
                 datflag = 1;
-                deref(NODE,p2,addon);
+                deref(NODE,(long)p2,addon);
                 datflag = 0;
                 nl();
         }
@@ -205,7 +205,7 @@ err:
                 if (type == FLOAT) *p->val.fp = *p->val.dp;
             case CONST:
             case LCONST:
-                datdef(p->val.num,type);
+                datdef((int *)(long)p->val.num,type);
                 break;
             case STRING:
                 defword();
@@ -227,7 +227,7 @@ static void datdef(int *p, int type)
     switch (type) {
         case CHAR:
             defbyte();
-            od(p);
+            od((int)(long)p);
             nl();
             return;
         case INT:
@@ -237,7 +237,7 @@ static void datdef(int *p, int type)
         case FLOAT:     size = (FLOATSIZE/2);   break;
         case DOUBLE:    size = (DOUBLESIZE/2);  break;
     }
-    defcon(p, size);
+    defcon((INTTYPE *)p, size);
 }
 
 void initerr(void)

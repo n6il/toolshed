@@ -7,15 +7,15 @@
 */
 
 #include "cj.h"
-static ilist(type,ptr,list,level);
-static defobject(type);
-static datdef(p,type);
-static iskip();
+#include "il.h"
+static int ilist(int, symnode *, dimnode *, int);
+static int defobject(int);
+static void datdef(int *, int);
+static void iskip(void);
 extern direct int stringlen;
 direct int datstring;
 
-initialise(ptr,tsc,type)
-register symnode *ptr;
+void initialise(register symnode *ptr, int tsc, int type)
 {
     register char *p;
     register dimnode *dimp;
@@ -43,8 +43,14 @@ register symnode *ptr;
             nlabel(p,0);        /* local to file */
         }
     } else {
+#ifdef MKIL
+        ilwrec(IL_LBL);    /* function local: pass 2 owns the label */
+        ilwint(ptr->offset);
+        ilweol();
+#else
         olbl(ptr->offset);  /* function local */
         nl();
+#endif
     }
 
     if (type == (CHAR | ARRAY)) {
@@ -76,9 +82,7 @@ out:
 
 #define INFINITY (-1)
 
-static ilist(type,ptr,list,level)
-register symnode *ptr;
-register dimnode *list;
+static int ilist(int type, register symnode *ptr, register dimnode *list, int level)
 {
     register dimnode *newlist;
     int flag,t,i;
@@ -142,15 +146,14 @@ out:
     return 0;
 }
 
-zero(n)
+void zero(int n)
 {
     ot("rzb ");
     od(n);
     nl();
 }
 
-static defobject(type)
-register int type;
+static int defobject(register int type)
 {
     register expnode *p, *p2;
     int addon, done, t;
@@ -215,11 +218,19 @@ err:
 #endif
             case CONST:
             case LCONST:
-                datdef(p->val.num,type);
+                datdef((int *)p->val.sp,type);	/* val.sp = union offset 0; see
+						   newnode() - val.lval is no longer
+						   written (broke on big-endian) */
                 break;
             case STRING:
+#ifdef MKIL
+                ilwrec(IL_DWSTR);
+                ilwint(p->val.num);    /* string temp-id; pass 2 -> fdb _label */
+                ilweol();
+#else
                 defword();
                 label(p->val.num);
+#endif
                 break;
             default:
                 done = 0;
@@ -230,8 +241,7 @@ finish:
     return done;
 }
 
-static datdef(p,type)
-register int *p;
+static void datdef(register int *p, int type)
 {
     register int size;
 
@@ -244,22 +254,25 @@ register int *p;
         case INT:
         case UNSIGN:    size = (INTSIZE/2);     break;
         default:        size = (POINTSIZE/2);   break;
-        case LONG:      size = (LONGSIZE/2);    break;
+        /* long / float / double: emit from the host-format value as target
+           big-endian words (see codgen.c) - defcon()'s int-word read mangles
+           them on a 64-bit host. */
+        case LONG:      deflong((char *) p);            return;
 #ifdef DOFLOATS
-        case FLOAT:     size = (FLOATSIZE/2);   break;
-        case DOUBLE:    size = (DOUBLESIZE/2);  break;
+        case FLOAT:     defbytes((char *) p, FLOATSIZE);  return;
+        case DOUBLE:    defbytes((char *) p, DOUBLESIZE); return;
 #endif
     }
     defcon(p,size);
 }
 
-initerr()
+void initerr(void)
 {
     error("cannot initialize");
     iskip();
 }
 
-static iskip()
+static void iskip(void)
 {
     for (;;)
         switch (sym) {

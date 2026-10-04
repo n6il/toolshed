@@ -3,6 +3,18 @@
  *        This program has been placed in the Public Domain.
  */
 
+#include <stdio.h>		/* FILE, used by the prototypes below */
+
+/* Standard-library prototypes for the modern host build.  Kept ahead of the
+   OS9 "#define void int" below so the system headers are seen untouched. */
+#ifdef unix
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+#include <unistd.h>
+#include <time.h>
+#endif
+
 /* Systems currently handled by this code */
 /* One of these must be specified */
 /* #define OS9 */
@@ -15,7 +27,9 @@
 
 #ifdef OS9
 #define uchar          char
-#define void           int
+/* NB: no "#define void int" - c3 has a real void keyword (and now parses an
+   ANSI "(void)" empty parameter list); textually mapping void->int would turn
+   "(void)" into "(int)", i.e. a phantom int parameter. */
 #define fputc          putc
 #else
 #define uchar          unsigned char
@@ -42,9 +56,14 @@
 #define DEFSHELL        "shell"
 #endif
 
-/* This is where it gets the default make rules */
-/* If undefined, defaults will be compiled in */
+/* This is where it gets the default make rules.  If undefined, the defaults
+   are compiled in (see makerules(void) in rules.c, which has unix/OS9/eon arms).
+   We compile them in on both the host (unix) and the c3/OS-9 cross-build so a
+   freshly-built make is self-contained - no external /dd/sys/make.default
+   needed.  Leave the file-based default only for the legacy eon target. */
+#ifdef eon
 #define DEFN0          "/dd/sys/make.default"
+#endif
 
 /* Default Makefile names. */
 #define DEFN1          "makefile"
@@ -153,18 +172,29 @@ char *                 rindex();
 /* char *                 malloc(); */
 extern int             errno;
 
-char *                 getmacro();
-struct macro *         setmacro();
-void                   input();
+char *                 getmacro(char *);
+struct macro *         setmacro(char *, char *);
+void                   input(FILE *, char *);
+#ifdef OS9			/* c3 has no varargs: error/fatal are K&R there */
 void                   error();
 void                   fatal();
-int                    make();
-struct name *          newname();
-struct depend *                newdep();
-struct cmd *           newcmd();
-void                   newline();
-char *                 suffix();
-void                   touch();
-void                   makerules();
-char *                 gettok();
-void                   precious();
+#else
+void                   error(char *, ...);
+void                   fatal(char *, ...);
+#endif
+int                    make(struct name *, int);
+struct name *          newname(char *);
+struct depend *        newdep(struct name *, struct depend *);
+struct cmd *           newcmd(char *, struct cmd *);
+void                   newline(struct name *, struct depend *, struct cmd *, bool);
+char *                 suffix(char *);
+void                   touch(struct name *);
+void                   makerules(void);
+char *                 gettok(char **);
+void                   precious(void);
+bool                   getline1(char *, FILE *);
+void                   expand(char *);
+void                   prt(void);
+void                   circh(void);
+void                   modtime(struct name *);
+bool                   dyndep(struct name *);

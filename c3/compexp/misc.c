@@ -8,6 +8,7 @@
 /* miscellaneous routines for the c compiler */
 
 #include "cj.h"
+#include <stdarg.h>
 
 /* to push down an outer block declaration
  */
@@ -23,9 +24,14 @@ void pushdown(symnode *sptr)
 
 	move(sptr, nptr, DOWNSIZE);
 	sptr->downptr = nptr;
-	sptr->type = sptr->size = sptr->dimptr =
-	sptr->offset = sptr->storage = sptr->x.labflg =
-	sptr->blocklevel = sptr->snext = 0;
+	sptr->type = 0;
+	sptr->size = 0;
+	sptr->dimptr = NULL;
+	sptr->offset = 0;
+	sptr->storage = 0;
+	sptr->x.labflg = 0;
+	sptr->blocklevel = 0;
+	sptr->snext = NULL;
 }
 
 /* to recover outer block declaration
@@ -42,10 +48,11 @@ void pullup(symnode *sptr)
 }
 
 /* byte move by count */
-void move(char *p1, char *p2, int count)
+void move(void *p1, void *p2, int count)
 {
+	register char *s = p1, *d = p2;
 	while (--count >= 0)
-		*p2++ = *p1++;
+		*d++ = *s++;
 }
 
 void pfile(void)
@@ -110,9 +117,12 @@ dopoint:
 	}
 }
 
-void eprintf(char *s1, char *s2, char *s3)
+void eprintf(char *fmt, ...)
 {
-	fprintf(stderr, s1, s2, s3);
+	va_list ap;
+	va_start(ap, fmt);
+	vfprintf(stderr, fmt, ap);
+	va_end(ap);
 }
 
 void eputs(char *s)
@@ -148,7 +158,7 @@ void release(expnode *node)
 	}
 }
 
-void nodecopy(char *n1, char *n2)
+void nodecopy(void *n1, void *n2)
 {
 	move(n1, n2, NODESIZE);
 }

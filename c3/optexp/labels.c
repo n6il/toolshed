@@ -8,7 +8,7 @@
 chain           ltable[128];
 DIRECT label   *lfree;
 
-void labelinit()
+void labelinit(void)
 {
 	register int    i;
 	register chain *p;
@@ -20,8 +20,7 @@ void labelinit()
 	}
 }
 
-label          *inslabel(s)
-	char           *s;
+label          *inslabel(char *s)
 {
 	register chain *l;
 	register label *p;
@@ -32,16 +31,15 @@ label          *inslabel(s)
 	strcpy(p->lname, s);
 
 	/* put at back of list */
-	p->succ = l;
+	p->succ = (int *)l;
 	p->pred = l->pred;
-	((instruction *) (l->pred))->succ = p;
+	((instruction *) (l->pred))->succ = (instruction *)p;
 	l->pred = p;
 
 	return p;
 }
 
-label          *findlabel(s)
-	char           *s;
+label          *findlabel(char *s)
 {
 	label          *p;
 	chain          *l;
@@ -49,17 +47,16 @@ label          *findlabel(s)
 	l = &ltable[hash(s)];
 
 
-	for (p = l->succ; p != l;)
+	for (p = l->succ; (chain *)p != l;)
 	{
 		if (strcmp(s, p->lname) == 0)
 			return p;
-		p = p->succ;
+		p = (label *)p->succ;
 	}
 	return NULL;
 }
 
-int hash(s)
-	register char  *s;
+int hash(register char *s)
 {
 	int             i = 0;
 
@@ -69,37 +66,38 @@ int hash(s)
 	return i & 127;
 }
 
-label          *newlabel()
+label          *newlabel(void)
 {
 	register label *p;
 
 	if ((p = lfree) != NULL)
 	{
-		lfree = p->succ;
-		p->dest = p->rlist = p->nextl = p->lflags = NULL;
+		lfree = (label *)p->succ;
+		p->dest = NULL;
+		p->rlist = NULL;
+		p->nextl = NULL;
+		p->lflags = 0;
 	}
 	else
-		p = grab(sizeof(*p));
+		p = (label *)grab(sizeof(*p));
 
 	return p;
 }
 
-void freelabel(p)
-	register label *p;
+void freelabel(register label *p)
 {
 	if (p->dest == NULL && p->rlist == NULL)
 	{
 		/* remove from ltable */
-		((instruction *) (p->pred))->succ = p->succ;
-		((instruction *) (p->succ))->pred = p->pred;
+		((instruction *) (p->pred))->succ = (instruction *)p->succ;
+		((instruction *) (p->succ))->pred = (instruction *)p->pred;
 		/* add to free list */
-		p->succ = lfree;
+		p->succ = (int *)lfree;
 		lfree = p;
 	}
 }
 
-char           *newbra(lblp)
-	char           *lblp;
+char           *newbra(char *lblp)
 {
 	static int      labnum = 0;
 

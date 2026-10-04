@@ -19,8 +19,6 @@ static long soffset;
 #endif
 */
 
-char getline2(void);
-
 void preinit(void)
 {
         lptr=line;
@@ -149,8 +147,7 @@ char getline2(void)
 }
 
 #ifndef UNIX
-atoi(s)
-register char *s;
+int atoi(register char *s)
 {
         int c;
         int n = 0;
@@ -161,7 +158,7 @@ register char *s;
 }
 #endif
 
-char *cgets()           /* Function to input a line of source.
+char *cgets(void)       /* Function to input a line of source.
                          * Returns a pointer to the start of the line
                          * if all is well.
                          * Returns NULL on end of file.

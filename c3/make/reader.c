@@ -6,6 +6,9 @@
 
 #include <stdio.h>
 #include       <ctype.h>
+#ifndef OS9			/* c3 (OS-9) has no <stdarg.h>; error() is K&R there */
+#include <stdarg.h>
+#endif
 #include "h.h"
 
 
@@ -15,6 +18,9 @@ char *                 currmake;
 /*
  *     Syntax error handler.  Print message, with line number, and exits.
  */
+#ifdef OS9
+/* The c3 6809 compiler has no <stdarg.h>; use the original K&R variadic-by-
+   over-declaration form (fprintf reads only the args its format consumes). */
 void
 error(msg, a1, a2, a3)
 char *                 msg;
@@ -26,6 +32,22 @@ char *                 msg;
        fputc('\n', stderr);
        exit(1);
 }
+#else
+void
+error(char *msg, ...)
+{
+       va_list ap;
+
+       fprintf(stderr, "%s: ", myname);
+       va_start(ap, msg);
+       vfprintf(stderr, msg, ap);
+       va_end(ap);
+       if (lineno)
+               fprintf(stderr, " near line %d in '%s'.", lineno,currmake);
+       fputc('\n', stderr);
+       exit(1);
+}
+#endif
 
 
 /*
@@ -34,9 +56,7 @@ char *                 msg;
  *     quoted newlines.  If EOF return TRUE.
  */
 bool
-getline1(str, fd)
-char *         str;
-FILE *         fd;
+getline1(char *str, FILE *fd)
 {
        register char *         p;
        char *                  q;
@@ -112,8 +132,7 @@ FILE *         fd;
  *     in it.
  */
 char *
-gettok(ptr)
-char   **ptr;
+gettok(char **ptr)
 {
        register char *         p;
 

@@ -12,8 +12,7 @@
 #define swap(type,x,y)  {type t;t = x;x = y;y = t;}
 
 
-expnode *optim(tree)
-register expnode *tree;
+expnode *optim(register expnode *tree)
 {
 	register expnode *lhs,*rhs,*tptr;
 	int /* temp, */ op;
@@ -70,8 +69,7 @@ if (dflag && --tcount==0) prtree(tree,"optim (after):");
 }
 
 
-expnode *fold(tree)
-register expnode *tree;
+expnode *fold(register expnode *tree)
 {
 	register expnode *lhs,*rhs,*ptr;
 	register int op, /* val, */ opl,opr;
@@ -219,8 +217,7 @@ doop:				tree->op=CONST;
 }
 
 
-int isleaf(node)
-register expnode *node;
+int isleaf(register expnode *node)
 {
 	if (node)
 		switch (node->op) {
@@ -249,8 +246,7 @@ void diverr(void)
  * fills in various node fields according to types and operators.
  * tree should not present any problems to the translator after this.
  */
-expnode *chtype(node)
-expnode *node;
+expnode *chtype(expnode *node)
 {
 	register expnode *lhs,*rhs,*eptr;
 	register symnode *sptr;
@@ -651,8 +647,7 @@ if (dflag) pnode(node);
 }
 
 
-void chknull(node)
-register expnode *node;
+void chknull(register expnode *node)
 {
 	if (node->op != CONST || node->val.num != 0) {
 		terror(node,"should be NULL");
@@ -662,8 +657,7 @@ register expnode *node;
 }
 
 
-usual(node)
-register expnode *node;
+int usual(register expnode *node)
 {
 	register int t;
 
@@ -845,8 +839,7 @@ fixint:
 	return node->type = t;
 }
 
-tymatch(lhs,rhs)
-register expnode *lhs,*rhs;
+int tymatch(register expnode *lhs, register expnode *rhs)
 {
 	register int tl,tr;
 
@@ -862,12 +855,11 @@ register expnode *lhs,*rhs;
 	else return INT;
 }
 
-expnode *fixup(size,t,dptr,rhs)
-register expnode *dptr,*rhs;
+expnode *fixup(int size, int t, register expnode *dptr, register expnode *rhs)
 {
 	register expnode *ptr;
 
-	if ((size = getsize(decref(t),size,dptr)) == 1) return rhs;
+	if ((size = getsize(decref(t),size,(dimnode *)dptr)) == 1) return rhs;
 
 	ptr = newnode(CONST,0,0,size,rhs->lno,rhs->pnt);
 	ptr->type = INT;
@@ -879,8 +871,7 @@ register expnode *dptr,*rhs;
 	return ptr;
 }
 
-void needlval(node,flag)
-register expnode *node;
+void needlval(register expnode *node, int flag)
 {
 	int op;
 
@@ -908,9 +899,7 @@ void chkdecl(expnode *node)
 	}
 }
 
-needmos(node,t,mosar)
-register expnode *node;
-int *t,*mosar;
+int needmos(register expnode *node, int *t, int *mosar)
 {
 	register expnode *eptr;
 	register symnode *sptr;
@@ -943,8 +932,7 @@ err:
 	return 2;
 }
 
-chkstrct(node)
-register expnode *node;
+int chkstrct(register expnode *node)
 {
 	if ((node->type) == STRUCT || node->type == UNION) {
 		terror(node,"structure or union inappropriate");
@@ -953,8 +941,7 @@ register expnode *node;
 	return node->type;
 }
 
-makedummy(node)
-register expnode *node;
+void makedummy(register expnode *node)
 {
 	move(&sdummy,node,6);
 	node->sux = 1;
@@ -977,7 +964,7 @@ int isint(int t)
 	return 0;
 }
 
-void integerr(node)
+void integerr(expnode *node)
 {
 	terror(node,"must be integral");
 }

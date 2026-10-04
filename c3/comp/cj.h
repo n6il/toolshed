@@ -1,5 +1,17 @@
 #include <stdio.h>
 
+/* Host-only standard library declarations.  On the 6809/OS-9 target these
+   functions are resolved the old K&R way (and pulling these system headers
+   into the c3 cross-compile would not even find them), so the includes are
+   gated on the UNIX host build - where strict clang needs real prototypes for
+   str*, exit/atoi/mktemp, unlink/_exit.  Gating on UNIX leaves the target's
+   generated code byte-for-byte unchanged. */
+#ifdef UNIX
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#endif
+
 #ifdef MAIN
 #define global
 #else
@@ -12,7 +24,21 @@
  *  see also 'local.c'.
  */
 
+/* `direct` requests direct-page storage for hot globals, and on the OS-9 target
+   it now reaches c3 as the real DIRECT storage class (the keyword is NOT defined
+   away below).  c3 emits those globals into `vsect dp`; the c3lw backend gives
+   them a genuine direct page: c3lw.awk collects every `vsect dp` into one
+   dedicated `directpage` bss section, os9c3.ld places that section FIRST in the
+   data area (offsets 0..255 from the data base Y), and crt0 sets DP = high(Y).
+   A `<name` access (offset & 0xFF, page DP) then resolves to Y+offset - the
+   variable's real, zeroed home.  The page must stay within 256 bytes (currently
+   ~90 bytes of direct globals); the link step checks l_directpage at link time.
+
+   The UNIX host has no such page, so `direct` is defined away there (clang does
+   not know the keyword) and every host global stays Y-relative - which is also
+   what keeps the host two-pass output byte-identical to single-pass. */
 #ifdef OS9
+#define		direct
 #define		INTTYPE		int
 #define		LONGTYPE	long
 #define		FLOATYPE	float
@@ -34,9 +60,27 @@
 #define		DBLETYPE	double
 #endif
 
+/* A pointer-width integer (this codebase's intptr_t) for K&R parameters that
+   genuinely carry EITHER an int or a pointer depending on a mode flag - gen's
+   `arg`, deref/doref's `val`, eprintf's forwarded `s2`/`s3`.  It MUST be exactly
+   pointer-width on each target, for two reasons: (1) the K&R stacked-argument
+   ABI - the param's width must match what callers push (a 2-byte int/pointer on
+   the 6809), so a wider `long` would misalign the following args; (2) on the
+   big-endian 6809 a too-wide member is read from its high half, so the value
+   would come back shifted (the same trap that bit val.lval - see expnode).
+   Hence `int` on the 6809 (int == pointer == 2 bytes) and `long` on the LP64
+   host (pointer == 8).  This is the right abstraction, NOT a workaround: a
+   single fixed C type cannot be pointer-width on both, and call-arg coercion
+   cannot help a parameter that has no single type. */
+#ifdef UNIX
+typedef long argword;
+#else
+typedef int argword;
+#endif
+
 #define		MICRO				/* suppresses word boundary forcing */
 #define		DOFLOATS			/*  include floating point code */
-#define		FNAMESIZE	30		/* file name size */
+#define		FNAMESIZE	256		/* file name size (host paths can be long) */
 
 #define		LINESIZE	256
 #define		MODNAMSIZE  15	  /* module name */
@@ -57,7 +101,7 @@ typedef struct dimstr {
 
 typedef struct downsym {
 	short type;				/* type of entry */
-	int size;				/* size of entry */
+	long size;				/* size of entry (or a struct-tag ptr for USTRUCT) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	int offset;				/* general purpose */
 	int storage;			/* storage class */
@@ -74,7 +118,7 @@ typedef struct downsym {
 
 typedef struct symstr {
 	short type;				/* type of entry */
-	int size;				/* size of entry */
+	long size;				/* size of entry (or a struct-tag ptr for USTRUCT) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	int offset;				/* general purpose */
 	int storage;			/* storage class */
@@ -87,18 +131,39 @@ typedef struct symstr {
 				  *snext,	/* ptr to entry in various lists */
 				  *hlink;	/* ptr to next symbol in hash chain */
 	char sname[NAMESIZE+1]; /* name entry */
+	struct symstr *args;	/* FUNCTION ONLY: ANSI-prototype parameter list
+				   (snext-chained, types only) for call-argument
+				   coercion; NULL = unprototyped (K&R "()" or
+				   implicit).  A dedicated field, NOT in the x union:
+				   a function's x.elems holds its return-type's
+				   struct members, so the two must not alias - and
+				   keeping args separate lets a prototype survive the
+				   function's later definition.  Placed after sname so
+				   it is outside the DOWNSIZE (pushdown) copy region;
+				   functions are top-level (blklev 0) and never pushed
+				   down, so pshnode need not mirror it. */
 } symnode;
 
 #define SYMSIZE	   sizeof(symnode)
 
+#define MAXCARGS	24	/* max call arguments handled by prototype coercion
+				   (optim.c coerceargs / cmain2.c IL reader) */
+
 typedef struct expstr {
 	short type;				/* type of node */
-	int size;				/* size of basic type */
+	long size;				/* size of basic type (long to match symnode.size:
+				   c3 shares one member namespace, so a member name must have
+				   the same type/offset in every struct that uses it) */
 	dimnode *dimptr;		/* ptr to list of dimensions */
 	short op;				/* operator */
 	union {
 		int num;			/* numeric value */
-		symnode *sp;		/* symbol pointer */
+		symnode *sp;		/* symbol pointer (also the pointer-width carry:
+					   newnode() stores every value here as (symnode *),
+					   at the union's offset 0, so all readers agree on
+					   both endiannesses - do NOT re-add a wider `long`
+					   member and store into it, that put the value in the
+					   wrong half on the big-endian target) */
 		long *lp;			/* long constant ptr */
 #ifdef DOFLOATS
 		FLOATYPE *fp;		/* float constant ptr */
@@ -114,6 +179,13 @@ typedef struct expstr {
 } expnode;
 
 #define NODESIZE	sizeof(expnode)
+
+/* pointer to a function returning int.  Used as a parameter type (walktree's
+   visitor, doquery's load callback): c3's ANSI param parser can't handle a
+   raw `int (*f)()` declarator nested inside the parameter-list parentheses, but
+   a typedef name parses fine - and a function-pointer typedef is the idiomatic
+   ANSI form anyway.  Same type, so codegen is identical to the old K&R param. */
+typedef int (*funcp)();
 
 typedef struct initstruct {
 	struct initstruct *initnext;	/* next initializer */
@@ -180,6 +252,9 @@ typedef struct initstruct {
 #define	   DIRECT  33	 /* direct */
 #define	   EXTERND 34	 /* extern direct */
 #define	   STATICD 35	 /* static direct */
+#define	   VOID	   36	 /* the `void' keyword: settype maps it to INT, but
+			    keeping it distinct lets declist see an explicit
+			    "(void)" empty parameter list (c3 has no real void) */
 
 #define	   SEMICOL 40
 #define	   LBRACE  41
@@ -371,10 +446,18 @@ global direct int	lineno,		/* current line number */
 					swflag,		/* current switch level */
 					mosflg,		/* member of structure flag */
 					sym,		/* current lexical token */
-					symval,		/* and its associated value */
 					scount,		/* chars on current line of string */
 					symline,	/* lineno of current symbol */
 					maxpush;	/* maximum push level */
+
+/* symval holds the current token's value: an int for a CONST, a symnode * for a
+   NAME, a pointer to the constant for long/double.  It is therefore the same
+   dual int/pointer quantity as argword, and MUST be argword (pointer-width) -
+   not long.  As `long` (4 bytes on the 6809) it is pushed 2 bytes too wide when
+   passed to newnode()'s value parameter, misaligning newnode's later args
+   (lno/pnt) on the stack ABI; argword (int on the 6809) matches what callers
+   actually push.  On the LP64 host argword == long, so this is a no-op there. */
+global argword	symval;		/* value associated with sym */
 
 global char	filename[FNAMESIZE];	/* current filename buffer */
 
@@ -384,7 +467,7 @@ global direct symnode *freedown,  /* list of free push-down entries */
 					*vlist;		/* list of declared variables */
 
 global direct char	*symptr,	/* start of current symbol */
-					cc,			/* current character */
+					curch,			/* current character */
 					*lobrk,		/* lower store bound */
 					*hibrk,		/* upper store bound */
 					*lptr;		/* input line pointer */
@@ -423,12 +506,20 @@ typedef struct {
 			*labxreg;
 } labstruc;
 
+/*  switch case-list node (shared: built by the parser, consumed by codegen)  */
+typedef struct casestct {
+	struct casestct *clink;		/* next case in case list */
+	int cval;					/* case value */
+	short clab;					/* case label */
+} casnode;
 
-/*  function type definitions  */
+#define CASESIZE	sizeof(casnode)
 
-extern  expnode *parsexp(), *primary(), *explist(), *getcast(),
-				*newnode(), *optim(), *fold(), *chtype(), *fixup(),
-				*tranexp(), *tranbool(), *treecopy();
 
-extern  dimnode *dimwalk();
+/*  function prototypes  */
+
+/* Every global comp function is declared (abstract ANSI prototype) in proto.h,
+   so their results are not truncated to int on a 64-bit host and every call
+   site type-checks.  See proto.h. */
+#include "proto.h"
 

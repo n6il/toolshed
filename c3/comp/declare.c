@@ -8,6 +8,7 @@
 */
 
 #include "cj.h"
+#include "il.h"
 #define  MPOINT 1
 
 #define MAXREG  1
@@ -20,17 +21,18 @@
 
 static direct int reguse;
 static direct struct initstruct *initlist,*initlast,*initfree;
+static symnode *protoargs(symnode *);	/* prototype param types + unscope the names */
 
 #ifdef FUNCNAME
 direct int fnline;
 #endif
 
-extdef()
+void extdef(void)
 {
 	register symnode *ptr;
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
-	int size,ssize,tsc,sclass,type,temp;
+	long size; int ssize,tsc,sclass,type,temp;
 	elem *eptr;
 
 	while (sym == RBRACE) {
@@ -96,7 +98,17 @@ extdef()
 onlist:
 			ssize = sizeup(ptr,tdp,size);
 			if (!isftn(temp)) {
-				if (sym == ASSIGN) initialise(ptr,tsc,temp);
+				if (sym == ASSIGN) {
+#ifdef MKIL
+					/* the initialised-data emitters are constant (no codegen
+					   state), so run them here and pass the asm through */
+					ilwrec(IL_RAW); ilweol();
+					initialise(ptr,tsc,temp);
+					ilwrec(IL_ENDRAW); ilweol();
+#else
+					initialise(ptr,tsc,temp);
+#endif
+				}
 				else if (ssize == 0 && tsc!=EXTERN) sizerr();
 				else switch(tsc) {
 						case STATICD:
@@ -120,8 +132,18 @@ onlist:
 				ptr->type = INT | FUNCTION;
 				temp = INT;
 			}
-			if (tsc == EXTERN) clear(&arglist);
-			else {
+			if (tsc == EXTERN) {
+				/* a function DECLARATION (prototype): keep its parameter-type
+				   list on the symnode so calls can coerce their arguments.
+				   arglist is empty for a K&R "()" decl -> args NULL -> no
+				   coercion (back-compatible).  Uses the dedicated args field,
+				   so it survives a later definition of the same function.
+				   protoargs() also takes any NAMED parameters back out of
+				   scope, so an ANSI prototype may name its parameters without
+				   leaking them (no more "named twice" against the definition). */
+				ptr->args = protoargs(arglist);
+				arglist = NULL;
+			} else {
 				ftype = temp;
 				newfunc(ptr,sclass);
 				return;
@@ -135,12 +157,12 @@ next:
 }
 
 
-argdef()
+void argdef(void)
 {
 	register symnode *ptr;
 	symnode *ptemp;
 	dimnode *dimptr, *tdp;
-	int sclass,type,size,stemp,temp;
+	long size; int sclass,type,stemp,temp;
 	elem *eptr;
 
 	switch (sclass = setclass()) {
@@ -194,13 +216,13 @@ next:
 }
 
 
-blkdef()
+void blkdef(void)
 {
 	register symnode *ptr;
 	symnode *p, *ptemp;
 	dimnode *dimptr, *tdp;
 	expnode *ep;
-	int sclass,type,temp,size,stemp,ssize;
+	long size; int sclass,type,temp,stemp,ssize;
 	elem *eptr;
 	initnode *i;
 
@@ -260,7 +282,18 @@ blkdef()
 
 		if (sym == ASSIGN) {
 			if (stemp == STATIC || stemp == STATICD)
+#ifdef MKIL
+			{
+				/* initialised local static: constant emitters, so run
+				   them and pass the asm through; the static's own label
+				   rides as IL_LBL so pass 2 can remap it */
+				ilwrec(IL_RAW); ilweol();
 				initialise(ptr,stemp,temp);
+				ilwrec(IL_ENDRAW); ilweol();
+			}
+#else
+				initialise(ptr,stemp,temp);
+#endif
 			else {
 				getsym();
 				if (isary(temp) || temp == STRUCT) initerr();
@@ -291,21 +324,18 @@ next:
 }
 
 
-check_same(ptr,type,eptr)
-register symnode *ptr;
-register int type;
-register elem *eptr;
+int check_same(register symnode *ptr, register int type, register elem *eptr)
 {
 	 if (ptr->type != type
 				|| (type == STRUCT && ptr->x.elems != eptr)) {
 		  error("declaration mismatch");
 		  return 1;
 	 }
-	 return NULL;
+	 return 0;
 }
 
 
-chkreg(sclass,type)
+int chkreg(int sclass, int type)
 {
 	/* if the user wants a register variable
 	 * and it is allowed allocate one.
@@ -334,8 +364,29 @@ chkreg(sclass,type)
 }
 
 
-newfunc(fptr,sclass)
-symnode *fptr;
+/* A function DEFINITION whose name was already prototyped must agree with the
+ * prototype's parameter types and count (proto = fptr->args, built by protoargs).
+ * c3 already rejects a return-type mismatch (via the symbol's type), but never
+ * checked the arguments - so a wrong prototype silently miscompiled every caller,
+ * which coerces its arguments to the PROTOTYPE's types.  Reports "declaration
+ * mismatch" on the first differing parameter, or on a differing parameter count.
+ * Both declist (ANSI params) and argdef (K&R params) apply the same FLOAT->DOUBLE
+ * and array->pointer adjustments, so an exact type compare is correct. */
+static void chkproto(symnode *proto, symnode *defargs)
+{
+	register symnode *a, *b;
+
+	for (a = proto, b = defargs; a && b; a = a->snext, b = b->snext)
+		if (a->type != b->type) {
+			error("declaration mismatch");
+			return;
+		}
+	if (a || b)
+		error("declaration mismatch");	/* parameter count differs */
+}
+
+
+void newfunc(symnode *fptr, int sclass)
 {
 	register symnode *p1;
 	symnode *p2;
@@ -349,6 +400,22 @@ symnode *fptr;
 	callflag = reguse = stlev = maxpush = sp = 0;
 
 	while (sym != LBRACE) argdef();
+
+	/* ANSI parameters (built by declist before this point) carry a raw storage
+	   class; now that reguse is reset, run each through chkreg so a 'register'
+	   parameter is assigned U/Y exactly as the K&R argdef path does.  No-op for
+	   K&R params, which argdef already mapped to UREG/YREG/AUTO. */
+	{
+		register symnode *pp;
+		for (pp = arglist; pp; pp = pp->snext)
+			if (pp->storage == REG || pp->storage == AUTO)
+				pp->storage = chkreg(pp->storage, pp->type);
+	}
+
+	/* if this function was prototyped, the definition's parameters (now fully
+	   typed, K&R or ANSI) must match the prototype's recorded types/count */
+	if (fptr->args)
+		chkproto(fptr->args, arglist);
 
 	cp = fptr->sname;
 
@@ -435,7 +502,14 @@ if (dflag) {printf("newfunc node:\n"); pnode(p1);}
 		switch (stemp = p1->storage) {
 			case UREG:
 			case YREG:
+#ifdef MKIL
+				ilwrec(IL_PARMOV);     /* pass 2 emits the spill */
+				ilwint(stemp);
+				ilwint(offset-sp);
+				ilweol();
+#else
 				gen(stemp,offset-sp);
+#endif
 				break;
 			case ARG:
 				p1->storage = AUTO;
@@ -451,7 +525,12 @@ if (dflag) {printf("newfunc node:\n"); pnode(p1);}
 
 	clear(&p2);
 	clear(&labelist);
-	if (lastst != RETURN) gen(RETURN,0,0);
+	if (lastst != RETURN)
+#ifndef MKIL
+		gen(RETURN,0,0);
+#else
+		;
+#endif
 	lastst = 0;
 
 	/* generate stack reservation */
@@ -463,8 +542,7 @@ if (dflag) {printf("newfunc node:\n"); pnode(p1);}
 }
 
 
-block(stkadj)
-int stkadj;
+void block(int stkadj)
 {
 	register expnode *p;
 	struct initstruct *i;
@@ -478,6 +556,34 @@ int stkadj;
 	savlev = stlev + stkadj;
 
 	while (issclass() || istype()) blkdef();
+#ifdef MKIL
+	{
+		int hadlocals;
+
+		ilwrec(IL_BLOCK); ilwint(stlev); ilweol();
+		while (initlist) {              /* local initialisers -> IL_EXPR */
+			i = initlist;
+			p = i->initp;
+			p = newnode(NAME,0,0,i->initname,p->lno,p->pnt);
+			p = newnode(ASSIGN,p,i->initp,0,p->lno,p->pnt);
+			ilwrec(IL_EXPR); ilweol();
+			ilexpr(p);
+			ilwrec(IL_ENDE); ilweol();
+			reltree(p);
+			i = i->initnext;
+			initlist->initnext = initfree;
+			initfree = initlist;
+			initlist = i;
+		}
+		while (sym != RBRACE && sym != EOF) statement();
+		hadlocals = (vlist != NULL);
+		clear(&vlist);
+		vlist = varlist;
+		--blklev;
+		stlev = savlev;
+		ilwrec(IL_ENDBLOCK); ilwint(savlev); ilwint(hadlocals); ilweol();
+	}
+#else
 	if (maxpush > stlev) maxpush = stlev;
 	sp = modstk(stlev);
 
@@ -506,20 +612,91 @@ int stkadj;
 	 else sp=savlev;
 */
 	 sp = (lastst != RETURN) ? modstk(savlev) : savlev;
+#endif
 }
 
 
-declist(list)
-register symnode **list;
+void declist(register symnode **list)
 {
 	register symnode *ptr,*last;
+	symnode *ptemp, *ap;
+	dimnode *dimptr,*tdp;
+	long size;
+	int temp, sclass, voidparam;
+	elem *eptr;
 
 	*list = NULL;
 	getsym();
 
 	for (;;) {
 		if (sym == RPAREN) break;
-		if (sym == NAME) {
+
+		/* note a leading `void' before settype maps it to INT, so the
+		   abstract-parameter arm below can recognise an explicit "(void)" */
+		voidparam = (sym == KEYWORD && symval == VOID);
+
+		if (istype() || issclass()) {
+			/*
+			 * ANSI-style typed parameter:  [register] type declarator
+			 * (also covers a prototype's abstract "type" with no name, and
+			 * "(void)").  Parse it the way argdef() parses a K&R parameter
+			 * declaration, but inline.  A 'register' hint is recorded as the
+			 * raw storage class (REG); newfunc runs it through chkreg() once
+			 * reguse has been reset, so an ANSI definition gets the same
+			 * register-parameter ABI a K&R one does (first arg in D, register
+			 * params in U/Y).  Without this the hint was dropped and every
+			 * register parameter spilled to the stack - different code.
+			 */
+			if ((sclass = setclass()) == 0) sclass = AUTO;
+			if ((temp = settype(&size,&dimptr,&eptr)) == 0) temp = INT;
+			tdp = dimptr;
+			temp = declarator(&ptemp,&tdp,temp);
+			ptr = ptemp;
+
+			if (isary(temp)) {	/* array param decays to pointer */
+				temp = incref(decref(temp));
+				tdp = tdp ? tdp->dptr : 0;
+			}
+#ifdef DOFLOATS
+			else if (temp == FLOAT) temp = DOUBLE;
+#endif
+			if (ptr) {		/* a named parameter (function definition) */
+				if (ptr->blklev == 1) error("named twice");
+				else if (ptr->type != UNDECL) pushdown(ptr);
+				ptr->type = temp;
+				ptr->storage = sclass;	/* raw REG/AUTO; newfunc -> chkreg */
+				ptr->blklev = 1;
+				ptr->x.elems = eptr;
+				sizeup(ptr,tdp,size);
+				if (*list) last->snext = ptr;
+				else *list = ptr;
+				ptr->snext = NULL;
+				last = ptr;
+			} else {
+				/* a lone "(void)" is the ANSI empty parameter list: the sole
+				   token was `void' (now INT, no declarator -> temp == INT) and
+				   the list is closing.  Take it as zero parameters.  A "void *"
+				   abstract param (temp is a pointer) is NOT this case.  (ap is
+				   declared at the top of declist so this statement may precede
+				   it - the c3 self-compile enforces K&R decls-before-stmts.) */
+				if (voidparam && *list == NULL && temp == INT && sym == RPAREN)
+					break;
+				/* abstract parameter (ANSI prototype, no name): keep only its
+				   TYPE so call sites can coerce arguments to it. */
+				ap = (symnode *) grab(SYMSIZE);
+				ap->type = temp;
+				ap->storage = ARG;
+				ap->blklev = 1;
+				ap->x.elems = eptr;
+				sizeup(ap,tdp,size);
+				ap->sname[0] = '\0';
+				if (*list) last->snext = ap;
+				else *list = ap;
+				ap->snext = NULL;
+				last = ap;
+			}
+		} else if (sym == NAME) {
+			/* K&R-style bare parameter name (type comes from argdef later) */
 			ptr = (symnode *) symval;
 			if (ptr->storage == ARG) error("named twice");
 			else if (ptr->type != UNDECL) pushdown(ptr);
@@ -541,7 +718,7 @@ register symnode **list;
 }
 
 
-setclass()
+int setclass(void)
 {
 	 int class;
 	 if(issclass()) {
@@ -560,14 +737,12 @@ setclass()
 }
 
 
-settype(size,dimptr,ellist)
-int *size;
-dimnode **dimptr;
-elem **ellist;
+/* size may carry a struct-tag pointer (USTRUCT) */
+int settype(long *size, dimnode **dimptr, elem **ellist)
 {
 	register symnode *ptr, *tagptr;
 	dimnode *dptr;
-	int offset,msize,mtype,savflg,dtype,s;
+	long msize; int offset,mtype,savflg,dtype,s;
 	elem *eptr,*elast,*elocal;
 	int type=0,tsize=2;
 
@@ -578,6 +753,10 @@ elem **ellist;
 			case UNSIGN:
 				getsym();
 				if(sym==KEYWORD && symval==INT) getsym();
+				break;
+			case VOID:		/* c3 has no void: treat as int */
+				type=INT;	/* (tsize stays the default 2) */
+				getsym();
 				break;
 			case CHAR:  tsize=1;
 			case INT:
@@ -629,7 +808,7 @@ default:
 							*ellist=tagptr->x.elems;
 							return STRUCT;
 						}
-						*size = (int) tagptr;
+						*size = (long) tagptr;
 						return USTRUCT;
 					} else if(tagptr->type==STRUCT) multidef();
 				}
@@ -717,9 +896,7 @@ next:
 }
 
 
-declarator(ptr,dptr,bastype)
-symnode **ptr;
-dimnode **dptr;
+int declarator(symnode **ptr, dimnode **dptr, int bastype)
 {
 	register dimnode *tempdim, *p, *p1;
 	int dtype, savmos, count;
@@ -746,7 +923,7 @@ dimnode **dptr;
 	if (sym == LPAREN) {
 		dtype = (dtype<<2) + FUNCTION;
 		if (blklev) {
-			declist(&dummy);
+			declist((symnode **)&dummy);
 			clear(&dummy);
 		} else declist(&arglist);
 	} else {
@@ -782,7 +959,7 @@ dimnode **dptr;
 }
 
 
-shiftin (a,b)
+int shiftin(int a, int b)
 {
 	int temp;
 
@@ -795,53 +972,58 @@ shiftin (a,b)
 }
 
 
-sizeup(ptr,dimptr,size)
-register symnode *ptr;
-register dimnode *dimptr;
+
+
+/* Build a prototype's call-coercion arg list (nameless, type-only symnodes) and
+ * take its NAMED parameters back out of scope.  A prototype's parameter names
+ * must not persist: left in scope they shadow file scope and make a later
+ * definition - or any other use of the name - "named twice".  The parsed param
+ * symnode is dual-purpose (the in-scope name AND the type entry ->args needs),
+ * and pushdown/pullup is in-place, so we copy each type into a fresh symnode for
+ * ->args and then release the original exactly as clear() (block exit) does: a
+ * freshly-inserted name is unhashed, a name that shadowed an outer one is pulled
+ * back up.  An abstract param (no name) was a private grab() - just recycle it. */
+static symnode *protoargs(symnode *list)
 {
-	register int n,temp;
+	register symnode *s, *nxt, *cp, *p, **pp;
+	symnode *head, *tail;
+	extern symnode *freesym;
 
-	switch (btype(temp = ptr->type)) {
-		case CHAR:		n = 1; break;
-		case INT:
-		case UNSIGN:	n = INTSIZE; break;
-		case LONG:		n = LONGSIZE; break;
-#ifdef  DOFLOATS
-		case FLOAT:		n = FLOATSIZE; break;
-		case DOUBLE:	n = DOUBLESIZE; break;
-#endif
-		case UNION:
-		case STRUCT:	n = size; break;
-		case USTRUCT:	n = 0; break;
+	head = tail = NULL;
+	for (s = list; s; s = nxt) {
+		nxt = s->snext;
+
+		cp = (symnode *) grab(SYMSIZE);
+		cp->type    = s->type;
+		cp->size    = s->size;
+		cp->dimptr  = s->dimptr;
+		cp->x.elems = s->x.elems;
+		cp->storage = ARG;
+		cp->blklev  = 1;
+		cp->args    = NULL;
+		cp->sname[0] = '\0';
+		cp->snext   = NULL;
+		if (tail) tail->snext = cp; else head = cp;
+		tail = cp;
+
+		if (s->sname[0]) {		/* a named parameter: take it out of scope */
+			pp = (symnode **) s->downptr;
+			if ((pp >= hashtab && pp < hashtab + 128)
+					|| (pp >= mostab && pp < mostab + 128)) {
+				if (*pp == s) *pp = s->hlink;
+				else { for (p = *pp; p->hlink != s; p = p->hlink) ; p->hlink = s->hlink; }
+				s->hlink = freesym; freesym = s;
+			} else
+				pullup(s);	/* restore the symbol it shadowed */
+		} else {			/* abstract param: a private symnode */
+			s->hlink = freesym; freesym = s;
+		}
 	}
-	ptr->size = n ? n : size;
-
-	return getsize(temp,n,ptr->dimptr = dimptr);
+	return head;
 }
 
 
-getsize(t,size,dptr)
-register dimnode *dptr;
-{
-	int n;
-
-	if (isptr(t) || isftn(t)) return 2;
-
-	if (isary(t)) {
-		n = 1;
-		do {
-			n *= dptr->dim;
-			dptr = dptr->dptr;
-		} while (isary(t = decref(t)));
-
-		return n * (isptr(t) ? POINTSIZE : size);
-	}
-	return size;
-}
-
-
-clear(list)
-symnode **list;
+void clear(symnode **list)
 {
 	register symnode *this, *next, *p, **pp;
 	char err[60];
@@ -889,13 +1071,13 @@ symnode **list;
 }
 
 
-sizerr()
+void sizerr(void)
 {
 	error("cannot evaluate size");
 }
 
 
-identerr()
+void identerr(void)
 {
 	error("identifier missing");
 }

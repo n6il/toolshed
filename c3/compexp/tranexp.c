@@ -2,7 +2,6 @@
 
 direct int shiftflag;
 extern direct expnode *dregcont,*xregcont,*currexpr;
-extern expnode *transexp();
 
 #define swap(x,y) {expnode *t; t=x; x=y; y=t;}
 
@@ -23,8 +22,7 @@ void lddexp(expnode *tree)
 }
 
 
-void ldxexp(tree)
-register expnode *tree;
+void ldxexp(register expnode *tree)
 {
 	tranxexp(tree);
 	if (tree->op != XREG) {
@@ -34,8 +32,7 @@ register expnode *tree;
 }
 
 
-void loadexp(tree)
-register expnode *tree;
+void loadexp(register expnode *tree)
 {
 	switch(tree->type) {
 		case LONG:
@@ -52,8 +49,7 @@ register expnode *tree;
 }
 
 
-doload(tree)
-register expnode *tree;
+void doload(register expnode *tree)
 {
 	switch (tree->op) {
 		case STRING:
@@ -95,8 +91,7 @@ register expnode *tree;
 }
 
 
-expnode *tranexp(tree)
-register expnode *tree;
+expnode *tranexp(register expnode *tree)
 {
 	register int op;
 
@@ -136,7 +131,7 @@ prtree(tree,"tranexp (before):");
 				break;
 			case LTOI:
 				tranlexp(tree->left);
-				gen(LTOI, NODE, tree->left, 0);
+				gen(LTOI, NODE, (long)tree->left, 0);
 				tree->op = DREG;
 				break;
 			case DTOI:
@@ -155,7 +150,7 @@ prtree(tree,"tranexp (before):");
 			case COMPL:
 			case NEG:
 				lddexp(tree->left);
-				gen(op, NULL, 0, 0);
+				gen(op, 0, 0, NULL);
 				setdreg(tree);		/* set D contents */
 				break;
 			case QUERY:
@@ -186,9 +181,7 @@ prtree(tree,"tranexp (after)");
 }
 
 
-void tranbinop(op,node)
-int op;
-expnode *node;
+void tranbinop(int op, expnode *node)
 {
 	register expnode *lhs,*rhs,*temp;
 	int s;
@@ -331,7 +324,7 @@ out1: node->op = DREG;
 }
 
 
-isashift(x)
+int isashift(int x)
 {
 		/* returns whether x is a suitable candidate for
 		 * shifting code in multiplication or division
@@ -348,8 +341,7 @@ isashift(x)
 }
 
 
-dobool(tree)
-register expnode *tree;
+void dobool(register expnode *tree)
 {
 	/*  to evaluate expressions of the form "e1 <rel> e2",
 		other than in tests */
@@ -363,7 +355,7 @@ register expnode *tree;
 
 	/*  put in 'true' condition */
 	uselabel(&l1);
-	gen(LOAD, DREG, CONST, 1);
+	gen(LOAD, DREG, CONST, (expnode *)1L);
 	gen(JMP, l1.labnum=getlabel(), 1, NULL);
 
 	/* put in 'false' condition */
@@ -454,7 +446,7 @@ void docall(expnode *node)
 			lddexp(lhs);
 		}
 	}
-	gen(CALL, NODE, node->left, NULL);
+	gen(CALL, NODE, (long)node->left, NULL);
 
 	sp = modstk(oldsp);
 
@@ -463,8 +455,7 @@ void docall(expnode *node)
 }
 
 
-int isdleaf(node)
-register expnode *node;
+int isdleaf(register expnode *node)
 {
 		expnode *p;
 
@@ -487,8 +478,7 @@ register expnode *node;
 }
 
 
-regandcon(p)
-register expnode *p;
+int regandcon(register expnode *p)
 {
 	switch (p->op) {
 		case PLUS:
@@ -499,15 +489,13 @@ register expnode *p;
 }
 
 
-int isxleaf(node)
-register expnode *node;
+int isxleaf(register expnode *node)
 {
 	return (node->sux<2);
 }
 
 
-isaddress(p)
-register expnode *p;
+int isaddress(register expnode *p)
 {
 	switch (p->op) {
 		case PLUS:
@@ -521,8 +509,7 @@ register expnode *p;
 }
 
 
-void getinx(node)
-register expnode *node;
+void getinx(register expnode *node)
 {
 	if (node->op & INDIRECT) {
 		node->op&= NOTIND;
@@ -533,8 +520,7 @@ register expnode *node;
 }
 
 
-void doass(node)
-register expnode *node;
+void doass(register expnode *node)
 {
 	register expnode *lhs,*rhs,*savlhs;
 
@@ -598,8 +584,7 @@ register expnode *node;
 }
 
 
-expnode *transexp(tree)
-register expnode *tree;
+expnode *transexp(register expnode *tree)
 {
 	switch (tree->op) {
 		case STAR:
@@ -620,8 +605,7 @@ register expnode *tree;
 }
 
 
-void assop(node,op)
-expnode *node;
+void assop(expnode *node, int op)
 {
 	register expnode *lhs,*rhs;
 	int inreg;
@@ -652,7 +636,7 @@ expnode *node;
 			case PLUS:
 			case MINUS:
 				if (rhs->op == CONST) {
-					gen(LEA, lhs->op, CONST, (op == PLUS ? rhs->val.num
+					gen(LEA, lhs->op, CONST, (expnode *)(long)(op == PLUS ? rhs->val.num
 													  : -rhs->val.num));
 				} else {
 					lddexp(rhs);
@@ -726,19 +710,17 @@ ord:
 }
 
 
-void stackx(node)
-register expnode *node;
+void stackx(register expnode *node)
 {
 	if ((node->op & NOTIND) == NAME) return;
 	getinx(node);
-	if(node->val.num) gen(LEA, XREG, CONST, node->val.num);
+	if(node->val.num) gen(LEA, XREG, CONST, (expnode *)(long)node->val.num);
 	gen(PUSH, XREG, 0, NULL);
 	node->op=STACK | INDIRECT;
 }
 
 
-dostar(node)
-register expnode *node;
+void dostar(register expnode *node)
 {
 	register expnode *lhs;
 	register int op;
@@ -760,7 +742,7 @@ prtree(currexpr,"current expression (by dostar):");
 #endif
 				}
 				setxreg(currexpr);
-				gen(LOAD, XREG, op, lhs->val.num);
+				gen(LOAD, XREG, op, (expnode *)(long)lhs->val.num);
 				break;
 			case XIND:
 				if (xregcont) {
@@ -769,7 +751,7 @@ prtree(currexpr,"current expression (by dostar):");
 prtree(xregcont,"X given (by dostar):");
 #endif
 				}
-				gen(LOAD, XREG, op, lhs->val.num);
+				gen(LOAD, XREG, op, (expnode *)(long)lhs->val.num);
 				break;
 			default:
 			comperr(lhs,"indirection");
@@ -817,9 +799,7 @@ fix:			node->val.sp = lhs->val.sp;
 }
 
 
-void dotoggle(node,dest)
-register expnode *node;
-register int dest;
+void dotoggle(register expnode *node, register int dest)
 {
 	register expnode *lhs, *temp;
 	int op, size, reg, inreg;
@@ -863,8 +843,8 @@ printf("dotoggle: reg %s(%x) dest %s(%x)\n",kw[reg],reg,kw[dest],dest);
 		case DECAFT:
 			size = -size;
 		default:
-			reg == DREG ? gen(PLUS, reg, CONST, size)
-						: gen(LEA, reg, CONST, size);
+			reg == DREG ? gen(PLUS, reg, CONST, (expnode *)(long)size)
+						: gen(LEA, reg, CONST, (expnode *)(long)size);
 	}
 
 	if (temp) {
@@ -878,7 +858,7 @@ printf("dotoggle: reg %s(%x) dest %s(%x)\n",kw[reg],reg,kw[dest],dest);
 		case INCAFT:
 		case DECAFT:
 			if (reg == DREG) {
-				gen(MINUS, DREG, CONST, size);
+				gen(MINUS, DREG, CONST, (expnode *)(long)size);
 				setdreg(NULL);
 			} else node->val.num = -size;
 			break;
@@ -895,8 +875,7 @@ printf("dotoggle: reg %s(%x) dest %s(%x)\n",kw[reg],reg,kw[dest],dest);
 	shiftflag = 0;
 }
 
-loadxexp(p)
-register expnode *p;
+void loadxexp(register expnode *p)
 {
 	tranxexp(p);
 	if (p->op != XREG || p->val.num) {
@@ -906,8 +885,7 @@ register expnode *p;
 	p->op = XREG;
 }
 
-void tranxexp(node)
-expnode *node;
+void tranxexp(expnode *node)
 {
 	register expnode *lhs,*rhs;
 	int lhsval,rhsval,op,newop;
@@ -1028,7 +1006,7 @@ prtree(node,"tranxexp (after):");
 #endif
 }
 
-int isreg(r)
+int isreg(int r)
 {
 		return (r==UREG || r==YREG);
 }

@@ -5,6 +5,13 @@
  */
 
 #include <stdio.h>
+
+/* `direct` is a no-op on every target: the OS-9 direct page aliases the stdio
+   iob and comes up as garbage, corrupting the driver's globals (flags, scount,
+   the arg pointers); keep them in normal, crt0-zeroed data (same decision as
+   comp/cj.h and prep). */
+#define direct
+
 #ifdef UNIX
 #include <stdlib.h>
 #include <unistd.h>
@@ -15,7 +22,6 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <errno.h>
-#define direct
 #define vfork fork
 #endif
 
@@ -28,9 +34,21 @@
 
 #define PREPNAME "c3prep"
 #define COMPNAME "c3comp"
-#define OPTZNAME "c3opt"
+#define COMP1NAME "c3comp1"
+#define COMP2NAME "c3comp2"
+/* The working optimiser is "c3optx" (built from optexp/); the original
+   "c3opt" (opt/) is incomplete and not built. */
+#define OPTZNAME "c3optx"
+#ifdef UNIX
+/* On a modern host there is no rma/rlink; default to the lwasm/lwlink
+   back-end wrappers (lwbackend/c3-as, c3-ld).  Override any of these with
+   the C3_OPT / C3_ASM / C3_LINK environment variables. */
+#define ASMBNAME "c3-as"
+#define LINKNAME "c3-ld"
+#else
 #define ASMBNAME "rma"
 #define LINKNAME "rlink"
+#endif
 
 #define CSTART  "/lib/cstart.r"
 #define CLIB    "/lib/clib.l"
@@ -38,10 +56,17 @@
 #define CLIBN	"/lib/clibn.l"
 #define MATH1	"/lib/math1.l"
 
+/* Where the host driver looks for defs/ (and lib/) when $C3BASE is unset.
+   The install builds this to match its PREFIX; the fallback is the standard
+   /usr/local prefix.  (The OS-9 build probes drives instead - see sysdrive.) */
+#ifndef C3BASE_DEFAULT
+#define C3BASE_DEFAULT "/usr/local/share/toolshed"
+#endif
+
 direct short
                 kflag, lflag, oflag, tflag, iflag, sflag, nflag, rflag,
-                aflag, mflag, pflag, qflag, dflag, xflag = 0, libcount,
-                term, pid, nocode, yflag = 0;
+                aflag, mflag, pflag, qflag, gflag, xflag = 0, libcount,
+                term, pid, nocode, twoflag, yflag = 0;
 direct short    optflag = 1;
 direct int      wstat;
 char           *libs[MAXLIBS];
@@ -71,21 +96,29 @@ char            arglst[1024];
 direct int      argsize;
 direct char    *argptr;
 direct int      scount, defcount, rdel;
+/* All file-local functions have internal linkage and abstract ANSI prototypes
+   (parameter TYPES only, no names: c3 rejects a parameter named twice).
+   No-argument functions use ANSI (void); error() keeps K&R () because it is
+   variadic in use and c3 has no <stdarg.h>.  main is the only non-static
+   function and needs no prototype. */
 #ifndef UNIX
-extern char    *sysdrive(), *attach(), *detach();
+extern char    *sysdrive(void), *attach(), *detach();
 #else
-static char    *sysdrive();
-void uchain();
+static char    *sysdrive(void);
+static void uchain(char *, char *);
 #endif
-void dofork();
-void error();
-void setsuf();
-int getsuf();
-void addarg();
-void endargs();
-void opts();
+static void tidy(void);
+static void errexit(int);
+static void dofork(char *, char *, int);
+static void error();		/* K&R: variadic-in-use, but c3/OS-9 has no varargs */
+static void rmtemp(char *);
+static void setsuf(char *, char);
+static int getsuf(char *);
+static void addarg(char *);
+static void endargs(void);
+static void opts(void);
 
-void tidy()
+static void tidy(void)
 {
 	/* first kill any running child process */
 	if (pid)
@@ -106,30 +139,36 @@ void tidy()
 
 	if (srcptr)
 	{
-		unlink(srcptr);
+		rmtemp(srcptr);
 	}
 
 	if (dstptr)
 	{
-		unlink(dstptr);
+		rmtemp(dstptr);
 	}
 
 	return;
 }
 
-void errexit(stat)
+static void errexit(int stat)
 {
 	tidy();
 	exit(stat);
 }
 
-int main(argc, argv)
-	int             argc;
-	char          **argv;
+int main(int argc, char **argv)
 {
 	register char  *p, **pp;
 	int             c, count, j;
 	int             assdel;
+	char           *optzname, *asmbname, *linkname, *comp1name, *comp2name;
+
+	/* tool names, overridable from the environment (see the #defines) */
+	if ((optzname = getenv("C3_OPT"))  == NULL) optzname = OPTZNAME;
+	if ((asmbname = getenv("C3_ASM"))  == NULL) asmbname = ASMBNAME;
+	if ((linkname = getenv("C3_LINK")) == NULL) linkname = LINKNAME;
+	if ((comp1name = getenv("C3_COMP1")) == NULL) comp1name = COMP1NAME;
+	if ((comp2name = getenv("C3_COMP2")) == NULL) comp2name = COMP2NAME;
 
 	if (argc == 1)
 	{
@@ -184,6 +223,11 @@ int main(argc, argv)
 					break;
 				case 'q':
 					qflag = 1;
+					break;
+				case 'g':	/* debug: echo every sub-command in
+						   full and keep all intermediate
+						   files (do not unlink them) */
+					gflag = 1;
 					break;
 				case 'x':
 					xflag = 0;
@@ -252,6 +296,9 @@ int main(argc, argv)
 				case 'i':
 					iflag++;
 					break;
+				case '2':
+					twoflag = 1;
+					break;
 				default:
 					opts();
 					error("unknown flag : -%c\n", *p);
@@ -285,6 +332,21 @@ int main(argc, argv)
 	{
 		error("Cannot find default system drive");
 	}
+#ifndef UNIX
+	/* Default the temp-file directory to the system drive, so the .r object
+	   the driver hands to rlink is an ABSOLUTE path: rlink fails silently on
+	   a relative object (or relative -o) on OS-9.  -t=<dir> still overrides. */
+	if (tdirname[0] == '\0')
+	{
+		strcpy(tdirname, devptr);
+		strcat(tdirname, "/");
+	}
+#endif
+	if (gflag)
+	{
+		fprintf(stderr, "+ sysdrive=%s  tmpdir=\"%s\"  outdir=\"%s\"\n",
+			devptr, tdirname, odirname);
+	}
 
 	if (aflag && rflag)
 	{
@@ -303,7 +365,15 @@ int main(argc, argv)
 		else
 			strcpy(outname, "output");
 	}
-	mkstemp(temp);
+#ifdef UNIX
+	/* On the host mkstemp() both fills in a unique name AND creates the file,
+	   returning an open fd.  We only want the NAME - the .m/.r intermediates
+	   are derived from it below - so close the fd and remove the empty base
+	   file, otherwise every run leaks a 0-byte ctmp.XXXXXX into the cwd. */
+	{ int tfd = mkstemp(temp); if (tfd >= 0) close(tfd); unlink(temp); }
+#else
+	mkstemp(temp);		/* OS-9: mkstemp is mktemp - generates a name only */
+#endif
 	strcpy(temp2, temp);
 	strcat(temp2, ".m");
 	strcpy(temp3, temp);
@@ -325,6 +395,7 @@ int main(argc, argv)
 		if (suffs[count] == 'c')
 		{
 			int i;
+			char ilfile[128];
 
 
 			assdel = 1;
@@ -373,23 +444,10 @@ int main(argc, argv)
 			term = 0;
 
 			strcpy(source, dest);
-			argptr = arglst;
 
-			srcptr = source;
-			addarg(source);
-			if (sflag)
-			{
-				addarg("-s");
-			}
-
-			if (xflag)
-			{
-				addarg("-t");
-			}
-
+			/* compute the compiler's final output (.a) name */
 			if (nocode)
 			{
-				addarg("-n");
 				strcpy(dest, "/nil");
 				assdel = 0;
 			} else if (aflag)
@@ -399,20 +457,72 @@ int main(argc, argv)
 			} else
 				setsuf(dest, 'a');
 
-			strcpy(temp1, "-o=");
-			strcat(temp1, dest);
-			addarg(temp1);
-			if (pflag)
-				addarg("-p");
+			if (twoflag && !nocode)
+			{
+				/*
+				 * two-pass: c3comp1 emits the intermediate language
+				 * to a temp file, c3comp2 reads it and generates the
+				 * assembler.  The IL temp shares the .m basename with
+				 * an 'i' suffix.  Same one-process-at-a-time,
+				 * file-between-stages model as the other stages -
+				 * which is what lets it run on OS-9 Level 2, where
+				 * the single-pass compiler is too big to load.
+				 */
+				strcpy(ilfile, source);
+				setsuf(ilfile, 'i');
 
-			endargs();
+				/* pass 1: preprocessed source -> IL */
+				argptr = arglst;
+				srcptr = source;
+				addarg(source);
+				strcpy(temp1, "-o=");
+				strcat(temp1, ilfile);
+				addarg(temp1);
+				endargs();
+				dstptr = ilfile;
+				dofork(comp1name, "compiler pass 1", 0);
+				rmtemp(source);
 
-			dstptr = dest;
-
-			dofork(kflag ? alt_comp :
-		      	COMPNAME, "compiler mainline", 0);
-
-			unlink(source);
+				/*
+				 * pass 2: IL -> assembler.  -s (stack-check
+				 * suppression) is a codegen flag, so it is handed
+				 * to this pass, not pass 1.
+				 */
+				argptr = arglst;
+				srcptr = ilfile;
+				addarg(ilfile);
+				if (sflag)
+					addarg("-s");
+				strcpy(temp1, "-o=");
+				strcat(temp1, dest);
+				addarg(temp1);
+				endargs();
+				dstptr = dest;
+				dofork(comp2name, "compiler pass 2", 0);
+				rmtemp(ilfile);
+			} else
+			{
+				/* single-pass compiler */
+				argptr = arglst;
+				srcptr = source;
+				addarg(source);
+				if (sflag)
+					addarg("-s");
+				if (xflag)
+					addarg("-t");
+				if (nocode)
+					addarg("-n");
+				strcpy(temp1, "-o=");
+				strcat(temp1, dest);
+				addarg(temp1);
+				if (pflag)
+					addarg("-p");
+				endargs();
+				dstptr = dest;
+				dofork(kflag ? alt_comp : COMPNAME,
+				       "compiler mainline", 0);
+				rmtemp(source);
+			}
 		} else
 			assdel = 0;
 
@@ -442,10 +552,10 @@ int main(argc, argv)
 			endargs();
 
 			dstptr = dest;
-			dofork(OPTZNAME, "optimizer", 0);
+			dofork(optzname, "optimizer", 0);
 
 			if (assdel)
-				unlink(source);
+				rmtemp(source);
 			strcpy(source, dest);
 			srcptr = source;
 		}
@@ -469,10 +579,10 @@ int main(argc, argv)
 
 		endargs();
 		dstptr = dest;
-		dofork(ASMBNAME, "assembler", 0);
+		dofork(asmbname, "assembler", 0);
 
 		if (assdel)
-			unlink(source);
+			rmtemp(source);
 	}
 
 	if (nocode || aflag || rflag)
@@ -498,12 +608,22 @@ int main(argc, argv)
 			addarg(snames[count]);
 	}
 
-	strcpy(temp1, "-o=");
 	setsuf(outname, 0);
-
-	/*
-	        fprintf(stderr,"\n'%s'\n",outname);
-	*/
+#ifndef UNIX
+	/* Make outname absolute (in place): rlink silently produces nothing for a
+	   relative -o on OS-9, and the chmod after the link must name the same
+	   file.  Skip if already absolute (a user-given -f=/dd/foo).  Build it in
+	   temp2, NOT dest: dest is the object temp that srcptr points at and tidy()
+	   deletes - clobbering it would make tidy() delete the output instead. */
+	if (outname[0] != '/')
+	{
+		strcpy(temp2, devptr);
+		strcat(temp2, "/");
+		strcat(temp2, outname);
+		strcpy(outname, temp2);
+	}
+#endif
+	strcpy(temp1, "-o=");
 	strcat(temp1, outname);
 
 	addarg(temp1);
@@ -554,19 +674,20 @@ int main(argc, argv)
 
 	endargs();
 	dstptr = NULL;
-	dofork(LINKNAME, "linker", 0);
-	/*
-	        chmod(outname,15);
-	*/
+	dofork(linkname, "linker", 0);
+#ifndef UNIX
+	/* mark the linked module executable (r/w/e + public read): rlink does not
+	   set the OS-9 execute attribute itself, so the output was not runnable
+	   without a manual `attr -e'.  outname was made absolute above. */
+	chmod(outname, 15);
+#endif
 
 	tidy();
 
 	return 0;
 }
 
-void dofork(s, s1, stat)
-	char           *s, *s1;
-	int            stat;
+static void dofork(char *s, char *s1, int stat)
 {
 	if (!qflag)
 	{
@@ -577,6 +698,12 @@ void dofork(s, s1, stat)
 	{
 		fprintf(stderr, arglst);
 		putc('\n', stderr);
+	}
+	if (gflag)	/* debug: log the exact command (tool + full arglist).
+			   arglst is passed as data, not a format string, so a
+			   '%' in a path can't misfire (unlike the iflag line). */
+	{
+		fprintf(stderr, "+ %s%s\n", s, arglst);
 	}
 #ifdef UNIX
 	if ((pid = vfork()) == -1)
@@ -613,8 +740,7 @@ void dofork(s, s1, stat)
 }
 
 #ifdef UNIX
-void uchain(prog, argstr)
-	char           *prog, *argstr;
+static void uchain(char *prog, char *argstr)
 {
 	char           *args[50], **argv = args;
 
@@ -636,8 +762,14 @@ void uchain(prog, argstr)
 }
 #endif
 
-void error(s1, s2)
-	char           *s1, *s2;
+/*
+ * error() is variadic in use (a printf format plus a single optional
+ * argument), but the c3 6809 compiler that cross-builds this driver for OS-9
+ * has no <stdarg.h> / varargs support.  So it stays in the K&R form that both
+ * c3 and the host accept: a fixed (format, arg) definition reached through an
+ * unprototyped declaration, letting callers pass the format alone.
+ */
+static void error(char *s1, char *s2)
 {
 	int             err = errno;
 
@@ -646,9 +778,19 @@ void error(s1, s2)
 	errexit(err ? err : 1);
 }
 
-void setsuf(s, c)
-	register char  *s;
-	char            c;
+/* remove an intermediate/temporary file - but under -g (debug) keep every one
+   and say so, so a failing build can be taken apart stage by stage. */
+static void rmtemp(char *f)
+{
+	if (gflag)
+	{
+		fprintf(stderr, "+ keep %s\n", f);
+		return;
+	}
+	unlink(f);
+}
+
+static void setsuf(register char *s, char c)
 {
 	while (*s++);
 	if (s[-3] != '.')
@@ -663,8 +805,7 @@ void setsuf(s, c)
 	}
 }
 
-int getsuf(s)
-	register char  *s;
+static int getsuf(register char *s)
 {
 	register int    count;
 	char            c;
@@ -684,8 +825,7 @@ int getsuf(s)
 		return 0;
 }
 
-void addarg(s)
-	register char  *s;
+static void addarg(register char *s)
 {
 	register char  *p = argptr;
 
@@ -694,7 +834,7 @@ void addarg(s)
 	argptr = p - 1;
 }
 
-void endargs()
+static void endargs(void)
 {
 #ifndef UNIX
 	*argptr++ = '\n';
@@ -725,11 +865,13 @@ static char    *cmds[] = {
 	"    -y         Don't add cstart.r and standard libs\n",
 	"    -q         Quiet mode. Don't output command names\n",
 	"    -i         Verbose mode. Output exact command executed\n",
+	"    -g         Debug. Echo every sub-command and keep all temp files\n",
+	"    -2         Two-pass (c3comp1+c3comp2; required on OS-9 L2)\n",
 };
 
 char          **cmdsend = cmds + (sizeof cmds) / (sizeof(char **));
 
-void opts()
+static void opts(void)
 {
 	register char **p = cmds;
 
@@ -750,35 +892,37 @@ char           *devices[] = {
 	"/dd",
 	"/h0",
 	"/d0",
+	"/j0",
 	0,
 };
 
 static char    *
-sysdrive()
+sysdrive(void)
 {
-	static char     buf[20];
-	register char **p = devices;
-	int             devptr;
+	int i;
+	char probe[32];
+	FILE *f;
 
-	while (*p)
-	{
-		if ((devptr = attach(*p + 1, 1)) != -1)
-		{
-			detach(devptr);
-			break;
-		} else
-			++p;
+	/* Return the drive that actually holds the c3 toolchain - the one whose
+	   cmds/ has the assembler - NOT merely the first that attaches.  The boot
+	   drive (/dd) always attaches but, during development, the toolchain may
+	   live on a slave (/j0); a bare attach-probe wrongly picked the boot drive
+	   and then looked for defs/lib that were not there.  Probe a stable file
+	   present on every c3 disk (cmds/rma) so the right drive is found wherever
+	   it is mounted; opening a path auto-attaches its device. */
+	for (i = 0; devices[i] != 0; i++) {
+		strcpy(probe, devices[i]);
+		strcat(probe, "/cmds/rma");
+		if ((f = fopen(probe, "r")) != NULL) {
+			fclose(f);
+			return devices[i];
+		}
 	}
-#ifdef OSK
-	return *p;
-#else
-	strhcpy(buf, *p);
-	return buf;
-#endif
+	return 0;
 }
 #else
 static char    *
-sysdrive()
+sysdrive(void)
 {
 	static char *c3base;
 	static int firsttime = 1;
@@ -790,7 +934,7 @@ sysdrive()
 
 		if (c3base == NULL)
 		{
-			c3base = "/opt/c3";
+			c3base = C3BASE_DEFAULT;
 		}
 	}
 

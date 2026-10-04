@@ -9,9 +9,10 @@
 #include "cj.h"
 #define swap(type,x,y)  {type t;t = x;x = y;y = t;}
 
+static void coerceargs(expnode *, symnode *);
 
-expnode *optim(tree)
-register expnode *tree;
+
+expnode *optim(register expnode *tree)
 {
 	register expnode *lhs,*rhs,*tptr;
 	int temp,op;
@@ -68,8 +69,7 @@ if (dflag && --tcount==0) prtree(tree,"optim (after):");
 }
 
 
-expnode *fold(tree)
-register expnode *tree;
+expnode *fold(register expnode *tree)
 {
 	register expnode *lhs,*rhs,*ptr;
 	register int op,val,opl,opr;
@@ -185,7 +185,12 @@ makezero:			tree->op=CONST;
 				if(lhs->op==CONST) {
 doop:				tree->op=CONST;
 					tree->sux = 0;
-					tree->val.num=constop(op,lhs->val.num,rhs->val.num);
+					/* rhs is NULL for unary ops (NEG/NOT/COMPL); constop
+					   ignores that operand, but it must not be dereferenced
+					   (harmless garbage read on the 6809, a fault on a
+					   protected host). */
+					tree->val.num=constop(op,lhs->val.num,
+								rhs ? rhs->val.num : 0);
 					tree->left=tree->right=NULL;
 					release(lhs);
 					release(rhs);
@@ -218,8 +223,7 @@ doop:				tree->op=CONST;
 }
 
 
-isleaf(node)
-register expnode *node;
+int isleaf(register expnode *node)
 {
 	if (node)
 		switch (node->op) {
@@ -238,7 +242,7 @@ register expnode *node;
 }
 
 
-diverr()
+void diverr(void)
 {
 	error("divide by zero");
 }
@@ -250,8 +254,26 @@ diverr()
  * fills in various node fields according to types and operators.
  * tree should not present any problems to the translator after this.
  */
-expnode *chtype(node)
-expnode *node;
+/* Coerce each argument of a call to its ANSI-prototype parameter type.  The
+   ARG chain is built reversed (explist prepends), so the head is the LAST arg;
+   params are forward.  cvt() is a no-op when the types already match or the
+   param is a pointer, so this only inserts real width conversions (e.g. the
+   int->long that K&R calls silently mismatch on the 16-bit target). */
+static void coerceargs(register expnode *achain, symnode *params)
+{
+	expnode *av[MAXCARGS];
+	register symnode *p;
+	register int n, i;
+
+	n = 0;
+	for ( ; achain && achain->op == ARG; achain = achain->right)
+		if (n < MAXCARGS) av[n++] = achain->left;
+	p = params;
+	for (i = 0; p && i < n; i++, p = p->snext)
+		cvt(av[n-1-i], (int) p->type);
+}
+
+expnode *chtype(expnode *node)
 {
 	register expnode *lhs,*rhs,*eptr;
 	register symnode *sptr;
@@ -439,6 +461,9 @@ strcommon:
 			}
 			dptr = lhs->dimptr;
 			size = lhs->size;
+			/* ANSI prototype: coerce each argument to its parameter type */
+			if (node->left->op == NAME && node->left->val.sp->args)
+				coerceargs(node->right, node->left->val.sp->args);
 		case ARG:
 			chkdecl(lhs);
 			chkstrct(lhs);
@@ -480,7 +505,12 @@ strcommon:
 			needlval(lhs,0);
 			size = lhs->size;
 			node->val.num = (t = lhs->type) & XTYPE ?
-					getsize(decref(t),lhs->size,lhs->dimptr) : 1;
+					getsize(decref(t),size,lhs->dimptr) : 1;
+					/* pass the int `size`, NOT lhs->size: getsize's size
+					   parameter is a K&R int, so a `long` arg is read from
+					   its HIGH half on the big-endian target -> the ++/--
+					   step came out 0 there (a register `char *p; *p++`
+					   never advanced).  Same width trap as build.c elsize. */
 			xtype = lhs->sux;
 			if (lhs->op == STAR) ++xtype;
 			break;
@@ -673,8 +703,7 @@ if (dflag) pnode(node);
 }
 
 
-chknull(node)
-register expnode *node;
+void chknull(register expnode *node)
 {
 	if (node->op != CONST || node->val.num != 0) {
 		terror(node,"should be NULL");
@@ -684,8 +713,7 @@ register expnode *node;
 }
 
 
-usual(node)
-register expnode *node;
+int usual(register expnode *node)
 {
 	register int t;
 
@@ -706,8 +734,7 @@ register expnode *node;
 }
 
 
-cvt(node,t)
-register expnode *node;
+int cvt(register expnode *node, int t)
 {
 	expnode *ptr;
 	DBLETYPE *dblptr;
@@ -813,7 +840,7 @@ fixint:
 					break;
 				case DOUBLE:
 					if (node->op == LCONST) {
-						*dblptr=grab(DOUBLESIZE);
+						dblptr = (DBLETYPE *) grab(DOUBLESIZE);
 						*dblptr = *node->val.lp;
 						goto fixf;
 					}
@@ -880,8 +907,7 @@ fixint:
 	return node->type = t;
 }
 
-tymatch(lhs,rhs)
-register expnode *lhs,*rhs;
+int tymatch(register expnode *lhs, register expnode *rhs)
 {
 	register int tl,tr;
 
@@ -899,8 +925,7 @@ register expnode *lhs,*rhs;
 	else return INT;
 }
 
-expnode *fixup(size,t,dptr,rhs)
-register expnode *dptr,*rhs;
+expnode *fixup(int size, int t, register expnode *dptr, register expnode *rhs)
 {
 	register expnode *ptr;
 
@@ -916,8 +941,7 @@ register expnode *dptr,*rhs;
 	return ptr;
 }
 
-needlval(node,flag)
-register expnode *node;
+void needlval(register expnode *node, int flag)
 {
 	int op;
 
@@ -937,8 +961,7 @@ register expnode *node;
 	makedummy(node);
 }
 
-chkdecl(node)
-register expnode *node;
+void chkdecl(register expnode *node)
 {
 	if (node->op == NAME && node->type == UNDECL) {
 		terror(node,"undeclared variable");
@@ -946,9 +969,7 @@ register expnode *node;
 	}
 }
 
-needmos(node,t,mosar)
-register expnode *node;
-int *t,*mosar;
+int needmos(register expnode *node, int *t, int *mosar)
 {
 	register expnode *eptr;
 	register symnode *sptr;
@@ -981,8 +1002,7 @@ err:
 	return 2;
 }
 
-chkstrct(node)
-register expnode *node;
+int chkstrct(register expnode *node)
 {
 	if ((node->type) == STRUCT || node->type == UNION) {
 		terror(node,"structure or union inappropriate");
@@ -991,8 +1011,7 @@ register expnode *node;
 	return node->type;
 }
 
-makedummy(node)
-register expnode *node;
+void makedummy(register expnode *node)
 {
 	move(&sdummy,node,6);
 	node->sux = 1;
@@ -1003,7 +1022,7 @@ register expnode *node;
 	node->val.sp = &sdummy;
 }
 
-isint(t)
+int isint(int t)
 {
 	switch(t){
 		case INT:
@@ -1015,7 +1034,7 @@ isint(t)
 	return 0;
 }
 
-integerr(node)
+void integerr(int node)
 {
 	terror(node,"must be integral");
 }

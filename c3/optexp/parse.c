@@ -2,11 +2,7 @@
 /* #include "../rma/ctype.h" */
 #include <ctype.h>
 
-char *parse(type, s, p, globflag)
-	int             type,
-	               *globflag;
-	register char  *s,
-	               *p;
+char *parse(int type, register char *s, register char *p, int *globflag)
 {
 	int             size;
 
@@ -46,7 +42,12 @@ char *parse(type, s, p, globflag)
 			*s++ = *p++;
 		break;
 	default:
-		error("parse called with bad type : %d", type);
+		{
+			char            badtype[32];
+
+			sprintf(badtype, "parse called with bad type : %d", type);
+			error(badtype, NULL, NULL, NULL);
+		}
 	}
 
 	*s = '\0';

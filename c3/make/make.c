@@ -19,6 +19,8 @@
 
 #include "h.h"
 
+static void            make1(struct name *, struct line *, struct depend *);  /* used before its body */
+
 
 
 /*
@@ -28,9 +30,7 @@
  *     [exec on eon is like a fork+exec on unix]
  */
 int
-dosh(string, shell)
-char *                 string;
-char *                 shell;
+dosh(char *string, char *shell)
 {
        int     number;
 
@@ -62,9 +62,7 @@ char *                 shell;
  *     Do commands to make a target
  */
 void
-docmds1(np, lp)
-struct name *          np;
-struct line *          lp;
+docmds1(struct name *np, struct line *lp)
 {
        bool                    ssilent;
        bool                    signore;
@@ -138,8 +136,7 @@ struct line *          lp;
 }
 
 
-docmds(np)
-struct name *          np;
+void docmds(struct name *np)
 {
        register struct line *  lp;
 
@@ -153,9 +150,7 @@ struct name *          np;
  *     Recursive routine to make a target.
  */
 int
-make(np, level)
-struct name *          np;
-int                    level;
+make(struct name *np, int level)
 {
        register struct depend *        dp;
        register struct line *          lp;
@@ -258,10 +253,7 @@ int                    level;
  * ?  - list of out-of-date prerequisites
  * *  - target name with suffix deleted
  */
-make1(np, lp, qdp)
-register struct depend *       qdp;
-struct line *                  lp;
-struct name *                  np;
+static void make1(struct name *np, struct line *lp, register struct depend *qdp)
 {
        register struct depend *        dp;
        register struct line *          lp1;

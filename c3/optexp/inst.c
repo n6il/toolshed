@@ -24,10 +24,7 @@ char           *bratab[] = {
 
 #define NUMBRA ((sizeof bratab) / (sizeof (char *)))
 
-char          **srchmnem(mnemp, tblbeg, tblend)
-	char           *mnemp;
-	char          **tblbeg,
-	              **tblend;
+char **srchmnem(char *mnemp, char **tblbeg, char **tblend)
 {
 	register char **nxtmnem;
 
@@ -39,7 +36,7 @@ char          **srchmnem(mnemp, tblbeg, tblend)
 	return NULL;
 }
 
-void insinit()
+void insinit(void)
 {
 	ilist.succ = ilist.pred = &ilist;
 	inscount = 0;
@@ -47,11 +44,7 @@ void insinit()
 	freeins = NULL;
 }
 
-instruction    *insins(ins, mnem, args, l)
-	instruction    *ins;
-	char           *mnem,
-	               *args;
-	label         **l;
+instruction *insins(instruction *ins, char *mnem, char *args, label **l)
 {
 	register instruction *i;
 	register label *lp;
@@ -107,7 +100,7 @@ instruction    *insins(ins, mnem, args, l)
 				if (lp && lp->dest)
 					movlab(i, lp->dest);
 				if (i->llist == NULL
-				    && i->pred != &ilist
+				    && (chain *)i->pred != &ilist
 #if 0
 				    && (((instruction *) i->pred)->itype & CODEBRK))
 #else
@@ -146,14 +139,14 @@ instruction    *insins(ins, mnem, args, l)
 	return i;
 }
 
-instruction    *newins()
+instruction    *newins(void)
 {
 	register instruction *i;
 
 	if ((i = freeins) == NULL)
 	{
 		if (++insused > insmax + 3)
-			error("run out of instructions");
+			error("run out of instructions", NULL, NULL, NULL);
 		i = (instruction *)grab(sizeof(*i));
 	}
 	else
@@ -165,9 +158,7 @@ instruction    *newins()
 	return i;
 }
 
-void insref(ip, lp)
-	instruction    *ip;
-	label          *lp;
+void insref(instruction *ip, label *lp)
 {
 	register chain *rlp;
 
@@ -177,9 +168,7 @@ void insref(ip, lp)
 	lp->rlist = rlp;
 }
 
-void movlab(i1, i2)
-	instruction    *i1,
-	               *i2;
+void movlab(instruction *i1, instruction *i2)
 {
 	register label *l,
 	               *lastl;
@@ -197,13 +186,13 @@ void movlab(i1, i2)
 	}
 }
 
-void rminst()
+void rminst(void)
 {
 	register instruction *i;
 	label          *l;
 
-	if ((i = ilist.succ) == &ilist)
-		error("removing too many instructions");
+	if ((chain *)(i = ilist.succ) == &ilist)
+		error("removing too many instructions", NULL, NULL, NULL);
 
 	if ((i->itype & LONGBRA) == LONGBRA)
 		fix(i, FORWARD);
@@ -211,31 +200,30 @@ void rminst()
 		fix(i, BACK);
 	while (l)
 	{
-		fprintf(out, "%s", l->lname);
+		fprintf(outf, "%s", l->lname);
 		if (l->lflags & GLOBAL)
-			putc(':', out);
+			putc(':', outf);
 		if ((l = l->nextl) != 0)
-			putc('\n', out);
+			putc('\n', outf);
 	}
 
-	putc(' ', out);
+	putc(' ', outf);
 	if (i->itype & BRANCH)
 	{
-		fprintf(out, "%sb%s %s", (i->itype & LONG ? "l" : ""), i->mnem,
+		fprintf(outf, "%sb%s %s", (i->itype & LONG ? "l" : ""), i->mnem,
 		    (i->itype & DESTPTR ? i->alt.lab->lname : i->alt.args));
 	}
 	else
 	{
-		fprintf(out, "%s", i->mnem);
+		fprintf(outf, "%s", i->mnem);
 		if (i->alt.args[0])
-			fprintf(out, " %s", i->alt.args);
+			fprintf(outf, " %s", i->alt.args);
 	}
-	putc('\n', out);
+	putc('\n', outf);
 	remins(i);
 }
 
-void fix(i, direction)
-	instruction    *i;
+void fix(instruction *i, int direction)
 {
 	register instruction *ip = i;
 	instruction    *dp;
@@ -268,7 +256,7 @@ void fix(i, direction)
 	else
 	{
 		for (c = BRALIM;
-		     c && ((ip = ip->succ) != NULL) != &ilist;
+		     c && (chain *)(ip = ip->succ) != &ilist;
 		     --c)
 		{
 			if ((ip->itype & LONGBRA) == LONGBRA)
@@ -290,8 +278,7 @@ void fix(i, direction)
 	}
 }
 
-void remins(i)
-	register instruction *i;
+void remins(register instruction *i)
 {
 	register label *l;
 
@@ -320,9 +307,7 @@ void remins(i)
 	--inscount;
 }
 
-void remref(ip, lp)
-	instruction    *ip;
-	label          *lp;
+void remref(instruction *ip, label *lp)
 {
 	chain          *rlp,
 	               *lastrlp;
@@ -343,7 +328,7 @@ void remref(ip, lp)
 
 static DIRECT chain *_cfree = NULL;
 
-chain          *newchain()
+chain          *newchain(void)
 {
 	register chain *cp;
 
@@ -355,8 +340,7 @@ chain          *newchain()
 	return cp;
 }
 
-void freechain(p)
-	register chain *p;
+void freechain(register chain *p)
 {
 	p->succ = _cfree;
 	_cfree = p;
@@ -365,8 +349,7 @@ void freechain(p)
 static DIRECT chain *safree = NULL,
                *lafree = NULL;
 
-char           *newarg(siz)
-	int             siz;
+char           *newarg(int siz)
 {
 	register chain *ap;
 
@@ -383,8 +366,7 @@ char           *newarg(siz)
 	return (char *)ap;
 }
 
-void freearg(p)
-	chain          *p;
+void freearg(chain *p)
 {
 	register char  *sp;
 

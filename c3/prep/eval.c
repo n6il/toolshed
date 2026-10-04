@@ -34,9 +34,7 @@
 static char	badop[]		= "invalid operator in constant expression";
 static char	badtyp[]	= "invalid type for constant expression";
 static char	needexpr[]	= "missing operand";
-static long	doit();		/* evaluate constant expressions */
-
-int			gch();		/* snarfs text -- explicitly passed to scan() now */
+static long	doit(int, int, long, long);	/* evaluate constant expressions */
 
 int eval(void)
 {
@@ -74,10 +72,8 @@ int eval(void)
 }
 
 
-long parsexp(resultp, uresultp, priority)
-long	*resultp;		/* -> the result */
-int		*uresultp;		/* -> unsignedness of result */
-int		priority;
+/* resultp -> the result; uresultp -> unsignedness of result */
+long parsexp(long *resultp, int *uresultp, int priority)
 {
 	long			rhs, lhs, tertius;
 	int				urhs, ulhs, utert;
@@ -166,9 +162,7 @@ int chkpost(void)
 }
 
 
-long primary(resultp, uresultp)
-long	*resultp;
-int		*uresultp;
+long primary(long *resultp, int *uresultp)
 {
 	long			nodep, prim;
 	int				unodep, uprim;
@@ -291,9 +285,7 @@ int isop(void)
 }
 
 static long
-doit(op, isunsigned, lhs, rhs)
-int		op, isunsigned;
-long	lhs, rhs;
+doit(int op, int isunsigned, long lhs, long rhs)
 {
 	switch (op)
 	{

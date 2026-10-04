@@ -13,6 +13,12 @@
 #include <string.h>
 #include <stdint.h>
 
+/* __attribute__ is a GCC extension; the c3 (6809) compiler has no notion of it
+   and packs structs naturally, so define it away when not building under gcc. */
+#ifndef __GNUC__
+#define __attribute__(x)
+#endif
+
 typedef int bool;
 
 #define TRUE    1
@@ -74,19 +80,17 @@ binhead header;
 FILE    *LibFP, *ModFP;
 bool    GetCurr;
 
-void CopyGlobalDefs();
-void CopyCode();
-void CopyExtRefs();
-void CopyRefs();
-void GetName();
-void PutName();
+void CopyGlobalDefs(void);
+void CopyCode(void);
+void CopyExtRefs(void);
+void CopyRefs(void);
+void GetName(char *);
+void PutName(char *);
 
 int getw_os9();
 int putw_os9();
 
-int main(argc, argv)
-int     argc;
-char    *argv[];
+int main(int argc, char *argv[])
 {
         int     i, NMods;
         bool    GetAll;
@@ -163,7 +167,7 @@ char    *argv[];
 	return 0;
 }
 
-void CopyGlobalDefs()
+void CopyGlobalDefs(void)
 {
         int     GCount, Offset;
         char    GSym[SYMLEN + 1], flag;
@@ -183,7 +187,7 @@ void CopyGlobalDefs()
         }
 }
 
-void CopyCode()
+void CopyCode(void)
 {
         int     HowMuch;
         char    buffer[BUFSIZ];
@@ -204,7 +208,7 @@ void CopyCode()
                 fseek(LibFP, (long) HowMuch, 1);
 }
 
-void CopyExtRefs()
+void CopyExtRefs(void)
 {
         int     ECount;
         char    ESym[SYMLEN + 1];
@@ -221,7 +225,7 @@ void CopyExtRefs()
         }
 }
 
-void CopyRefs()
+void CopyRefs(void)
 {
         int     RCount;
         def_ref ref;
@@ -237,35 +241,30 @@ void CopyRefs()
                 fseek(LibFP, (long) (RCount * sizeof(ref)), 1);
 }
 
-void GetName(s)
-char    *s;
+void GetName(char *s)
 {
         while ( (*(s++) = getc(LibFP)) )
                 ;
 }
 
-void PutName(s)
-char    *s;
+void PutName(char *s)
 {
         fputs(s, ModFP);
         putc('\0', ModFP);
 }
 
-int getw_os9( fp )
-FILE *fp;
+int getw_os9(FILE *fp)
 {
 	unsigned int result;
 	
-	result = (unsigned char)getc( fp );
+	result = (getc( fp ) & 0xff);
 	result <<= 8;
-	result += (unsigned char)getc( fp );
+	result += (getc( fp ) & 0xff);
 	
 	return result;
 }
 
-int putw_os9(value, fp)
-int value;
-FILE *fp;
+int putw_os9(int value, FILE *fp)
 {
 	putc( (value>>8)&0xff, fp );
 	putc( (value)&0xff, fp );

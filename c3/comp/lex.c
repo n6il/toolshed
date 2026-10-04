@@ -15,9 +15,10 @@
  *************************************************/
 
 #include "cj.h"
+#include "il.h"
 
-static numshf(n);
-static double normaliz(n);
+static int numshf(char *);
+static double normaliz(char *);
 
 #define     isdigit(c)  (chartab[c]==DIGIT)
 
@@ -34,12 +35,13 @@ typedef union {
 extern double atoftbl[];
 #endif
 direct int stringlen;
+static int strtempid;        /* pass-1 string temp-id; pass 2 maps it to a label */
 
-extern symnode *lookup();
-extern char *grab();
+extern symnode *lookup(char *);
+extern char *grab(int);
 
 
-getsym()
+void getsym(void)
 {
     register symnode *ptr;
     register int numtype;
@@ -53,17 +55,17 @@ getsym()
 #endif
     char name[NAMESIZE+1];
 
-    blanks();
-    if (cc==EOF) {sym=EOF; return; }
+    skipblanks();
+    if (curch==EOF) {sym=EOF; return; }
 
     symptr=lptr-1;
     symline=lineno;
-    while(!(sym=chartab[cc])) {
+    while(!(sym=chartab[curch])) {
         error("bad character");
         getch();
         symptr=lptr;
     }
-    symval=valtab[cc];
+    symval=valtab[curch];
 
     switch(sym) {
         case LETTER:
@@ -76,7 +78,7 @@ getsym()
                 }
             } else {
                 sym = NAME;
-                symval = (int) ptr;
+                symval = (argword) ptr;
             }
             break;
         case DIGIT:
@@ -99,7 +101,7 @@ donum:
                 case LONG:
                     longp = (long *) grab(sizeof(long));
                     *longp = *np.lp;
-                    symval = (int) longp;
+                    symval = (argword) longp;
 #ifdef DEBUG
 fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
 #endif
@@ -109,7 +111,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                 case DOUBLE:
                     dblp = (double *) grab(sizeof(double));
                     *dblp = *np.dp;
-                    symval = (int) dblp;
+                    symval = (argword) dblp;
                     sym = FCONST;
                     break;
 #endif
@@ -128,14 +130,14 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
             switch(sym) {
 #ifdef  DOFLOATS
                 case DOT:
-                    if(isdigit(cc)) {
+                    if(isdigit(curch)) {
                         numtype=number(DOUBLE,&n);
                         goto donum;
                     }
                     break;
 #endif
                 case AMPER :
-                    switch(cc) {
+                    switch(curch) {
                         case '&':
                             sym=DBLAND;
                             getch();
@@ -149,14 +151,14 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case ASSIGN:
-                    if (cc=='=') {
+                    if (curch=='=') {
                         sym=EQ;
                         symval=9;
                         getch();
                     }
                     break;
                 case OR :
-                    switch (cc) {
+                    switch (curch) {
                         case '|':
                             sym=DBLOR;
                             getch();
@@ -170,14 +172,14 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case NOT:
-                    if(cc=='=') {
+                    if(curch=='=') {
                         sym=NEQ;
                         getch();
                         symval=9;
                     }
                     break;
                 case STAR:
-                    if (cc=='=') {
+                    if (curch=='=') {
                         sym=ASSMUL;
                         getch();
                         symval=2;
@@ -186,19 +188,19 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                 case DIV:
                 case MOD:
                 case XOR:
-                    if(cc=='=') {
+                    if(curch=='=') {
                         sym=sym+(ASSPLUS-PLUS);
                         getch();
                         symval=2;
                     }
                     break;
                 case LT:
-                    switch (cc) {
+                    switch (curch) {
                         case '<':
                             sym=SHL;
                             symval=11;
                             getch();
-                            if (cc=='='){
+                            if (curch=='='){
                                 sym=ASSSHL;
                                 symval=2;
                                 getch();
@@ -212,12 +214,12 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case GT:
-                    switch (cc) {
+                    switch (curch) {
                         case '>':
                             sym=SHR;
                             symval=11;
                             getch();
-                            if (cc=='=') {
+                            if (curch=='=') {
                                 sym=ASSSHR;
                                 symval=2;
                                 getch();
@@ -231,7 +233,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case PLUS :
-                    switch(cc){
+                    switch(curch){
                         case '+':
                             sym=INCBEF;
                             symval=14;
@@ -245,7 +247,7 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
                     }
                     break;
                 case NEG:
-                    switch(cc){
+                    switch(curch){
                         case '-':
                             sym=DECBEF;
                             symval=14;
@@ -268,16 +270,6 @@ fprintf(stderr,"getsym: symval=%04X, *longp=%08lX\n",symval,*longp);
     return;
 }
 
-char chartab[] = {
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  109,64,105,0,0,84,65,104,45,46,66,80,48,67,69,83,
-  107,107,107,107,107,107,107,107,107,107,47,40,93,120,95,100,
-  0,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,
-  106,106,106,106,106,106,106,106,106,106,106,43,102,44,89,106,
-  0,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,
-  106,106,106,106,106,106,106,106,106,106,106,41,88,42,68,0,
-};
 
 char valtab[] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -290,7 +282,7 @@ char valtab[] = {
   0,0,0,0,0,0,0,0,0,0,0,0,6,0,14,0
 };
 
-lexinit()
+void lexinit(void)
 {
      register symnode *ptr;
 
@@ -309,6 +301,11 @@ lexinit()
 #endif
      mosflg=0;
      install("char",CHAR);
+     install("void",VOID);	/* ANSI void: c3 has no distinct void type, so
+				   settype maps VOID->INT (return values are
+				   ignored and all pointers are alike).  It stays
+				   a distinct keyword only so declist can spot an
+				   explicit "(void)" empty parameter list */
      install("short",SHORT);
      install("auto",AUTO);
      install("extern",EXTERN);
@@ -340,32 +337,29 @@ lexinit()
      ptr->size=4;
 }
 
-getword(name)
-register char name[];
+void getword(register char name[])
 {
     int count;
 
-    for (count=1; an(cc) && count<=NAMESIZE ; ++count) {
-        *name++=cc;
+    for (count=1; an(curch) && count<=NAMESIZE ; ++count) {
+        *name++=curch;
         getch();
     }
 
     if(count == 2) *name++ = UNIQUE;
     *name='\0';
 
-    while(an(cc)) getch();
+    while(an(curch)) getch();
 }
 
-an(c)
-int c;
+int an(int c)
 {
     return (chartab[c]==LETTER || chartab[c]==DIGIT);
 }
 
 direct  symnode *freesym;       /* list of free symbol table entries */
 
-symnode *lookup(name)
-char name[];
+symnode *lookup(char name[])
 {
     /* return a pointer to a symbol table entry for 'name'  */
     /* if one is not found create one                       */
@@ -392,6 +386,19 @@ char name[];
     strncpy(nptr->sname,name,NAMESIZE);
     nptr->type = UNDECL;
     nptr->storage = 0;
+    nptr->args = NULL;      /* no prototype yet: an unprototyped (incl.
+			       implicitly-declared) function must have args NULL
+			       so call coercion does not walk a wild list */
+    /* Fully reset the rest of the entry too.  An entry reused from the freesym
+       list (a symbol freed at an earlier block/parameter-scope exit) keeps its
+       old blklev/size/etc.; a fresh symbol must read as clean, otherwise e.g. a
+       reused parameter name still shows blklev==1 and trips the "named twice"
+       check in declist. */
+    nptr->blklev = 0;
+    nptr->size = 0;
+    nptr->dimptr = NULL;
+    nptr->offset = 0;
+    nptr->x.labflg = 0;
 
     /* put the new entry on the front of the list;  the chance  */
     /* that a lookup is for a recently declared variable is     */
@@ -405,9 +412,7 @@ char name[];
     return nptr;
 }
 
-install(word,typ)
-char *word;
-int typ;
+void install(char *word, int typ)
 {
         /* put a keyword in the symbol table */
         register symnode *cptr;
@@ -423,8 +428,7 @@ int typ;
         cptr->storage = typ;
 }
 
-hash(word)
-register char *word;
+int hash(register char *word)
 {
     register int n = 0, c;
 
@@ -433,23 +437,9 @@ register char *word;
     return (n & 127);
 }
 
-char *grab(size)
-int size;
-{
-    char *oldptr;
-    extern char *sbrk();
-
-    if ((oldptr = sbrk(size)) == (char *) -1) fatal("out of memory");
-
-    if (!lobrk) lobrk = oldptr;
-    hibrk = oldptr+size;
-
-    return oldptr;
-}
 
 #ifdef  DOFLOATS
-number(type,np)
-register numptrs np;
+int number(int type, register numptrs np)
 {
     long i;
     double n, scale(), normaliz();
@@ -462,26 +452,26 @@ register numptrs np;
 
     if (type == DOUBLE) goto fraction;
 
-    if (cc == '0') {
+    if (curch == '0') {
         getch();
-        if (cc == '.') {
+        if (curch == '.') {
             getch();
             goto fraction;
         }
-        if (cc == 'x' || cc == 'X') {
+        if (curch == 'x' || curch == 'X') {
             int c;
             getch();
-            while (c = ishex(cc)) {
+            while (c = ishex(curch)) {
                 i = (i << 4) + (c - (c >= 'A' ? 'A' - 10 : '0'));
                 getch();
             }
         } else
-            while (isoct(cc)) {
-                i = (i << 3) + (cc - '0');
+            while (isoct(curch)) {
+                i = (i << 3) + (curch - '0');
                 getch();
             }
 
-        if (cc == 'L' || cc == 'l') {
+        if (curch == 'L' || curch == 'l') {
             getch();
             goto retlong;
         }
@@ -497,8 +487,8 @@ retlong:
     }
 
     /* here all types still possible; collect in 8 byte integer */
-    while (isdigit(cc)) {
-        if (addin(&n,cc)) { /* overflow */
+    while (isdigit(curch)) {
+        if (addin(&n,curch)) { /* overflow */
             getch();
             return 0;
         }
@@ -509,12 +499,12 @@ retlong:
      * there must be either a '.' or 'e'
      * here if it is to be double
      */
-    if (cc=='.' || cc=='e' || cc=='E') { /* double */
-        if (cc == '.') {
+    if (curch=='.' || curch=='e' || curch=='E') { /* double */
+        if (curch == '.') {
             getch();
 fraction:
-            while (isdigit(cc)) {
-                if (addin(&n,cc)) { /* overflow */
+            while (isdigit(curch)) {
+                if (addin(&n,curch)) { /* overflow */
                     getch();
                     return 0;
                 }
@@ -525,17 +515,17 @@ fraction:
 
         n = normaliz(&n);
 
-        if (cc=='E' || cc=='e') {
+        if (curch=='E' || curch=='e') {
             esign=1;
             getch();
-            if (cc=='+') getch();
-            else if(cc=='-') {
+            if (curch=='+') getch();
+            else if(curch=='-') {
                 getch();
                 esign=0;
             }
             exp=0;
-            while(isdigit(cc)) {
-                exp=exp*10 + (cc - '0');
+            while(isdigit(curch)) {
+                exp=exp*10 + (curch - '0');
                 getch();
             }
 
@@ -551,26 +541,42 @@ fraction:
         return DOUBLE;
     }
 
-    if (*((long*)&n)) return 0;     /*  overflow  */
-    if (cc=='l' || cc=='L') {       /* explicitly long */
-        getch();
-longint:
-#ifdef DEBUG
-pflinit();
-fprintf(stderr,"number: n=%08lX%08lX\n",*((long*)&n),*((long*)&n+1));
-#endif
-        *np.lp = *((long*)&n+1);
-        return LONG;
-    } else if (*((short*)&n+2)) goto longint;   /*  implicitly long  */
-    else {                          /*  int  */
-        *np.ip = *((short*)&n+3);
-        return INT;
+    /*
+     * n[] holds the parsed value as 8 big-endian bytes (n[0] most
+     * significant).  The original code aliased it as host long/short
+     * (*((long*)&n) etc.), which assumed a big-endian host with 16-bit int
+     * and 32-bit long (the 6809).  Extract the high and low 32-bit halves
+     * by hand so it works on any host (e.g. little-endian LP64).  Target
+     * semantics are preserved: int = low 16 bits, long = low 32 bits,
+     * overflow if any of the high 32 bits are set.
+     */
+    {
+        register char *nb;
+        long hi, lo;
+        int k;
+
+        nb = (char *) &n;
+        hi = lo = 0;
+        for (k = 0; k < 4; k++) hi = (hi << 8) | (nb[k]     & 0xFF);
+        for (k = 4; k < 8; k++) lo = (lo << 8) | (nb[k]     & 0xFF);
+
+        if (hi) return 0;                   /*  overflow (> 32 bits)  */
+        if (curch=='l' || curch=='L') {           /* explicitly long */
+            getch();
+            *np.lp = lo;
+            return LONG;
+        } else if (lo & 0xffff0000) {       /*  implicitly long (> 16 bits)  */
+            *np.lp = lo;
+            return LONG;
+        } else {                            /*  int  */
+            *np.ip = lo;
+            return INT;
+        }
     }
 }
 
 #ifndef SPLIT
-double scale(n,power,esign)
-double n;
+double scale(double n, int power, int esign)
 {
         double scale0();
 
@@ -580,8 +586,7 @@ double n;
         return scale0(n, power % 10, esign);
 }
 
-double scale0(n,power,esign)
-double n;
+double scale0(double n, int power, int esign)
 {
 
         if (power) {
@@ -629,8 +634,7 @@ double atoftbl[] = {
 };
 #endif
 #else
-number(np)
-register long *np;
+int number(register long *np)
 {
        long n;
        register char *cp;
@@ -638,28 +642,28 @@ register long *np;
        n=0;
        cp= &n;
 
-       if (cc=='0') {
+       if (curch=='0') {
                long n1;
                int *ip;
 
                getch();
 
                n1=0;
-               if (cc=='x' || cc=='X'){
+               if (curch=='x' || curch=='X'){
                        int c;
                        getch();
-                       while(c=ishex(cc)) {
+                       while(c=ishex(curch)) {
                                n1=(n1<<4)+ (c- (c>='A' ? 'A'-10 : '0'));
                                getch();
                        }
                }
-               else while(isoct(cc)) {
-                       n1=(n1<<3)+(cc-'0');
+               else while(isoct(curch)) {
+                       n1=(n1<<3)+(curch-'0');
                        getch();
                }
 
                ip= &n1;
-               if(cc=='L' || cc=='l') {
+               if(curch=='L' || curch=='l') {
                        getch();
                        goto retlong;
                }
@@ -675,12 +679,12 @@ register long *np;
        }
 
        /* here all types still possible; collect in 4 byte integer */
-       while(isdigit(cc)) {
-                n = (n * 10) + (cc - '0');
+       while(isdigit(curch)) {
+                n = (n * 10) + (curch - '0');
                 getch();
        }
 
-       if(cc=='l' || cc=='L') { /* explicitly long */
+       if(curch=='l' || curch=='L') { /* explicitly long */
                getch();
        longint:
                *np = n;
@@ -695,19 +699,19 @@ register long *np;
 }
 #endif
 
-pstr()
+void pstr(void)
 {
         getch();
 
-        if (cc=='\\')
+        if (curch=='\\')
                 symval=dobslash();
 
         else {
-                symval=cc;
+                symval=curch;
                 getch();
         }
 
-        if (cc!='\'')
+        if (curch!='\'')
                 error("unterminated character constant");
         else
                 getch();
@@ -716,8 +720,34 @@ pstr()
 static direct FILE *sfile;
 extern direct int datstring;
 
-qstr()
+void qstr(void)
 {
+#ifdef MKIL
+        /* code string (datstring 0) and string-pointer data initialisers
+           (datstring 2): pass 1 sends body + a temp-id; pass 2 assigns the real
+           label (so all label numbering stays in pass 2).  datstring 1 is a
+           char-array initialiser - chars go inline, handled by the old path. */
+        if (datstring != 1) {
+                extern FILE *code;
+
+                symval = strtempid++;
+                ilwrec(IL_STR); ilwint(symval); ilweol();
+                sfile = code;
+                stringlen = 0;
+                getch();
+                while (curch != '"') {
+                        if ((lptr-line) == 0) { error("unterminated string"); break; }
+                        if (curch == '\\') oc(dobslash());
+                        else { oc(curch); getch(); }
+                }
+                oc('\0');
+                putc('\n', sfile);
+                scount = 0;
+                getch();
+                ilwrec(IL_ENDRAW); ilweol();
+                return;
+        }
+#endif
         switch(datstring) {
                 case 0:
                 case 2:
@@ -745,16 +775,16 @@ qstr()
 #ifdef  SPLIT
         putc('s',sfile);
 #endif
-        while(cc!='"') {
+        while(curch!='"') {
                 if ((lptr-line)==0) {
                         error("unterminated string");
                         break;
                 }
 
-                if (cc=='\\')
+                if (curch=='\\')
                         oc(dobslash());
                 else {
-                        oc(cc);
+                        oc(curch);
                         getch();
                 }
         }
@@ -770,8 +800,7 @@ qstr()
 
 }
 
-oc(c)
-int c;
+void oc(int c)
 {
 #ifdef  SPLIT
         if(c == '\0' || c == '\\')
@@ -802,7 +831,7 @@ int c;
         ++stringlen;
 }
 
-oz(n)
+void oz(int n)
 {
 #ifdef SPLIT
      passthru();
@@ -810,12 +839,12 @@ oz(n)
      fprintf(sfile," rzb %d\n",n);
 }
 
-dobslash()
+int dobslash(void)
 {
         register int c,n;
 
         getch();
-        c=cc;
+        c=curch;
         getch();
 
         switch(c) {
@@ -833,15 +862,15 @@ dobslash()
                 int c1;
 
                 c = n = 0;
-                while((c1 = ishex(cc)) && n++ < 2) {
+                while((c1 = ishex(curch)) && n++ < 2) {
                         c =(c<<4)+ (c1 < 'A' ? c1-'0' : c1-'A'+10);
                         getch();
                 }
         }
         else if (c=='d') {
                 c=n=0;
-                while(isdigit(cc) && n++<3) {
-                        c= c*10 + cc - '0';
+                while(isdigit(curch) && n++<3) {
+                        c= c*10 + curch - '0';
                         getch();
                 }
         }
@@ -849,8 +878,8 @@ dobslash()
         else if (isoct(c)) {
                 c -= '0';
                 n=0;
-                while(isoct(cc) && n++<3) {
-                        c = (c << 3) + (cc - '0');
+                while(isoct(curch) && n++<3) {
+                        c = (c << 3) + (curch - '0');
                         getch();
                 }
         }
@@ -858,27 +887,34 @@ dobslash()
         return c;
 }
 
-isoct(c)
-char c;
+int isoct(int c)
 {
         return (c<='7' && c>='0');
 }
 
-ishex(c)
-char c;
+int ishex(int c)
 {
         return ( isdigit(c) ||  ((c &=0x5f) >='A' && c<='F')) ? c : 0;
 }
 
-static double normaliz(n)
-long n[];
+static double normaliz(char n[])
 {
-    return n[0] * 4294967296. + n[1];
+    /*
+     * n[] is the parsed digits as an 8-byte big-endian integer (n[0] most
+     * significant), built by addin().  Sum it into a double byte by byte so it
+     * is independent of host `long` width - the original `n[0]*2^32 + n[1]`
+     * aliased n as two 32-bit longs, which over-reads on a 64-bit host (where
+     * long is 64-bit), producing garbage.
+     */
+    register int i;
+    double v;
+
+    v = 0.0;
+    for (i = 0; i < 8; i++) v = v * 256.0 + (n[i] & 0xFF);
+    return v;
 }
 
-addin(n,c)
-register char n[];
-char c;
+int addin(register char n[], int c)
 {
     register int i,x;
     char ntemp[8];
@@ -895,8 +931,7 @@ char c;
     return x;
 }
 
-static numshf(n)
-register char n[];
+static int numshf(register char n[])
 {
     register int i, x = 0;
 

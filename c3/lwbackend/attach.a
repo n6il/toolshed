@@ -1,0 +1,28 @@
+* attach.a - OS-9 I/O device attach/detach wrappers for the c3 backend.
+* The stock c3 library never shipped C wrappers for I$Attach/I$Detach (only the
+* raw syscall codes), yet prep/main.c calls attach()/detach() in its OS9 path.
+* c3 v2 ABI: first arg in D, the rest on the stack, result in D; Y = data base.
+* Y is preserved across the OS-9 call and restored before _os9err/_sysret, which
+* reference errno,y.
+ psect attach_a,0,0,0,0,0
+
+* attach(name, mode) -> device-table pointer, or -1 on error
+attach:
+ tfr d,x                X = device name pointer (1st arg)
+ lda 3,s                A = access mode (low byte of 2nd arg)
+ pshs y                 preserve data base (OS-9 may clobber Y)
+ os9 I$Attach           U = device table address (carry+B on error)
+ puls y                 (does not disturb carry)
+ bcs attach10
+ tfr u,d                return device-table pointer in D
+ rts
+attach10 lbra _os9err   set errno, return -1
+
+* detach(devptr) -> 0, or -1 on error
+detach:
+ tfr d,u                U = device-table pointer (1st arg)
+ pshs y                 preserve data base
+ os9 I$Detach
+ puls y                 (does not disturb carry)
+ lbra _sysret           0 on success, -1 + errno on error
+ endsect

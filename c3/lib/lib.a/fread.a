@@ -37,4 +37,4 @@ fread4 std 2,s
 fread5 leas 2,s waste K
  puls d,u,pc return J
 
-endsect
+ endsect

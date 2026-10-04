@@ -5,7 +5,7 @@
 #define LINESIZE 100
 
 FILE           *in,
-               *out,
+               *outf,
                *datfile;
 DIRECT int      dbflag,
                 inserts,
@@ -19,9 +19,7 @@ DIRECT int      debugon,
 
 extern int      insmax;
 
-int main(argc, argv)
-	int             argc;
-	char          **argv;
+int main(int argc, char **argv)
 {
 	int             c;
 	char           *argp,
@@ -29,7 +27,7 @@ int main(argc, argv)
 	               *outfile;
 
 	in = stdin;
-	out = stdout;
+	outf = stdout;
 	infile = outfile = NULL;
 
 #ifdef DEBUG
@@ -62,25 +60,28 @@ int main(argc, argv)
 					insmax = insmax * 10 + (c - '0');
 				break;
 			default:
-				error("unknown option '%s'\n", --argp);
+				error("unknown option '%s'\n", --argp, NULL, NULL);
 			}
 		else if (!infile)
 			infile = argp;
 		else if (!outfile)
 			outfile = argp;
 		else
-			error("too many files");
+			error("too many files", NULL, NULL, NULL);
 	}
 
 	if (infile)
-		if ((in = freopen(infile, "r", stdin)) == NULL)
-			error("can't open %s", infile);
+		/* fopen, not freopen(...,stdin): on OS-9 freopen's fclose(stdin) +
+		   reuse of path 0 leaves `in` reading the console, so getc blocks
+		   forever (same fix as comp's cmain.c). */
+		if ((in = fopen(infile, "r")) == NULL)
+			error("can't open %s", infile, NULL, NULL);
 
 	if (outfile)
-		if ((out = fopen(outfile, "w")) == NULL)
-			error("can't open %s", outfile);
+		if ((outf = fopen(outfile, "w")) == NULL)
+			error("can't open %s", outfile, NULL, NULL);
 
-	datfile = out;
+	datfile = outf;
 
 #ifdef DEBUG
 	debug("files open,");
@@ -123,14 +124,12 @@ int main(argc, argv)
 	exit(0);
 }
 
-int             estimate(n)
+int             estimate(int n)
 {
 	return n + n + (n * 3 / 5);
 }
 
-int             percent(x, y)
-	unsigned        x,
-	                y;
+int percent(unsigned x, unsigned y)
 {
 	return y ? x / ((y + 50) / 100) : 0;
 }
@@ -141,7 +140,7 @@ static DIRECT int datflag,
 
 #define DIRECTPAGE  2
 
-void optimise()
+void optimise(void)
 {
 	char            line[LINESIZE];
 	char            lab[LABELSIZE + 1],
@@ -164,7 +163,10 @@ void optimise()
 		{
 			register char  *lp = line;
 
-			while (*lp != '\n')
+			/* Strip the line terminator without running off the end:
+			   fgets may not store a newline (last line / EOF), and on
+			   OS-9 the line end is CR.  Stop at CR, LF, or the NUL. */
+			while (*lp && *lp != '\n' && *lp != '\r')
 				++lp;
 			*lp = '\0';
 		}
@@ -180,7 +182,7 @@ void optimise()
 			continue;
 
 		p = parse(LABEL, lab, p, &globflag);
-		p = parse(MNEM, mnem, p);
+		p = parse(MNEM, mnem, p, &globflag);
 		while (*p == ' ' || *p == '\t')
 			++p;
 
@@ -205,7 +207,7 @@ void optimise()
 		case 'n':
 			if (strcmp(mnem, "nam") == 0)
 			{
-		put:		fprintf(out, "%s\n", line);
+		put:		fprintf(outf, "%s\n", line);
 				continue;
 			}
 			break;
@@ -254,7 +256,7 @@ void optimise()
 			}
 			if (*mnem)
 			{
-				parse(ARGS, args, p);
+				parse(ARGS, args, p, &globflag);
 				if (insins(&ilist, mnem, args, &l))
 				{
 					optim(ilist.pred);
@@ -274,7 +276,7 @@ void optimise()
 		rminst();
 }
 
-void endsect()
+void endsect(void)
 {
 	if (endflag)
 	{
@@ -283,7 +285,7 @@ void endsect()
 		else
 			while (inscount)
 				rminst();
-		fprintf(out, " endsect\n");
+		fprintf(outf, " endsect\n");
 		endflag = FALSE;
 	}
 }

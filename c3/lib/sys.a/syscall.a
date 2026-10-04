@@ -6,58 +6,44 @@
 *                   char code;
 *                   struct registers *reg;
 *
-*       regs structure:
+*       regs structure (byte offsets inlined below, so the host library
+*       build's c3lw.awk does not over-export them as link symbols):
 *
 *       struct registers {
-*               char rg_cc, rg_a, rg_b, rg_dp;
-*               unsigned rg_x, rg_y, rg_u;
-*               };
+*               char rg_cc, rg_a, rg_b, rg_dp;   R$CC=0 R$A=1 R$B=2 R$DP=3
+*               unsigned rg_x, rg_y, rg_u;       R$X=4  R$Y=6 R$U=8
+*               };                               R$PC=10 R$Size=12
+*
+*       R$D=1 (D high byte == R$A); m$rts=$39; m$os9=$103f; carry=%1.
 
 * tjl  07/27/2005  Moved file to version 2 C ABI.
-
-m$rts equ $39 rts instruction
-m$os9 equ $103f os9 call instruction
-carry equ %00000001 carry bit
-
- csect
-R$CC rmb 1
-R$D rmb 0
-R$A rmb 1
-R$B rmb 1
-R$DP rmb 1
-R$X rmb 2
-R$Y rmb 2
-R$U rmb 2
-R$PC rmb 2
-R$Size rmb 0
- endsect
 
  psect syscall_a,0,0,1,0,0
 _os9: pshs u,y save register variable & data ptr
 *lda 7,s get function code
  tfr b,a put function code into a
- ldb #m$rts and rts instruction
+ ldb #$39 rts instruction (m$rts)
  pshs d
- ldd #m$os9 os9 call code
+ ldd #$103f os9 call code (m$os9)
  pshs d
 *ldu 12,s get user register ptr
  ldu 10,s get user register ptr
- ldd R$D,u init regs for system call
- ldx R$X,u
- ldy R$Y,u
- ldu R$U,u
+ ldd 1,u init regs for system call (R$D)
+ ldx 4,u (R$X)
+ ldy 6,u (R$Y)
+ ldu 8,u (R$U)
  jsr 0,s execute system call
  pshs cc,u save regs
 *ldu 15,s get user register ptr
  ldu 13,s get user register ptr
- leau R$U,u copy regs to user struct
+ leau 8,u copy regs to user struct (R$U)
  pshu a,b,dp,x,y
  puls a,x
  sta ,-u
- stx R$U,u
+ stx 8,u (R$U)
  leas 4,s junk the system call code
  puls u,y restore regs
- bita #carry carry on?
+ bita #%00000001 carry on? (carry)
  beq os9.a bra if not
  ldd #-1 return error
  rts

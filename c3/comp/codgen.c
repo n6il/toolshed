@@ -19,10 +19,9 @@
 
 #include "cj.h"
 
-static addoff(offset);
-static outlea(reg);
+extern void addoff(int); /* now in emit.c (shared) */
+static void outlea(int);
 
-direct int datflag;
 
 /* no advantage putting the following ptrs on dp (ptrs always access indexed)*/
 static char *yind = ",y";
@@ -32,13 +31,13 @@ static char *lbra = "lbra ";
 static char *clra = "clra";
 static char *unkopr = "unknown operator : ";
 
-extern char *getrel(),regname();
+extern char *getrel(int);
+extern char regname(int);
 
 
-gen(op,rtype,arg,val)
-register op,rtype;
-register expnode *val;
-register int arg;
+/* arg is an int (register/type/offset) or an expnode * - hence argword, not
+   long (the 6809 stack ABI pushes it pointer-width; a long would misalign). */
+void gen(register int op, register int rtype, register argword arg, register expnode *val)
 {
     register expnode *ptr;
     register symnode *sptr;
@@ -61,7 +60,7 @@ register int arg;
             if((sp-=2) < maxpush) maxpush=sp;
             return;
         case JMPEQ:
-            gen(COMPARE,XREG,CONST,arg);
+            gen(COMPARE,XREG,CONST,(expnode *)arg);
             arg=rtype;
             rtype=EQ;
         case CNDJMP:
@@ -187,7 +186,7 @@ fprintf(stderr,
                             fprintf(code,"%d,%c\n",value,regname(temp));
                         } else {
                             transfer(regname(temp),'d');
-                            if (value) gen(PLUS,DREG,CONST,value);
+                            if (value) gen(PLUS,DREG,CONST,(expnode *)(long)value);
                         }
                         return;
                     case DREG:
@@ -198,7 +197,7 @@ fprintf(stderr,
                         return;
                     case CONST:
                         arg = CONST;
-                        val = (expnode *)value;
+                        val = (expnode *)(long)value;
                 }
             }
             if(rtype==DREG && arg==CONST && val==0) {
@@ -228,7 +227,7 @@ fprintf(stderr,
             ot("sub");
             goto simple;
         case RSUB:
-            gen(NEG);
+            gen(NEG,0,0,0);
         case PLUS:
             ot("add");
 simple:
@@ -279,7 +278,7 @@ leaexit:
     }
 }
 
-char regname(r)
+char regname(int r)
 {
     switch (r) {
         case DREG:  return 'd';
@@ -290,20 +289,19 @@ char regname(r)
     }
 }
 
-transfer(r1,r2)
+void transfer(int r1, int r2)
 {
     fprintf(code," tfr %c,%c\n",r1,r2);
 }
 
-dolongs(op,arg)
-int *arg;
+void dolongs(int op, int *arg)
 {
     switch (op) {
         case STACK:
-            gen(LOAD,DREG,XIND,2);
-            gen(PUSH,DREG);
+            gen(LOAD,DREG,XIND,(expnode *)2L);
+            gen(PUSH,DREG,0,0);
             gen(LOAD,DREG,XIND,0);
-            gen(PUSH,DREG);
+            gen(PUSH,DREG,0,0);
 			break;
 		case TEST:
             ol("lda 0,x\n ora 1,x\n ora 2,x\n ora 3,x");
@@ -346,11 +344,10 @@ int *arg;
 }
 
 #ifdef  DOFLOATS
-dofloats(op,arg)
-register int arg;
+void dofloats(int op, register long arg)
 {
     switch (op) {
-        case FCONST:    getcon(arg,4); break;
+        case FCONST:    getcon((int *)arg,4); break;
         case STACK:     fcall("_dstack"); sp -= 8; break;
         case TEST:
             fprintf(code," lda %c,x\n",arg == FLOAT ? '3' : '7');
@@ -391,59 +388,40 @@ register int arg;
 }
 #endif
 
-getcon(p,n)
-int *p;
+void getcon(int *p, int n)
 {
     int temp;
 
     ot("bsr ");
     label(temp = getlabel());
-    defcon(p,n);
+    if (n == 2) deflong((char *) p);        /* LCONST: host long */
+    else        defbytes((char *) p, n * 2);/* FCONST: host double (n=4 -> 8 bytes) */
     olbl(temp);
     ol("puls x");
 }
 
-defcon(p,n)
-register int *p;
-{
-    register int i;
 
-    defword();
-    if (n == 1) od(p);
-    else if (p == NULL) {
-        for (i = 1; i++ < n; ) os("0,");
-        ob('0');
-    } else
-        for (i = 0; i < n; ++i){
-            od(*p++);
-            if (i != n - 1) ob(',');
-        }
-    nl();
-}
-
-mwsyscall(s)
+void mwsyscall(char *s)
 {
     ot(lbsr);
     ol(s);
     sp += 2;
 }
 
-lcall(s)
+void lcall(char *s)
 {
     ot(lbsr);
     ol(s);
     sp += 4;
 }
 
-fcall(s)
+void fcall(char *s)
 {
     ot(lbsr);
     ol(s);
 }
 
-trouble(op,arg,val)
-register int op,arg;
-register expnode *val;
+void trouble(register int op, register int arg, register expnode *val)
 {
     char *s;
     int cflag,temp;
@@ -477,7 +455,7 @@ register expnode *val;
             }
             break;
         case CONST:
-            switch (temp = ((int)val >> 8) & 0xff) {
+            switch (temp = ((int)(long)val >> 8) & 0xff) {
                 case 0:
                     if (op == AND) ol(clra);
                     break;
@@ -491,7 +469,7 @@ register expnode *val;
                     ot(s);
                     doref('a',CONST,temp,0);
             }
-            switch (temp = (int)val & 255) {
+            switch (temp = (int)(long)val & 255) {
                 case 0:
                     if (op == AND) ol("clrb");
                     break;
@@ -516,7 +494,8 @@ register expnode *val;
     }
 }
 
-doref(reg,arg,val,offset)
+/* val is an expnode * in NODE mode, an int otherwise - hence argword, not long. */
+void doref(int reg, int arg, argword val, int offset)
 {
     ob(reg);
     ob(' ');
@@ -524,97 +503,8 @@ doref(reg,arg,val,offset)
     nl();
 }
 
-static addoff(offset)
-register int offset;
-{
-    if(offset) {
-        if(offset > 0) ob('+');
-        od(offset);
-    }
-}
 
-deref(arg,val,offset)
-{
-    register expnode *node;
-    register symnode *sn;
-    int sc;
-
-    if (arg & INDIRECT) ob('[');
-
-    switch (arg & NOTIND) {
-        case NODE:
-            node = (expnode *)val;
-            if (node->op == AMPER) {
-                ob('#');
-                deref(NODE,node->left,offset);
-                return;
-            }
-            deref(node->op,node->val.sp,offset+node->modifier);
-            return;
-        case CONST:
-            ob('#');
-            od(val);
-            break;
-        case FREG:
-            os("_flacc");
-            addoff(offset);
-            os(yind);
-            break;
-        case NAME:
-            if (sn = (symnode *)val)
-                switch (sc = sn->storage) {
-                    case AUTO:
-                        od(val = sn->offset-sp+offset);
-                        os(spind);
-                        break;
-                    case STATICD:
-                        if(!datflag) ob((arg & INDIRECT) ? '>' : '<');
-                    case STATIC:
-                        olbl(sn->offset);
-                        goto dooff;
-                    case DIRECT:
-                    case EXTERND:
-                        if(!datflag) ob((arg & INDIRECT) ? '>' : '<');
-                    case EXTERN:
-                    case EXTDEF:
-                        on(sn->sname);
-dooff:
-                        addoff(offset);
-                        if(arg & INDIRECT || (!datflag && (sc != DIRECT
-                                    && sc != EXTERND && sc != STATICD))) {
-                            if(isftn(sn->type)) os(",pcr");
-                            else os(yind);
-                        }
-                        break;
-                    default:
-                        error("storage error");
-                        break;
-                }
-            else od(offset);
-            break;
-        case XIND:
-        case YIND:
-        case UIND:
-            od(val += offset);
-            ob(',');
-            switch(arg & NOTIND) {
-                case XIND:  ob('x'); break;
-                case YIND:  ob('y'); break;
-                case UIND:  ob('u'); break;
-            }
-            break;
-        case STACK:
-            os(spind);os("++");
-            sp += 2;
-            break;
-        default:
-            error("dereference");
-    }
-
-    if(arg & INDIRECT) ob(']');
-}
-
-char *getrel(op)
+char *getrel(int op)
 {
     switch (op) {
         default:    error("rel op");
@@ -631,82 +521,13 @@ char *getrel(op)
     }
 }
 
-ot(s)
-{
-    putc(' ',code);
-    os(s);
-}
 
-ol(s)
-{
-    ot(s);
-    nl();
-}
-
-nl()
-{
-    putc('\n',code);
-}
-
-ob(b)
-{
-    putc(b,code);
-}
-
-os(s)
-{
-    fprintf(code,s);
-}
-
-od(n)
-{
-    fprintf(code,"%d",n & 0xFFFF);
-}
-
-label(n)
-{
-    olbl(n);
-    lastst = 0;
-    nl();
-}
-
-olbl(n)
-{
-    ob(UNIQUE);
-    od(n);
-}
-
-on(s)
-{
-    fprintf(code,"%.8s",s);
-}
-
-modstk(nsp)
-{
-    int x;
-
-    if (x=nsp-sp) {
-        ot("leas ");
-        od(x);
-        os(spind);
-        nl();
-    }
-    return nsp;
-}
-
-nlabel(ptr,scope)
-{
-    on(ptr);
-    if (scope) ob(':');
-    nl();
-}
-
-static outlea(reg)
+static void outlea(int reg)
 {
     fprintf(code," lea%c ",reg);
 }
 
-outstr(reg,l)
+void outstr(int reg, int l)
 {
     outlea(reg);
     fprintf(code,"%c%d,pcr\n",UNIQUE,l);

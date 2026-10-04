@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <rof.h>
 
 /* what we keep track of for symbols */
@@ -61,9 +62,18 @@ FILE    *LibFP;
 Global  *HashTable[HASHSIZE];
 Module  *MList;
 
-main(argc, argv)
-int     argc;
-char    *argv[];
+/* file-local helpers: static, with abstract ANSI prototypes (types only).
+   () (not (void)) on the no-arg ones: this file is also cross-compiled by c3
+   for OS-9, where void maps to int. */
+static void     DoLibFile(char *);
+static void     DoGlobalDefs(Module *);
+static void     DoExtRefs(Module *);
+static void     SkipRefs(void);
+static Global   *GetGlobal(void);
+static Module   *GetModule(void);
+static void     ShowDep(void);
+
+int main(int argc, char *argv[])
 {
         int     i;
 
@@ -81,12 +91,12 @@ char    *argv[];
 
         ShowDep();
 
+        return 0;
 }
 
-DoLibFile(LibPath)
-char    *LibPath;
+static void DoLibFile(char *LibPath)
 {
-        Module  *NewMod, *GetModule();
+        Module  *NewMod;
 
         if ((LibFP = fopen(LibPath, "r")) == NULL) {
                 fprintf(stderr, "LOrder: can't open %s\n", LibPath);
@@ -111,11 +121,10 @@ char    *LibPath;
 
 }
 
-DoGlobalDefs(Mod)
-Module  *Mod;
+static void DoGlobalDefs(Module *Mod)
 {
         int     GCount;
-        Global  *GSym, *GetGlobal();
+        Global  *GSym;
 
         GCount = getw(LibFP);
 
@@ -127,11 +136,10 @@ Module  *Mod;
 
 }
 
-DoExtRefs(Mod)
-Module  *Mod;
+static void DoExtRefs(Module *Mod)
 {
         int     i, ECount;
-        Global  *GetGlobal(), **rlist;
+        Global  **rlist;
 
         ECount = getw(LibFP);
 
@@ -148,7 +156,7 @@ Module  *Mod;
 
 }
 
-SkipRefs()
+static void SkipRefs(void)
 {
         int     RCount;
 
@@ -157,8 +165,8 @@ SkipRefs()
 
 }
 
-Global *
-GetGlobal()
+static Global *
+GetGlobal(void)
 {
         char    NameIn[MAXNAME];
         Global  *NewGlob;
@@ -190,8 +198,8 @@ GetGlobal()
 
 }
 
-Module *
-GetModule()
+static Module *
+GetModule(void)
 {
         Module  *NewMod;
         char    *scan;
@@ -209,7 +217,7 @@ GetModule()
 
 }
 
-ShowDep()
+static void ShowDep(void)
 {
         int     i, j, rcount;
         Global  **rlist;

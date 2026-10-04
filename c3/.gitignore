@@ -1,0 +1,6 @@
+# Transient temp files left by the c3 driver/compiler (mkstemp name generator)
+cstr.*
+ctmp.*
+
+# Editor swap files
+*.swp

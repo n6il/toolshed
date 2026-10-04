@@ -1,0 +1,11 @@
+* getenv.a - environment lookup stub for the OS-9 backend.
+* OS-9/6809 has no Unix-style process environment, and the stock c3 library
+* never shipped a getenv().  The c3 driver (exec/c3.c) only uses it to let
+* C3_OPT / C3_ASM / C3_LINK / C3BASE override the built-in tool names, so a stub
+* that always reports "unset" (returns NULL) makes it fall back to the defaults.
+* c3 v2 ABI: result in D.
+ psect getenv_a,0,0,0,0,0
+getenv:
+ ldd #0                 NULL: variable not set
+ rts
+ endsect

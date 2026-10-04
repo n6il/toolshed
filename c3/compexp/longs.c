@@ -34,7 +34,7 @@ void tranlexp(expnode *node)
                 case YIND:
                 case UIND:
                     if (node->val.num) {
-                        gen(LEAX, NODE, node, 0);
+                        gen(LEAX, NODE, (long)node, 0);
                         node->op = XIND;
                         node->val.num = 0;
                     }
@@ -47,7 +47,7 @@ void tranlexp(expnode *node)
             break;
         case DTOL:
             dload(node->left);
-            gen(DBLOP, DTOL, node->left, 0);
+            gen(DBLOP, DTOL, (long)node->left, 0);
             node->op=FREG;
             break;
         case ITOL:
@@ -60,7 +60,7 @@ void tranlexp(expnode *node)
 fprintf(stderr,"tranlexp: *(node->val.lp=%04X)=%08lX\n",
 node->val.lp,*node->val.lp);
 #endif
-            gen(LONGOP, LCONST, node->val.lp, 0);
+            gen(LONGOP, LCONST, (long)node->val.lp, 0);
             /*  should free constant storage here  */
             node->val.lp = NULL;
 			node->op = XIND;
@@ -184,7 +184,7 @@ void getadd(expnode *ptr)
             break;
         case YIND:
         case UIND:
-            gen(LEAX, NODE, ptr, 0);
+            gen(LEAX, NODE, (long)ptr, 0);
             setxreg(ptr);
             break;
     }
@@ -195,9 +195,9 @@ void pushcon(expnode *p)
     register long *p1;
 
     if ((p1 = p->val.lp) && *p1) {
-        gen(LOAD, DREG, CONST, (int) *p1);
+        gen(LOAD, DREG, CONST, (expnode *)(long)(int) *p1);
         gen(PUSH, DREG, 0, 0);
-        gen(LOAD, DREG, CONST, (int) (*p1 >> 16));
+        gen(LOAD, DREG, CONST, (expnode *)(long)(int) (*p1 >> 16));
         gen(PUSH, DREG, 0, 0);
     } else {
         gen(LOAD, DREG, CONST, 0);

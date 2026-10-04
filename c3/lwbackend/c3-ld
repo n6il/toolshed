@@ -1,0 +1,38 @@
+#!/bin/sh
+# c3-ld - linker shim used by the c3 driver in place of Microware "rlink".
+# The driver invokes it roughly as:
+#   c3-ld [DEV/lib/cstart.r] OBJ.r... -o=OUTPUT [-l=DEV/lib/...] [-mMEM] [-eED]
+# We drop the Microware cstart/library/edition args (the lwasm back-end has
+# its own crt0.o, C library libc3.a and runtime libc3lw.a) and link an OS-9
+# module with lwlink.
+#
+# crt0 calls _fpinit/_fpterm; the link names exactly one provider.  By default
+# that's fpdummy.o (no-op).  A library argument whose name ends in fp.l (e.g.
+# the on-target spelling -l=/dd/lib/fp.l) opts the program into floating point:
+# fpinit.o instead, whose _fpinit links the MC6839 FPO9 module.  Every other
+# Microware library spec is ignored.
+#
+# Locates crt0.o / fpdummy.o / fpinit.o / libc3.a / libc3lw.a relative to this
+# script; override with C3LW_HOME.
+set -e
+self=$0
+while [ -L "$self" ]; do
+	link=$(readlink "$self")
+	case "$link" in /*) self=$link ;; *) self=$(dirname "$self")/$link ;; esac
+done
+home=${C3LW_HOME:-$(cd "$(dirname "$self")" && pwd)}
+out=; objs=; fp="$home/fpdummy.o"
+for a in "$@"; do
+	case "$a" in
+		-o=*)     out=${a#-o=} ;;
+		-l=*fp.l) fp="$home/fpinit.o" ;;	# opt in to MC6839 floating point
+		-l=*|-y)  ;;			# Microware library specs - ignored
+		-*)       ;;			# other rlink flags (-m, -e, ...) - ignored
+		*cstart*) ;;			# Microware C startup - replaced by crt0.o
+		*)        objs="$objs $a" ;;
+	esac
+done
+[ -n "$out" ] || { echo "c3-ld: no -o=output" >&2; exit 2; }
+[ -f "$fp" ] || { echo "c3-ld: $fp not found (run buildlibc.sh)" >&2; exit 2; }
+# shellcheck disable=SC2086
+lwlink --format=os9 -s "$home/os9c3.ld" -o "$out" "$home/crt0.o" $objs $fp "-L$home" "-lc3" "-lc3lw"

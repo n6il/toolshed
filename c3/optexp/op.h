@@ -39,7 +39,10 @@
 
 typedef struct chstruct
 {
-	void           *succ,
+	struct chstruct *succ,		/* self-referential: c3 requires a member
+					   name's type be consistent across all
+					   structs, and rejects mixing a struct
+					   pointer with void or scalar pointers */
 	               *pred;
 }               chain;
 
@@ -49,7 +52,7 @@ typedef struct istruct
 	               *pred;
 	struct lstruct
 	{
-		int            *succ,
+		struct lstruct *succ,	/* self-referential (see chain above) */
 		               *pred;
 		struct istruct *dest;
 		chain          *rlist;
@@ -103,22 +106,74 @@ typedef union istruct
 typedef struct lstruct label;
 
 extern DIRECT chain ilist;
-extern chain    ltable[],
-               *newchain();
-extern char   *parse();
-extern void    debug(), movlab(), remins(), insref(), prtins(), error(), fix(), freechain();
-extern void    remref(), freearg(), freelabel(), endsect(), optim(), finddupl(), rminst();;
-extern void    labelinit(), insinit(), optinit(), optimise();
-extern int     estimate(), percent(), hash();
-extern char    *newarg(), *grab();
-extern label   *inslabel(), *newlabel(), *findlabel();
+extern chain    ltable[];
 extern DIRECT label *lfree;
-extern instruction *insins(), *newins();
 extern DIRECT int inscount;
 extern FILE    *in,
-               *out,
+               *outf,
                *datfile;
 extern DIRECT int lbf,
                 lbdone,
                 opsdone;
 extern DIRECT int dbflag;
+
+/*
+ * function prototypes - abstract (parameter TYPES only, no names).
+ *
+ * Every non-static (global) function defined across the optexp .c files is
+ * declared here so each translation unit sees a real ANSI prototype.  Static
+ * functions are NOT declared here (there are none in optexp); a static helper
+ * would carry its prototype in its own .c file.
+ *
+ * No-argument functions use the ANSI (void) form in both prototype and
+ * definition; c3 accepts (void) for an empty parameter list.
+ *
+ * error() and parse() keep their fixed four / four parameter shapes from their
+ * definitions: error()/debug() are the classic "poor man's varargs" idiom that
+ * forwards all trailing char* slots to fprintf (the format string decides how
+ * many are read), and parse()'s fourth argument is dereferenced only for a
+ * LABEL parse.  Call sites pass the full argument count to match.
+ */
+char           *parse(int, char *, char *, int *);
+char           *newarg(int);
+char           *grab(unsigned);
+char           *newbra(char *);
+
+void            movlab(instruction *, instruction *);
+void            remins(instruction *);
+void            insref(instruction *, label *);
+void            error(char *, char *, char *, char *);
+void            fix(instruction *, int);
+void            freechain(chain *);
+void            remref(instruction *, label *);
+void            freearg(chain *);
+void            freelabel(label *);
+void            endsect(void);
+void            optim(instruction *);
+void            finddupl(instruction *);
+void            rminst(void);
+void            labelinit(void);
+void            insinit(void);
+void            optinit(void);
+void            optimise(void);
+void            fixcond(instruction *);
+void            duplrefs(label *, instruction *);
+
+int             estimate(int);
+int             percent(unsigned, unsigned);
+int             hash(char *);
+int             match(char *, char *);
+int             duplsrch(instruction *, instruction *);
+
+chain          *newchain(void);
+label          *inslabel(char *);
+label          *newlabel(void);
+label          *findlabel(char *);
+instruction    *insins(instruction *, char *, char *, label **);
+instruction    *newins(void);
+char          **srchmnem(char *, char **, char **);
+
+#ifdef DEBUG
+void            debug(char *, char *, char *, char *);
+void            prtins(instruction *);
+#endif

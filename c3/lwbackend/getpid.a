@@ -1,0 +1,13 @@
+* getpid.a - standalone process-id call for the OS-9 backend.
+* (The full lib/sys.a/id.a pulls in setuid/setgid and extra error codes that
+*  cross-compiled programs here do not need; getpid only needs F$ID.)
+* Returns the process id in D, per the c3 v2 ABI.  Matches lib/sys.a/id.a.
+ psect getpid_a,0,0,0,0,0
+getpid:
+ pshs y                  preserve data pointer (ROM scratch)
+ os9 F$ID                A = process id (no error possible)
+ puls y
+ tfr a,b
+ clra
+ rts
+ endsect

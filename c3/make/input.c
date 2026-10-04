@@ -18,9 +18,7 @@ char                   str2[LZ];
 /*
  * Find a separator in a string, removing \ from all \-quoted occurences.
  */
-char *findsep(str,sep)
-char *str;
-char sep;
+char *findsep(char *str, char sep)
 {
         char *q, *p, *pos;
 
@@ -47,8 +45,7 @@ char sep;
  *     Intern a name.  Return a pointer to the name struct
  */
 struct name *
-newname(name)
-char *                 name;
+newname(char *name)
 {
        register struct name *  rp;
        register struct name *  rrp;
@@ -106,9 +103,7 @@ char *                 name;
  *     Return the new head pointer for that list.
  */
 struct depend *
-newdep(np, dp)
-struct name *          np;
-struct depend *                dp;
+newdep(struct name *np, struct depend *dp)
 {
        register struct depend *        rp;
        register struct depend *        rrp;
@@ -137,9 +132,7 @@ struct depend *                dp;
  *     Return the new head pointer for that list.
  */
 struct cmd *
-newcmd(str, cp)
-char *                 str;
-struct cmd *           cp;
+newcmd(char *str, struct cmd *cp)
 {
        register struct cmd *   rp;
        register struct cmd *   rrp;
@@ -191,10 +184,7 @@ struct cmd *           cp;
  *     since they could be used by another target.
  */
 void
-newline(np, dp, cp, flag)
-struct name *          np;
-struct depend *                dp;
-struct cmd *           cp;
+newline(struct name *np, struct depend *dp, struct cmd *cp, bool flag)
 {
        bool                    hascmds = FALSE;  /*  Target has commands  */
        register struct line *  rp;
@@ -260,9 +250,7 @@ struct cmd *           cp;
  *     of it.
  */
 void
-input(fd,thisfile)
-FILE *                 fd;
-char *                 thisfile;
+input(FILE *fd, char *thisfile)
 {
        char *                  p;              /*  General  */
        char *                  q;

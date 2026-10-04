@@ -22,11 +22,17 @@
  */
 
 #include <stdio.h>
+#ifndef OS9			/* c3 (OS-9) has no <stdarg.h>; fatal() is K&R there */
+#include <stdarg.h>
+#endif
 #include "h.h"
 
 #ifdef unix
 #include <sys/errno.h>
+#include <ctype.h>
 #endif
+
+static void            usage(void);
 #ifdef eon
 #include <sys/err.h>
 #endif
@@ -59,10 +65,8 @@ bool                   debug = FALSE;  /*  Debug mode */
 bool                   force = FALSE;  /*  Force update */
 
 
-void
-main(argc, argv)
-int                    argc;
-char **                        argv;
+int
+main(int argc, char **argv)
 {
        register char *         p;              /*  For argument processing  */
        int                     estat = 0;      /*  For question  */
@@ -195,7 +199,7 @@ char **                        argv;
        if (debug)
                 printf("Opening makefile.\n");
 
-       if (strcmp(makefile, "-") == 0) /*  Can use stdin as makefile  */
+       if (makefile && strcmp(makefile, "-") == 0) /* Can use stdin as makefile */
                ifd = stdin;
        else
                if (!makefile)          /*  If no file, then use default */
@@ -289,7 +293,8 @@ char **                        argv;
 }
 
 
-usage()
+static void
+usage(void)
 {
 #ifdef eon
    /* For eon, we list the -m option */
@@ -312,6 +317,9 @@ usage()
 }
 
 
+#ifdef OS9
+/* The c3 6809 compiler has no <stdarg.h>; use the original K&R variadic-by-
+   over-declaration form (fprintf reads only the args its format consumes). */
 void
 fatal(msg, a1, a2, a3, a4, a5, a6)
 char   *msg;
@@ -321,3 +329,17 @@ char   *msg;
        fputc('\n', stderr);
        exit(1);
 }
+#else
+void
+fatal(char *msg, ...)
+{
+       va_list ap;
+
+       fprintf(stderr, "%s: ", myname);
+       va_start(ap, msg);
+       vfprintf(stderr, msg, ap);
+       va_end(ap);
+       fputc('\n', stderr);
+       exit(1);
+}
+#endif

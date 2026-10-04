@@ -23,14 +23,22 @@
 extern int errno;
 #endif
 
-#ifndef OS9
+/* `direct` is a no-op on every target.  On OS-9 the direct-page section aliases
+   the stdio iob, so direct-page globals (inclcount, fname, in/out, ...) come up
+   as garbage and corrupt argument parsing; keep prep's globals in normal,
+   crt0-zeroed data instead (same decision as comp/cj.h). */
 #define direct
-#endif
 
 #define TRUE		1
 #define FALSE		0
 
-#define FNAMSIZE    128     /* length of file names */
+/* c3's declarator cannot parse a raw `int (*f)()` function-pointer parameter
+   (it mis-parses the nested parens and silently miscompiles the whole param
+   list - scan()'s first arg came through as a bad pointer on target).  A
+   typedef'd name parses cleanly; scan() takes its char-getter through this. */
+typedef int (*funcp)();
+
+#define FNAMSIZE    256     /* length of file names, incl. include paths */
 #define NAMESIZE    256     /* length of macro names */
 #define HOLDSIZE    512     /* size of string hold buffer */
 #define LINESIZE    512     /* size of line buffer */
@@ -95,7 +103,7 @@ typedef struct{
 } cmdstruct;
 
 global direct FILE
-	*out,					/* output file ptr */
+	*outfp,					/* output file ptr */
     *in;                    /* current input file ptr */
     
 global char
@@ -135,8 +143,71 @@ global direct long
 	sym,			/* lexical token */
 	symval;         /* value associated with lexical token */
 
-extern long parsexp();
-extern long primary();
+/* abstract ANSI prototypes for every global prep function (no param names) */
 
-extern macro *addmac();
-extern char *savestr(), *setfile(), *makename();
+/* scan.c */
+extern void scan(char *, int, funcp);
+
+/* dues.c */
+extern char *nextname(char *, char);
+extern void doinclude(void);
+extern void dodefine(int);
+extern void docond(void);
+extern void doifdef(int);
+extern void doelif(void);
+extern void doelse(void);
+extern void unstack(void);
+extern void doliner(void);
+
+/* eval.c */
+extern int eval(void);
+extern long parsexp(long *, int *, int);
+extern int chkpost(void);
+extern long primary(long *, int *);
+extern int isop(void);
+
+/* lex.c */
+extern void getsym(void);
+extern int number(long *);
+extern void pstr(void);
+extern void qstr(void);
+extern int isoct(int);
+extern int ishex(int);
+extern int an(int);
+extern int need(char);
+
+/* macros.c */
+extern macdef *revlist(macdef *);
+extern macro *addmac(char *, char *);
+extern macro *findmac(char *);
+extern void delmac(char *);
+extern void nxtch(void);
+
+/* main.c */
+extern void errexit(int);
+extern void setline(int);
+extern char *setfile(char *);
+extern int findcmd(char *);
+
+/* misc.c */
+extern void fatal(char *);
+extern void error(char *);
+extern void lerror(char *);
+extern void doerr(int, char *, int, int);
+extern void putesc(int, char *, char *);
+extern int hash(char *);
+extern char *grab(unsigned);
+extern char *copystr(char *, char *, int);
+extern char *savestr(char *);
+
+/* parse.c */
+extern void preinit(void);
+extern int getline1(void);
+extern void quoexp(char *, char *);
+extern char *makename(char *);
+extern void getword(char *, int);
+extern int newline(void);
+extern int gch(int);
+extern int supergch(int);
+extern int skipsp(int);
+extern int _inline(void);

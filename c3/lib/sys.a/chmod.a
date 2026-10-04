@@ -3,12 +3,13 @@
 * ifp1
 * use ../../defs/os9defs.a
 * endc
-*Carry equ %00000001
+Carry equ %00000001
 Write. equ 2 write access
 FD.Att equ 0 FD offset to attr
 FD.Own equ 1 FD offset to owner
 
 Bufsize equ 16 FD info bytes
+SS.FD equ $0F getstat/setstat code: read/write the FD
 
  psect chmod,0,0,3,0,0
 

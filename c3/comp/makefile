@@ -6,7 +6,7 @@ CFLAGS = -ccc09 -dPROF -S
 PROG = cc09
 FILES = cmain.r misc.r build.r optim.r stats.r longs.r floats.r\
 		inits.r get.r codgen.r local.r lex.r tranexp.r regscont.r\
-		declare.r bool.r printf.r
+		declare.r bool.r treeutil.r
 
 $(PROG): $(FILES)
 	chd $(RDIR) rlink /h0/lib.new/cstart.r $(FILES)\
@@ -18,7 +18,7 @@ $(FILES): cj.h
 
 date.list: cj.h cmain.c misc.c build.c optim.c stats.c longs.c floats.c\
 		inits.c get.c codgen.c local.c lex.c tranexp.c regscont.c\
-		declare.c bool.c printf.c
+		declare.c bool.c treeutil.c
 	pr -p96 -h1 -t2 -r90 -n $? ! spl -jn=$(PROG)
 	touch date.list
 

@@ -1,0 +1,3 @@
+# assembled bench images
+*.s19
+*.o

@@ -7,15 +7,10 @@ DIRECT int      opsdone;
 int             labelnum = 0;
 action         *acslots[128];
 
-int match();
-void fixcond();
-int duplsrch();
-void duplrefs();
-
 extern DIRECT chain *freeins;
 extern char    *bratab[];
 
-void optinit()
+void optinit(void)
 {
 	register action *a,
 	              **slot;
@@ -52,8 +47,7 @@ void optinit()
 
 #define isconbra(a) (((a) & BRAMASK) > (BRANCH|SUBR))
 
-void optim(i)
-	register instruction *i;
+void optim(register instruction *i)
 {
 	register instruction *i2;
 	action         *a;
@@ -64,7 +58,7 @@ void optim(i)
 	i = i->pred;
 	for (;;)
 	{
-loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
+loop:		if ((chain *)i == &ilist || (chain *)(i2 = i->succ) == &ilist)
 			return;
 		if (i2->llist)
 		{		/* look for jump to next instruction */
@@ -83,7 +77,7 @@ loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
 				}
 				else if ((i->itype & CODEBRK)
 					 && i->llist == NULL
-					 && (i = i->pred) != &ilist
+					 && (chain *)(i = i->pred) != &ilist
 					 && isconbra(i->itype)
 					 && i->alt.lab->dest == i2)
 				{
@@ -105,7 +99,7 @@ loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
 			c = 0;
 			for (ap = a->actp; ap; ap = ap->nxtins)
 			{
-				if (i == &ilist || i->llist)
+				if ((chain *)i == &ilist || i->llist)
 					break;
 				if (ap->mnp && match(i->mnem, ap->mnp) == 0)
 					break;
@@ -113,7 +107,7 @@ loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
 				{
 					if (ap->opp == one)
 					{
-						if (i->pred == &ilist)
+						if ((chain *)i->pred == &ilist)
 							break;
 						if (match(i->alt.args, ((instruction *) (i->pred))->alt.args) == 0)
 							break;
@@ -164,8 +158,7 @@ loop:		if (i == &ilist || (i2 = i->succ) == &ilist)
 	}
 }
 
-void fixcond(i)
-	register instruction *i;
+void fixcond(register instruction *i)
 {
 	i->itype = ((i->itype & BRAMASK) ^ 1)
 		| (((instruction *) (i->succ))->itype & ~(CODEBRK | BRAMASK));
@@ -176,9 +169,7 @@ void fixcond(i)
 	++opsdone;
 }
 
-int match(s, p)
-	register char  *s,
-	               *p;
+int match(register char *s, register char *p)
 {
 	if (p == NULL)
 		return 1;
@@ -209,8 +200,7 @@ int match(s, p)
 	return (*s == '\0');
 }
 
-void finddupl(i)
-	register instruction *i;
+void finddupl(register instruction *i)
 {
 	register instruction *ip1;
 	label          *lbp;
@@ -218,7 +208,7 @@ void finddupl(i)
 	               *rlp2,
 	               *lmovp;
 
-	if (i->pred == &ilist)
+	if ((chain *)i->pred == &ilist)
 		return;
 	/* move labels on "bra"s to here */
 	lmovp = NULL;
@@ -246,12 +236,12 @@ void finddupl(i)
 	while (lmovp)
 	{
 		movlab(ip1 = lmovp->pred, i);
-		if ((ip1 = ip1->pred) != &ilist && (ip1->itype & BRANCH))
+		if ((chain *)(ip1 = ip1->pred) != &ilist && (ip1->itype & BRANCH))
 		{
 			if (ip1->itype & CODEBRK)
 				remins(ip1->succ);
 			else if (isconbra(ip1->itype)
-				 && ((struct lstruct *) (ip1->alt.lab))->dest == ((instruction *) (ip1->succ))->succ)
+				 && ((label *) (ip1->alt.lab))->dest == ((instruction *) (ip1->succ))->succ)
 				fixcond(ip1);
 		}
 		rlp2 = lmovp->succ;
@@ -284,7 +274,7 @@ void finddupl(i)
 		if (i->itype & BRANCH)
 		{
 			/* does branch label know its destination ? */
-			if (ip1 = ((struct lstruct *) (i->alt.lab))->dest)
+			if (ip1 = ((label *) (i->alt.lab))->dest)
 			{
 
 				/*
@@ -308,7 +298,7 @@ void finddupl(i)
 		else
 		{
 			/* travel down instruction list */
-			for (ip1 = i->pred; ip1 != &ilist; ip1 = ip1->pred)
+			for (ip1 = i->pred; (chain *)ip1 != &ilist; ip1 = ip1->pred)
 			{
 				if (!(ip1->itype & CODEBRK)
 				    || (ip1->itype & (BLOCKDUP | BRANCH)))
@@ -322,9 +312,7 @@ void finddupl(i)
 	}
 }
 
-int duplsrch(ip1, ip2)
-	register instruction *ip1,
-	               *ip2;
+int duplsrch(register instruction *ip1, register instruction *ip2)
 {
 	char            bralbl[LABELSIZE + 1];
 	instruction    *ip1b,
@@ -335,7 +323,7 @@ int duplsrch(ip1, ip2)
 	count = 0;
 	if ((ip1b = ip1) == (ip2b = ip2))
 		return 0;
-	while (ip1 != &ilist && ip2 != &ilist
+	while ((chain *)ip1 != &ilist && (chain *)ip2 != &ilist
 	       && ip1 != ip2b && ip2 != ip1b
 	       && (ip1->itype & BRAMASK) == (ip2->itype & BRAMASK)
 	       && !(ip1->itype & BLOCKDUP)
@@ -386,9 +374,7 @@ int duplsrch(ip1, ip2)
 	return 0;
 }
 
-void duplrefs(lbp, ip)
-	label          *lbp;
-	instruction    *ip;
+void duplrefs(label *lbp, instruction *ip)
 {
 	register instruction *ip1;
 	chain          *rlp;

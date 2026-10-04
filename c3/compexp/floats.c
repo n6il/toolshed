@@ -6,15 +6,13 @@
 
 #include "cj.h"
 
-void dload(ptr)
-register expnode *ptr;
+void dload(register expnode *ptr)
 {
     trandexp(ptr);
     getadd(ptr);
 }
 
-void trandexp(node)
-register expnode *node;
+void trandexp(register expnode *node)
 {
     register expnode *p;
     register int op, type;
@@ -48,7 +46,7 @@ register expnode *node;
 			node->op = FREG;
 			break;
         case FCONST:
-            gen(DBLOP, FCONST, node->val.dp, NULL);
+            gen(DBLOP, FCONST, (long)node->val.dp, NULL);
             node->op = XIND;
             /*  should free constant storage here  */
             node->val.dp = NULL;

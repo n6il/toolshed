@@ -40,15 +40,17 @@ void doerr(int n, char errstr[], int lno, int ertype)
 		tmp="";
 
 	if (!aflag) {
-		putesc(ertype, tmp);
-		fprintf(out, "%d\n", lno);
-		fprintf(out, "%d\n%s\n", n, errstr);
+		putesc(ertype, tmp, 0);
+		fprintf(outfp, "%d\n", lno);
+		fprintf(outfp, "%d\n%s\n", n, errstr);
 	} else
-		fprintf(out, " fatal line #%d - %s\n", lno, errstr);
+		fprintf(outfp, " fatal line #%d - %s\n", lno, errstr);
 }
 
 
-void putesc(type, arg, arg1)
+/* arg/arg1: most callers pass strings (%s); NEWLINO passes an int line
+   number, round-tripping through the low word for the "%d" case */
+void putesc(int type, char *arg, char *arg1)
 {
 	if (!aflag)
 	{
@@ -57,13 +59,13 @@ void putesc(type, arg, arg1)
 		case NEWFNAME:
 		case OLDFNAME:
 		case PSECT:
-			fprintf(out, "%c%c\n%s\n%s\n", ESCHAR, type, arg, arg1);
+			fprintf(outfp, "%c%c\n%s\n%s\n", ESCHAR, type, arg, arg1);
 			break;
 		case NEWLINO:
-			fprintf(out,"%c%c\n%d\n",ESCHAR,type,arg);
+			fprintf(outfp,"%c%c\n%d\n",ESCHAR,type,arg);
 			break;
 		default:
-			fprintf(out,"%c%c\n%s\n",ESCHAR,type,arg);
+			fprintf(outfp,"%c%c\n%s\n",ESCHAR,type,arg);
 			break;
 		}
 	}

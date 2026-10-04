@@ -10,10 +10,9 @@
 
 #include "cj.h"
 
-static elsize(prim);
+static int elsize(expnode **);
 
-expnode *parsexp(priority)
-int priority;
+expnode *parsexp(int priority)
 {
     register expnode *rhs,*lhs,*temp;
     register int op,priop,lno,rprec;
@@ -61,7 +60,7 @@ exit:
     return lhs;
 }
 
-expnode *primary()
+expnode *primary(void)
 {
     register expnode *nodep,*prim;
     expnode *temp;
@@ -186,7 +185,7 @@ dblop:      nodep = newnode(sym,nodep,0,14,symline,symptr);
     return nodep;
 }
 
-expnode *explist()
+expnode *explist(void)
 {
     register expnode *list = NULL, *ptr;
 
@@ -202,8 +201,7 @@ expnode *explist()
     return list;
 }
 
-constexp(p)
-int p;
+int constexp(int p)
 {
     register expnode *ptr;
     register int v;
@@ -217,7 +215,7 @@ int p;
     return v;
 }
 
-isop()
+int isop(void)
 {
     switch (sym) {
         case AMPER:
@@ -243,57 +241,16 @@ isop()
     }
 }
 
-constop(op,r,l)
-{
-    switch(op) {
-        case PLUS:      return r + l;
-        case MINUS:     return r - l;
-        case TIMES:     return r * l;
-        case DIV:       if (l) return r / l;
-                        diverr();
-                        return 0;
-        case MOD:       if(l) return r % l;
-                        diverr();
-                        return 0;
-        case AND:       return r & l;
-        case OR:        return r | l;
-        case XOR:       return r ^ l;
-        case SHL:       return r << l;
-        case SHR:       return r >> l;
-        case EQ:        return r == l;
-        case NEQ:       return r != l;
-        case GT:        return r > l;
-        case LT:        return r < l;
-        case GEQ:       return r >= l;
-        case LEQ:       return r <= l;
-        case NEG:       return -r;
-        case NOT:       return !r;
-        case COMPL:     return ~r;
-        case DBLAND:    return r && l;
-        case DBLOR:     return r || l;
-        case ULEQ:
-        case ULT:
-        case UGEQ:
-        case UGT:
-            {
-                char *lp,*rp;
-                lp = (char *) l;  rp = (char *) r;
-                switch (op) {
-                    case ULEQ:      return rp <= lp;
-                    case ULT:       return rp < lp;
-                    case UGEQ:      return rp >= lp;
-                    default:        return rp > lp;
-                }
-            }
-        default:        error("constant operator");
-                        return 0;
-    }
-}
 
-expnode *getcast()
+expnode *getcast(void)
 {
-    expnode *dptr,*ptr;
-    int lno,dummy,size,type;
+    expnode *ptr;
+    dimnode *dptr;          /* settype writes a dimnode * here, not an expnode * */
+    elem *dummy;            /* settype writes an elem * here; ignored by a cast */
+    long size;              /* settype writes a long here: an int would be
+                               overrun by 2 bytes on the 6809 (4 on an LP64 host),
+                               smashing this frame on every cast that is parsed */
+    int lno,type;
     register char *errpnt;
 
     lno = symline;
@@ -313,34 +270,13 @@ expnode *getcast()
     return ptr;
 }
 
-expnode *newnode(op,left,right,value,lno,errpnt)
-expnode *left,*right;
-char *errpnt;
-{
-    register expnode *node;
 
-    if (freenode) {
-        node = freenode;
-        freenode = node->left;
-    } else node = (expnode *) grab(NODESIZE);
-    node->op = op;
-    node->left = left;
-    node->right = right;
-    node->val.num = value;
-    node->lno = lno;
-    node->pnt = errpnt;
-    node->modifier = 0;
-
-    return node;
-}
-
-experr()
+void experr(void)
 {
     error("expression missing");
 }
 
-static elsize(prim)
-expnode **prim;
+static int elsize(expnode **prim)
 {
     register expnode *p;
 
@@ -353,10 +289,51 @@ expnode **prim;
             chkdecl(p);
             p = (expnode *) p->val.sp;
         case CAST:
-usual:      return getsize(p->type,p->size,p->dimptr);
+usual:      return getsize(p->type,(int)p->size,p->dimptr);
+            /* p->size is `long` but getsize's size parameter is a K&R int (as
+               sizeup's call already assumes); without the cast the long is read
+               from its HIGH half on the big-endian target, so sizeof(struct)
+               folded to 0 there (24 on the little-endian host) - the same width
+               trap as val.lval / argword.  Truncating to int first gives the
+               correct low 16 bits on both. */
         case DOT:
         case ARROW:
             return elsize(&p->right);
     }
 }
 
+
+/* parser error-recovery helpers (moved from misc.c at the split) */
+int need(int key)
+{
+    static char ptr[] = "x expected";
+    register int i;
+
+    if(sym==key) {
+        getsym();
+        return 0;
+    }
+    for (i = 0; i < 128; ++i) if (chartab[i] == key) break;
+    *ptr=i;
+    error(ptr);
+/*
+    for ( ; ; ) {
+        if(sym==key)
+            getsym();
+        else switch(sym) {
+            case SEMICOL: case RBRACE: case EOF:
+                break;
+            default:
+                getsym();
+                continue;
+        }
+        break;
+    }
+*/
+    return 1;
+}
+
+void junk(void)
+{
+    while (sym != SEMICOL && sym != RBRACE && sym != EOF) getsym();
+}
